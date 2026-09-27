@@ -21,7 +21,8 @@
 ## 下一步
 - [ ] 同龄追踪脚本（「最新」笔记在第 3、7 天再抓一次）+ 扩大样本
 - [x] Google 评价抓取（专用 Chrome 配置 + 小号登录）+ 餐厅画像（`jevdev/restaurant.py`、`rubrics/review_v1.json`）
-- [ ] 写稿（`claude -p`）→ 卡片渲染 → Jev 审稿和选稿 → MCP 发布（先用「仅自己可见」测试，发布前先问 Chris）
+- [x] 端到端流水线 `scripts/make_post.py`：Google + 小红书 → Jev 画像 → Claude（`claude -p`，Opus 5.5）写 4 篇 → 逐句核查 + 禁用词 → Claude 修改 → Jev 审稿闸门和质量 → 选稿 → 渲染卡片（自动适配）；第一篇：明家烧腊，草稿包在 `data/posts/20260926-2354_HK-BBQ-Master-Richmond-BC`
+- [ ] 用「仅自己可见」测试发布 `scripts/publish.py <包> --yes`（等 Chris 同意）
 - [ ] 定时任务（Windows 任务计划程序）：MCP 常驻 + 每日采集 / 追踪（改系统配置前先问 Chris）
 
 ## 阻塞 / 待 Chris 处理
