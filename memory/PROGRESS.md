@@ -3,7 +3,7 @@
 > 最后更新：2026-09-27（本地会话）
 
 ## 当前阶段
-产品方向初稿：小红书运营工作流（Claude 写稿 + Jev 判断）。见 `PRODUCT.md`。
+执行计划已定稿（`PLAN.md`）：阶段 0 基建。账号用 Chris 新注册的小红书号（0 笔记）。目标：全自动、能自我优化、能自我验证。
 
 ## 已完成
 - [x] TypeSafe 插件安装（当前容器，user scope，v0.5.7）
@@ -12,10 +12,9 @@
 - [x] 切换到本地会话（Claude Desktop + Claude in Chrome 已连接；本地已装 TypeSafe 插件）
 
 ## 下一步
-- [ ] Chris 决定目标用户（三选一，见 `PRODUCT.md` 待定）
-- [ ] Chris 确认验证号方案（真实号 + 人工发布，见 DECISIONS）
-  - 新发现：本地已有小红书 MCP 环境 + 一个现成真号（见 `CONTEXT.md`「本地小红书环境」）→ 是否直接用它当验证号？
-- [ ] 设计 MVP 验证实验：Jev 维度分与真实笔记表现是否相关
+- [ ] Chris 选赛道 + 确认发布闸门（见 `PLAN.md` 待定）
+- [ ] 阶段 0：MCP 换登新号（先备份旧号 cookies）；拿到 TypeSafe key；搭好 Python 项目骨架
+- [ ] 阶段 1：离线验证 Jev 在所选赛道能否预测互动
 
 ## 阻塞 / 待 Chris 处理
 - [ ] 需要 TypeSafe API key（放环境变量，不入库）
