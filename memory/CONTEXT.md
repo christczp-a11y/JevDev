@@ -16,6 +16,13 @@
 - Codex CLI 未安装（有 `~/.codex` 目录，可能来自桌面版）
 - Chris 只有 ChatGPT / Gemini 会员，没有付费 API key
 
+## ⚠️ 新号是 rednote 海外账号，本地 MCP（v2.5.0）不支持（2026-09-27 实测）
+- rednote.com 和 xiaohongshu.com 在网页端是两套独立的登录和账号体系；MCP 只支持 xiaohongshu.com
+- 表现：扫码显示成功，但 `check_login_status` 仍是未登录，`search_feeds` 返回 0 条
+- 上游：issue #838（登录误判）、PR #798（增加 `-site rednote`，未合并，和主分支有冲突，基于较旧版本）；最新版本 v2.5.5（2026-09-22）仍不支持
+- 本机没装 Go，无法自行编译 PR 版本
+- 旧号（国内账号）的 cookies 备份在 `xhs\bin\cookies.old-account-backup.json`
+
 ## 本地小红书环境（先前会话搭建，2026-08）
 - 位置：`C:\Users\Chris\xhs\`；说明见 `~/.claude/projects/C--Users-Chris-xhs/memory/xiaohongshu-mcp-setup.md`
 - 服务：HTTP MCP `localhost:18060`（已写入 `~/.claude.json`，名为 `xiaohongshu-mcp`）；**必须用 `bin\start-mcp.cmd` 启动**，未启动时 MCP 显示 ECONNREFUSED
@@ -44,3 +51,8 @@
 ## 协作约定
 - 默认中文；行业术语 / 北美市场可夹英文
 - 简洁直接，给真实判断，有依据；不确定就说不确定
+
+## Codex CLI（2026-09-27 实测可用）
+- 0.157.1，已用 ChatGPT 账号登录
+- 调用方式：`codex --search exec --skip-git-repo-check -s read-only "<prompt>"`
+- 实测：能找到 Kirin 相关的 5 个 Reddit 帖子（带链接和日期），每次约消耗 2.8 万 token；帖子正文打不开，只能拿到搜索摘要，是 Codex 转述后的内容（二手信息，需要注意可能失真）
