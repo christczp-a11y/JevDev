@@ -1,11 +1,13 @@
 """用 Claude（本机 `claude -p`，走会员额度）按写作规范批量写草稿。"""
 import json
+import shutil
 import subprocess
 from pathlib import Path
 
 PROMPT_DIR = Path(__file__).resolve().parent.parent / "prompts"
 MODEL = "claude-opus-5-5"
-CLAUDE_EXE = str(Path.home() / "AppData/Roaming/npm/node_modules/@anthropic-ai/claude-code/bin/claude.exe")
+_WIN_CLAUDE = Path.home() / "AppData/Roaming/npm/node_modules/@anthropic-ai/claude-code/bin/claude.exe"
+CLAUDE_EXE = str(_WIN_CLAUDE) if _WIN_CLAUDE.exists() else (shutil.which("claude") or "claude")   # 本地 Windows / 云端 Linux
 
 _CARD = {
     "type": "object",

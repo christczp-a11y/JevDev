@@ -1,0 +1,13 @@
+# JevDev 的 Python 依赖（2026-09-27 从本地 .venv 导出核心部分）
+# 安装：pip install -r requirements.txt && python -m playwright install --with-deps chromium
+typesafe-sdk==0.7.2
+playwright==1.63.0
+pillow==12.3.0
+pillow_heif==1.8.0
+numpy==2.5.3
+scipy==1.18.1
+scikit-image==0.26.0
+scikit-learn==1.9.1
+httpx2==2.13.1
+# 可选：图库抠图（美食赛道用，视频不需要）
+# rembg==2.0.85

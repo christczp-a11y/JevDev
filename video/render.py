@@ -9,6 +9,7 @@
 import argparse
 import base64
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -18,7 +19,8 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 sys.stdout.reconfigure(encoding="utf-8")
-FFMPEG = str(next((Path.home() / "AppData/Local/Microsoft/WinGet/Packages").glob("Gyan.FFmpeg*/ffmpeg-*/bin/ffmpeg.exe")))
+FFMPEG = str(next((Path.home() / "AppData/Local/Microsoft/WinGet/Packages").glob("Gyan.FFmpeg*/ffmpeg-*/bin/ffmpeg.exe"), None)
+             or shutil.which("ffmpeg") or "ffmpeg")   # 本地 Windows（WinGet 装的）/ 云端 Linux（apt install ffmpeg）
 FPS = 30
 
 

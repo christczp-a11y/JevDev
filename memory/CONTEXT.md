@@ -3,7 +3,7 @@
 ## 仓库
 - GitHub：`christczp-a11y/JevDev`
 - 开发分支：`claude/loving-cerf-f4z5v5`
-- 运行环境：本地 Windows（Claude Desktop），路径 `C:\Users\Chris\Claude x Jev\JevDev`；云容器会话已弃用
+- 运行环境：2026-09-27 起**切回云端会话**（本地这周额度用完，改用云端 credit），交接见 `memory/HANDOFF-CLOUD.md`；本地 Windows 路径 `C:\Users\Chris\Claude x Jev\JevDev`（Codex 画素材、小红书 MCP 只能在本地做）
 
 ## 本地环境（2026-09-27 切换后实测）
 - 网络：`docs.typesafe.ai`、`www.xiaohongshu.com` 均可访问（云端拦截问题不存在）
@@ -78,3 +78,10 @@
 ## 写稿用的 LLM
 - `claude -p`（npm 版 CLI）登录已过期：「OAuth session expired」→ 需要 Chris 在终端运行 `claude` 重新登录一次
 - Codex CLI 已登录，可以作为备选
+
+## 视频工具链（儿童历史动画，2026-09-27）
+- 渲染：`video/render.py <剧本.json>` → `video/out/<名>.mp4`（Playwright 逐帧截 `video/engine.html` → ffmpeg；18 秒约 40 秒渲完）；`--still <秒>` 出单帧
+- 纸偶：`video/puppet.js`（部件和关节在 `video/assets/rig/<角色视角>/rig.json`）；场景在 `video/sets/`，剧本在 `video/scenes/`
+- 检查：`video/contact.py`（连续帧联系表，`--follow` 跟人物）；`video/logic_qa.py`（每集必做的合理性复查）；`video/motion_qa.py`（改前 vs 改后动作比较）；`video/story.py`（剧本质检）
+- 素材：Codex CLI `codex exec -m gpt-6-astra -c 'model_reasoning_effort="low"' -s workspace-write -C <目录> -i <参考图> -`（只在本地可用）；绿幕素材用 `video/split_sheet.py` 切，透明底用 `video/split_alpha.py` 切
+- 依赖：`requirements.txt` + `python -m playwright install chromium` + ffmpeg；字体从 Google Fonts 在线加载
