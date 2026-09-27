@@ -16,12 +16,14 @@
 - Codex CLI 未安装（有 `~/.codex` 目录，可能来自桌面版）
 - Chris 只有 ChatGPT / Gemini 会员，没有付费 API key
 
-## ⚠️ 新号是 rednote 海外账号，本地 MCP（v2.5.0）不支持（2026-09-27 实测）
-- rednote.com 和 xiaohongshu.com 在网页端是两套独立的登录和账号体系；MCP 只支持 xiaohongshu.com
-- 表现：扫码显示成功，但 `check_login_status` 仍是未登录，`search_feeds` 返回 0 条
-- 上游：issue #838（登录误判）、PR #798（增加 `-site rednote`，未合并，和主分支有冲突，基于较旧版本）；最新版本 v2.5.5（2026-09-22）仍不支持
-- 本机没装 Go，无法自行编译 PR 版本
-- 旧号（国内账号）的 cookies 备份在 `xhs\bin\cookies.old-account-backup.json`
+## 小红书 MCP：改装版支持 rednote 海外号（2026-09-27 跑通）
+- 新号是 rednote 海外账号；rednote.com 和 xiaohongshu.com 在网页端是两套独立的登录。官方 MCP（最高 v2.5.5）只支持国内站（相关：issue #838、PR #798）
+- 改装版源码：`C:\Users\Chris\xhs\xiaohongshu-mcp-rednote\`，分支 `rednote` = v2.5.5 + PR #798（cherry-pick，解决 3 处冲突），另外把创作者中心和通知页的 URL 改成随站点切换
+- 编译：`go build -o ../bin/xiaohongshu-mcp-rednote.exe .`（Go 1.27 在 `C:\Program Files\Go`）
+- **启动新号：`xhs\bin\start-mcp-rednote.cmd`**（带 `-site rednote`，端口同样是 18060）；登录工具：`start-login-rednote.cmd`
+- cookies：新号 → `bin\cookies-rednote.json`；旧号（国内）→ `bin\cookies.json`（已恢复）
+- 实测：`check_login_status` ✅ 已登录（小红薯6AB9FF32）；`search_feeds`「温哥华 餐厅」返回 20 条，带点赞、收藏、评论数
+- 还没测：发布功能
 
 ## 本地小红书环境（先前会话搭建，2026-08）
 - 位置：`C:\Users\Chris\xhs\`；说明见 `~/.claude/projects/C--Users-Chris-xhs/memory/xiaohongshu-mcp-setup.md`
@@ -51,6 +53,10 @@
 ## 协作约定
 - 默认中文；行业术语 / 北美市场可夹英文
 - 简洁直接，给真实判断，有依据；不确定就说不确定
+
+## TypeSafe key（2026-09-27）
+- 已充值 $5，绑卡正常，但 Create key 一直报「Failed to create API key」（填了名字也不行）；控制台 `/keys` 页面有请求返回 503
+- 第三方消息：TypeSafe 自 2026-09-22 起暂停新用户注册；备选渠道：OpenRouter、Vercel AI Gateway
 
 ## Codex CLI（2026-09-27 实测可用）
 - 0.157.1，已用 ChatGPT 账号登录

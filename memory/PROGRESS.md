@@ -3,20 +3,21 @@
 > 最后更新：2026-09-27（本地会话）
 
 ## 当前阶段
-执行计划已定稿（`PLAN.md`）：阶段 0 基建。账号用 Chris 新注册的小红书号（0 笔记）。目标：全自动、能自我优化、能自我验证。
+阶段 0 基建（`PLAN.md`）。赛道：温哥华美食推荐。账号：rednote 海外新号「小红薯6AB9FF32」（0 笔记）。目标：全自动、能自我优化、能自我验证。
 
 ## 已完成
-- [x] TypeSafe 插件安装（当前容器，user scope，v0.5.7）
-- [x] 建立 `memory/` 记忆目录
-- [x] 产品方向初稿 + 风险分析（`PRODUCT.md`）
-- [x] 切换到本地会话（Claude Desktop + Claude in Chrome 已连接；本地已装 TypeSafe 插件）
+- [x] 建立 `memory/` 记忆目录；产品方向和风险分析（`PRODUCT.md`）；执行计划（`PLAN.md`）
+- [x] 切换到本地会话（Claude Desktop + Claude in Chrome；本地已装 TypeSafe 插件）
+- [x] 定赛道、定发布闸门、接受 Google 抓取风险、Reddit 走 Codex（见 DECISIONS）
+- [x] 小红书 MCP 改装为支持 rednote，新号已登录，搜索可用（见 CONTEXT）
+- [x] Codex CLI 已装并登录，实测能搜到 Reddit
 
 ## 下一步
-- [ ] Chris 选赛道 + 确认发布闸门（见 `PLAN.md` 待定）
-- [ ] 阶段 0：MCP 换登新号（先备份旧号 cookies）；拿到 TypeSafe key；搭好 Python 项目骨架
-- [ ] 阶段 1：离线验证 Jev 在所选赛道能否预测互动
+- [ ] 搭 Python 项目骨架 + SQLite
+- [ ] Google 评价抓取脚本（无头浏览器、不登录、遇到验证码就跳过）
+- [ ] 小红书采集：`search_feeds` + `get_feed_detail` → 入库
+- [ ] 阶段 1：离线验证 Jev 在温哥华美食赛道能否预测互动（需要 TypeSafe key）
 
 ## 阻塞 / 待 Chris 处理
-- [ ] 需要 TypeSafe API key（放环境变量，不入库）
-- [ ] `.claude/settings.json` 与 `CLAUDE.md` 需 Chris 手动创建，内容见 `log/2026-09-27.md`
-  - 本地 TypeSafe 已是 user scope 安装，此项只影响云端会话；clear 后仍需提示 Claude「先读 memory/PROGRESS.md」
+- [ ] TypeSafe key 创建失败（服务端 503，已充值 $5）→ 联系 TypeSafe 客服，或改走 OpenRouter / Vercel
+- [ ] `.claude/settings.json` 与 `CLAUDE.md` 需 Chris 手动创建，内容见 `log/2026-09-27.md`（可选）
