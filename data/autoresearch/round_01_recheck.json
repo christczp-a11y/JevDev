@@ -1,0 +1,44 @@
+[
+ {
+  "id": "t_homesick",
+  "rmse_with": 1.2345,
+  "rmse_without": 1.2302,
+  "kept": false
+ },
+ {
+  "id": "t_self_exclaim",
+  "rmse_with": 1.2302,
+  "rmse_without": 1.2283,
+  "kept": false
+ },
+ {
+  "id": "t_ad_copy",
+  "rmse_with": 1.2283,
+  "rmse_without": 1.2242,
+  "kept": false
+ },
+ {
+  "id": "t_trend_item",
+  "rmse_with": 1.2242,
+  "rmse_without": 1.2215,
+  "kept": false
+ },
+ {
+  "id": "t_label_only",
+  "rmse_with": 1.2215,
+  "rmse_without": 1.2187,
+  "kept": false
+ },
+ {
+  "id": "cv_headline_promise",
+  "rmse_with": 1.2187,
+  "rmse_without": 1.2163,
+  "kept": false
+ },
+ {
+  "id": "cv_appetite",
+  "rmse_with": 1.2163,
+  "rmse_without": 1.2144,
+  "kept": false
+ }
+]

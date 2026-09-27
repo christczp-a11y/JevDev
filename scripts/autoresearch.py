@@ -5,7 +5,7 @@ Claude 提问题 → Jev 给每篇赛道笔记回答 → 用真实互动量做�
   - 按 note_id 的哈希固定留出 25% 的笔记作测试集，循环全程不看，最后只评一次（--final）
   - 基线已经包含控制变量（采样来源、发布天数、视频）、代码能数出来的特征（字数、数字、emoji…）
     和封面的客观描述（版式、有没有人脸…）；Jev 的问题必须在这个基线之上还有增量才算有用
-  - 新加的问题：只要答案不是千篇一律（标准差 ≥ 0.05）就先留；修改 / 删除：同一组折的交叉验证误差下降才接受
+  - 新加、修改、删除：都要在同一组折上的交叉验证误差下降才接受（样本小，比官方 cookbook 的「不平就留」更严）
 
 题目在 rubrics/xhs_features_current.json（每个问题带 input：title / body / cover，决定给 Jev 看什么）。
 Jev 的答案按「笔记 × 问题内容的哈希」缓存在 feat_answers 表，改题只会重打改动的题。
@@ -31,7 +31,7 @@ from scipy.stats import spearmanr
 from sklearn.linear_model import RidgeCV
 from sklearn.model_selection import KFold
 from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import FunctionTransformer, StandardScaler
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -241,7 +241,9 @@ def matrix(dicts, keys, fill=None):
 
 
 def model():
-    return make_pipeline(StandardScaler(), RidgeCV(alphas=np.logspace(-2, 3, 20)))
+    # 标准化后截断到 ±3：几乎全是 0、偶尔一个 1 的稀有特征标准化后会变成十几个标准差，把预测带飞
+    return make_pipeline(StandardScaler(), FunctionTransformer(np.clip, kw_args={"a_min": -3, "a_max": 3}),
+                         RidgeCV(alphas=np.logspace(-2, 3, 20)))
 
 
 def cv(X, y):
@@ -448,10 +450,18 @@ def run_round(con, questions, round_no, extra=""):
     for a in prop["actions"]:
         qid = a["id"]
         if a["op"] == "add" and qid in trial and qid not in questions:
-            ok = not flat(data, cols[qid])
+            # 官方 cookbook 是「不是千篇一律就留」（2000 行数据）；我们只有 ~300 篇，加噪声题会让误差变大，
+            # 所以新题也要让交叉验证误差下降才留（第 1 轮用宽松规则时 7 道新题让 RMSE 从 1.223 升到 1.241）
+            if flat(data, cols[qid]):
+                log["actions"].append({**a, "accepted": False, "reason": "答案几乎都一样"})
+                continue
+            before = rmse_with(current)
+            cand = dict(current, **{qid: trial[qid]})
+            after = rmse_with(cand)
+            ok = after < before
             if ok:
-                current[qid] = trial[qid]
-            log["actions"].append({**a, "accepted": ok, "reason": "有区分度" if ok else "答案几乎都一样"})
+                current = cand
+            log["actions"].append({**a, "accepted": ok, "rmse_before": round(before, 4), "rmse_after": round(after, 4)})
         elif a["op"] == "revise" and qid in current and qid + "__new" in trial:
             before = rmse_with(current)
             cand = dict(current)
@@ -510,6 +520,21 @@ def final(con, questions):
     lo, hi = np.percentile(diffs, [2.5, 97.5])
     print(f"加入 Jev 后 RMSE 变化 {np.sqrt(e1.mean()) - np.sqrt(e0.mean()):+.3f}，95% 区间 [{lo:+.3f}, {hi:+.3f}]（负数 = 更准）")
 
+    # 逐条复核：开发集上显著的规则，在测试集上方向是否一致
+    dev_rules = {r["feature"]: r for r in rule_report(dev, questions) if r["verdict"] != "不确定"}
+    test_rules = {r["feature"]: r for r in rule_report(test, questions, boot=500)}
+    print("\n开发集显著的规则 → 测试集复核：")
+    check = []
+    for k, r in sorted(dev_rules.items(), key=lambda kv: -abs(kv[1]["rho"])):
+        t = test_rules.get(k)
+        same = bool(t and np.sign(t["rho"]) == np.sign(r["rho"]))
+        check.append({"feature": k, "dev": r, "test": t, "same_sign": same})
+        print(f"  {k:<22} 开发 {r['rho']:+.3f}  测试 {t['rho'] if t else float('nan'):+.3f} (n={t['n'] if t else 0})  "
+              f"{'✓ 方向一致' if same else '✗ 不一致'}")
+    (HISTORY / "final_check.json").write_text(json.dumps(
+        {"rmse_change": float(np.sqrt(e1.mean()) - np.sqrt(e0.mean())), "ci": [float(lo), float(hi)],
+         "n_test": int(len(test.y)), "rules": check}, ensure_ascii=False, indent=1), encoding="utf-8")
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -545,7 +570,7 @@ def main():
 
     best = None
     for r in range(args.rounds):
-        done = len(list(HISTORY.glob("round_*.json"))) if HISTORY.exists() else 0
+        done = len(list(HISTORY.glob("round_[0-9][0-9].json"))) if HISTORY.exists() else 0
         extra = Path(args.extra).read_text(encoding="utf-8") if (args.extra and r == 0) else ""
         questions, rmse = run_round(con, questions, done + 1, extra)
         save_questions(questions)

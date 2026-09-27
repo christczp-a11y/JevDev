@@ -1,0 +1,195 @@
+{
+ "round": 4,
+ "start": {
+  "base": [
+   1.3087198588279716,
+   0.6742006354624995
+  ],
+  "full": [
+   1.1973858558558126,
+   0.750980706703032
+  ]
+ },
+ "analysis": "本轮信号仍几乎都来自标题：t_curiosity(0.37)、t_hype、t_absolute、t_emo_surprise、t_hook、t_casual 为正；t_label_only(-0.28)、t_specific(-0.19) 为负。也就是说，情绪饱满、留了悬念的口语标题比堆名词的「信息标签」标题更好。正文和封面题普遍接近 0，主要原因是大量笔记正文为空（视频或纯图）。\n\n误差样本给出几条新线索：\n1) 低估样本：「终于在温哥华吃到了焦糖布蕾奶皮子蛋糕」「国内可能没有的饭」这两篇都有「海外 vs 国内」的身份锚点，并且点名了国内正火的网红单品，再加上「终于」这种念想被满足的情绪；「永远可以相信…每晚爆满要排队」用的是人群排队这种社会证明；「这个中秋来海底捞」借了节日热点；「8天吃了27家 0踩雷」是封面大字本身就在制造好奇和承诺。\n2) 高估样本：「冲着高评分来的韩餐，结果有点意外」虽然有悬念，但态度偏负面、含糊；「这一杯，敬平安」「本拿比早午餐+马甲线」主题偏离了美食，是个人日记或自我展示；「明家烧腊风声很大」态度不明。\n\n据此新增 8 题：国内关联/海外身份、国内网红单品、「终于吃到」的念想、人群排队式社会证明、节日时令、标题态度正负（score）、封面大字好奇心（score）、正文偏离美食主题。\n修订 2 题：b_voice 原题没有给出量表方向，改成「真实亲历者 ↔ 商家/营销号」；b_deliver 补上正文为空时的处理规则。\n删除 4 道偏相关接近 0 的题：cv_identity、t_kind_new、b_pain_first、cv_single_focus。",
+ "actions": [
+  {
+   "op": "add",
+   "id": "t_china_link",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 把温哥华的食物和中国国内做了关联或对照（如「国内吃不到」「终于在温哥华吃到国内的XX」「比国内还好吃」「家乡味」），或点明了海外华人、留学生的身份视角",
+   "criteria_json": "",
+   "why": "两篇大幅低估的笔记（奶皮子蛋糕、国内可能没有的饭）都用了「海外 vs 国内」锚点，可以直接变成写作规则",
+   "accepted": false,
+   "rmse_before": 1.1974,
+   "rmse_after": 1.2002
+  },
+  {
+   "op": "add",
+   "id": "t_trend_item",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 点名了一道近期在国内社交媒体上走红的网红单品或网红品类（如奶皮子蛋糕、脏脏包、某爆款茶饮），而不是常规菜式",
+   "criteria_json": "",
+   "why": "焦糖布蕾奶皮子蛋糕这篇实际 4436、预测只有 106，蹭国内热点单品可能是一个可操作的选题规则",
+   "accepted": false,
+   "rmse_before": 1.1974,
+   "rmse_after": 1.2004
+  },
+  {
+   "op": "add",
+   "id": "t_longing",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 表达了期待已久终于实现的心情（如「终于吃到」「心心念念」「等了好久」「找了好久终于」）",
+   "criteria_json": "",
+   "why": "「终于」式的念想被满足是一种有代入感的情绪，和已有的惊喜情绪题不同，可以指导标题写法",
+   "accepted": false,
+   "rmse_before": 1.1974,
+   "rmse_after": 1.1998
+  },
+  {
+   "op": "add",
+   "id": "t_social_proof",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 用人群行为做证明来说明店好（如「每晚爆满」「排长队」「本地人都去」「回头客」「永远可以相信」），而不是只写作者自己的评价",
+   "criteria_json": "",
+   "why": "「永远可以相信…每晚都爆满要排队的日料」被低估了约 20 倍；社会证明这种写法和权威背书（t_authority，偏负相关）不同，值得单独检验",
+   "accepted": false,
+   "rmse_before": 1.1974,
+   "rmse_after": 1.1996
+  },
+  {
+   "op": "add",
+   "id": "t_seasonal",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 结合了节日或时令热点（如中秋、春节、圣诞、情人节、樱花季、夏天限定）",
+   "criteria_json": "",
+   "why": "「这个中秋来海底捞」被低估了；借节日热点是很容易照做的选题规则",
+   "accepted": false,
+   "rmse_before": 1.1974,
+   "rmse_after": 1.1997
+  },
+  {
+   "op": "add",
+   "id": "t_valence",
+   "input": "title",
+   "type": "score",
+   "instructions": "`title` 对所讲的店或食物表达了怎样的态度？",
+   "criteria_json": "[\"明确负面：吐槽、失望、踩雷，如「难吃到哭」「千万别去」\",\"偏负面或含糊地暗示不满：如「结果有点意外」「风声很大」「一般般」，读者猜不出是好是坏但更像不好\",\"中性：只陈述店名、菜名或事实，没有表态\",\"偏正面：温和地推荐或满意，如「还不错」「可以一试」\",\"强烈正面：明显的喜爱或赞叹，如「也太好了吧」「原地翻跟头」「永远可以相信」\"]",
+   "why": "高估的「冲着高评分来的韩餐，结果有点意外」有悬念但态度偏负、含糊；想检验 t_curiosity 的效果是否依赖正面态度",
+   "accepted": false,
+   "rmse_before": 1.1974,
+   "rmse_after": 1.2006
+  },
+  {
+   "op": "add",
+   "id": "cv_curiosity",
+   "input": "cover",
+   "type": "score",
+   "instructions": "只看 `cover.headline_text`（封面大字），它制造了多大的好奇心或承诺，让人想点开？没有封面大字时选第 1 档",
+   "criteria_json": "[\"没有封面大字，或只有水印、账号名\",\"只有店名、英文招牌或菜名等标签，没有任何悬念或承诺\",\"有一句主题说明（如「温哥华咖啡馆」），但没有数字、反差或问题\",\"有明确的利益或数字承诺（如「我很爱的5家咖啡馆」），或者有一个问句\",\"数字或反差很强、让人非点不可（如「8天吃了27家 0踩雷」「捞月?」）\"]",
+   "why": "标题好奇心是最强的特征，封面大字是否也有同样效应尚未检验；cv_benefit 只问利益点，没有问悬念",
+   "accepted": true,
+   "rmse_before": 1.1974,
+   "rmse_after": 1.1954
+  },
+  {
+   "op": "add",
+   "id": "b_offtopic",
+   "input": "body",
+   "type": "noul",
+   "instructions": "根据 `title` 和 `body`，这篇笔记的主要内容不是美食本身，而是个人日记、心情、自拍、健身或其他与吃无关的话题（食物只是陪衬）",
+   "criteria_json": "",
+   "why": "「这一杯，敬平安」「本拿比早午餐+马甲线」都被高估了；主题偏离美食可能会拖累互动，对应的写作规则是保持选题聚焦",
+   "accepted": false,
+   "rmse_before": 1.1954,
+   "rmse_after": 1.1975
+  },
+  {
+   "op": "revise",
+   "id": "b_voice",
+   "input": "body",
+   "type": "score",
+   "instructions": "`body` 读起来有多像一个真实的普通食客在讲自己亲身吃饭的经历（而不是商家、营销号或广告文案）？正文为空时选第 1 档",
+   "criteria_json": "[\"正文为空，或几乎全是话题标签\",\"像商家宣传或广告文案：套话多、只夸不评，没有个人经历\",\"像资讯号或攻略号：信息罗列为主，很少有「我」的感受\",\"像个人分享，有一些亲身细节，但语气偏工整\",\"明显是真人亲历：有具体场景和细节（排队、和谁去、吃第一口的反应），口语化，有个人判断\"]",
+   "why": "原题「像谁在说话」没有给出量表方向，Jev 没法稳定打分；改成「真实亲历 ↔ 营销」的强度量表",
+   "accepted": true,
+   "rmse_before": 1.1954,
+   "rmse_after": 1.1951
+  },
+  {
+   "op": "revise",
+   "id": "b_deliver",
+   "input": "body",
+   "type": "noul",
+   "instructions": "`title` 里的承诺（数字、结论、悬念、问题）在 `body` 里被完整兑现了。`body` 为空或只有话题标签时，回答「否」",
+   "criteria_json": "",
+   "why": "大量笔记正文为空，原题没有说明这种情况怎么处理，判断会不一致",
+   "accepted": false,
+   "rmse_before": 1.1951,
+   "rmse_after": 1.2006
+  },
+  {
+   "op": "drop",
+   "id": "cv_identity",
+   "input": "cover",
+   "type": "noul",
+   "instructions": "",
+   "criteria_json": "",
+   "why": "偏相关 0.002，基本没有信号，而且和 cv_info_card 重叠",
+   "accepted": true,
+   "rmse_before": 1.1951,
+   "rmse_after": 1.1933
+  },
+  {
+   "op": "drop",
+   "id": "t_kind_new",
+   "input": "title",
+   "type": "noul",
+   "instructions": "",
+   "criteria_json": "",
+   "why": "偏相关 0.01，新店这个选题本身没有预测力",
+   "accepted": true,
+   "rmse_before": 1.1933,
+   "rmse_after": 1.1931
+  },
+  {
+   "op": "drop",
+   "id": "b_pain_first",
+   "input": "body",
+   "type": "noul",
+   "instructions": "",
+   "criteria_json": "",
+   "why": "偏相关 0.021，而且正文常为空，这道题信息量太低",
+   "accepted": false,
+   "rmse_before": 1.1931,
+   "rmse_after": 1.1933
+  },
+  {
+   "op": "drop",
+   "id": "cv_single_focus",
+   "input": "cover",
+   "type": "noul",
+   "instructions": "",
+   "criteria_json": "",
+   "why": "偏相关 -0.028，没有信号；腾出位置给 cv_curiosity",
+   "accepted": true,
+   "rmse_before": 1.1931,
+   "rmse_after": 1.1916
+  }
+ ],
+ "end": {
+  "base": [
+   1.3087247071382657,
+   0.6742006354624995
+  ],
+  "full": [
+   1.1916356461583328,
+   0.7524650988141522
+  ],
+  "n_questions": 39
+ }
+}

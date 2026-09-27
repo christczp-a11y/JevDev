@@ -1,0 +1,601 @@
+{
+ "rmse_change": 0.07662568939350334,
+ "ci": [
+  -0.039961666657995144,
+  0.1932871502241426
+ ],
+ "n_test": 95,
+ "rules": [
+  {
+   "feature": "t_curiosity",
+   "dev": {
+    "feature": "t_curiosity",
+    "n": 297,
+    "rho": 0.34,
+    "ci": [
+     0.233,
+     0.445
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "t_curiosity",
+    "n": 95,
+    "rho": 0.238,
+    "ci": [
+     0.038,
+     0.42
+    ],
+    "verdict": "正相关"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_hype",
+   "dev": {
+    "feature": "t_hype",
+    "n": 297,
+    "rho": 0.315,
+    "ci": [
+     0.211,
+     0.413
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "t_hype",
+    "n": 95,
+    "rho": 0.182,
+    "ci": [
+     -0.018,
+     0.373
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "b_deliver",
+   "dev": {
+    "feature": "b_deliver",
+    "n": 96,
+    "rho": 0.304,
+    "ci": [
+     0.118,
+     0.467
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "b_deliver",
+    "n": 34,
+    "rho": 0.326,
+    "ci": [
+     -0.017,
+     0.624
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_emo_surprise",
+   "dev": {
+    "feature": "t_emo_surprise",
+    "n": 297,
+    "rho": 0.302,
+    "ci": [
+     0.204,
+     0.403
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "t_emo_surprise",
+    "n": 95,
+    "rho": 0.201,
+    "ci": [
+     -0.024,
+     0.404
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_absolute",
+   "dev": {
+    "feature": "t_absolute",
+    "n": 297,
+    "rho": 0.299,
+    "ci": [
+     0.195,
+     0.403
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "t_absolute",
+    "n": 95,
+    "rho": 0.25,
+    "ci": [
+     0.043,
+     0.461
+    ],
+    "verdict": "正相关"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_hook",
+   "dev": {
+    "feature": "t_hook",
+    "n": 297,
+    "rho": 0.266,
+    "ci": [
+     0.16,
+     0.365
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "t_hook",
+    "n": 95,
+    "rho": 0.103,
+    "ci": [
+     -0.088,
+     0.289
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_casual",
+   "dev": {
+    "feature": "t_casual",
+    "n": 297,
+    "rho": 0.266,
+    "ci": [
+     0.16,
+     0.368
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "t_casual",
+    "n": 95,
+    "rho": 0.208,
+    "ci": [
+     0.003,
+     0.405
+    ],
+    "verdict": "正相关"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_label_only",
+   "dev": {
+    "feature": "t_label_only",
+    "n": 297,
+    "rho": -0.239,
+    "ci": [
+     -0.349,
+     -0.131
+    ],
+    "verdict": "负相关"
+   },
+   "test": {
+    "feature": "t_label_only",
+    "n": 95,
+    "rho": -0.165,
+    "ci": [
+     -0.363,
+     0.04
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "b_useful",
+   "dev": {
+    "feature": "b_useful",
+    "n": 96,
+    "rho": 0.234,
+    "ci": [
+     0.033,
+     0.408
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "b_useful",
+    "n": 34,
+    "rho": 0.241,
+    "ci": [
+     -0.083,
+     0.539
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "b_save",
+   "dev": {
+    "feature": "b_save",
+    "n": 96,
+    "rho": 0.223,
+    "ci": [
+     0.032,
+     0.405
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "b_save",
+    "n": 34,
+    "rho": 0.148,
+    "ci": [
+     -0.23,
+     0.458
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_kind_warn",
+   "dev": {
+    "feature": "t_kind_warn",
+    "n": 297,
+    "rho": -0.215,
+    "ci": [
+     -0.329,
+     -0.107
+    ],
+    "verdict": "负相关"
+   },
+   "test": {
+    "feature": "t_kind_warn",
+    "n": 95,
+    "rho": -0.195,
+    "ci": [
+     -0.376,
+     -0.001
+    ],
+    "verdict": "负相关"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "k_title_place",
+   "dev": {
+    "feature": "k_title_place",
+    "n": 297,
+    "rho": 0.21,
+    "ci": [
+     0.1,
+     0.32
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "k_title_place",
+    "n": 95,
+    "rho": 0.133,
+    "ci": [
+     -0.093,
+     0.336
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "b_vague_attrib",
+   "dev": {
+    "feature": "b_vague_attrib",
+    "n": 96,
+    "rho": 0.196,
+    "ci": [
+     0.008,
+     0.402
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "b_vague_attrib",
+    "n": 34,
+    "rho": -0.064,
+    "ci": [
+     -0.406,
+     0.314
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": false
+  },
+  {
+   "feature": "t_specific",
+   "dev": {
+    "feature": "t_specific",
+    "n": 297,
+    "rho": -0.193,
+    "ci": [
+     -0.302,
+     -0.073
+    ],
+    "verdict": "负相关"
+   },
+   "test": {
+    "feature": "t_specific",
+    "n": 95,
+    "rho": -0.084,
+    "ci": [
+     -0.301,
+     0.104
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "r_len_100_300",
+   "dev": {
+    "feature": "r_len_100_300",
+    "n": 96,
+    "rho": -0.189,
+    "ci": [
+     -0.378,
+     -0.006
+    ],
+    "verdict": "负相关"
+   },
+   "test": {
+    "feature": "r_len_100_300",
+    "n": 34,
+    "rho": -0.502,
+    "ci": [
+     -0.696,
+     -0.256
+    ],
+    "verdict": "负相关"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "k_title_emoji",
+   "dev": {
+    "feature": "k_title_emoji",
+    "n": 297,
+    "rho": 0.182,
+    "ci": [
+     0.075,
+     0.29
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "k_title_emoji",
+    "n": 95,
+    "rho": 0.131,
+    "ci": [
+     -0.093,
+     0.316
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_front_hook",
+   "dev": {
+    "feature": "t_front_hook",
+    "n": 297,
+    "rho": 0.149,
+    "ci": [
+     0.036,
+     0.269
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "t_front_hook",
+    "n": 95,
+    "rho": 0.181,
+    "ci": [
+     -0.026,
+     0.403
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_authority",
+   "dev": {
+    "feature": "t_authority",
+    "n": 297,
+    "rho": -0.132,
+    "ci": [
+     -0.246,
+     -0.01
+    ],
+    "verdict": "负相关"
+   },
+   "test": {
+    "feature": "t_authority",
+    "n": 95,
+    "rho": -0.053,
+    "ci": [
+     -0.244,
+     0.148
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "v_dark",
+   "dev": {
+    "feature": "v_dark",
+    "n": 297,
+    "rho": -0.122,
+    "ci": [
+     -0.23,
+     -0.016
+    ],
+    "verdict": "负相关"
+   },
+   "test": {
+    "feature": "v_dark",
+    "n": 95,
+    "rho": -0.209,
+    "ci": [
+     -0.399,
+     -0.006
+    ],
+    "verdict": "负相关"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_kind_cheap",
+   "dev": {
+    "feature": "t_kind_cheap",
+    "n": 297,
+    "rho": -0.117,
+    "ci": [
+     -0.235,
+     -0.003
+    ],
+    "verdict": "负相关"
+   },
+   "test": {
+    "feature": "t_kind_cheap",
+    "n": 95,
+    "rho": -0.158,
+    "ci": [
+     -0.349,
+     0.045
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_direct_you",
+   "dev": {
+    "feature": "t_direct_you",
+    "n": 297,
+    "rho": 0.117,
+    "ci": [
+     0.003,
+     0.227
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "t_direct_you",
+    "n": 95,
+    "rho": 0.031,
+    "ci": [
+     -0.175,
+     0.214
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "k_title_digit",
+   "dev": {
+    "feature": "k_title_digit",
+    "n": 297,
+    "rho": 0.113,
+    "ci": [
+     0.002,
+     0.241
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "k_title_digit",
+    "n": 95,
+    "rho": 0.034,
+    "ci": [
+     -0.18,
+     0.237
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_pat_discovery",
+   "dev": {
+    "feature": "t_pat_discovery",
+    "n": 297,
+    "rho": 0.112,
+    "ci": [
+     0.004,
+     0.211
+    ],
+    "verdict": "正相关"
+   },
+   "test": {
+    "feature": "t_pat_discovery",
+    "n": 95,
+    "rho": 0.132,
+    "ci": [
+     -0.057,
+     0.326
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": true
+  },
+  {
+   "feature": "t_kind_scene",
+   "dev": {
+    "feature": "t_kind_scene",
+    "n": 297,
+    "rho": -0.111,
+    "ci": [
+     -0.227,
+     -0.0
+    ],
+    "verdict": "负相关"
+   },
+   "test": {
+    "feature": "t_kind_scene",
+    "n": 95,
+    "rho": 0.09,
+    "ci": [
+     -0.106,
+     0.301
+    ],
+    "verdict": "不确定"
+   },
+   "same_sign": false
+  },
+  {
+   "feature": "r_generic_tags",
+   "dev": {
+    "feature": "r_generic_tags",
+    "n": 96,
+    "rho": 0.054,
+    "ci": [
+     0.024,
+     0.133
+    ],
+    "verdict": "正相关"
+   },
+   "test": null,
+   "same_sign": false
+  }
+ ]
+}

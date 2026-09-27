@@ -262,10 +262,10 @@ def review_drafts(con, drafts, facts, work_dir):
         q = [a[k]["score"] / 4 for k in ("q_hook", "q_useful", "q_scan", "q_save", "q_voice")]
         d["quality"] = round((sum(q) / len(q) + a["q_balance"]["noul"] * 0.2 + a["q_deliver"]["noul"] * 0.2) / 1.4, 3)
 
-    # 选稿依据：赛道数据学到的互动预测（标题 + 正文 + 渲染后的封面，见 jevdev/engagement.py）
-    log("  渲染每篇的卡片，Claude 描述封面，Jev 按赛道模型打分…")
-    p = engagement.score_drafts(con, drafts, work_dir)
-    log(f"  （预测模型用 {p.n_train} 篇赛道笔记训练）")
+    # 选稿依据：赛道数据验证过的复合分（标题 + 正文 + 渲染后的封面，见 jevdev/engagement.py）
+    log("  渲染每篇的卡片，Claude 描述封面，Jev 按验证过的规则打复合分…")
+    n_rules = engagement.score_drafts(drafts, work_dir)
+    log(f"  （复合分用 {n_rules} 条规则）")
     ok = [d for d in drafts if not d["gate_fail"] and not d["code_problems"]]
     for d in ok:
         d["rank_score"] = d["pred"]

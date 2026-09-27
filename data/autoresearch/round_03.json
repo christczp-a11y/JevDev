@@ -1,0 +1,195 @@
+{
+ "round": 3,
+ "start": {
+  "base": [
+   1.308713731114137,
+   0.6741723860498303
+  ],
+  "full": [
+   1.214362018323058,
+   0.7436289115805205
+  ]
+ },
+ "analysis": "第 3 轮诊断：\n1) 目前有效的信号几乎都在标题的情绪和张力上：t_curiosity(0.37)、t_hype(0.35)、t_absolute(0.33)、t_emo_surprise(0.31)、t_hook(0.31)、t_casual(0.27)。t_specific 为负(-0.19)，说明「只把店名 / 菜名写清楚」本身不带来互动。正文和封面类的题基本都低于 0.1，只有 b_deliver 稍高。\n2) 实际比预测高的笔记有几个共同点：①追国内网红单品，并且「终于在温哥华吃到」（焦糖布蕾奶皮子蛋糕）；②和国内 / 家乡对比（「国内可能没有的饭」）；③蹭节日（中秋海底捞）；④系列企划（纯吃之旅下篇、8天27家）；⑤第一人称的真实感受（「只好说…也太好了吧」）。其中 ①–④ 现有题都没覆盖。\n3) 实际比预测低的笔记有几个共同点：①标题只是标签堆砌（「温哥华米其林越南餐厅」「Kojan Sushi $18 …」），没有观点，也没有句子；②靠米其林这类权威背书当卖点，结果都很差；③正文是翻译腔 / 新闻稿式的第三人称介绍（Torafuku 那篇）；④内容跑题到自拍、马甲线；⑤封面是菜单牌照片，食物本身不诱人。\n4) 现有题的问题：b_voice 只问「像谁在说话」，没有给强度方向，要改成可打分的量表；b_save 太泛，没说明什么算有收藏价值。b_balance、t_audience_named、t_search_kw、cv_complement 的偏相关都在 ±0.01 以内，删掉。\n本轮计划：新增 8 题（t_home_compare、t_trend_item、t_festival、t_authority、t_label_only、t_series、b_offtopic、cv_appetite），改写 2 题（b_voice、b_save），删除 4 题（上面 4 个近零题）。",
+ "actions": [
+  {
+   "op": "add",
+   "id": "t_home_compare",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 把温哥华的食物和国内 / 家乡做了比较或关联（如「国内可能没有」「终于吃到家乡味」「比国内还好吃」「在温哥华也能吃到」）",
+   "criteria_json": "{\"true\":\"标题明确提到国内、家乡、老家，或暗示『在海外终于吃到 / 海外独有』的对照\",\"false\":\"标题只讲这家店或这道菜本身，没有和国内 / 家乡做任何对照\"}",
+   "why": "高互动的「国内可能没有的饭」「终于在温哥华吃到了…」都在打海外华人的乡愁和对比心理，现有题没覆盖；可以直接变成一条标题写法规则",
+   "accepted": false,
+   "rmse_before": 1.2144,
+   "rmse_after": 1.2189
+  },
+  {
+   "op": "add",
+   "id": "t_trend_item",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 提到的菜品或饮品，是国内社交媒体近期流行的网红单品或网红吃法（如奶皮子蛋糕、某种爆款甜品、流行饮品）",
+   "criteria_json": "{\"true\":\"标题里的主角是一个明显的网红 / 爆款单品或流行吃法\",\"false\":\"标题讲的是常规菜系、普通菜品或店铺本身，没有指向流行单品\"}",
+   "why": "4436 互动的焦糖布蕾奶皮子蛋糕被严重低估，推测是在追国内的爆款；如果成立，就能形成「追国内爆款在温哥华的落地版」这一选题规则",
+   "accepted": false,
+   "rmse_before": 1.2144,
+   "rmse_after": 1.2171
+  },
+  {
+   "op": "add",
+   "id": "t_festival",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 把内容和一个节日或节令绑定（如中秋、春节、圣诞、情人节、感恩节、夏天限定）",
+   "criteria_json": "{\"true\":\"标题里出现节日 / 节令，并把吃什么和它关联起来\",\"false\":\"标题和任何节日、节令都没有关联\"}",
+   "why": "「这个中秋，来海底捞捞一轮月亮」实际比预测高约 30 倍；借节日选题是可以照着排期执行的规则",
+   "accepted": false,
+   "rmse_before": 1.2144,
+   "rmse_after": 1.2163
+  },
+  {
+   "op": "add",
+   "id": "t_authority",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 的主要卖点是外部权威背书（如米其林、获奖、某某榜单、名厨），而不是作者自己的体验或感受",
+   "criteria_json": "{\"true\":\"标题主要靠米其林、奖项、机构榜单等外部认证来吸引读者\",\"false\":\"标题没有权威背书，或者背书只是陪衬、主体是作者自己的体验\"}",
+   "why": "两篇「米其林」标题实际 6 和 0 互动，被高估；想验证权威背书是不是反而没用，好决定标题里要不要写米其林",
+   "accepted": true,
+   "rmse_before": 1.2144,
+   "rmse_after": 1.21
+  },
+  {
+   "op": "add",
+   "id": "t_label_only",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 只是名词标签的堆砌（店名、菜名、价格、地名、emoji 的罗列），没有一句完整的话、观点或感受",
+   "criteria_json": "{\"true\":\"标题像标签或目录，例如『温哥华米其林越南餐厅』『店名 $18 甜品店名』，读不出作者想说什么\",\"false\":\"标题至少有一个完整的句子、评价、情绪或主张\"}",
+   "why": "低互动的 Kojan Sushi、米其林越南餐厅都是标签式标题；这个现象可以直接写成「标题必须是一句有态度的话」的规则，也能解释 t_specific 为什么是负的",
+   "accepted": true,
+   "rmse_before": 1.21,
+   "rmse_after": 1.2096
+  },
+  {
+   "op": "add",
+   "id": "t_series",
+   "input": "title",
+   "type": "noul",
+   "instructions": "`title` 表明这是系列内容的一部分（如「上 / 下篇」「Vol.2」「第 N 期」「XX 之旅」「合集续」）",
+   "criteria_json": "{\"true\":\"标题里有明确的系列或分集标识\",\"false\":\"标题是独立的单篇，没有系列标识\"}",
+   "why": "「温哥华纯吃之旅（下：甜品篇）」被严重低估；想验证系列企划能不能积累追更的读者，可以变成内容规划规则",
+   "accepted": true,
+   "rmse_before": 1.2096,
+   "rmse_after": 1.2094
+  },
+  {
+   "op": "add",
+   "id": "b_offtopic",
+   "input": "body",
+   "type": "noul",
+   "instructions": "`body` 有相当篇幅（或话题标签）偏离了美食本身，转去讲作者的身材、自拍、穿搭、私人生活等和吃无关的内容；正文为空时答「否」",
+   "criteria_json": "{\"true\":\"正文或标签里明显混入了与美食无关的主题（如马甲线、健身、自拍炫耀）\",\"false\":\"正文和标签都围绕食物、餐厅和用餐体验\"}",
+   "why": "Birdies 早午餐那篇混入马甲线自拍，实际 0 互动，被高估；想验证「跑题」是否伤害互动，可以变成写作禁忌",
+   "accepted": false,
+   "rmse_before": 1.2094,
+   "rmse_after": 1.2111
+  },
+  {
+   "op": "add",
+   "id": "cv_appetite",
+   "input": "cover",
+   "type": "score",
+   "instructions": "根据 `cover` 的描述，封面上的食物看起来有多诱人、多有食欲？",
+   "criteria_json": "[\"封面基本没有食物，或者只有菜单牌、招牌、文字截图这类非食物画面\",\"有食物，但很小、很远或很杂乱，看不清质感，像随手记录\",\"食物清楚可辨，但画面平淡，没有突出质感或光线\",\"食物是画面主体，能看出具体质感（油光、焦斑、拉丝、汁水等）\",\"食物特写且质感极强（如正在淋酱、冒热气、切开的截面、焦糖斑点），让人一看就想吃\"]",
+   "why": "菜单牌封面（明家烧腊）互动为 4，高互动的蛋糕、寿司封面都是质感特写；现有封面题都在问信息量，没有问食欲，而食欲是能直接指导拍摄的",
+   "accepted": false,
+   "rmse_before": 1.2094,
+   "rmse_after": 1.2113
+  },
+  {
+   "op": "revise",
+   "id": "b_voice",
+   "input": "body",
+   "type": "score",
+   "instructions": "`body` 读起来有多像作者本人在讲自己的亲身体验，而不是新闻稿、翻译文章或官方介绍？正文为空时选第 1 档",
+   "criteria_json": "[\"正文为空，或全是第三人称的背景介绍 / 新闻稿 / 翻译腔（如介绍主厨履历、餐厅历史），完全没有作者自己的体验\",\"以客观介绍为主，偶尔带一两句个人评价\",\"介绍和个人体验各占一半\",\"主要是第一人称讲自己吃了什么、感觉如何，有少量客观信息\",\"通篇是鲜活的个人体验，有具体的动作、反应和口语化的感受（如『香得我原地翻个跟头』『我俩敞开了吃』）\"]",
+   "why": "原题只问「像谁在说话」，没有强度方向，Jev 没法稳定打分；而被高估的 Torafuku 那篇正好是翻译腔新闻稿，被低估的 Main St 日料那篇是鲜活的第一人称，这个方向值得测",
+   "accepted": false,
+   "rmse_before": 1.2094,
+   "rmse_after": 1.2107
+  },
+  {
+   "op": "revise",
+   "id": "b_save",
+   "input": "body",
+   "type": "score",
+   "instructions": "`body` 有多少值得读者收藏、日后照着用的具体信息？正文为空时选第 1 档",
+   "criteria_json": "[\"正文为空，或只有感想，没有任何可以照着用的信息\",\"有一两条零散信息（如一个菜名），不足以帮读者规划一次用餐\",\"能照着去一家店：有店名、推荐菜，但缺价格、位置、时间等细节\",\"信息较全：店名、推荐菜、价格、位置 / 时间 / 预约方式都有，可以直接照着去\",\"是一份可以反复查阅的攻略：多家店或多道菜，每条都有具体信息，读者会想存下来以后慢慢用\"]",
+   "why": "原题「有多大的收藏价值」没有说清标准，各档含义模糊；改成按可复用的具体信息量分 5 档",
+   "accepted": true,
+   "rmse_before": 1.2094,
+   "rmse_after": 1.2064
+  },
+  {
+   "op": "drop",
+   "id": "b_balance",
+   "input": "body",
+   "type": "noul",
+   "instructions": "",
+   "criteria_json": "",
+   "why": "偏相关 -0.003，完全没有信号",
+   "accepted": true,
+   "rmse_before": 1.2064,
+   "rmse_after": 1.2045
+  },
+  {
+   "op": "drop",
+   "id": "t_audience_named",
+   "input": "title",
+   "type": "noul",
+   "instructions": "",
+   "criteria_json": "",
+   "why": "偏相关 0.006，没有信号",
+   "accepted": true,
+   "rmse_before": 1.2045,
+   "rmse_after": 1.2008
+  },
+  {
+   "op": "drop",
+   "id": "t_search_kw",
+   "input": "title",
+   "type": "noul",
+   "instructions": "",
+   "criteria_json": "",
+   "why": "偏相关 -0.007，没有信号，而且和基线的「有无地名」重叠",
+   "accepted": true,
+   "rmse_before": 1.2008,
+   "rmse_after": 1.1994
+  },
+  {
+   "op": "drop",
+   "id": "cv_complement",
+   "input": "cover",
+   "type": "noul",
+   "instructions": "",
+   "criteria_json": "",
+   "why": "偏相关 0.008，没有信号",
+   "accepted": true,
+   "rmse_before": 1.1994,
+   "rmse_after": 1.1974
+  }
+ ],
+ "end": {
+  "base": [
+   1.3087198407407217,
+   0.6742006354624995
+  ],
+  "full": [
+   1.197385840412444,
+   0.750980706703032
+  ],
+  "n_questions": 41
+ }
+}

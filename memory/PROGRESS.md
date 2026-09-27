@@ -1,9 +1,10 @@
 # PROGRESS — 当前进度
 
-> 最后更新：2026-09-27 00:30（检查点）
+> 最后更新：2026-09-27 03:00
 
 ## 当前阶段
-端到端流水线已跑通，**等 Chris 同意后用「仅自己可见」试发第一篇**。
+工作流 v2 完成：「10 个 Skill」的规则已用 Jev 在赛道数据上检验，验证过的写进了写作规则和选稿复合分（总结见 `docs/小红书爆款工作流.md`）。
+**等 Chris 同意后用「仅自己可见」试发第一篇**，新草稿包是 `data/posts/20260927-0239_HK-BBQ-Master-Richmond-BC`。发之前请 Chris 看一下正文里「只收现金」这句。
 赛道：温哥华美食推荐。账号：rednote 海外新号「小红薯6AB9FF32」（0 笔记）。
 长期目标：Claude + Jev 的自媒体爆文辅助网页工具（小红书 → IG / TikTok）。
 
@@ -13,7 +14,8 @@
    `.venv/Scripts/python scripts/make_post.py --query "<英文店名 城市>" --name "<写进笔记的店名>" --xhs-keyword "<中文店名>" [--my-notes "..."] [--no-reddit]`
    → 草稿包在 `data/posts/<时间>_<店>/`（package.json + card_*.png）
 3. 预览 / 发布：`.venv/Scripts/python scripts/publish.py <草稿包> [--yes] [--public]`（默认仅自己可见；不加 --yes 只预览）
-4. 数据：`scripts/collect_xhs.py`（采集赛道笔记）、`scripts/track.py`（第 1/3/7 天追踪）、`scripts/phase1_eval.py`（Jev 标题预测验证）
+4. 数据：`scripts/collect_xhs.py`（采集赛道笔记）、`scripts/track.py`（第 1/3/7 天追踪）
+5. 自我优化（每 1–2 周）：`scripts/covers.py --download --describe`（封面转文字）→ `scripts/autoresearch.py --rounds 2`（Claude 提题、Jev 作答、交叉验证去留）→ `scripts/composite.py --build --eval`（重建选稿复合分）；`scripts/rule_catalog.py` 输出所有题的逐条检验总账。留出测试集只在最后看一次（`autoresearch.py --final`）
 - 需要：环境变量 `TYPESAFE_API_KEY`（Jev）；`claude` CLI 已登录（写稿，Opus 5.5）；Codex CLI 已登录（Reddit）；Google 专用 Chrome 配置已登录小号（`scripts/open_google_profile.cmd`）
 - Git Bash 里 export key：`export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`
 
@@ -26,14 +28,20 @@
 - [x] 数据：179 篇赛道笔记（60 篇有详情和发布时间），SQLite `data/jevdev.db`
 - [x] 流水线 `scripts/make_post.py`：Google（50 条）+ 小红书（笔记 + 评论）+ Reddit（Codex）→ Jev 逐条判断 → 画像（`jevdev/restaurant.py`）→ Claude 写 4 篇（`prompts/xhs_writer.md`）→ 逐句核查（`rubrics/claim_check_v1.json`）+ 禁用词 → Claude 只改问题句 → Jev 闸门和质量（`rubrics/draft_v1.json`）+ 标题预测 → 80/20 选稿 → 渲染卡片（自动适配）
 - [x] 第一篇：明家烧腊《明家烧腊4.3分，名气和味道对得上吗》→ `data/posts/20260927-0028_HK-BBQ-Master-Richmond-BC`（4/4 过审）
+- [x] 「10 个 Skill」调研：66 条候选规则（`docs/research/10个skill-提取.md`）
+- [x] 自动研究（照 TypeSafe 的 autoresearch cookbook）：398 篇笔记和封面，3 轮；大回归在测试集上过拟合 → 改用复合分（21 条规则，测试集 +0.29 [0.10, 0.46]）
+- [x] 写作规则 v2（标题要有好奇缺口、不能写成名词堆砌；正文 350–700 字；标题承诺要兑现）+ 选稿改用复合分（`jevdev/engagement.py`）
+- [x] 明家烧腊按 v2 重跑：《列治文这家烧腊店，你可能排错了队🤔》→ `data/posts/20260927-0239_HK-BBQ-Master-Richmond-BC`（4/4 过审，复合分平均 −0.04 → +0.43）
 
 ## 下一步
 - [ ] 【等 Chris】仅自己可见试发 → 检查图片、话题、AI 标注（MCP 可能勾不了「AI 生成」声明，靠正文末行标注）
 - [ ] 发布后拿到自己笔记的 note_id，写入 notes（is_ours=1），接上 track.py
 - [ ] 选店候选池（每天 1–2 家；来源：赛道笔记里出现的店 + Chris 推荐）
 - [ ] 定时任务（Windows 任务计划程序）：MCP 常驻 + 每日 make_post / track / collect（改系统配置前先问 Chris）
-- [ ] 阶段 1 扩样本：同龄追踪积累「第 7 天互动」→ 重新验证标题预测
-- [ ] 封面看图：用 Claude / Codex 把封面转成文字描述 → Jev 封面题（8.2 节）
+- [ ] 阶段 1 扩样本：同龄追踪积累「第 7 天互动」→ 用新数据做一次干净的复合分检验（测试集已经看过两次）
+- [ ] 【等 Chris 决定】要不要用 MCP 查作者粉丝数（284 个作者主页），控制大号效应
+- [ ] 【等 Chris】亲自去吃，用 --my-notes 写入体验（数据显示「真人亲历感」和互动正相关，我们不能冒充）；封面实拍图 vs 文字卡做 A/B
+- [ ] 卡片模板小问题：长词被从中间断开换行（「电话预/订」），页脚孤字
 
 ## 阻塞 / 待 Chris 处理
 - [ ] 同意试发（仅自己可见）
@@ -43,4 +51,5 @@
 ## 已知问题
 - MCP 的 search_feeds 偶尔超时（context deadline exceeded）→ make_post 会重试一次，再失败就改用缓存
 - 小红书采集的「最新」排序偶尔超时；collect_xhs 失败的组合下次自动补
-- 选稿用的标题预测模型只基于 177 篇（信号弱），目前权重只占 0.1
+- 51 篇笔记的详情页打不开（「无法获取初始状态数据」），可能是 xsec_token 过期了；有正文的样本只有 136 篇
+- 自动研究的 39 题回归只用来发现规则，不用来选稿（它在测试集上过拟合）
