@@ -92,9 +92,11 @@ def main():
         print(f"[search {i}/{len(todo)}] {kw}/{sort_by}: {len(feeds)} 条")
         xhs.polite_sleep()
 
-    pending = [r["id"] for r in con.execute(
-        "SELECT id FROM notes WHERE detail_at IS NULL AND xsec_token IS NOT NULL AND note_type='normal'")]
-    random.shuffle(pending)  # 随机抽样，避免只补某类笔记
+    # 优先补「最新」排序的笔记：它们是同龄追踪的样本，需要详情里的发布时间；其余随机抽样
+    rows = con.execute("""SELECT id, EXISTS(SELECT 1 FROM search_hits h WHERE h.note_id=notes.id AND h.sort_by='最新') AS latest
+                          FROM notes WHERE detail_at IS NULL AND xsec_token IS NOT NULL AND note_type='normal'""").fetchall()
+    random.shuffle(rows)
+    pending = [r["id"] for r in sorted(rows, key=lambda r: -r["latest"])]
     for i, nid in enumerate(pending[: args.details], 1):
         tok = con.execute("SELECT xsec_token FROM notes WHERE id=?", (nid,)).fetchone()[0]
         try:

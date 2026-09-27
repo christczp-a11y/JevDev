@@ -62,3 +62,11 @@
 - 0.157.1，已用 ChatGPT 账号登录
 - 调用方式：`codex --search exec --skip-git-repo-check -s read-only "<prompt>"`
 - 实测：能找到 Kirin 相关的 5 个 Reddit 帖子（带链接和日期），每次约消耗 2.8 万 token；帖子正文打不开，只能拿到搜索摘要，是 Codex 转述后的内容（二手信息，需要注意可能失真）
+
+## Google 评价：不登录拿不到（2026-09-27 实测）
+- 未登录的 Google 地图是「limited view」：只有「概览」和「简介」，**没有评价标签页**，只显示星级（如 4.1），连评价数都没有
+- → 不登录的无头浏览器抓评价这条路不通。备选：Places API（官方，每家店有评分、评价数和最多 5 条评价）/ 用一个单独的 Google 账号登录后抓取 / 不用 Google 的评价文本
+
+## 写稿用的 LLM
+- `claude -p`（npm 版 CLI）登录已过期：「OAuth session expired」→ 需要 Chris 在终端运行 `claude` 重新登录一次
+- Codex CLI 已登录，可以作为备选
