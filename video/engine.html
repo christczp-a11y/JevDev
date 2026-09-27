@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<!-- 纸艺立体书风格的横版闯关动画引擎：读剧本数据（scene），逐帧画出 1080×1920 的竖屏画面。
+     导出时由 video/render.py 逐帧调用 renderFrame(t) 截图，不是录屏，所以成片一定流畅。 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;700;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; background: #000; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const W = 1080, H = 1920;
+// 竖屏布局：顶部问句标题 / 中间横屏闯关画面 / 下方字幕（古人云式布局）
+const BAND = { x: 0, y: 560, w: 1080, h: 608 };
+const GROUND = 500;           // 闯关画面里地面的 y
+const C = document.getElementById('c');
+const ctx = C.getContext('2d');
+const INK = '#2a2320', RED = '#c8372d', CREAM = '#f4e8d0';
+let scene = null, img = {}, noise = null;
+
+// ---------- 工具 ----------
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+const easeOutBack = x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+function interp(keys, t, idx = 1) {  // keys: [[t, v, ...], ...]，按时间做缓动插值
+  if (t <= keys[0][0]) return keys[0][idx];
+  for (let i = 1; i < keys.length; i++) {
+    if (t <= keys[i][0]) {
+      const [t0, t1] = [keys[i - 1][0], keys[i][0]];
+      const u = ease((t - t0) / (t1 - t0 || 1));
+      return keys[i - 1][idx] + (keys[i][idx] - keys[i - 1][idx]) * u;
+    }
+  }
+  return keys[keys.length - 1][idx];
+}
+function stepVal(keys, t) { let v = keys[0][1]; for (const k of keys) if (t >= k[0]) v = k[1]; return v; }
+
+// 纸张颗粒：一张随机噪点图，叠在纸片上
+function makeNoise() {
+  const n = document.createElement('canvas'); n.width = n.height = 256;
+  const g = n.getContext('2d'), r = mulberry32(7), d = g.createImageData(256, 256);
+  for (let i = 0; i < d.data.length; i += 4) { const v = 200 + r() * 55; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+  g.putImageData(d, 0, 0); return ctx.createPattern(n, 'repeat');
+}
+
+// 画一片「卡纸」：填色 + 纸纹 + 白边 + 投影
+function paper(pathFn, fill, { outline = 5, shadow = 10, grain = 0.18 } = {}) {
+  ctx.save();
+  ctx.shadowColor = 'rgba(60,40,20,0.28)'; ctx.shadowBlur = shadow; ctx.shadowOffsetY = shadow * 0.35;
+  ctx.beginPath(); pathFn(); ctx.fillStyle = fill; ctx.fill();
+  ctx.shadowColor = 'transparent';
+  if (grain) { ctx.globalAlpha = grain; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = noise; ctx.fill();
+               ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; }
+  if (outline) { ctx.lineWidth = outline; ctx.strokeStyle = '#fffaf0'; ctx.lineJoin = 'round'; ctx.stroke(); }
+  ctx.restore();
+}
+function roundRect(x, y, w, h, r) { ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+
+// ---------- 背景各层（代码画，每集复用；越远越淡、越虚，把清晰度留给舞台） ----------
+function sky() {
+  const g = ctx.createLinearGradient(0, 0, 0, BAND.h);
+  g.addColorStop(0, '#bfe0ea'); g.addColorStop(1, '#f6ecd6');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, BAND.w, BAND.h);
+}
+function layer(parallax, camX, blur, sat, drawFn) {
+  ctx.save(); ctx.filter = `blur(${blur}px) saturate(${sat})`;
+  ctx.translate(-camX * parallax, 0); drawFn(); ctx.restore();
+}
+function clouds() {
+  for (const [x, y, s] of [[80, 70, 1], [520, 40, 0.8], [900, 90, 1.1], [1350, 55, 0.9], [1800, 80, 1]]) {
+    paper(() => { ctx.ellipse(x, y, 70 * s, 26 * s, 0, 0, 7); ctx.ellipse(x + 45 * s, y - 14 * s, 44 * s, 30 * s, 0, 0, 7);
+                  ctx.ellipse(x - 40 * s, y - 6 * s, 36 * s, 22 * s, 0, 0, 7); }, '#fffdf6', { outline: 0, shadow: 6, grain: 0.1 });
+  }
+}
+function mountains(base, color, peaks, h) {
+  paper(() => { ctx.moveTo(-200, BAND.h); ctx.lineTo(-200, base);
+    for (const [x, ph] of peaks) { ctx.quadraticCurveTo(x - 90, base - ph * h * 0.2, x, base - ph * h); ctx.quadraticCurveTo(x + 90, base - ph * h * 0.2, x + 180, base); }
+    ctx.lineTo(3000, base); ctx.lineTo(3000, BAND.h); ctx.closePath(); }, color, { outline: 4, shadow: 8 });
+}
+function cityWall(x0, x1, gateX) {
+  const top = 250, bottom = 470;
+  paper(() => { ctx.rect(x0, top, x1 - x0, bottom - top); }, '#cdb99a', { outline: 5 });
+  for (let x = x0; x < x1; x += 46) paper(() => ctx.rect(x, top - 26, 26, 28), '#cdb99a', { outline: 4, shadow: 4 });  // 城垛
+  paper(() => { ctx.moveTo(gateX - 70, bottom); ctx.lineTo(gateX - 70, 360); ctx.arc(gateX, 360, 70, Math.PI, 0); ctx.lineTo(gateX + 70, bottom); ctx.closePath(); }, '#6e5a48', { outline: 5, shadow: 4 });
+  // 城楼
+  paper(() => ctx.rect(gateX - 120, 170, 240, 80), '#a8452f', { outline: 5 });
+  paper(() => { ctx.moveTo(gateX - 170, 180); ctx.quadraticCurveTo(gateX, 110, gateX + 170, 180); ctx.lineTo(gateX + 140, 150); ctx.quadraticCurveTo(gateX, 95, gateX - 140, 150); ctx.closePath(); }, '#3d4a5c', { outline: 5 });
+  for (const fx of [x0 + 60, gateX - 260, gateX + 260, x1 - 60]) {  // 旗子
+    ctx.save(); ctx.fillStyle = '#6b4f36'; ctx.fillRect(fx, 120, 6, 130); ctx.restore();
+    paper(() => { ctx.moveTo(fx + 6, 124); ctx.lineTo(fx + 70, 138); ctx.lineTo(fx + 6, 168); ctx.closePath(); }, '#c8372d', { outline: 3, shadow: 4 });
+  }
+}
+function ground() {
+  paper(() => { ctx.moveTo(-300, GROUND); for (let x = -300; x <= 3200; x += 60) ctx.quadraticCurveTo(x + 30, GROUND - 6, x + 60, GROUND);
+                ctx.lineTo(3200, BAND.h + 20); ctx.lineTo(-300, BAND.h + 20); ctx.closePath(); }, '#d8b77f', { outline: 6, shadow: 12 });
+  paper(() => { ctx.moveTo(-300, GROUND + 40); for (let x = -300; x <= 3200; x += 90) ctx.quadraticCurveTo(x + 45, GROUND + 30, x + 90, GROUND + 40);
+                ctx.lineTo(3200, BAND.h + 20); ctx.lineTo(-300, BAND.h + 20); ctx.closePath(); }, '#c49a62', { outline: 0, shadow: 6 });
+}
+function bushes(xs, y, color) {
+  for (const x of xs) paper(() => { ctx.ellipse(x, y, 60, 34, 0, Math.PI, 0); ctx.ellipse(x + 50, y, 44, 28, 0, Math.PI, 0); ctx.closePath(); }, color, { outline: 4, shadow: 6 });
+}
+
+// ---------- 道具 ----------
+function bambooBlock(x, y, bump) {
+  const s = 74, yy = y - bump;
+  paper(() => ctx.rect(x - s / 2, yy - s / 2, s, s), '#d9b36a', { outline: 5 });
+  ctx.save(); ctx.strokeStyle = '#8a6a36'; ctx.lineWidth = 3;
+  for (let i = 1; i < 5; i++) { ctx.beginPath(); ctx.moveTo(x - s / 2 + i * s / 5, yy - s / 2 + 4); ctx.lineTo(x - s / 2 + i * s / 5, yy + s / 2 - 4); ctx.stroke(); }
+  ctx.strokeStyle = '#5b3d1e'; ctx.lineWidth = 4;
+  for (const dy of [-18, 18]) { ctx.beginPath(); ctx.moveTo(x - s / 2, yy + dy); ctx.lineTo(x + s / 2, yy + dy); ctx.stroke(); }
+  ctx.restore();
+}
+function scroll(x, y, text, a) {
+  ctx.save(); ctx.globalAlpha = a;
+  paper(() => roundRect(x - 58, y - 30, 116, 60, 10), '#fff6e0', { outline: 4 });
+  paper(() => { ctx.rect(x - 66, y - 34, 12, 68); ctx.rect(x + 54, y - 34, 12, 68); }, '#8a5a2b', { outline: 3, shadow: 3 });
+  ctx.fillStyle = RED; ctx.font = '34px "ZCOOL KuaiLe"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, x, y + 2);
+  ctx.restore();
+}
+function log(x, y, angle, len = 250) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+  paper(() => roundRect(-20, -len, 40, len, 14), '#9a6a3f', { outline: 5 });
+  ctx.strokeStyle = '#6d4523'; ctx.lineWidth = 3;
+  for (let i = 1; i < 6; i++) { ctx.beginPath(); ctx.moveTo(-12, -len + i * len / 6); ctx.lineTo(10, -len + i * len / 6 - 8); ctx.stroke(); }
+  paper(() => { ctx.rect(-22, -len * 0.25 - 6, 44, 12); ctx.rect(-22, -len * 0.75 - 6, 44, 12); }, '#d8c08a', { outline: 2, shadow: 2 });
+  ctx.restore();
+}
+function coin(x, y, spin, r = 20) {
+  const sx = Math.max(0.12, Math.abs(Math.cos(spin)));
+  ctx.save(); ctx.translate(x, y); ctx.scale(sx, 1);
+  paper(() => { ctx.arc(0, 0, r, 0, 7); ctx.rect(r * 0.32, -r * 0.32, -r * 0.64, r * 0.64); }, '#e0a93c', { outline: 3, shadow: 4, grain: 0.1 });
+  ctx.restore();
+}
+
+// ---------- 角色（纸片人：走路上下颠、左右轻摆，转身像纸一样翻面） ----------
+function actorState(a, t) {
+  const x = interp(a.keys, t, 1);
+  const dx = interp(a.keys, t + 0.05, 1) - x;
+  const moving = Math.abs(dx) > 0.4;
+  // 朝向：关键帧里写 1（右）/ -1（左）；朝向变化时用 0.25 秒「翻纸」（scaleX 从 1 经过 0 到 -1）
+  let flip = a.keys[0][3];
+  for (let i = 1; i < a.keys.length; i++) {
+    const k = a.keys[i], p = a.keys[i - 1];
+    if (t < k[0]) break;
+    flip = k[3] === p[3] ? k[3] : p[3] * Math.cos(clamp((t - k[0]) / 0.25, 0, 1) * Math.PI);
+  }
+  let pose = stepVal(a.keys.map(k => [k[0], k[2]]), t);
+  if (pose === 'auto') pose = moving ? 'run' : 'stand';
+  let jy = 0;
+  for (const [t0, t1, h] of a.jumps || []) if (t >= t0 && t <= t1) { const u = (t - t0) / (t1 - t0); jy = 4 * h * u * (1 - u); }
+  return { x, moving, flip, pose, jy };
+}
+function drawActor(a, t) {
+  const s = actorState(a, t);
+  const im = img[a.sprites[s.pose] || a.sprites.stand];
+  const h = a.height, w = im.width * h / im.height;
+  const bob = s.moving && !s.jy ? Math.abs(Math.sin(t * 14)) * 12 : Math.sin(t * 2.2 + a.phase) * 2;
+  const tilt = s.moving && !s.jy ? Math.sin(t * 14) * 0.05 : 0;
+  ctx.save();
+  // 脚下影子（跳起时变小）
+  ctx.fillStyle = 'rgba(60,40,20,0.22)'; ctx.beginPath();
+  ctx.ellipse(s.x, GROUND + 6, w * 0.34 * (1 - s.jy / 400), 9, 0, 0, 7); ctx.fill();
+  ctx.translate(s.x, GROUND - bob - s.jy); ctx.rotate(tilt);
+  const flipSign = a.native === 1 ? s.flip : -s.flip;   // 素材本身朝向：native=1 朝右，-1 朝左
+  ctx.scale(flipSign, 1);
+  ctx.drawImage(im, -w / 2, -h, w, h);
+  ctx.restore();
+  return { x: s.x, top: GROUND - h - bob - s.jy };
+}
+function bubble(x, y, text, a, tail = 0) {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = Math.min(1, a);
+  const sc = easeOutBack(Math.min(1, a)); ctx.translate(x, y); ctx.scale(sc, sc);
+  ctx.font = '38px "ZCOOL KuaiLe"';
+  const w = Math.max(70, ctx.measureText(text).width + 44), h = 64;
+  paper(() => { roundRect(-w / 2, -h, w, h, 22); ctx.moveTo(-12 + tail, -2); ctx.lineTo(0 + tail, 18); ctx.lineTo(12 + tail, -2); }, '#fffdf6', { outline: 4, shadow: 8, grain: 0.06 });
+  ctx.fillStyle = INK; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 0, -h / 2 + 2);
+  ctx.restore();
+}
+
+// ---------- 闯关画面（在横屏区域里画） ----------
+function drawBand(t) {
+  const camX = interp(scene.camera, t);
+  sky();
+  layer(0.08, camX, 1.2, 0.85, clouds);
+  layer(0.18, camX, 3, 0.55, () => mountains(330, '#a9c4b8', [[100, 1], [520, 1.3], [980, 1.1], [1500, 1.4], [2000, 1]], 190));
+  layer(0.35, camX, 1.8, 0.7, () => mountains(400, '#8fb39a', [[300, 0.9], [800, 1.1], [1350, 0.8], [1900, 1]], 160));
+  layer(0.62, camX, 0.8, 0.8, () => cityWall(700, 2300, 1500));
+  // 舞台（清晰、饱和）
+  ctx.save(); ctx.translate(-camX, 0);
+  ground();
+  bushes([-120, 250, 1850], GROUND + 2, '#7fa66a');
+  for (const p of scene.props) drawProp(p, t);
+  const pos = {};
+  for (const [id, a] of Object.entries(scene.actors)) pos[id] = drawActor(a, t);
+  for (const p of scene.props) if (p.type === 'log' && p.carry && t >= p.carry[0]) drawProp(p, t, true);  // 被扛起的木头画在人前
+  for (const ev of scene.events) drawEvent(ev, t, pos);
+  for (const [id, a] of Object.entries(scene.actors))
+    for (const [t0, t1, text] of a.bubbles || []) {
+      const fade = Math.min((t - t0) / 0.25, (t1 - t) / 0.2);
+      if (t >= t0 && t <= t1) bubble(pos[id].x, pos[id].top - 14, text, fade);
+    }
+  ctx.restore();
+  // 前景虚化的草丛（更近、更快、更虚）
+  layer(1.35, camX, 4, 0.8, () => bushes([160, 1400, 2300], BAND.h + 10, '#5f8a52'));
+  for (const ev of scene.events) if (ev.type === 'stamp') drawStamp(ev, t);  // 印章固定在画面中央，不跟镜头走
+  drawHud(t);
+  // 纸纹叠加
+  ctx.save(); ctx.globalAlpha = 0.08; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = noise; ctx.fillRect(0, 0, BAND.w, BAND.h); ctx.restore();
+}
+function drawProp(p, t, front = false) {
+  if (p.type === 'block') {
+    const u = t - p.hitAt, bump = u > 0 && u < 0.3 ? Math.sin(u / 0.3 * Math.PI) * 22 : 0;
+    bambooBlock(p.x, p.y, bump);
+    if (u > 0) { const up = Math.min(1, u / 0.6); scroll(p.x, p.y - 70 - easeOutBack(up) * 60, p.reward, Math.min(1, u / 0.2) * (u > 3 ? Math.max(0, 1 - (u - 3) / 0.5) : 1)); }
+  }
+  if (p.type === 'log') {
+    if (!p.carry || t < p.carry[0]) { if (!front) log(p.x, GROUND + 4, 0); return; }
+    if (!front) return;
+    // 扛起：0.5 秒内从竖着转成横着，架到扛的人肩上，之后跟着他走（木头长 250，横着时中心对准人）
+    const [t0, , by] = p.carry, a = scene.actors[by], s = actorState(a, t);
+    const u = ease(clamp((t - t0) / 0.5, 0, 1));
+    const bob = s.moving ? Math.abs(Math.sin(t * 14)) * 12 : 0;
+    const bx = p.x + (s.x - 125 - p.x) * u, by_ = (GROUND + 4) + (GROUND - a.height * 0.8 - bob - GROUND - 4) * u;
+    log(bx, by_, Math.PI / 2 * u);
+  }
+}
+function drawEvent(ev, t, pos) {
+  const u = t - ev.t; if (u < 0) return;
+  if (ev.type === 'coinRain') {
+    const r = mulberry32(ev.seed || 3);
+    for (let i = 0; i < ev.n; i++) {
+      const delay = r() * 0.8, x = ev.x + (r() - 0.5) * 360, vy = 0;
+      const tt = u - delay; if (tt < 0) continue;
+      let y = -40 + 900 * tt * tt; const floor = GROUND - 14 - r() * 20;
+      let yy = y; if (y > floor) { const over = tt - Math.sqrt((floor + 40) / 900); yy = floor - Math.abs(Math.sin(over * 9)) * 40 * Math.exp(-over * 5); }
+      coin(x, yy, tt * 9 + i, 18);
+    }
+  }
+}
+function drawStamp(ev, t) {
+  const u = t - ev.t; if (u < 0) return;
+  const s = u < 0.25 ? 2.2 - 1.2 * (u / 0.25) : 1;
+  ctx.save(); ctx.translate(BAND.w / 2, BAND.h * 0.36); ctx.rotate(-0.12); ctx.scale(s, s); ctx.globalAlpha = Math.min(1, u / 0.15);
+  paper(() => roundRect(-190, -80, 380, 160, 22), 'rgba(255,250,240,0.9)', { outline: 0, shadow: 14, grain: 0 });
+  ctx.strokeStyle = RED; ctx.lineWidth = 12; ctx.beginPath(); roundRect(-170, -62, 340, 124, 16); ctx.stroke();
+  ctx.fillStyle = RED; ctx.font = '900 88px "Noto Sans SC"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ev.text, 0, 4);
+  ctx.restore();
+}
+function drawHud(t) {
+  const credit = stepVal(scene.hud.credit, t), coins = stepVal(scene.hud.coins, t);
+  ctx.save();
+  paper(() => roundRect(24, 20, 300, 64, 32), 'rgba(255,250,240,0.92)', { outline: 3, shadow: 6, grain: 0 });
+  ctx.fillStyle = INK; ctx.font = '30px "ZCOOL KuaiLe"'; ctx.textBaseline = 'middle'; ctx.fillText('信用', 46, 53);
+  for (let i = 0; i < 5; i++) {
+    const on = i < credit, cx = 130 + i * 38, cy = 52;
+    ctx.beginPath(); ctx.moveTo(cx, cy + 12); ctx.bezierCurveTo(cx - 20, cy - 2, cx - 10, cy - 18, cx, cy - 6); ctx.bezierCurveTo(cx + 10, cy - 18, cx + 20, cy - 2, cx, cy + 12);
+    ctx.fillStyle = on ? RED : 'rgba(42,35,32,0.18)'; ctx.fill();
+  }
+  const last = [...scene.hud.coins].reverse().find(k => t >= k[0]); const pop = last ? Math.max(0, 1 - (t - last[0]) / 0.3) : 0;
+  paper(() => roundRect(BAND.w - 250, 20, 226, 64, 32), 'rgba(255,250,240,0.92)', { outline: 3, shadow: 6, grain: 0 });
+  coin(BAND.w - 212, 52, 0, 18);
+  ctx.fillStyle = INK; ctx.font = `${34 + pop * 14}px "ZCOOL KuaiLe"`; ctx.fillText(`赏金 ${coins}`, BAND.w - 184, 54);
+  ctx.restore();
+}
+
+// ---------- 整个竖屏：标题 / 闯关画面 / 字幕 ----------
+function renderFrame(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = CREAM; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.globalAlpha = 0.35; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = noise; ctx.fillRect(0, 0, W, H); ctx.restore();
+  // 标题区
+  const T = scene.title;
+  ctx.save(); ctx.font = '40px "ZCOOL KuaiLe"'; const kw = ctx.measureText(T.kicker).width + 60;
+  paper(() => roundRect((W - kw) / 2, 150, kw, 70, 35), INK, { outline: 0, shadow: 6, grain: 0 });
+  ctx.fillStyle = CREAM; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(T.kicker, W / 2, 187);
+  ctx.font = '900 100px "Noto Sans SC"';  // 标题要在小图里也醒目：用最粗的黑体
+  T.lines.forEach((ln, i) => {
+    const y = 320 + i * 124; let x = (W - ctx.measureText(ln.replace(/\[\[|\]\]/g, '')).width) / 2;
+    ctx.textAlign = 'left';
+    for (const part of ln.split(/(\[\[.+?\]\])/)) { if (!part) continue;
+      const hot = part.startsWith('[['), s = part.replace(/\[\[|\]\]/g, '');
+      ctx.fillStyle = hot ? RED : INK; ctx.fillText(s, x, y); x += ctx.measureText(s).width; }
+  });
+  ctx.restore();
+  // 闯关画面（带纸框）
+  paper(() => roundRect(BAND.x + 18, BAND.y - 12, BAND.w - 36, BAND.h + 24, 26), '#fffaf0', { outline: 0, shadow: 16, grain: 0 });
+  ctx.save(); ctx.beginPath(); roundRect(BAND.x + 30, BAND.y, BAND.w - 60, BAND.h, 18); ctx.clip();
+  ctx.translate(BAND.x, BAND.y); drawBand(t); ctx.restore();
+  // 字幕
+  const sub = scene.subtitles.find(s => t >= s[0] && t <= s[1]);
+  if (sub) {
+    const [t0, t1, who, text] = sub, a = Math.min(1, (t - t0) / 0.15, (t1 - t) / 0.15);
+    ctx.save(); ctx.globalAlpha = a; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (who) { ctx.font = '40px "ZCOOL KuaiLe"'; const ww = ctx.measureText(who).width + 44;
+      paper(() => roundRect((W - ww) / 2, 1236, ww, 58, 29), who === '旁白' ? '#7d6b5a' : RED, { outline: 0, shadow: 4, grain: 0 });
+      ctx.fillStyle = '#fffaf0'; ctx.fillText(who, W / 2, 1266); }
+    ctx.fillStyle = INK; ctx.font = '700 58px "Noto Sans SC"';
+    wrap(text, 940).forEach((ln, i) => ctx.fillText(ln, W / 2, 1360 + i * 78));
+    ctx.restore();
+  }
+  // 底部说明（AI 标注 + 出处）
+  ctx.save(); ctx.fillStyle = 'rgba(42,35,32,0.55)'; ctx.font = '32px "Noto Sans SC"'; ctx.textAlign = 'center';
+  ctx.fillText(scene.footer, W / 2, 1830); ctx.restore();
+}
+function wrap(text, maxW) {
+  const out = []; let cur = '';
+  for (const ch of text) { if (ctx.measureText(cur + ch).width > maxW) { out.push(cur); cur = ch; } else cur += ch; }
+  if (cur) out.push(cur); return out;
+}
+
+// ---------- 初始化：render.py 传入剧本和素材（data URI，避免本地文件把画布「污染」、导不出帧） ----------
+async function init(sceneData, assets) {
+  scene = sceneData; noise = makeNoise();
+  await Promise.all(Object.entries(assets).map(([n, uri]) => new Promise((ok, bad) => {
+    const i = new Image(); i.onload = () => { img[n] = i; ok(); }; i.onerror = bad; i.src = uri; })));
+  await document.fonts.load('104px "ZCOOL KuaiLe"'); await document.fonts.load('700 58px "Noto Sans SC"'); await document.fonts.load('32px "Noto Sans SC"'); await document.fonts.load('900 100px "Noto Sans SC"');
+  await document.fonts.ready;
+  return true;
+}
+window.init = init; window.renderFrame = renderFrame;
+</script>
+</body>
+</html>

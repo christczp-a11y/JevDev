@@ -6,3 +6,5 @@ __pycache__/
 data/*.log
 data/posts/
 data/tmp/
+data/research/
+video/out/
