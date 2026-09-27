@@ -1,7 +1,7 @@
 """剧本质检：Jev 按 rubrics/story_v1.json 给每一版剧本打分，再两两比较。
 
 三种判断：
-  - script：整部剧本一次问完（钩子、讲清为什么、办法妙在哪、代价、升级、留存、寓意、生活联系、大人层、孩子笑点、游戏机制、清晰）+ 两道闸门（史实、儿童不宜）
+  - script：整部剧本一次问完（钩子、讲清为什么、办法妙在哪、代价、升级、留存、寓意、生活联系、大人层、孩子笑点、游戏机制、清晰）+ 三道闸门（史实、儿童不宜、两代人对立）
   - beat：逐句问「这一句给了观众继续看的新理由吗」，代码算出最长的「平淡段」有几秒
   - pair：两两比较（孩子更可能看完 / 更能说清道理 / 家长更想转发），a、b 两种顺序各问一次抵消位置偏差
 
@@ -115,12 +115,12 @@ def main():
 
     dims = [k for k in RUBRIC["script"] if not k.startswith("g_")]
     report = []
-    print("版本".ljust(14) + " ".join(d[:6].rjust(6) for d in dims) + "   均分  平淡段  史实?  不宜?  时长")
+    print("版本".ljust(14) + " ".join(d[:6].rjust(6) for d in dims) + "   均分  平淡段  史实?  不宜?  对立?  时长")
     for tr, s, b in zip(trs, scores, beats):
         c = checks(tr)
         mean = sum(s[d] for d in dims) / len(dims)
         print(tr["id"].ljust(14) + " ".join(f"{s[d]:6.2f}" for d in dims)
-              + f"  {mean:5.2f}  {b['longest_flat']:5.1f}s  {s['g_accuracy']:.2f}   {s['g_kid_unsafe']:.2f}  {c['duration']:g}s"
+              + f"  {mean:5.2f}  {b['longest_flat']:5.1f}s  {s['g_accuracy']:.2f}   {s['g_kid_unsafe']:.2f}   {s['g_generation']:.2f}  {c['duration']:g}s"
               + (f"  语速过快：{c['too_fast']}" if c["too_fast"] else ""))
         report.append({"id": tr["id"], "name": tr["name"], "scores": s, "mean": round(mean, 2), "beats": b, "checks": c})
     if pairs:
