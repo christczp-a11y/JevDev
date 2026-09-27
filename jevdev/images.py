@@ -51,7 +51,9 @@ def _generate(dishes, style, raw, timeout):
               f"要画的菜：{dishes}\n"
               f"风格：{style}\n"
               f"画好后保存到当前目录，文件名 {raw.name}。只需要保存图片，不用解释。")
+    # Chris 的 ChatGPT 额度有限：画图时用小模型 + 低推理（他本机默认是 gpt-6-sol + high）
     proc = subprocess.run([str(CODEX_EXE), "exec", "--skip-git-repo-check", "-s", "workspace-write",
+                           "-m", "gpt-6-astra", "-c", 'model_reasoning_effort="low"',
                            "-C", str(raw.parent), "-"],
                           input=prompt, capture_output=True, text=True, encoding="utf-8", timeout=timeout)
     if not raw.exists():
