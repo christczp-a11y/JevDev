@@ -32,10 +32,10 @@ from jevdev.writer import CLAUDE_EXE  # noqa: E402
 
 OBSERVER = "claude-opus-5-5"
 ACTION_TEXT = {   # 动作名 → 这一刻人物在做的事（给观察员和 Jev 看）
-    "talk": "站着说话，边说边比划", "fist": "握拳给自己打气", "reach": "伸手去够面前那根竖着的高木杆",
-    "look": "回头张望", "crouch": "蹲下", "lift": "抓住那根三丈长（约 7 米）、很重的木杆，把它放倒扛上肩",
-    "carry": "把那根三丈长、很重的木杆扛在肩上走/跑", "drop": "弯腰把肩上的长木杆放到地上",
-    "lookup": "抬头看天上", "catch": "伸手准备接住飞来的金块", "hug": "双手捧着接到的一小堆金块，开心地笑",
+    "talk": "站着说话，边说边比划", "fist": "握拳给自己打气", "reach": "伸手去够面前那根竖着的高木杆，但伸到一半停住犹豫（手还没碰到木杆是剧情设计）",
+    "look": "回头张望", "crouch": "蹲下", "lift": "握住那根三丈长（约 7 米）、很重的竖着的木杆靠下的地方，让杆顶往前方倒下放平，再把它抱到腰前",
+    "carry": "双臂从下面兜住那根三丈长、很重的木杆，抱在腰前，迈着沉重的步子往前走", "drop": "把抱在腰前的长木杆放下：弯腰先压前端着地，再放后端",
+    "lookup": "抬头看天上", "catch": "伸手准备接住飞来的金块（金块还在空中飞过来，这时手里还没有东西是正常的）", "hug": "双手捧着接到的一小堆金块，开心地笑",
     "cheer": "欢呼",
 }
 OBS_SCHEMA = {"type": "object", "properties": {
@@ -87,6 +87,10 @@ def beat_of(scene, t, id_, name):
     a = scene["actors"][id_ or next(iter(scene["actors"]))]
     acts = [n for t0, t1, n, *_ in a.get("actions", []) if t0 <= t <= t1] or ([name] if name else [])
     parts = [ACTION_TEXT.get(n, n) for n in acts]
+    for t0, t1, n, *pp in a.get("actions", []):   # 动作里的「蹦」：开心地蹦起来时脚离地是正常的
+        for h0, k in (pp[0].get("hops", []) if pp else []):
+            if t0 + h0 - 0.05 <= t <= t0 + h0 + k * 0.42 + 0.05:
+                parts.append("正在开心地原地蹦起来（这时脚离开地面是正常的）")
     if any(t0 - 0.2 <= t <= t1 + 0.25 for t0, t1, _h in a.get("jumps", [])):
         parts.append("正在起跳/腾空跨过地上的石头/落地（这时脚离开地面是正常的）")
     views = a.get("views")

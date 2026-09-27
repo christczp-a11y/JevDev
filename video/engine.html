@@ -225,31 +225,35 @@ function poleState(p, t, info) {   // info = 扛的人此刻的局部信息（�
   const H = p.height, [l0, l1] = p.lift, [d0, d1] = p.drop, T = p.thick;
   const Ps = [(p.x - info.x) * info.face, GROUND + 6 - 0.18 * H];
   const bounce = Math.sin(info.st.phase * Math.PI * 4) * info.st.moving;
-  const Pc = [info.sh.F[0] + 2, info.sh.F[1] - 9 + 3 * bounce], thc = Math.PI / 2 + 0.06 + 0.025 * bounce;   // 压在近侧肩膀顶上
-  const u = P.smooth((t - l0) / (l1 - l0));
-  let Pn = [P.lerp(Ps[0], Pc[0], u), P.lerp(Ps[1], Pc[1], u)], th = P.lerp(Math.PI, thc, P.smooth((u - 0.15) / 0.85)), f = P.lerp(0.18, 0.42, u);
+  // 抱在腰前（Q 版肩膀就在下巴底下，扛在肩上一定横过脸）：两臂从下面兜住，杆前端略微翘起
+  const Pc = [info.sh.F[0] + 24, info.st.hipY - 7 + 2 * bounce], thc = Math.PI / 2 + 0.05 + 0.02 * bounce;
+  const u = P.smooth((t - l0) / (l1 - l0)), u1 = P.smooth(u / 0.62), u2 = P.smooth((u - 0.62) / 0.38);
+  const Ps2 = [(p.x - info.x) * info.face, GROUND + 6 - 0.12 * H];
+  let Pn = [P.lerp(Ps2[0], Pc[0], u1), P.lerp(Ps2[1], Pc[1], u1)], th = P.lerp(Math.PI, thc, u1), f = P.lerp(0.12, 0.42, u2);
   if (t >= d0) {
-    // 放下：先把前端压下去着地，再放下后端（前端着地后稍微往前滑一点，最后平躺在脚前）
-    const v = (t - d0) / (d1 - d0), dn = dir => [Math.sin(dir), Math.cos(dir)];
-    const thA = Math.PI / 2 - Math.asin(Math.min(0.95, (GROUND + 8 - Pc[1]) / ((1 - f) * H)));
-    const v1 = P.smooth(v / 0.5);
-    th = P.lerp(thc, thA, v1);
-    if (v > 0.5) {
-      const EA = [Pc[0] + Math.sin(thA) * (1 - f) * H, Pc[1] + Math.cos(thA) * (1 - f) * H];
+    // 放下：① 抱着的杆放低一点 ② 压下前端着地 ③ 放下后端，平躺在脚前
+    const v = (t - d0) / (d1 - d0);
+    const Pw = [Pc[0] + 6, info.st.hipY - 4];
+    const thA = Math.PI / 2 - Math.asin(Math.min(0.95, (GROUND + 8 - Pw[1]) / ((1 - f) * H)));
+    if (v < 0.3) { const k = P.smooth(v / 0.3); Pn = [P.lerp(Pc[0], Pw[0], k), P.lerp(Pc[1], Pw[1], k)]; th = P.lerp(thc, Math.PI / 2, k); }
+    else if (v < 0.62) { Pn = Pw; th = P.lerp(Math.PI / 2, thA, P.smooth((v - 0.3) / 0.32)); }
+    else {
+      const EA = [Pw[0] + Math.sin(thA) * (1 - f) * H, Pw[1] + Math.cos(thA) * (1 - f) * H];
       const Er = [p.rest[0] + (1 - f) * H, p.rest[1]];
-      const v2 = P.smooth((v - 0.5) / 0.5), E = [P.lerp(EA[0], Er[0], v2), P.lerp(EA[1], Er[1], v2)];
+      const v2 = P.smooth((v - 0.62) / 0.38), E = [P.lerp(EA[0], Er[0], v2), P.lerp(EA[1], Er[1], v2)];
       th = P.lerp(thA, Math.PI / 2, v2);
       Pn = [E[0] - Math.sin(th) * (1 - f) * H, E[1] - Math.cos(th) * (1 - f) * H];
-    } else Pn = Pc;
+    }
   }
   // 两端都不能扎进地里：低于地面就整根往上抬
   const low = Math.max(Pn[1] - f * H * Math.cos(th), Pn[1] + (1 - f) * H * Math.cos(th));
   if (low > GROUND + 12) Pn = [Pn[0], Pn[1] - (low - GROUND - 12)];
-  // 握点：近侧手从上面扣住（手压在杆的上半截），远侧手从下面托住；手顺着杆的方向
+  // 握点：两只手都从下面兜住杆子；手顺着杆的方向
   const up = [Math.cos(th), -Math.sin(th)];
-  const grips = [[p.gF, -0.32], [p.gB, 0.34]].map(([[a, b], k]) => { const o = P.lerp(a, b, u) * H;
+  const grips = [[p.gF, -0.95], [p.gB, -0.95]].map(([[a, b], k]) => { const o = P.lerp(a, b, u) * H;
     return [Pn[0] + Math.sin(th) * o + up[0] * T * k * u, Pn[1] + Math.cos(th) * o + up[1] * T * k * u]; });
-  return { P: Pn, th, f, grips, handAngles: u > 0.5 ? [th, th] : null };
+  // 起杆时木杆在头后面（不挡脸），快落到肩上时再压到上臂上面
+  return { P: Pn, th, f, grips, handAngles: u > 0.5 ? [th, th] : null, layer: u < 0.85 ? 'mid' : 'afterHead' };   // 起杆时在头后面；抱住以后在身体前面、手臂后面（手臂兜着它）
 }
 function drawPoleWorld(p, t, front) {   // 没被扛着的时候：立在集市南门口，或者放倒在地上
   if (t < p.lift[0]) { if (!front) drawPoleAt(ctx, p, [p.x, GROUND + 6], Math.PI, 0); }
@@ -266,19 +270,29 @@ function goldState(ev, t, info) {   // 金块从正上方一块块落进怀里�
   let dip = 0;
   let meet = 0;   // 金块快到的时候手先往上迎，接住后往下一沉
   slots.forEach((_, i) => { const l = t - (ev.t + i * gap + fall); if (l > 0 && l < 0.3) dip = Math.max(dip, Math.sin(l / 0.3 * Math.PI) * 11);
-    if (l > -0.3 && l <= 0) meet = Math.max(meet, P.smooth((l + 0.3) / 0.3) * 8); });
-  const base = info.view === 'q' ? [(info.sh.F[0] + info.sh.B[0]) / 2 + 4, Math.max(info.sh.F[1], info.sh.B[1]) + 46] : [info.sh.F[0] + 34, info.sh.F[1] + 40];
-  const C = [base[0], base[1] + landed * 1.5 + dip - meet];
+    if (l > -0.45 && l <= 0) meet = Math.max(meet, P.smooth((l + 0.45) / 0.45) * 14); });
+  const reachOut = t < ev.t + fall ? 22 * P.smooth((t - ev.t + 0.5) / 0.5) : 0;   // 第一块到之前：双手往金块飞来的方向伸
+  const base = info.view === 'q' ? [(info.sh.F[0] + info.sh.B[0]) / 2 + 10, Math.max(info.sh.F[1], info.sh.B[1]) + 26] : [info.sh.F[0] + 34, info.sh.F[1] + 40];
+  const C = [base[0] + reachOut, base[1] + landed * 1.5 + dip - meet - reachOut * 0.5];
   const R = mulberry32(ev.seed || 9);
   const pieces = slots.map(([sx, sy], i) => {
     const t0 = ev.t + i * gap, u = clamp((t - t0) / fall, 0, 1), wob = (R() - 0.5) * 16, spin = (R() - 0.5) * 3;
     if (t < t0) return null;
     // 从前方（正片里是商鞅）抛过来：低低的一道弧线落进怀里，不从脸前经过
     const x = P.lerp(C[0] + sx + 260 + wob, C[0] + sx, u), y = P.lerp(C[1] - 30, C[1] + sy, u) - Math.sin(u * Math.PI) * 55;
-    return [x, y, (1 - u) * spin, t - t0 - fall];
+    return [x, y, (1 - u) * spin, t - t0 - fall, u, wob];
   });
+  const at = (i, u, wob) => { const [sx, sy] = slots[i]; return [P.lerp(C[0] + sx + 260 + wob, C[0] + sx, u), P.lerp(C[1] - 30, C[1] + sy, u) - Math.sin(u * Math.PI) * 55]; };
   return { grips: [[C[0] - 14, C[1] + 12], [C[0] + 18, C[1] + 11]], layer: 'front',   // 两手心朝上托在金堆底下，金子画在手前面（压着手指）
-    draw: g => { for (const pc of pieces) if (pc) {
+    draw: g => { pieces.forEach((pc, i) => { if (!pc) return;
+      if (pc[4] < 1) {   // 飞行中：残影 + 闪光
+        for (let j = 4; j >= 1; j--) { const uu = Math.max(0, pc[4] - j * 0.07), q = at(i, uu, pc[5]);
+          g.save(); g.globalAlpha = 0.14 * (5 - j); g.translate(q[0], q[1]); g.drawImage(cache.ingot, -23 * k, -13 * k, 46 * k, 26 * k); g.restore(); }
+        g.save(); g.fillStyle = '#fff6c2';
+        for (let j = 0; j < 3; j++) { const q = at(i, Math.max(0, pc[4] - 0.12 - j * 0.09), pc[5]); g.globalAlpha = 0.8 - j * 0.22;
+          g.beginPath(); g.arc(q[0] + (j - 1) * 4, q[1] - 6 + j * 5, 2.4, 0, 7); g.fill(); }
+        g.restore();
+      }
       g.save(); g.translate(pc[0], pc[1]); g.rotate(pc[2]); g.drawImage(cache.ingot, -23 * k, -13 * k, 46 * k, 26 * k); g.restore();
       const l = pc[3];
       if (l > 0 && l < 0.25) {   // 落进怀里时一闪
@@ -287,7 +301,7 @@ function goldState(ev, t, info) {   // 金块从正上方一块块落进怀里�
         for (let j = 0; j < 4; j++) { const an = j * Math.PI / 2 + 0.4; g.beginPath(); g.moveTo(pc[0] + Math.cos(an) * r * 0.5, pc[1] + Math.sin(an) * r * 0.5);
           g.lineTo(pc[0] + Math.cos(an) * r, pc[1] + Math.sin(an) * r); g.stroke(); }
         g.restore();
-      } } } };
+      } }); } };
 }
 function coin(x, y, spin, r = 20) {
   ctx.save(); ctx.translate(x, y); ctx.scale(Math.max(0.12, Math.abs(Math.cos(spin))), 1);
@@ -475,10 +489,10 @@ async function init(sceneData, assets) {
       images: Object.fromEntries(Object.keys(a.rigData[v].parts).map(n => [n, img[`rig:${d}:${n}`]])) }]));
     P.setup(a, views, scene.subtitles, paperize);
     const poles = scene.props.filter(p => p.type === 'pole' && p.by === id), golds = scene.events.filter(e => e.type === 'gold' && e.by === id);
-    for (const p of poles) { cache.pole = makePole(p.height, p.thick); p.rest = p.rest || [40, GROUND + 26 - p.thick / 2]; p.gF = p.gF || [-0.02, 0.04]; p.gB = p.gB || [0.05, 0.085]; }
+    for (const p of poles) { cache.pole = makePole(p.height, p.thick); p.rest = p.rest || [40, GROUND + 44 - p.thick / 2]; p.gF = p.gF || [0.0, 0.02]; p.gB = p.gB || [0.04, 0.075]; }
     a.hook = (t, info) => {   // 手里拿着的东西：木杆（扛起到放下之间）、金块
       const p = poles.find(p => t >= p.lift[0] && t < p.drop[1]);
-      if (p) { const st = poleState(p, t, info); return { grips: st.grips, handAngles: st.handAngles, layer: 'mid', draw: g => drawPoleAt(g, p, st.P, st.th, st.f) }; }
+      if (p) { const st = poleState(p, t, info); return { grips: st.grips, handAngles: st.handAngles, layer: st.layer, draw: g => drawPoleAt(g, p, st.P, st.th, st.f) }; }
       const e = golds.find(e => t >= e.t - 0.6);
       return e ? goldState(e, t, info) : null;
     };

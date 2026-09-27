@@ -64,17 +64,18 @@ const P = (() => {
       return { look: l, head: -0.06, eyes: 'wide', lean: -0.04 }; },
     crouch: u => ({ drop: 0.6 * Math.sin(u * Math.PI / 2), lean: 0.35 * Math.sin(u * Math.PI / 2), armF: [0.5, 0.6], armB: [0.4, 0.6] }),
     lift: (u, d, a, t) => { const rise = smooth((u - 0.35) / 0.65);   // 先蹲下抓住，再使劲站起来（抖一抖）
-      return { grip: 1, drop: lerp(0.6, 0.28, rise), lean: lerp(0.35, 0.26, rise) + 0.03 * Math.sin(t * 43) * (1 - rise), handF: 'fist', handB: rise > 0.6 ? 'up' : 'fist', eyes: 'wide' }; },
-    carry: (u, d, a, t) => ({ grip: 1, handF: 'fist', handB: 'up', lean: 0.26, drop: 0.28, head: 0.12, smile: 0 }),   // 扛着重木杆：弓背、屈膝，一只手扣住、一只手托住
-    drop: u => ({ grip: 1 - smooth((u - 0.8) / 0.15), drop: 0.25 + 0.35 * Math.sin(u * Math.PI), lean: 0.2 + 0.35 * Math.sin(u * Math.PI), armF: [0.3, 0.5], armB: [0.2, 0.5], handF: 'fist', handB: 'up' }),
+      return { grip: 1, drop: lerp(0.6, 0.34, rise), lean: lerp(0.3, -0.24, rise) + 0.03 * Math.sin(t * 43) * (1 - rise), handF: u > 0.4 ? 'up' : 'fist', handB: u > 0.4 ? 'up' : 'fist', strain: 1 }; },
+    carry: (u, d, a, t) => ({ grip: 1, handF: 'up', handB: 'up', lean: -0.24, drop: 0.34, head: 0.14, smile: 0, strain: 0.9 }),   // 抱着重木杆：身子稍往后仰来平衡，屈膝，低头使劲   // 扛着重木杆：弓背、屈膝，一只手扣住、一只手托住
+    drop: u => ({ grip: 1 - smooth((u - 0.85) / 0.12), drop: 0.34 + 0.3 * smooth((u - 0.3) / 0.4), lean: lerp(-0.24, 0.55, smooth((u - 0.2) / 0.4)), head: 0.25 * smooth((u - 0.3) / 0.4),
+                  armF: [0.3, 0.5], armB: [0.2, 0.5], handF: 'up', handB: 'up', strain: 1 - smooth((u - 0.8) / 0.2) }),   // 卸到腰前，弯腰低头放下
     lookup: (u, d, a, t) => { const s = u * d, up = smooth((s - 0.1) / 0.3);   // 抬头、抬手指着天上：「看！」
       return { head: -0.34 + 0.05 * Math.sin(t * 6), lean: -0.12, eyes: 'wide', armF: [lerp(0.4, 2.55, up), lerp(0.8, 0.15, up)], armB: [0.4, 0.9],
                handF: up > 0.5 ? 'point' : 'open', handB: 'open', smile: 0.4, lift: 3 * Math.abs(Math.sin(t * 6)) }; },
-    catch: (u, d, a, t) => ({ grip: 1, head: -0.18, handF: 'up', handB: 'up', eyes: 'wide', smile: 0.6, lean: -0.04 }),
+    catch: (u, d, a, t) => ({ grip: 1, head: -0.18, handF: 'up', handB: 'up', eyes: 'wide', smile: 0.6, lean: -0.04, armBFront: true }),
     hug: (u, d, a, t, p) => { const s = u * d, b = Math.abs(Math.sin(t * 7.5));   // 捧着金子笑：嘴哈哈地开合，头和身子跟着笑声颠
       let hop = 0;   // 蹦：hops = [[开始, 蹦几下], ...]
       for (const [h0, n] of p.hops || []) if (s > h0 && s < h0 + n * 0.42) hop = Math.abs(Math.sin((s - h0) / 0.42 * Math.PI));
-      return { grip: 1, handF: 'up', handB: 'up', happy: smooth(s / 0.15), smile: 1, laugh: smooth(s / 0.3),
+      return { grip: 1, handF: 'up', handB: 'up', happy: smooth(s / 0.15), smile: 1, laugh: smooth(s / 0.3), armBFront: true,
                lean: -0.08 + 0.06 * b, head: -0.12 + 0.12 * b, lift: 5 * b + 22 * hop }; },
     wave: (u, d, a, t) => ({ armF: [2.4, 0.5], handF: 'wave', wristF: 0.35 * Math.sin(t * 11), smile: 1, head: -0.06 }),
     cheer: (u, d, a, t) => { const hop = Math.abs(Math.sin(u * d * 5.2));
@@ -87,14 +88,15 @@ const P = (() => {
     const rig = V.rig, s = rig.scale * (rig.parts.foot.size || 1), L = V.L, legLen = L.thigh + L.shin;
     const x = a.xAt(t), h = 0.05;
     const vx = (a.xAt(t + h) - a.xAt(t - h)) / (2 * h), speed = Math.abs(vx);
-    const run = smooth((speed - 200) / 140), moving = smooth(speed / 35);
-    const stride = lerp(1.25, 2.4, run) * legLen, duty = lerp(0.6, 0.36, run);
+    const heavy = (a.actions || []).some(([t0, t1, n]) => n === 'carry' && t >= t0 && t <= t1);
+    const run = heavy ? 0 : smooth((speed - 200) / 140), moving = smooth(speed / 35);
+    const stride = lerp(1.25, 2.4, run) * legLen, duty = heavy ? 0.66 : lerp(0.6, 0.36, run);
     const phase = a._phase(t);
     const lean0 = moving * lerp(0.05, 0.2, run);
     const pose = {
       lean: lean0 + Math.sin(t * 2.2 + a.phase) * 0.015, head: -lean0 * 0.45 + Math.sin(t * 1.7 + a.phase) * 0.02,
       look: 1, drop: 0, lift: 0, grip: 0, reachW: 0, wristF: 0, wristB: 0,
-      handF: 'open', handB: 'open', eyes: 'open', smile: 0, laugh: 0, happy: 0,
+      handF: 'open', handB: 'open', eyes: 'open', smile: 0, laugh: 0, happy: 0, strain: 0, armBFront: false,
     };
     const swing = moving * lerp(0.4, 0.85, run), elbow = lerp(0.3, 1.7, run * moving), R0 = REST[view] || REST.side;
     pose.armF = [lerp(R0.F[0], 0.1, moving) - swing * Math.cos(phase * TAU), lerp(R0.F[1], elbow, moving) + 0.2 * run * Math.sin(phase * TAU)];
@@ -120,10 +122,10 @@ const P = (() => {
       if (t > t1 && t < t1 + 0.22) pose.drop = Math.max(pose.drop, 0.5 * Math.sin((t - t1) / 0.22 * Math.PI));
     }
     // 髋部高度：站着微屈膝，走/跑时屈得更多；走路一步一起伏（跑步相反：腾空时最高）
-    const bob = moving * lerp(0.03, 0.07, run) * legLen * Math.cos(2 * TAU * (phase - duty / 2)) * lerp(1, -1, run);
+    const bob = moving * (heavy ? 0.08 : lerp(0.03, 0.07, run)) * legLen * Math.cos(2 * TAU * (phase - duty / 2)) * lerp(1, -1, run);
     const hipH = lerp(0.95, lerp(0.9, 0.84, run), moving) * legLen * (1 - 0.3 * pose.drop);
     const hipY = GROUND - rig.ankleH * s - hipH - bob - jy - pose.lift;
-    return { x, vx, speed, run, moving, stride, duty, phase, pose, hipY, jy, tuck, legLen };
+    return { x, vx, speed, run, moving, stride, duty, phase, pose, hipY, jy, tuck, legLen, heavy };
   }
 
   function draw(g, a, t) {
@@ -177,10 +179,10 @@ const P = (() => {
     // 飘带：结在头上，跑得越快越往后飘，带一点抖动
     const flow = Math.min(1, st.speed / 320);
     const tails = rig.parts.tails && place(rig, 'tails', head.map(rig.parts.head.knot),
-      V.tailRest - 0.5 * flow + pose.lean * 0.6 + pose.head + Math.sin(t * lerp(2.6, 14, flow) + a.phase) * lerp(0.11, 0.13, flow) + Math.sin(t * 1.1 + a.phase * 2) * 0.06 * (1 - flow));
+      V.tailRest - 0.5 * flow + 0.15 * (pose.lean + pose.head) + Math.sin(t * lerp(2.6, 14, flow) + a.phase) * lerp(0.11, 0.13, flow) + Math.sin(t * 1.1 + a.phase * 2) * 0.06 * (1 - flow));
 
     g.save(); g.translate(st.x, 0); g.scale(face, 1);
-    g.fillStyle = 'rgba(60,40,20,0.22)'; g.beginPath();
+    g.fillStyle = 'rgba(60,40,20,0.32)'; g.beginPath();
     g.ellipse(0, GROUND + 4, st.legLen * 0.75 * (1 - Math.min(0.5, (st.jy + pose.lift) / 250)), 7, 0, 0, TAU); g.fill();
     const shadowOn = () => { g.shadowColor = 'rgba(50,30,10,0.26)'; g.shadowBlur = 6; g.shadowOffsetX = 3; g.shadowOffsetY = 3; };
     const put = (pl, dark) => {
@@ -190,20 +192,33 @@ const P = (() => {
     };
     const drawHeld = layer => { if (held && held.draw && (held.layer || 'afterHead') === layer) { g.shadowColor = 'rgba(50,30,10,0.3)'; held.draw(g); shadowOn(); } };
     shadowOn();
-    armB.forEach(p => put(p, true));
+    if (!pose.armBFront) armB.forEach(p => put(p, true));
     put(legs.B.th, true); put(legs.B.sn, true); put(legs.B.ft, true);
     if (tails) put(tails, false);
     put(legs.F.th, false); put(legs.F.sn, false); put(legs.F.ft, false);
     put(torso, false);
     drawHeld('mid');
+    const onShoulder = held && held.layer === 'shoulder';
+    if (onShoulder) { put(armF[0], false); drawHeld('shoulder'); }
     g.save();   // 回头：头这张纸片绕脖子翻面
     const lk = Math.abs(pose.look) < 0.06 ? 0.06 * Math.sign(pose.look || 1) : pose.look;
     g.translate(neck[0], 0); g.scale(lk, 1); g.translate(-neck[0], 0);
     put(head, false); drawFace(g, V, head, pose, t, a);
     g.restore();
     drawHeld('afterHead');
-    armF.forEach(p => put(p, false));
+    if (pose.armBFront) armB.forEach(p => put(p, false));   // 半正面捧东西时，远侧手臂绕到身前
+    if (!onShoulder) put(armF[0], false);
+    drawHeld('overUpper');
+    put(armF[1], false); put(armF[2], false);
     drawHeld('front');
+    if (pose.strain > 0.5) {   // 汗珠：从头顶两侧甩出去（吃力的信号）
+      const top = head.map([rig.parts.head.pivot[0], rig.parts.head.pivot[1] * 0.25]);
+      for (const [dx, ph] of [[-1, 0], [1, 0.5]]) {
+        const u = ((t * 1.6 + ph) % 1), x = top[0] + dx * (10 + 26 * u), y = top[1] - 6 - 18 * Math.sin(u * Math.PI);
+        g.save(); g.globalAlpha = Math.sin(u * Math.PI) * pose.strain; g.fillStyle = '#bfe3f2'; g.strokeStyle = '#fbf6ea'; g.lineWidth = 2;
+        g.beginPath(); g.moveTo(x, y - 7); g.quadraticCurveTo(x + 5, y, x, y + 4); g.quadraticCurveTo(x - 5, y, x, y - 7); g.fill(); g.stroke(); g.restore();
+      }
+    }
     g.restore();
     return { x: st.x, top: head.map([rig.parts.head.pivot[0], 0])[1], st };
   }
@@ -213,7 +228,7 @@ const P = (() => {
     const hp = V.rig.parts.head, s = head.s;
     g.save(); g.shadowColor = 'transparent';
     g.translate(head.at[0], head.at[1]); g.rotate(head.phi); g.scale(s, s); g.translate(-hp.pivot[0], -hp.pivot[1]);
-    const happy = pose.eyes === 'happy' ? 1 : pose.happy, closed = Math.max(happy, a.blinkAt(t));
+    const happy = pose.eyes === 'happy' ? 1 : pose.happy, closed = Math.max(happy, a.blinkAt(t), 0.45 * pose.strain);
     for (const [ex, ey, rx, ry] of hp.eyes) {
       if (closed > 0) {
         g.fillStyle = V.skin; g.beginPath(); g.ellipse(ex, ey - ry * (1 - closed) * 0.9, rx * 1.18, ry * 1.12 * Math.max(closed, 0.15), 0, 0, TAU); g.fill();
@@ -229,7 +244,10 @@ const P = (() => {
     const [mx, my, mw] = hp.mouth, sm = pose.smile, open = Math.max(a.mouthAt(t), pose.laugh * (0.35 + 0.55 * Math.abs(Math.sin(t * 7.5))));
     g.lineCap = 'round'; g.lineJoin = 'round';
     const o = Math.max(open, sm > 0.5 ? 0.35 * sm : 0);
-    if (o > 0.06) {
+    if (pose.strain > 0.5 && open < 0.1) {   // 使劲：嘴紧抿、嘴角往下撇
+      g.strokeStyle = '#3a1c16'; g.lineWidth = 6; g.beginPath();
+      g.moveTo(mx - mw * 0.4, my + mw * 0.16); g.quadraticCurveTo(mx, my - mw * 0.14, mx + mw * 0.38, my + mw * 0.14); g.stroke();
+    } else if (o > 0.06) {
       const hh = mw * (0.1 + 0.6 * o), w = mw * (0.85 + 0.35 * sm - 0.15 * open);
       g.fillStyle = '#5b1c18'; g.strokeStyle = '#3a1210'; g.lineWidth = 3;
       g.beginPath(); g.moveTo(mx - w / 2, my - hh * 0.15 * sm); g.quadraticCurveTo(mx, my - hh * 0.35 * (1 - sm), mx + w / 2, my - hh * 0.15 * sm);
