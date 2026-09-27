@@ -2,25 +2,23 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<!-- 纸艺立体书风格的横版闯关动画引擎：读剧本数据（scene），逐帧画出 1080×1920 的竖屏画面。
-     导出时由 video/render.py 逐帧调用 renderFrame(t) 截图，不是录屏，所以成片一定流畅。 -->
+<!-- 纸艺立体书风格的横版闯关动画引擎：读剧本（scene）和场景（scene.set），逐帧画出 1080×1920 竖屏画面。
+     美术全部来自素材图（Codex 按参考画风生成）；代码只负责摆放、分层视差、景深和动作。
+     背景各层在 init 时先模糊、缓存成离屏画布，每帧只做平移，所以渲染快。
+     导出时由 video/render.py 逐帧调用 renderFrame(t) 截图，不是录屏，成片一定流畅。 -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;700;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
-<style>
-  html, body { margin: 0; background: #000; }
-  canvas { display: block; }
-</style>
+<style>html, body { margin: 0; background: #000; } canvas { display: block; }</style>
 </head>
 <body>
 <canvas id="c" width="1080" height="1920"></canvas>
 <script>
 const W = 1080, H = 1920;
-// 竖屏布局：顶部问句标题 / 中间横屏闯关画面 / 下方字幕（古人云式布局）
-const BAND = { x: 0, y: 560, w: 1080, h: 608 };
-const GROUND = 500;           // 闯关画面里地面的 y
+const BAND = { x: 0, y: 560, w: 1080, h: 608 };   // 竖屏中间的横屏闯关画面
+const GROUND = 500;                                  // 闯关画面里地面的 y
 const C = document.getElementById('c');
 const ctx = C.getContext('2d');
 const INK = '#2a2320', RED = '#c8372d', CREAM = '#f4e8d0';
-let scene = null, img = {}, noise = null;
+let scene = null, img = {}, noise = null, fiber = null, cache = {};
 
 // ---------- 工具 ----------
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
@@ -28,127 +26,175 @@ function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; le
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const ease = x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
 const easeOutBack = x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
-function interp(keys, t, idx = 1) {  // keys: [[t, v, ...], ...]，按时间做缓动插值
+function interp(keys, t, idx = 1) {
   if (t <= keys[0][0]) return keys[0][idx];
-  for (let i = 1; i < keys.length; i++) {
-    if (t <= keys[i][0]) {
-      const [t0, t1] = [keys[i - 1][0], keys[i][0]];
-      const u = ease((t - t0) / (t1 - t0 || 1));
-      return keys[i - 1][idx] + (keys[i][idx] - keys[i - 1][idx]) * u;
-    }
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) {
+    const u = ease((t - keys[i - 1][0]) / (keys[i][0] - keys[i - 1][0] || 1));
+    return keys[i - 1][idx] + (keys[i][idx] - keys[i - 1][idx]) * u;
   }
   return keys[keys.length - 1][idx];
 }
 function stepVal(keys, t) { let v = keys[0][1]; for (const k of keys) if (t >= k[0]) v = k[1]; return v; }
-
-// 纸张颗粒：一张随机噪点图，叠在纸片上
+function roundRect(g, x, y, w, h, r) { g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 function makeNoise() {
   const n = document.createElement('canvas'); n.width = n.height = 256;
   const g = n.getContext('2d'), r = mulberry32(7), d = g.createImageData(256, 256);
-  for (let i = 0; i < d.data.length; i += 4) { const v = 200 + r() * 55; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+  for (let i = 0; i < d.data.length; i += 4) { const v = 205 + r() * 50; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
   g.putImageData(d, 0, 0); return ctx.createPattern(n, 'repeat');
 }
-
-// 画一片「卡纸」：填色 + 纸纹 + 白边 + 投影
-function paper(pathFn, fill, { outline = 5, shadow = 10, grain = 0.18 } = {}) {
+function makeFiber() {   // 纸纤维：中灰底上的明暗斑点和短纤维，用 overlay 叠在界面纸片上
+  const n = document.createElement('canvas'); n.width = n.height = 256;
+  const g = n.getContext('2d'), r = mulberry32(21);
+  g.fillStyle = '#808080'; g.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 2600; i++) { const v = 90 + r() * 80; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(r() * 256, r() * 256, 1 + r() * 2, 1 + r() * 2); }
+  g.lineWidth = 0.8; for (let i = 0; i < 160; i++) { const x = r() * 256, y = r() * 256, a = r() * 6.3, l = 4 + r() * 10, v = 60 + r() * 140;
+    g.strokeStyle = `rgba(${v},${v},${v},0.6)`; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke(); }
+  return ctx.createPattern(n, 'repeat');
+}
+// 毛边纸片：沿圆角矩形一圈取点，按固定随机数往外/往里抖 1–2 像素（同一张卡每帧形状一样，不会闪）
+function deckle(g, x, y, w, h, r, seed = 1) {
+  const rnd = mulberry32(seed + Math.round(w) * 7 + Math.round(h) * 13), pts = [];
+  const per = 2 * (w + h - 4 * r) + 2 * Math.PI * r, n = Math.max(24, Math.floor(per / 7));
+  for (let i = 0; i < n; i++) {
+    let d = i / n * per, px, py;
+    const segs = [[w - 2 * r, (s) => [x + r + s, y]], [Math.PI * r / 2, (s) => arc(x + w - r, y + r, -Math.PI / 2 + s / r)],
+                  [h - 2 * r, (s) => [x + w, y + r + s]], [Math.PI * r / 2, (s) => arc(x + w - r, y + h - r, s / r)],
+                  [w - 2 * r, (s) => [x + w - r - s, y + h]], [Math.PI * r / 2, (s) => arc(x + r, y + h - r, Math.PI / 2 + s / r)],
+                  [h - 2 * r, (s) => [x, y + h - r - s]], [Math.PI * r / 2, (s) => arc(x + r, y + r, Math.PI + s / r)]];
+    for (const [len, f] of segs) { if (d <= len) { [px, py] = f(d); break; } d -= len; }
+    const j = (rnd() - 0.5) * 6, cx = x + w / 2, cy = y + h / 2, dx = px - cx, dy = py - cy, l = Math.hypot(dx, dy) || 1;
+    pts.push([px + dx / l * j, py + dy / l * j]);
+  }
+  function arc(cx, cy, a) { return [cx + Math.cos(a) * r, cy + Math.sin(a) * r]; }
+  g.moveTo(pts[0][0], pts[0][1]); for (const [px, py] of pts.slice(1)) g.lineTo(px, py); g.closePath();
+}
+// 纸片卡（字幕标签、气泡、HUD、标题胶囊用）：填色 + 纸纹 + 白色纸边 + 投影，和场景的纸艺质感一致
+function card(pathFn, fill, { outline = 5, shadow = 8, grain = 0.55, under = true } = {}) {
   ctx.save();
-  ctx.shadowColor = 'rgba(60,40,20,0.28)'; ctx.shadowBlur = shadow; ctx.shadowOffsetY = shadow * 0.35;
-  ctx.beginPath(); pathFn(); ctx.fillStyle = fill; ctx.fill();
-  ctx.shadowColor = 'transparent';
-  if (grain) { ctx.globalAlpha = grain; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = noise; ctx.fill();
-               ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; }
+  if (under) {   // 下面垫一张错位的深色卡纸，做出两层纸叠在一起的感觉
+    ctx.save(); ctx.translate(4, 5); ctx.beginPath(); pathFn(); ctx.fillStyle = 'rgba(120,86,52,0.55)'; ctx.fill(); ctx.restore();
+  }
+  ctx.shadowColor = 'rgba(60,40,20,0.32)'; ctx.shadowBlur = shadow; ctx.shadowOffsetY = shadow * 0.4;
+  ctx.beginPath(); pathFn(); ctx.fillStyle = fill; ctx.fill(); ctx.shadowColor = 'transparent';
+  if (grain) { ctx.save(); ctx.clip(); ctx.globalAlpha = grain; ctx.globalCompositeOperation = 'overlay'; ctx.fillStyle = fiber;
+               ctx.fillRect(-4000, -4000, 8000, 8000); ctx.restore(); }
   if (outline) { ctx.lineWidth = outline; ctx.strokeStyle = '#fffaf0'; ctx.lineJoin = 'round'; ctx.stroke(); }
   ctx.restore();
 }
-function roundRect(x, y, w, h, r) { ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+// 给人物素材叠一层纸纹（只叠在人物像素上），让人物和场景的纸感一致
+function paperize(im, { edge = 7, sat = 0.85, grain = 0.3 } = {}) {
+  // 厚白纸边：把剪影往 16 个方向各挪 edge 像素叠出一圈白边（参考图里每件东西都有明显的粗白纸边）
+  const pad = edge + 2, w = im.width + 2 * pad, h = im.height + 2 * pad;
+  const mk = () => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
+  const [sil, sg] = mk(); sg.drawImage(im, pad, pad); sg.globalCompositeOperation = 'source-in'; sg.fillStyle = '#fbf6ea'; sg.fillRect(0, 0, w, h);
+  const [c, g] = mk();
+  for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; g.drawImage(sil, Math.cos(a) * edge, Math.sin(a) * edge); }
+  g.filter = `saturate(${sat})`; g.drawImage(im, pad, pad); g.filter = 'none';
+  const [mask, mg] = mk(); mg.drawImage(c, 0, 0);
+  g.globalCompositeOperation = 'multiply'; g.globalAlpha = grain; g.fillStyle = noise; g.fillRect(0, 0, w, h);   // 纸纹
+  g.globalCompositeOperation = 'destination-in'; g.globalAlpha = 1; g.drawImage(mask, 0, 0);
+  return c;
+}
+// 按「中心 x、底边 y、显示高度」画一张素材
+function put(g, name, cx, bottom, h, { flip = false, rot = 0 } = {}) {
+  const im = img[name], w = im.width * h / im.height;
+  g.save(); g.translate(cx, bottom); if (rot) g.rotate(rot); if (flip) g.scale(-1, 1);
+  g.drawImage(im, -w / 2, -h, w, h); g.restore();
+  return w;
+}
 
-// ---------- 背景各层（代码画，每集复用；越远越淡、越虚，把清晰度留给舞台） ----------
-function sky() {
-  const g = ctx.createLinearGradient(0, 0, 0, BAND.h);
-  g.addColorStop(0, '#bfe0ea'); g.addColorStop(1, '#f6ecd6');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, BAND.w, BAND.h);
+// ---------- 场景各层：init 时画好、模糊好，缓存成离屏画布 ----------
+function offscreen(width, filter, drawFn) {
+  const c = document.createElement('canvas'); c.width = width; c.height = BAND.h;
+  const g = c.getContext('2d'); g.filter = filter || 'none'; drawFn(g); return c;
 }
-function layer(parallax, camX, blur, sat, drawFn) {
-  ctx.save(); ctx.filter = `blur(${blur}px) saturate(${sat})`;
-  ctx.translate(-camX * parallax, 0); drawFn(); ctx.restore();
+function buildSet(set) {
+  const far = set.far, fim = img[far.img], fw = fim.width * far.height / fim.height;
+  // 远景：横向重复拼接（素材本身左右可衔接），两张拼成一条
+  cache.far = offscreen(Math.ceil(fw * 2), far.filter, g => { g.drawImage(fim, 0, far.y, fw, far.height); g.drawImage(fim, fw, far.y, fw, far.height); });
+  cache.farW = fw;
+  if (set.hills) cache.hills = offscreen(set.hills.width, set.hills.filter, g => { for (const [n, x, b, h] of set.hills.items) put(g, n, x, b, h); });
+  cache.mid = offscreen(set.mid.width, set.mid.filter, g => { for (const [n, x, b, h] of set.mid.items) put(g, n, x, b, h); });
+  if (set.frame) cache.frame = offscreen(BAND.w, set.frame.filter, g => {
+    g.shadowColor = 'rgba(40,25,10,0.5)'; g.shadowBlur = 18; g.shadowOffsetX = 6; g.shadowOffsetY = 6;
+    for (const [n, x, b, h, flip] of set.frame.items) put(g, n, x, b, h, { flip: !!flip }); });
+  cache.stage = offscreen(set.stage.width, set.stage.filter || 'none', g => {
+    g.translate(-set.stage.offset, 0);
+    const gr = set.stage.ground, gim = img[gr.img], gw = gim.width * gr.height / gim.height;
+    for (let x = set.stage.offset - gw; x < set.stage.offset + set.stage.width; x += gw - 2) g.drawImage(gim, x, GROUND + gr.top, gw, gr.height);
+    for (const [n, x, b, h] of set.stage.items) put(g, n, x, b, h);
+  });
+  cache.fore = offscreen(set.fore.width, set.fore.filter, g => {
+    g.shadowColor = 'rgba(40,25,10,0.45)'; g.shadowBlur = 16; g.shadowOffsetY = -6;
+    for (const [n, x, b, h] of set.fore.items) put(g, n, x, b, h); });
 }
-function clouds() {
-  for (const [x, y, s] of [[80, 70, 1], [520, 40, 0.8], [900, 90, 1.1], [1350, 55, 0.9], [1800, 80, 1]]) {
-    paper(() => { ctx.ellipse(x, y, 70 * s, 26 * s, 0, 0, 7); ctx.ellipse(x + 45 * s, y - 14 * s, 44 * s, 30 * s, 0, 0, 7);
-                  ctx.ellipse(x - 40 * s, y - 6 * s, 36 * s, 22 * s, 0, 0, 7); }, '#fffdf6', { outline: 0, shadow: 6, grain: 0.1 });
-  }
-}
-function mountains(base, color, peaks, h) {
-  paper(() => { ctx.moveTo(-200, BAND.h); ctx.lineTo(-200, base);
-    for (const [x, ph] of peaks) { ctx.quadraticCurveTo(x - 90, base - ph * h * 0.2, x, base - ph * h); ctx.quadraticCurveTo(x + 90, base - ph * h * 0.2, x + 180, base); }
-    ctx.lineTo(3000, base); ctx.lineTo(3000, BAND.h); ctx.closePath(); }, color, { outline: 4, shadow: 8 });
-}
-function cityWall(x0, x1, gateX) {
-  const top = 250, bottom = 470;
-  paper(() => { ctx.rect(x0, top, x1 - x0, bottom - top); }, '#cdb99a', { outline: 5 });
-  for (let x = x0; x < x1; x += 46) paper(() => ctx.rect(x, top - 26, 26, 28), '#cdb99a', { outline: 4, shadow: 4 });  // 城垛
-  paper(() => { ctx.moveTo(gateX - 70, bottom); ctx.lineTo(gateX - 70, 360); ctx.arc(gateX, 360, 70, Math.PI, 0); ctx.lineTo(gateX + 70, bottom); ctx.closePath(); }, '#6e5a48', { outline: 5, shadow: 4 });
-  // 城楼
-  paper(() => ctx.rect(gateX - 120, 170, 240, 80), '#a8452f', { outline: 5 });
-  paper(() => { ctx.moveTo(gateX - 170, 180); ctx.quadraticCurveTo(gateX, 110, gateX + 170, 180); ctx.lineTo(gateX + 140, 150); ctx.quadraticCurveTo(gateX, 95, gateX - 140, 150); ctx.closePath(); }, '#3d4a5c', { outline: 5 });
-  for (const fx of [x0 + 60, gateX - 260, gateX + 260, x1 - 60]) {  // 旗子
-    ctx.save(); ctx.fillStyle = '#6b4f36'; ctx.fillRect(fx, 120, 6, 130); ctx.restore();
-    paper(() => { ctx.moveTo(fx + 6, 124); ctx.lineTo(fx + 70, 138); ctx.lineTo(fx + 6, 168); ctx.closePath(); }, '#c8372d', { outline: 3, shadow: 4 });
-  }
-}
-function ground() {
-  paper(() => { ctx.moveTo(-300, GROUND); for (let x = -300; x <= 3200; x += 60) ctx.quadraticCurveTo(x + 30, GROUND - 6, x + 60, GROUND);
-                ctx.lineTo(3200, BAND.h + 20); ctx.lineTo(-300, BAND.h + 20); ctx.closePath(); }, '#d8b77f', { outline: 6, shadow: 12 });
-  paper(() => { ctx.moveTo(-300, GROUND + 40); for (let x = -300; x <= 3200; x += 90) ctx.quadraticCurveTo(x + 45, GROUND + 30, x + 90, GROUND + 40);
-                ctx.lineTo(3200, BAND.h + 20); ctx.lineTo(-300, BAND.h + 20); ctx.closePath(); }, '#c49a62', { outline: 0, shadow: 6 });
-}
-function bushes(xs, y, color) {
-  for (const x of xs) paper(() => { ctx.ellipse(x, y, 60, 34, 0, Math.PI, 0); ctx.ellipse(x + 50, y, 44, 28, 0, Math.PI, 0); ctx.closePath(); }, color, { outline: 4, shadow: 6 });
-}
+function drawLayerCache(c, parallax, camX, offset = 0) { ctx.drawImage(c, Math.round(offset - camX * parallax), 0); }
 
 // ---------- 道具 ----------
-function bambooBlock(x, y, bump) {
-  const s = 74, yy = y - bump;
-  paper(() => ctx.rect(x - s / 2, yy - s / 2, s, s), '#d9b36a', { outline: 5 });
-  ctx.save(); ctx.strokeStyle = '#8a6a36'; ctx.lineWidth = 3;
-  for (let i = 1; i < 5; i++) { ctx.beginPath(); ctx.moveTo(x - s / 2 + i * s / 5, yy - s / 2 + 4); ctx.lineTo(x - s / 2 + i * s / 5, yy + s / 2 - 4); ctx.stroke(); }
-  ctx.strokeStyle = '#5b3d1e'; ctx.lineWidth = 4;
-  for (const dy of [-18, 18]) { ctx.beginPath(); ctx.moveTo(x - s / 2, yy + dy); ctx.lineTo(x + s / 2, yy + dy); ctx.stroke(); }
-  ctx.restore();
+function drawBlock(p, t) {
+  const u = t - p.hitAt, bump = u > 0 && u < 0.3 ? Math.sin(u / 0.3 * Math.PI) * 22 : 0;
+  put(ctx, 'block', p.x, p.y + 42 - bump, 84);
+  if (u > 0) {   // 顶出的卷轴：往右上方弹出、停留，再淡出（避开左上角 HUD）
+    const up = easeOutBack(Math.min(1, u / 0.5)), a = Math.min(1, u / 0.15) * (u > 3 ? Math.max(0, 1 - (u - 3) / 0.5) : 1);
+    if (a <= 0) return;
+    ctx.save(); ctx.globalAlpha = a;
+    const sx = p.x + 100 * up, sy = p.y - 10 - 70 * up;
+    put(ctx, 'scroll', sx, sy + 46, 92);
+    ctx.fillStyle = RED; ctx.font = '38px "ZCOOL KuaiLe"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(p.reward, sx, sy);
+    ctx.restore();
+  }
 }
-function scroll(x, y, text, a) {
-  ctx.save(); ctx.globalAlpha = a;
-  paper(() => roundRect(x - 58, y - 30, 116, 60, 10), '#fff6e0', { outline: 4 });
-  paper(() => { ctx.rect(x - 66, y - 34, 12, 68); ctx.rect(x + 54, y - 34, 12, 68); }, '#8a5a2b', { outline: 3, shadow: 3 });
-  ctx.fillStyle = RED; ctx.font = '34px "ZCOOL KuaiLe"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, x, y + 2);
-  ctx.restore();
+function drawBoard(p, t) {
+  const [tin, tout] = p.show || [0, 1e9];
+  if (t < tin || t > tout + 0.4) return;
+  const grow = t < tin + 0.45 ? easeOutBack((t - tin) / 0.45) : t > tout ? 1 - ease((t - tout) / 0.4) : 1;
+  ctx.save(); ctx.translate(p.x, GROUND + 8); ctx.scale(1, Math.max(0.001, grow)); ctx.translate(-p.x, -(GROUND + 8));
+  put(ctx, 'board', p.x, GROUND + 8, p.height);
+  const lines = stepVal(p.texts, t), changed = [...p.texts].reverse().find(k => t >= k[0]);
+  const pop = changed && changed[0] > 0 ? Math.max(0, 1 - (t - changed[0]) / 0.35) : 0;
+  // 告示纸在素材里的位置：从上往下 19.5%–65.7%；三行字平均排在纸上，字号随牌子大小缩放
+  const paperTop = GROUND + 8 - p.height * (1 - 0.195), paperH = p.height * 0.462, k = p.height / 250, cx = p.x;
+  ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  lines.forEach((ln, i) => {
+    const hot = ln.startsWith('!'), s = hot ? ln.slice(1) : ln;
+    ctx.fillStyle = hot ? RED : INK; ctx.font = `${Math.round((hot ? 36 + pop * 12 : 28) * k)}px "ZCOOL KuaiLe"`;
+    ctx.fillText(s, cx, paperTop + paperH * (i + 0.55) / lines.length);
+  });
+  ctx.restore(); ctx.restore();
 }
-function log(x, y, angle, len = 250) {
-  ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
-  paper(() => roundRect(-20, -len, 40, len, 14), '#9a6a3f', { outline: 5 });
-  ctx.strokeStyle = '#6d4523'; ctx.lineWidth = 3;
-  for (let i = 1; i < 6; i++) { ctx.beginPath(); ctx.moveTo(-12, -len + i * len / 6); ctx.lineTo(10, -len + i * len / 6 - 8); ctx.stroke(); }
-  paper(() => { ctx.rect(-22, -len * 0.25 - 6, 44, 12); ctx.rect(-22, -len * 0.75 - 6, 44, 12); }, '#d8c08a', { outline: 2, shadow: 2 });
-  ctx.restore();
+function drawLog(p, t, front) {
+  const carried = p.carry && t >= p.carry[0];
+  if (!carried) { if (!front) put(ctx, 'log', p.x, GROUND + 10, p.height); return; }
+  if (!front) return;
+  // 扛起：0.5 秒内从竖着转成横着，架到扛的人肩上，然后跟着他走
+  const [t0, t1, by] = p.carry, a = scene.actors[by];
+  if (t >= t1) {   // 放下
+    const s1 = actorState(a, t1), u3 = ease(clamp((t - t1) / 0.4, 0, 1)), head1 = GROUND - a.height - 14;
+    const lieY = GROUND + 12 - (img.log.width * p.height / img.log.height) / 2;
+    ctx.save(); ctx.translate(s1.x + (-170) * u3, head1 + (lieY - head1) * u3); ctx.rotate(Math.PI / 2);
+    put(ctx, 'log', 0, p.height / 2, p.height); ctx.restore(); return;
+  }
+  const s = actorState(a, t);
+  const bob = s.moving ? Math.abs(Math.sin(t * 14)) * 12 : 0, head = GROUND - a.height - 14 - bob;
+  const u1 = ease(clamp((t - t0) / 0.4, 0, 1)), u2 = ease(clamp((t - t0 - 0.4) / 0.4, 0, 1));
+  // 第一段：竖着整根举起、移到头顶正上方；第二段：在头顶上转成横的
+  const cyUp = (GROUND + 10 - p.height / 2) + (head - p.height / 2 - (GROUND + 10 - p.height / 2)) * u1;
+  const cx = p.x + (s.x - p.x) * u1, cy = cyUp + (head - cyUp) * u2;   // 升高的同时移到头顶正上方
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(Math.PI / 2 * u2);
+  put(ctx, 'log', 0, p.height / 2, p.height); ctx.restore();
 }
 function coin(x, y, spin, r = 20) {
-  const sx = Math.max(0.12, Math.abs(Math.cos(spin)));
-  ctx.save(); ctx.translate(x, y); ctx.scale(sx, 1);
-  paper(() => { ctx.arc(0, 0, r, 0, 7); ctx.rect(r * 0.32, -r * 0.32, -r * 0.64, r * 0.64); }, '#e0a93c', { outline: 3, shadow: 4, grain: 0.1 });
-  ctx.restore();
+  ctx.save(); ctx.translate(x, y); ctx.scale(Math.max(0.12, Math.abs(Math.cos(spin))), 1);
+  put(ctx, 'coin', 0, r, r * 2); ctx.restore();
 }
 
 // ---------- 角色（纸片人：走路上下颠、左右轻摆，转身像纸一样翻面） ----------
 function actorState(a, t) {
-  const x = interp(a.keys, t, 1);
-  const dx = interp(a.keys, t + 0.05, 1) - x;
-  const moving = Math.abs(dx) > 0.4;
-  // 朝向：关键帧里写 1（右）/ -1（左）；朝向变化时用 0.25 秒「翻纸」（scaleX 从 1 经过 0 到 -1）
+  const x = interp(a.keys, t, 1), moving = Math.abs(interp(a.keys, t + 0.05, 1) - x) > 0.4;
   let flip = a.keys[0][3];
   for (let i = 1; i < a.keys.length; i++) {
-    const k = a.keys[i], p = a.keys[i - 1];
-    if (t < k[0]) break;
+    const k = a.keys[i], p = a.keys[i - 1]; if (t < k[0]) break;
     flip = k[3] === p[3] ? k[3] : p[3] * Math.cos(clamp((t - k[0]) / 0.25, 0, 1) * Math.PI);
   }
   let pose = stepVal(a.keys.map(k => [k[0], k[2]]), t);
@@ -158,116 +204,99 @@ function actorState(a, t) {
   return { x, moving, flip, pose, jy };
 }
 function drawActor(a, t) {
-  const s = actorState(a, t);
-  const im = img[a.sprites[s.pose] || a.sprites.stand];
+  const s = actorState(a, t), im = img[a.sprites[s.pose] || a.sprites.stand];
   const h = a.height, w = im.width * h / im.height;
   const bob = s.moving && !s.jy ? Math.abs(Math.sin(t * 14)) * 12 : Math.sin(t * 2.2 + a.phase) * 2;
   const tilt = s.moving && !s.jy ? Math.sin(t * 14) * 0.05 : 0;
   ctx.save();
-  // 脚下影子（跳起时变小）
-  ctx.fillStyle = 'rgba(60,40,20,0.22)'; ctx.beginPath();
+  ctx.fillStyle = 'rgba(60,40,20,0.25)'; ctx.beginPath();
   ctx.ellipse(s.x, GROUND + 6, w * 0.34 * (1 - s.jy / 400), 9, 0, 0, 7); ctx.fill();
   ctx.translate(s.x, GROUND - bob - s.jy); ctx.rotate(tilt);
-  const flipSign = a.native === 1 ? s.flip : -s.flip;   // 素材本身朝向：native=1 朝右，-1 朝左
-  ctx.scale(flipSign, 1);
+  ctx.scale(a.native === 1 ? s.flip : -s.flip, 1);
+  ctx.shadowColor = 'rgba(50,30,10,0.30)'; ctx.shadowBlur = 10; ctx.shadowOffsetX = 5; ctx.shadowOffsetY = 4;
   ctx.drawImage(im, -w / 2, -h, w, h);
   ctx.restore();
   return { x: s.x, top: GROUND - h - bob - s.jy };
 }
-function bubble(x, y, text, a, tail = 0) {
+function bubble(x, y, text, a) {
   if (a <= 0) return;
-  ctx.save(); ctx.globalAlpha = Math.min(1, a);
-  const sc = easeOutBack(Math.min(1, a)); ctx.translate(x, y); ctx.scale(sc, sc);
-  ctx.font = '38px "ZCOOL KuaiLe"';
-  const w = Math.max(70, ctx.measureText(text).width + 44), h = 64;
-  paper(() => { roundRect(-w / 2, -h, w, h, 22); ctx.moveTo(-12 + tail, -2); ctx.lineTo(0 + tail, 18); ctx.lineTo(12 + tail, -2); }, '#fffdf6', { outline: 4, shadow: 8, grain: 0.06 });
+  ctx.save(); ctx.globalAlpha = Math.min(1, a); ctx.translate(x, y); const sc = easeOutBack(Math.min(1, a)); ctx.scale(sc, sc);
+  ctx.font = '38px "ZCOOL KuaiLe"'; const w = Math.max(70, ctx.measureText(text).width + 44), h = 64;
+  card(() => { deckle(ctx, -w / 2, -h, w, h, 22); ctx.moveTo(-12, -2); ctx.lineTo(0, 18); ctx.lineTo(12, -2); }, '#fffdf6');
   ctx.fillStyle = INK; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 0, -h / 2 + 2);
   ctx.restore();
 }
 
-// ---------- 闯关画面（在横屏区域里画） ----------
+// ---------- 闯关画面 ----------
 function drawBand(t) {
-  const camX = interp(scene.camera, t);
-  sky();
-  layer(0.08, camX, 1.2, 0.85, clouds);
-  layer(0.18, camX, 3, 0.55, () => mountains(330, '#a9c4b8', [[100, 1], [520, 1.3], [980, 1.1], [1500, 1.4], [2000, 1]], 190));
-  layer(0.35, camX, 1.8, 0.7, () => mountains(400, '#8fb39a', [[300, 0.9], [800, 1.1], [1350, 0.8], [1900, 1]], 160));
-  layer(0.62, camX, 0.8, 0.8, () => cityWall(700, 2300, 1500));
-  // 舞台（清晰、饱和）
+  const camX = interp(scene.camera, t), set = scene.set;
+  const fx = -((camX * set.far.parallax) % cache.farW);
+  ctx.drawImage(cache.far, Math.round(fx), 0);
+  if (cache.hills) drawLayerCache(cache.hills, set.hills.parallax, camX);
+  drawLayerCache(cache.mid, set.mid.parallax, camX);
+  drawLayerCache(cache.stage, 1, camX, set.stage.offset);
   ctx.save(); ctx.translate(-camX, 0);
-  ground();
-  bushes([-120, 250, 1850], GROUND + 2, '#7fa66a');
-  for (const p of scene.props) drawProp(p, t);
+  for (const p of scene.props) {
+    if (p.type === 'block') drawBlock(p, t);
+    if (p.type === 'board') drawBoard(p, t);
+    if (p.type === 'log') drawLog(p, t, false);
+  }
   const pos = {};
   for (const [id, a] of Object.entries(scene.actors)) pos[id] = drawActor(a, t);
-  for (const p of scene.props) if (p.type === 'log' && p.carry && t >= p.carry[0]) drawProp(p, t, true);  // 被扛起的木头画在人前
-  for (const ev of scene.events) drawEvent(ev, t, pos);
+  for (const p of scene.props) if (p.type === 'log') drawLog(p, t, true);
+  for (const ev of scene.events) if (ev.type === 'coinRain') coinRain(ev, t);
   for (const [id, a] of Object.entries(scene.actors))
-    for (const [t0, t1, text] of a.bubbles || []) {
-      const fade = Math.min((t - t0) / 0.25, (t1 - t) / 0.2);
-      if (t >= t0 && t <= t1) bubble(pos[id].x, pos[id].top - 14, text, fade);
-    }
+    for (const [t0, t1, text] of a.bubbles || [])
+      if (t >= t0 && t <= t1) bubble(pos[id].x, pos[id].top - 14, text, Math.min((t - t0) / 0.25, (t1 - t) / 0.2));
   ctx.restore();
-  // 前景虚化的草丛（更近、更快、更虚）
-  layer(1.35, camX, 4, 0.8, () => bushes([160, 1400, 2300], BAND.h + 10, '#5f8a52'));
+  drawLayerCache(cache.fore, set.fore.parallax, camX);
+  if (cache.frame) ctx.drawImage(cache.frame, 0, 0);   // 立体书纸框：固定在画框上
   for (const ev of scene.events) if (ev.type === 'stamp') drawStamp(ev, t);  // 印章固定在画面中央，不跟镜头走
   drawHud(t);
-  // 纸纹叠加
-  ctx.save(); ctx.globalAlpha = 0.08; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = noise; ctx.fillRect(0, 0, BAND.w, BAND.h); ctx.restore();
+  ctx.save(); ctx.globalAlpha = 0.06; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = noise; ctx.fillRect(0, 0, BAND.w, BAND.h); ctx.restore();
 }
-function drawProp(p, t, front = false) {
-  if (p.type === 'block') {
-    const u = t - p.hitAt, bump = u > 0 && u < 0.3 ? Math.sin(u / 0.3 * Math.PI) * 22 : 0;
-    bambooBlock(p.x, p.y, bump);
-    if (u > 0) { const up = Math.min(1, u / 0.6); scroll(p.x, p.y - 70 - easeOutBack(up) * 60, p.reward, Math.min(1, u / 0.2) * (u > 3 ? Math.max(0, 1 - (u - 3) / 0.5) : 1)); }
-  }
-  if (p.type === 'log') {
-    if (!p.carry || t < p.carry[0]) { if (!front) log(p.x, GROUND + 4, 0); return; }
-    if (!front) return;
-    // 扛起：0.5 秒内从竖着转成横着，架到扛的人肩上，之后跟着他走（木头长 250，横着时中心对准人）
-    const [t0, , by] = p.carry, a = scene.actors[by], s = actorState(a, t);
-    const u = ease(clamp((t - t0) / 0.5, 0, 1));
-    const bob = s.moving ? Math.abs(Math.sin(t * 14)) * 12 : 0;
-    const bx = p.x + (s.x - 125 - p.x) * u, by_ = (GROUND + 4) + (GROUND - a.height * 0.8 - bob - GROUND - 4) * u;
-    log(bx, by_, Math.PI / 2 * u);
-  }
-}
-function drawEvent(ev, t, pos) {
+function coinRain(ev, t) {
   const u = t - ev.t; if (u < 0) return;
-  if (ev.type === 'coinRain') {
-    const r = mulberry32(ev.seed || 3);
-    for (let i = 0; i < ev.n; i++) {
-      const delay = r() * 0.8, x = ev.x + (r() - 0.5) * 360, vy = 0;
-      const tt = u - delay; if (tt < 0) continue;
-      let y = -40 + 900 * tt * tt; const floor = GROUND - 14 - r() * 20;
-      let yy = y; if (y > floor) { const over = tt - Math.sqrt((floor + 40) / 900); yy = floor - Math.abs(Math.sin(over * 9)) * 40 * Math.exp(-over * 5); }
-      coin(x, yy, tt * 9 + i, 18);
-    }
+  const r = mulberry32(ev.seed || 3);
+  for (let i = 0; i < ev.n; i++) {
+    const delay = r() * 0.8, x = ev.x + (r() - 0.5) * 340, floor = GROUND - 16 - r() * 18, tt = u - delay;
+    if (tt < 0) continue;
+    let y = -40 + 900 * tt * tt;
+    if (y > floor) { const over = tt - Math.sqrt((floor + 40) / 900); y = floor - Math.abs(Math.sin(over * 9)) * 40 * Math.exp(-over * 5); }
+    coin(x, y, tt * 9 + i, 19);
   }
+}
+function buildStamp(text) {
+  const c = document.createElement('canvas'); c.width = 420; c.height = 200; const g = c.getContext('2d');
+  g.translate(210, 100); g.strokeStyle = RED; g.lineWidth = 14; g.beginPath(); roundRect(g, -180, -76, 360, 152, 18); g.stroke();
+  g.lineWidth = 4; g.beginPath(); roundRect(g, -164, -60, 328, 120, 12); g.stroke();
+  g.fillStyle = RED; g.font = '900 92px "Noto Sans SC"'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(text, 0, 6);
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'destination-out';   // 油墨没盖实的地方
+  const r = mulberry32(11); for (let i = 0; i < 900; i++) { g.globalAlpha = 0.25 + r() * 0.5; g.fillRect(r() * 420, r() * 200, 1 + r() * 3, 1 + r() * 3); }
+  return c;
 }
 function drawStamp(ev, t) {
   const u = t - ev.t; if (u < 0) return;
+  cache.stamps = cache.stamps || {}; const im = cache.stamps[ev.text] || (cache.stamps[ev.text] = buildStamp(ev.text));
   const s = u < 0.25 ? 2.2 - 1.2 * (u / 0.25) : 1;
-  ctx.save(); ctx.translate(BAND.w / 2, BAND.h * 0.36); ctx.rotate(-0.12); ctx.scale(s, s); ctx.globalAlpha = Math.min(1, u / 0.15);
-  paper(() => roundRect(-190, -80, 380, 160, 22), 'rgba(255,250,240,0.9)', { outline: 0, shadow: 14, grain: 0 });
-  ctx.strokeStyle = RED; ctx.lineWidth = 12; ctx.beginPath(); roundRect(-170, -62, 340, 124, 16); ctx.stroke();
-  ctx.fillStyle = RED; ctx.font = '900 88px "Noto Sans SC"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ev.text, 0, 4);
-  ctx.restore();
+  ctx.save(); ctx.translate(BAND.w / 2, BAND.h * 0.3); ctx.rotate(-0.12); ctx.scale(s, s); ctx.globalAlpha = Math.min(1, u / 0.15);
+  ctx.shadowColor = 'rgba(255,250,240,0.95)'; ctx.shadowBlur = 18;   // 一圈浅色光晕，压在任何背景上都清楚
+  ctx.drawImage(im, -210, -100); ctx.restore();
 }
 function drawHud(t) {
   const credit = stepVal(scene.hud.credit, t), coins = stepVal(scene.hud.coins, t);
   ctx.save();
-  paper(() => roundRect(24, 20, 300, 64, 32), 'rgba(255,250,240,0.92)', { outline: 3, shadow: 6, grain: 0 });
-  ctx.fillStyle = INK; ctx.font = '30px "ZCOOL KuaiLe"'; ctx.textBaseline = 'middle'; ctx.fillText('信用', 46, 53);
+  card(() => deckle(ctx, 44, 18, 300, 62, 31), 'rgba(255,250,240,0.93)', { outline: 5, shadow: 7 });
+  ctx.fillStyle = INK; ctx.font = '30px "ZCOOL KuaiLe"'; ctx.textBaseline = 'middle'; ctx.fillText('信用', 66, 50);
   for (let i = 0; i < 5; i++) {
-    const on = i < credit, cx = 130 + i * 38, cy = 52;
-    ctx.beginPath(); ctx.moveTo(cx, cy + 12); ctx.bezierCurveTo(cx - 20, cy - 2, cx - 10, cy - 18, cx, cy - 6); ctx.bezierCurveTo(cx + 10, cy - 18, cx + 20, cy - 2, cx, cy + 12);
-    ctx.fillStyle = on ? RED : 'rgba(42,35,32,0.18)'; ctx.fill();
+    const cx = 150 + i * 38, cy = 50;
+    card(() => { ctx.moveTo(cx, cy + 13); ctx.bezierCurveTo(cx - 21, cy - 2, cx - 11, cy - 19, cx, cy - 7); ctx.bezierCurveTo(cx + 11, cy - 19, cx + 21, cy - 2, cx, cy + 13); ctx.closePath(); },
+         i < credit ? RED : '#efe2cc', { outline: 3, shadow: 3, under: false, grain: 0.5 });
   }
-  const last = [...scene.hud.coins].reverse().find(k => t >= k[0]); const pop = last ? Math.max(0, 1 - (t - last[0]) / 0.3) : 0;
-  paper(() => roundRect(BAND.w - 250, 20, 226, 64, 32), 'rgba(255,250,240,0.92)', { outline: 3, shadow: 6, grain: 0 });
-  coin(BAND.w - 212, 52, 0, 18);
-  ctx.fillStyle = INK; ctx.font = `${34 + pop * 14}px "ZCOOL KuaiLe"`; ctx.fillText(`赏金 ${coins}`, BAND.w - 184, 54);
+  const last = [...scene.hud.coins].reverse().find(k => t >= k[0] && k[0] > 0), pop = last ? Math.max(0, 1 - (t - last[0]) / 0.3) : 0;
+  card(() => deckle(ctx, BAND.w - 270, 18, 226, 62, 31), 'rgba(255,250,240,0.93)', { outline: 5, shadow: 7 });
+  coin(BAND.w - 232, 49, 0, 18);
+  ctx.fillStyle = INK; ctx.font = `900 ${34 + pop * 12}px "Noto Sans SC"`; ctx.fillText(`赏金 ${coins}`, BAND.w - 206, 51);
   ctx.restore();
 }
 
@@ -276,39 +305,45 @@ function renderFrame(t) {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.fillStyle = CREAM; ctx.fillRect(0, 0, W, H);
   ctx.save(); ctx.globalAlpha = 0.35; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = noise; ctx.fillRect(0, 0, W, H); ctx.restore();
-  // 标题区
   const T = scene.title;
   ctx.save(); ctx.font = '40px "ZCOOL KuaiLe"'; const kw = ctx.measureText(T.kicker).width + 60;
-  paper(() => roundRect((W - kw) / 2, 150, kw, 70, 35), INK, { outline: 0, shadow: 6, grain: 0 });
+  card(() => deckle(ctx, (W - kw) / 2, 150, kw, 70, 35), INK, { outline: 5, shadow: 7 });
   ctx.fillStyle = CREAM; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(T.kicker, W / 2, 187);
-  ctx.font = '900 100px "Noto Sans SC"';  // 标题要在小图里也醒目：用最粗的黑体
-  T.lines.forEach((ln, i) => {
-    const y = 320 + i * 124; let x = (W - ctx.measureText(ln.replace(/\[\[|\]\]/g, '')).width) / 2;
-    ctx.textAlign = 'left';
-    for (const part of ln.split(/(\[\[.+?\]\])/)) { if (!part) continue;
-      const hot = part.startsWith('[['), s = part.replace(/\[\[|\]\]/g, '');
-      ctx.fillStyle = hot ? RED : INK; ctx.fillText(s, x, y); x += ctx.measureText(s).width; }
-  });
   ctx.restore();
-  // 闯关画面（带纸框）
-  paper(() => roundRect(BAND.x + 18, BAND.y - 12, BAND.w - 36, BAND.h + 24, 26), '#fffaf0', { outline: 0, shadow: 16, grain: 0 });
-  ctx.save(); ctx.beginPath(); roundRect(BAND.x + 30, BAND.y, BAND.w - 60, BAND.h, 18); ctx.clip();
+  ctx.drawImage(cache.title || (cache.title = buildTitle(T)), 0, 0);
+  card(() => deckle(ctx, BAND.x + 18, BAND.y - 12, BAND.w - 36, BAND.h + 24, 26), '#fffaf0', { outline: 0, shadow: 16 });
+  ctx.save(); ctx.beginPath(); roundRect(ctx, BAND.x + 30, BAND.y, BAND.w - 60, BAND.h, 18); ctx.clip();
   ctx.translate(BAND.x, BAND.y); drawBand(t); ctx.restore();
-  // 字幕
   const sub = scene.subtitles.find(s => t >= s[0] && t <= s[1]);
   if (sub) {
     const [t0, t1, who, text] = sub, a = Math.min(1, (t - t0) / 0.15, (t1 - t) / 0.15);
     ctx.save(); ctx.globalAlpha = a; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     if (who) { ctx.font = '40px "ZCOOL KuaiLe"'; const ww = ctx.measureText(who).width + 44;
-      paper(() => roundRect((W - ww) / 2, 1236, ww, 58, 29), who === '旁白' ? '#7d6b5a' : RED, { outline: 0, shadow: 4, grain: 0 });
+      card(() => deckle(ctx, (W - ww) / 2, 1236, ww, 58, 29), who === '旁白' ? '#7d6b5a' : RED, { outline: 4, shadow: 5 });
       ctx.fillStyle = '#fffaf0'; ctx.fillText(who, W / 2, 1266); }
-    ctx.fillStyle = INK; ctx.font = '700 58px "Noto Sans SC"';
-    wrap(text, 940).forEach((ln, i) => ctx.fillText(ln, W / 2, 1360 + i * 78));
+    ctx.font = '700 58px "Noto Sans SC"'; const lines = wrap(text, 900);
+    card(() => deckle(ctx, 60, 1310, W - 120, 36 + lines.length * 78, 18, 5), '#fbf3e2', { outline: 5, shadow: 8 });
+    ctx.fillStyle = INK; lines.forEach((ln, i) => ctx.fillText(ln, W / 2, 1360 + i * 78));
     ctx.restore();
   }
-  // 底部说明（AI 标注 + 出处）
   ctx.save(); ctx.fillStyle = 'rgba(42,35,32,0.55)'; ctx.font = '32px "Noto Sans SC"'; ctx.textAlign = 'center';
   ctx.fillText(scene.footer, W / 2, 1830); ctx.restore();
+}
+// 标题：剪纸字（厚白纸边 + 投影）+ 字面纸纤维，画一次缓存
+function buildTitle(T) {
+  const c = document.createElement('canvas'); c.width = W; c.height = 520; const g = c.getContext('2d');
+  const txt = document.createElement('canvas'); txt.width = W; txt.height = 520; const tg = txt.getContext('2d');
+  g.font = tg.font = '900 100px "Noto Sans SC"';
+  T.lines.forEach((ln, i) => {
+    const y = 350 + i * 124; let x = (W - g.measureText(ln.replace(/\[\[|\]\]/g, '')).width) / 2;
+    for (const part of ln.split(/(\[\[.+?\]\])/)) { if (!part) continue;
+      const hot = part.startsWith('[['), t = part.replace(/\[\[|\]\]/g, '');
+      g.save(); g.lineJoin = 'round'; g.shadowColor = 'rgba(60,40,20,0.38)'; g.shadowBlur = 12; g.shadowOffsetY = 6;
+      g.lineWidth = 22; g.strokeStyle = '#fbf6ea'; g.strokeText(t, x, y); g.restore();
+      tg.fillStyle = hot ? RED : INK; tg.fillText(t, x, y); x += g.measureText(t).width; }
+  });
+  tg.globalCompositeOperation = 'source-atop'; tg.globalAlpha = 0.5; tg.fillStyle = fiber; tg.fillRect(0, 0, W, 520);
+  g.drawImage(txt, 0, 0); return c;
 }
 function wrap(text, maxW) {
   const out = []; let cur = '';
@@ -316,13 +351,21 @@ function wrap(text, maxW) {
   if (cur) out.push(cur); return out;
 }
 
-// ---------- 初始化：render.py 传入剧本和素材（data URI，避免本地文件把画布「污染」、导不出帧） ----------
+// ---------- 初始化：render.py 传入剧本（含场景）和素材（data URI，避免本地文件把画布「污染」导不出帧） ----------
 async function init(sceneData, assets) {
-  scene = sceneData; noise = makeNoise();
+  scene = sceneData; noise = makeNoise(); fiber = makeFiber();
   await Promise.all(Object.entries(assets).map(([n, uri]) => new Promise((ok, bad) => {
     const i = new Image(); i.onload = () => { img[n] = i; ok(); }; i.onerror = bad; i.src = uri; })));
-  await document.fonts.load('104px "ZCOOL KuaiLe"'); await document.fonts.load('700 58px "Noto Sans SC"'); await document.fonts.load('32px "Noto Sans SC"'); await document.fonts.load('900 100px "Noto Sans SC"');
+  for (const f of ['40px "ZCOOL KuaiLe"', '700 58px "Noto Sans SC"', '32px "Noto Sans SC"', '900 100px "Noto Sans SC"']) await document.fonts.load(f);
   await document.fonts.ready;
+  const done = new Set();
+  const pz = (n, o) => { if (img[n] && !done.has(n)) { img[n] = paperize(img[n], o); done.add(n); } };
+  for (const a of Object.values(scene.actors)) for (const n of Object.values(a.sprites)) pz(n, { edge: 7, sat: 0.85 });
+  for (const n of ['block', 'log', 'coin', 'scroll', 'board']) pz(n, { edge: 6, sat: 0.8 });
+  const skip = new Set([scene.set.far.img, scene.set.stage.ground.img]);   // 远景和地面是整块拼接的，不加边
+  pz('wall', { edge: 4, sat: 0.72 });
+  for (const k of ['hills', 'mid', 'stage', 'fore', 'frame']) for (const [n] of (scene.set[k] || { items: [] }).items) if (!skip.has(n)) pz(n, { edge: 5, sat: 0.8 });
+  buildSet(scene.set);
   return true;
 }
 window.init = init; window.renderFrame = renderFrame;

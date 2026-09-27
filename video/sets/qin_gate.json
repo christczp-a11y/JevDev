@@ -1,0 +1,247 @@
+{
+ "about": "场景：秦国都城南门外的集市（资治通鉴卷二：立三丈之木于国都市南门）。素材由 Codex 按 video/assets/ref/paper_style_ref.png 的画风生成，每层先模糊一次再缓存。items 格式：[素材名, 中心 x, 底边 y, 显示高度]",
+ "dir": "sets/qin_gate",
+ "far": {
+  "img": "far",
+  "parallax": 0.12,
+  "y": -30,
+  "height": 660,
+  "filter": "saturate(0.7) brightness(1.06) contrast(0.9) blur(0.6px)"
+ },
+ "mid": {
+  "parallax": 0.55,
+  "width": 2700,
+  "filter": "saturate(0.74) brightness(1.03) contrast(0.94) blur(0.4px)",
+  "items": [
+   [
+    "wall",
+    921,
+    478,
+    128
+   ],
+   [
+    "wall",
+    1735,
+    478,
+    128
+   ],
+   [
+    "wall",
+    2550,
+    478,
+    128
+   ],
+   [
+    "flag",
+    420,
+    356,
+    130
+   ],
+   [
+    "flag",
+    760,
+    356,
+    120
+   ],
+   [
+    "flag",
+    1330,
+    356,
+    130
+   ],
+   [
+    "flag",
+    1720,
+    356,
+    120
+   ],
+   [
+    "flag",
+    2150,
+    356,
+    130
+   ],
+   [
+    "gate",
+    1010,
+    484,
+    300
+   ]
+  ]
+ },
+ "stage": {
+  "offset": -400,
+  "width": 3600,
+  "ground": {
+   "img": "ground",
+   "top": -28,
+   "height": 150
+  },
+  "items": [
+   [
+    "pine",
+    -120,
+    506,
+    320
+   ],
+   [
+    "pine",
+    90,
+    506,
+    300
+   ],
+   [
+    "rock",
+    300,
+    510,
+    64
+   ],
+   [
+    "stall",
+    480,
+    506,
+    180
+   ],
+   [
+    "bush",
+    640,
+    508,
+    70
+   ],
+   [
+    "rock",
+    1900,
+    510,
+    56
+   ],
+   [
+    "bush_flower",
+    1990,
+    508,
+    76
+   ],
+   [
+    "pine",
+    2150,
+    506,
+    280
+   ],
+   [
+    "bush",
+    2300,
+    508,
+    80
+   ]
+  ],
+  "filter": "saturate(0.64) sepia(0.12) contrast(0.95) brightness(0.98)"
+ },
+ "fore": {
+  "parallax": 1.35,
+  "width": 4000,
+  "filter": "saturate(0.72) brightness(0.78)",
+  "items": [
+   [
+    "bush_flower",
+    900,
+    684,
+    150
+   ],
+   [
+    "bush",
+    1850,
+    694,
+    170
+   ],
+   [
+    "bush_flower",
+    2700,
+    684,
+    150
+   ]
+  ]
+ },
+ "hills": {
+  "parallax": 0.33,
+  "width": 2400,
+  "filter": "saturate(0.62) brightness(1.1) contrast(0.85) blur(0.5px)",
+  "items": [
+   [
+    "pine",
+    120,
+    440,
+    150
+   ],
+   [
+    "pine",
+    210,
+    440,
+    120
+   ],
+   [
+    "pine",
+    560,
+    440,
+    140
+   ],
+   [
+    "pine",
+    900,
+    440,
+    160
+   ],
+   [
+    "pine",
+    990,
+    440,
+    120
+   ],
+   [
+    "pine",
+    1300,
+    440,
+    145
+   ],
+   [
+    "pine",
+    1650,
+    440,
+    150
+   ],
+   [
+    "pine",
+    1740,
+    440,
+    118
+   ],
+   [
+    "pine",
+    2050,
+    440,
+    140
+   ]
+  ]
+ },
+ "frame": {
+  "filter": "saturate(0.7) brightness(0.8)",
+  "items": [
+   [
+    "pine",
+    40,
+    640,
+    560
+   ],
+   [
+    "bush",
+    1020,
+    640,
+    170
+   ],
+   [
+    "rock",
+    200,
+    632,
+    90
+   ]
+  ]
+ }
+}

@@ -22,10 +22,23 @@ FFMPEG = str(next((Path.home() / "AppData/Local/Microsoft/WinGet/Packages").glob
 FPS = 30
 
 
+PROPS = ["block", "log", "coin", "scroll", "board"]
+
+
+def load_scene(path):
+    """读剧本，并把它引用的场景（video/sets/<名字>.json）合进来。"""
+    scene = json.loads(Path(path).read_text(encoding="utf-8"))
+    scene["set"] = json.loads((ROOT / "sets" / f"{scene['set']}.json").read_text(encoding="utf-8"))
+    return scene
+
+
 def assets_for(scene):
-    names = {n for a in scene["actors"].values() for n in a["sprites"].values()}
-    return {n: "data:image/png;base64," + base64.b64encode((ROOT / "assets/chars" / f"{n}.png").read_bytes()).decode()
-            for n in names}
+    files = {n: ROOT / "assets/chars" / f"{n}.png" for a in scene["actors"].values() for n in a["sprites"].values()}
+    files.update({n: ROOT / "assets/props" / f"{n}.png" for n in PROPS})
+    s = scene["set"]
+    names = {s["far"]["img"], s["stage"]["ground"]["img"]} | {it[0] for k in ("mid", "stage", "fore") for it in s[k]["items"]}
+    files.update({n: ROOT / "assets" / s["dir"] / f"{n}.png" for n in names})
+    return {n: "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode() for n, p in files.items()}
 
 
 def open_page(p, scene):
@@ -48,7 +61,7 @@ def main():
     ap.add_argument("--out")
     args = ap.parse_args()
     scene_path = Path(args.scene)
-    scene = json.loads(scene_path.read_text(encoding="utf-8"))
+    scene = load_scene(scene_path)
     out_dir = ROOT / "out"
     out_dir.mkdir(exist_ok=True)
 
