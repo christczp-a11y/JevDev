@@ -10,6 +10,7 @@
 - 不能操作 Chris 本地电脑；需要本地操作时用 Claude Desktop 或本地 `claude remote-control`
 - 已连接服务：Gmail、Google Calendar、Google Drive、Figma、GitHub
 - 未授权服务：Canva、Cloudflare_Developer_Platform、HyperFrames_by_HeyGen
+- 网络策略拦截（2026-09-27 实测）：`docs.typesafe.ai`、`www.xiaohongshu.com`；`raw.githubusercontent.com` 可访问
 
 ## TypeSafe
 - 插件：`typesafe@typesafe-ai`，skill：`typesafe-ai`
