@@ -30,3 +30,12 @@
 - 决定：Chris 确认。阶段 2 连续 7 天稳定运行、合规检查可靠之后，关闭人工审核。
 - 理由：新号最敏感，一旦被限流，实验数据就废了。
 - 放弃：一开始就全自动。
+
+## 2026-09-27 Google 评价：接受风险，用不登录的无头浏览器抓取
+- 决定：Chris 知情后接受违反 Google 服务条款的风险。条件：**不使用 Chris 已登录的任何账号**；每天只抓少量店；遇到验证码就跳过，不绕过。
+- 放弃：只用 Places API（每家店最多 5 条评价）。
+
+## 2026-09-27 Reddit 通过 Codex CLI（ChatGPT 会员）获取
+- 决定：用 `codex exec` 加联网搜索找 Reddit 讨论；Codex CLI 0.157.1 已装，用 ChatGPT 账号登录。
+- 理由：本机脚本和 Claude 的搜索都被 Reddit 挡住；Chris 没有付费 API key；Gemini CLI 个人登录已停用。
+- 注意：Gemini API key 救不了 Google 评价（搜索只返回摘要，拿不到 50 条评价）。
