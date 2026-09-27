@@ -281,11 +281,11 @@ def pick(ok):
 
 # ---------- 输出 ----------
 
-def finalize(chosen, out_dir, photo_dir):
-    """选中的那篇：配封面（实拍 → 图库实物抠图 → AI 插画 → 纯文字，见 images.dress_cover）
+def finalize(chosen, out_dir, photo_dir, credit=None):
+    """选中的那篇：配封面（照片文件夹 → 图库实物抠图 → AI 插画 → 纯文字，见 images.dress_cover）
     → 重新渲染卡片到草稿包根目录（publish.py 读这里）。"""
     log("配封面图…")
-    extra = images.dress_cover(chosen, out_dir / "_img", photo_dir, log)
+    extra = images.dress_cover(chosen, out_dir / "_img", photo_dir, log, credit)
     log(f"  封面来源：{chosen['cover_source']['type']}")
     chosen["images"] = cards.render([chosen["cover"]] + chosen["pages"], out_dir)
     chosen["images"] += images.photo_pages(extra, out_dir, len(chosen["images"]) + 1)
@@ -303,7 +303,9 @@ def main():
     ap.add_argument("--my-notes", default="", help="Chris 的亲身体验（可选）")
     ap.add_argument("--no-reddit", action="store_true", help="跳过 Reddit（默认会通过 Codex 搜索）")
     ap.add_argument("--photos", help="Chris 实拍照片的文件夹（可选；cover 开头的文件当封面，其余接在信息卡后面）。"
-                                     "不给就用 Codex 画插画当封面主图")
+                                     "不给就依次试图库抠图、Codex 插画")
+    ap.add_argument("--photo-credit", help="照片不是 Chris 拍的、而是已获授权时，写出处（如「Tourism Richmond」）："
+                                           "图上和正文都会注明")
     ap.add_argument("--n", type=int, default=4)
     args = ap.parse_args()
 
@@ -328,7 +330,7 @@ def main():
     chosen, mode = pick(ok)
 
     if chosen:
-        finalize(chosen, out_dir, args.photos)
+        finalize(chosen, out_dir, args.photos, args.photo_credit)
         chosen["pick_mode"] = mode
     (out_dir / "package.json").write_text(json.dumps(
         {"query": args.query, "name": args.name, "facts": facts, "profile": prof, "drafts": drafts,

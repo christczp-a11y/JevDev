@@ -128,15 +128,20 @@ def cover_image(draft, out_dir, photo_dir=None):
     return illustrate(draft, out_dir), AI_LABEL, []
 
 
-def dress_cover(draft, out_dir, photo_dir=None, log=print):
-    """给选中的草稿配封面，按优先级：Chris 实拍 → 图库实物抠图（stock.py，Jev 选图）→ AI 插画 → 纯文字。
-    直接修改 draft（cover、body），返回其余实拍列表（接在信息卡后面）。"""
+def dress_cover(draft, out_dir, photo_dir=None, log=print, credit=None):
+    """给选中的草稿配封面，按优先级：照片文件夹 → 图库实物抠图（stock.py，Jev 选图）→ AI 插画 → 纯文字。
+    照片文件夹：Chris 实拍（credit 为空），或已获授权的照片（credit = 出处，如「Tourism Richmond」）。
+    直接修改 draft（cover、body），返回其余照片列表（接在信息卡后面）。"""
     from jevdev import cards, stock
     out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
     if photo_dir and photos_in(photo_dir):
         img, label, extra = cover_image(draft, out_dir, photo_dir)
+        if credit:
+            label = f"图片：{credit}"
+            draft["body"] += f"\n📷 图片来源：{credit}（已获授权）"
         draft["cover"] = dict(draft["cover"], image=img, image_label=label)
-        draft["cover_source"] = {"type": "photo", "dir": str(photo_dir)}
+        draft["cover_source"] = {"type": "licensed_photo" if credit else "photo", "dir": str(photo_dir), "credit": credit}
         return extra
     try:
         log("  图库找实物图 → Jev 选图 → 抠图 → 自检…")

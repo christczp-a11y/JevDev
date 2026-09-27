@@ -43,7 +43,8 @@
 - [ ] 【等 Chris 决定】要不要用 MCP 查作者粉丝数（284 个作者主页），控制大号效应
 - [ ] 【等 Chris】亲自去吃，用 --my-notes 写入体验（数据显示「真人亲历感」和互动正相关，我们不能冒充）；封面实拍图 vs 文字卡做 A/B
 - [x] 配图：封面优先级 = 实拍（--photos）→ 图库实物抠图（Jev 选图，亮黄底爆款模板）→ Codex 插画 → 纯文字；`scripts/add_image.py` 可以给已有草稿包补图或换图；断行和页脚孤字已修
-- [ ] 【等 Chris】注册 Pexels API key，存进用户环境变量 PEXELS_API_KEY（没有它，图库抠图基本拿不到能用的图）
+- [ ] 【等 Chris】真实店铺照片：自己去拍，或在 Tourism Richmond Media Hub（CrowdRiff）申请授权图（申请文案见 2026-09-27 的会话）；拿到后运行 `scripts/add_image.py <草稿包> --photos <文件夹> [--photo-credit 出处]`
+- （Pexels 图库和写实 AI 图都被 Chris 否决：不是这家店的实物）
 
 ## 阻塞 / 待 Chris 处理
 - [ ] 同意试发（仅自己可见）
