@@ -1,0 +1,27 @@
+{
+ "about": "壮小伙·45° 半正面纸偶（站着说话、做表情、和观众交流用）。部件来自 Codex 的 youth_q_parts.png；指、托、挥三种手借用侧面那套。size 按侧面版换算过：头高、腿总长和侧面一致，转身时人不会突然变高变矮",
+ "scale": 0.18,
+ "ankleH": 130,
+ "hands": {
+  "open": "hand_open",
+  "fist": "hand_fist",
+  "point": "hand_point",
+  "up": "hand_up",
+  "wave": "hand_wave"
+ },
+ "parts": {
+  "head": {"pivot": [265, 490], "tip": [265, 0], "knot": [45, 230], "mouth": [385, 442, 50], "eyes": [[340, 330, 33, 43], [430, 322, 18, 36]], "skin": [300, 460], "size": 1.065},
+  "tails": {"pivot": [285, 60], "tip": [65, 255], "size": 1.1},
+  "torso": {"pivot": [190, 420], "tip": [190, 40], "neck": [160, 45], "shoulderF": [50, 150], "shoulderB": [325, 150], "hipF": [115, 415], "hipB": [265, 420], "size": 0.94},
+  "upper": {"pivot": [75, 75], "tip": [225, 185], "size": 0.91},
+  "forearm": {"pivot": [55, 65], "tip": [240, 110], "size": 0.77},
+  "hand_open": {"pivot": [55, 90], "tip": [170, 90], "size": 0.75},
+  "hand_fist": {"pivot": [60, 80], "tip": [200, 80], "size": 0.72},
+  "hand_point": {"pivot": [65, 110], "tip": [260, 100], "size": 0.5},
+  "hand_up": {"pivot": [70, 85], "tip": [270, 120], "size": 0.5},
+  "hand_wave": {"pivot": [170, 360], "tip": [170, 200], "size": 0.5},
+  "thigh": {"pivot": [70, 65], "tip": [230, 320], "size": 0.78},
+  "shin": {"pivot": [90, 65], "tip": [88, 300], "size": 0.44},
+  "foot": {"pivot": [95, 60], "tip": [95, 190], "size": 0.8}
+ }
+}

@@ -29,20 +29,24 @@ def load_scene(path):
     """读剧本，并把它引用的场景（video/sets/<名字>.json）合进来。"""
     scene = json.loads(Path(path).read_text(encoding="utf-8"))
     scene["set"] = json.loads((ROOT / "sets" / f"{scene['set']}.json").read_text(encoding="utf-8"))
-    for a in scene["actors"].values():   # 纸偶角色：读部件和关节（video/assets/rig/<角色>/rig.json）
-        if a.get("rig"):
-            a["rigData"] = json.loads((ROOT / "assets/rig" / a["rig"] / "rig.json").read_text(encoding="utf-8"))
+    for a in scene["actors"].values():   # 纸偶角色：每个视角一套部件和关节（video/assets/rig/<文件夹>/rig.json）
+        rigs = a.get("rigs") or ({"side": a["rig"]} if a.get("rig") else None)
+        if rigs:
+            a["rigs"] = rigs
+            a["rigData"] = {v: json.loads((ROOT / "assets/rig" / d / "rig.json").read_text(encoding="utf-8")) for v, d in rigs.items()}
     return scene
 
 
 def assets_for(scene):
     files = {n: ROOT / "assets/chars" / f"{n}.png" for a in scene["actors"].values() for n in a.get("sprites", {}).values()}
     for a in scene["actors"].values():
-        if a.get("rig"):
-            files.update({f"rig:{a['rig']}:{n}": ROOT / "assets/rig" / a["rig"] / f"{n}.png" for n in a["rigData"]["parts"]})
+        for v, d in a.get("rigs", {}).items():
+            files.update({f"rig:{d}:{n}": ROOT / "assets/rig" / d / f"{n}.png" for n in a["rigData"][v]["parts"]})
     files.update({n: ROOT / "assets/props" / f"{n}.png" for n in PROPS})
     s = scene["set"]
-    names = {s["far"]["img"], s["stage"]["ground"]["img"]} | {it[0] for k in ("mid", "stage", "fore") for it in s[k]["items"]}
+    names = {s["far"]["img"], s["stage"]["ground"]["img"]} | {it[0] for k in ("hills", "mid", "stage", "fore", "frame") for it in s.get(k, {}).get("items", [])}
+    if s["mid"].get("wallStrip"):
+        names.add(s["mid"]["wallStrip"]["img"])
     files.update({n: ROOT / "assets" / s["dir"] / f"{n}.png" for n in names})
     return {n: "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode() for n, p in files.items()}
 
