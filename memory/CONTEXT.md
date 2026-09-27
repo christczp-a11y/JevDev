@@ -58,6 +58,11 @@
 - 已充值 $5，绑卡正常，但 Create key 一直报「Failed to create API key」（填了名字也不行）；控制台 `/keys` 页面有请求返回 503
 - 第三方消息：TypeSafe 自 2026-09-22 起暂停新用户注册；备选渠道：OpenRouter、Vercel AI Gateway
 
+## Codex CLI → Reddit（已接入流水线，默认开启）
+- `make_post.py` 的 `reddit_data()` 直接调用 codex.exe（`AppData/Roaming/npm/node_modules/@openai/codex/.../bin/codex.exe`），不走 codex.cmd（cmd 会把引号转义坏）；提示词走 stdin，`--output-schema` 做结构化输出，`-o` 写结果文件
+- 实测：HK BBQ Master 用 43 秒拿到 5 个帖子、13 条要点；结果缓存在 reviews 表（source='reddit'），7 天内复用
+- 写稿规范：正文里不点名 Reddit、Yelp 等平台，来源统一说「网友评价」；评分写「谷歌评分」
+
 ## Codex CLI（2026-09-27 实测可用）
 - 0.157.1，已用 ChatGPT 账号登录
 - 调用方式：`codex --search exec --skip-git-repo-check -s read-only "<prompt>"`

@@ -7,7 +7,7 @@
 
 用法：
   python scripts/make_post.py --query "HK BBQ Master Richmond BC" --name "明家烧腊 HK BBQ Master" --xhs-keyword "明家烧腊"
-        [--my-notes "本人体验……"] [--reddit] [--n 4]
+        [--my-notes "本人体验……"] [--no-reddit] [--n 4]
 """
 import argparse
 import json
@@ -58,13 +58,34 @@ def google_data(con, query):
         google_reviews.save(con, query, google_reviews.scrape(query, 50))
         row = con.execute("SELECT * FROM places WHERE query=?", (query,)).fetchone()
     reviews = [dict(r) for r in con.execute(
-        "SELECT review_id, stars, when_text, text, 'google' AS source FROM reviews WHERE query=?", (query,))]
+        "SELECT review_id, stars, when_text, text, source FROM reviews WHERE query=? AND source='google'", (query,))]
     return dict(row), reviews
+
+
+def xhs_cached(con, keyword):
+    """MCP 出错时退回数据库里上次抓到的笔记和正文。"""
+    rows = con.execute("""SELECT DISTINCT n.id, n.title, n.desc FROM notes n JOIN search_hits h ON h.note_id = n.id
+                          WHERE h.keyword = ? AND n.desc IS NOT NULL""", (keyword,)).fetchall()
+    notes = [{"title": r["title"], "likes": None, "collects": None} for r in rows]
+    reviews = [{"review_id": "xhs:" + r["id"], "stars": None, "when_text": None, "text": r["desc"][:1500],
+                "source": "xhs_note"} for r in rows]
+    log(f"  改用缓存：{len(rows)} 篇笔记")
+    return notes, reviews
 
 
 def xhs_data(con, keyword, max_details=4):
     log(f"搜小红书「{keyword}」…")
-    feeds = [f for f in (xhs.call("search_feeds", {"keyword": keyword}).get("feeds") or []) if f.get("modelType") == "note"]
+    feeds = None
+    for attempt in range(2):
+        try:
+            feeds = [f for f in (xhs.call("search_feeds", {"keyword": keyword}).get("feeds") or [])
+                     if f.get("modelType") == "note"]
+            break
+        except Exception as e:
+            log(f"  搜索失败（第 {attempt + 1} 次）：{str(e)[:80]}")
+            xhs.polite_sleep(5, 10)
+    if feeds is None:
+        return xhs_cached(con, keyword)
     collect_xhs.save_search(con, keyword, "综合", feeds)
     notes, reviews = [], []
     for f in feeds[:max_details]:
@@ -88,23 +109,57 @@ def xhs_data(con, keyword, max_details=4):
     return notes, reviews
 
 
-def reddit_data(name):
-    log("通过 Codex 搜 Reddit…")
-    prompt = (f"Use web search to find Reddit threads discussing the restaurant {name} in Metro Vancouver. "
-              "Return up to 5 items as JSON lines: {\"url\":..., \"summary\": one or two sentences paraphrasing what "
-              "commenters said, good and bad}. Only include threads you actually saw. Output JSON lines only.")
-    proc = subprocess.run(["codex", "--search", "exec", "--skip-git-repo-check", "-s", "read-only", prompt],
-                          capture_output=True, text=True, encoding="utf-8", timeout=400, shell=True)
+CODEX_EXE = str(Path.home() / "AppData/Roaming/npm/node_modules/@openai/codex/node_modules/@openai/codex-win32-x64"
+                / "vendor/x86_64-pc-windows-msvc/bin/codex.exe")
+REDDIT_SCHEMA = {
+    "type": "object", "additionalProperties": False, "required": ["threads"],
+    "properties": {"threads": {"type": "array", "items": {
+        "type": "object", "additionalProperties": False, "required": ["url", "subreddit", "date", "points"],
+        "properties": {"url": {"type": "string"}, "subreddit": {"type": "string"}, "date": {"type": "string"},
+                       "points": {"type": "array", "items": {"type": "string"}}}}}},
+}
+
+
+def reddit_data(con, query, name):
+    """Reddit 讨论：Claude 的搜索和本机脚本都被 Reddit 挡住，所以通过 Codex CLI（ChatGPT 会员）的联网搜索获取。
+    每条讨论要点当作一条「评价」交给 Jev；7 天内同一家店复用缓存。"""
+    con.executescript(google_reviews.SCHEMA)
+    cached = [dict(r) for r in con.execute(
+        """SELECT review_id, stars, when_text, text, 'reddit' AS source FROM reviews
+           WHERE query=? AND source='reddit' AND fetched_at > datetime('now', '-7 days')""", (query,))]
+    if cached:
+        log(f"Reddit 用缓存 {len(cached)} 条")
+        return cached
+    log("通过 Codex 搜 Reddit（约 1–2 分钟）…")
+    prompt = (f"Use web search to find Reddit threads (reddit.com) that discuss the restaurant \"{name}\" "
+              f"(Google Maps query: \"{query}\") in Metro Vancouver. Return up to 5 threads you actually saw in "
+              "search results. For each, give the URL, subreddit, approximate date, and 1-4 short points "
+              "paraphrasing what commenters said about THIS restaurant (dishes, taste, price, service, wait, "
+              "payment), good and bad. Do not invent anything; return an empty list if nothing relevant is found.")
+    tmp = ROOT / "data" / "tmp"
+    tmp.mkdir(parents=True, exist_ok=True)
+    schema_file, out_file = tmp / "reddit_schema.json", tmp / "reddit_out.json"
+    schema_file.write_text(json.dumps(REDDIT_SCHEMA), encoding="utf-8")
+    out_file.unlink(missing_ok=True)
+    proc = subprocess.run(
+        [CODEX_EXE, "--search", "exec", "--skip-git-repo-check", "-s", "read-only",
+         "--output-schema", str(schema_file), "-o", str(out_file)],
+        input=prompt, capture_output=True, text=True, encoding="utf-8", timeout=600)
+    if not out_file.exists():
+        log(f"  Codex 没有返回结果（exit {proc.returncode}）：{proc.stderr[-300:]}")
+        return []
+    threads = json.loads(out_file.read_text(encoding="utf-8")).get("threads", [])
+    ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
     out = []
-    for line in proc.stdout.splitlines():
-        line = line.strip()
-        if line.startswith("{") and "summary" in line:
-            try:
-                j = json.loads(line)
-                out.append({"review_id": "reddit:" + j.get("url", str(len(out))), "stars": None, "when_text": None,
-                            "text": j["summary"], "source": "reddit"})
-            except json.JSONDecodeError:
-                pass
+    for t in threads:
+        for i, p in enumerate(t["points"]):
+            rid = f"reddit:{t['url']}#{i}"
+            out.append({"review_id": rid, "stars": None, "when_text": t["date"],
+                        "text": f"[r/{t['subreddit'].removeprefix('r/')} {t['date']}] {p}", "source": "reddit"})
+            con.execute("INSERT OR REPLACE INTO reviews VALUES (?,?,?,?,?,?,?,?)",
+                        (rid, query, "reddit", t["subreddit"], None, t["date"], out[-1]["text"], ts))
+    con.commit()
+    log(f"  Reddit：{len(threads)} 个帖子，{len(out)} 条要点")
     return out
 
 
@@ -116,20 +171,25 @@ def build_facts(name, place, prof, reviews, answers, xhs_notes, my_notes):
         if v:
             dims[d] = {"评价": LEVEL_WORD[round(v["score"])], "分数_1到4": v["score"],
                        "提及次数": v["mentions"], "分歧度": v["disagreement"]}
+    # 按来源分配名额，避免 Google 的大量评价把 Reddit / 小红书挤掉
+    quota = {"google": 15, "reddit": 10, "xhs_note": 4, "xhs_comment": 6}
+    used = {s: 0 for s in quota}
     evidence = []
     for r in reviews:
         a = answers.get(r["review_id"])
-        if a and a["relevant"]["noul"] >= 0.7 and a["ad_like"]["noul"] < 0.5:
-            evidence.append(f"[{r['source']}{'·' + str(r['stars']) + '星' if r['stars'] else ''}] {r['text'][:280]}")
+        src = r["source"]
+        if a and a["relevant"]["noul"] >= 0.7 and a["ad_like"]["noul"] < 0.5 and used.get(src, 0) < quota.get(src, 5):
+            used[src] = used.get(src, 0) + 1
+            evidence.append(f"[{src}{'·' + str(r['stars']) + '星' if r['stars'] else ''}] {r['text'][:280]}")
     facts = {
         "餐厅": name,
-        "Google": {"评分": place.get("rating"), "评价总数": place.get("review_count")},
+        "谷歌评分": {"评分": place.get("rating"), "评价总数": place.get("review_count")},
         "评价维度画像（Jev 汇总）": dims,
         "排队": None if prof["wait_long_share"] is None else f"提到排队的评价中约 {int(prof['wait_long_share'] * 100)}% 说要等很久",
         # cash_only 信号只说明「有评价提到只收现金 / 不收卡」，具体支付方式以评价原文为准
         "支付": ("有评价提到只收现金、不收信用卡（具体支付方式看评价摘录，可能还支持其他方式）"
                  if prof["cash_only_signal"] is not None and prof["cash_only_signal"] > 0.7 else None),
-        "评价摘录（只供参考，不要照抄）": evidence[:25],
+        "评价摘录（只供参考，不要照抄）": evidence,
         "小红书上已有的相关笔记（标题和互动，用来找差异化角度）": xhs_notes,
     }
     if my_notes:
@@ -258,7 +318,7 @@ def main():
     ap.add_argument("--name", required=True, help="写进笔记的店名")
     ap.add_argument("--xhs-keyword", required=True, help="小红书搜索词（中文店名）")
     ap.add_argument("--my-notes", default="", help="Chris 的亲身体验（可选）")
-    ap.add_argument("--reddit", action="store_true")
+    ap.add_argument("--no-reddit", action="store_true", help="跳过 Reddit（默认会通过 Codex 搜索）")
     ap.add_argument("--n", type=int, default=4)
     args = ap.parse_args()
 
@@ -266,9 +326,10 @@ def main():
     place, reviews = google_data(con, args.query)
     xhs_notes, xhs_reviews = xhs_data(con, args.xhs_keyword)
     reviews += xhs_reviews
-    if args.reddit:
-        reviews += reddit_data(args.query)
-    log(f"评价共 {len(reviews)} 条（Google {sum(r['source'] == 'google' for r in reviews)}），Jev 判断中…")
+    if not args.no_reddit:
+        reviews += reddit_data(con, args.query, args.name)
+    by_src = {s: sum(r["source"] == s for r in reviews) for s in sorted({r["source"] for r in reviews})}
+    log(f"评价共 {len(reviews)} 条 {by_src}，Jev 判断中…")
     answers = restaurant.judge_reviews(con, args.name, reviews)
     prof = restaurant.profile(reviews, answers)
     facts = build_facts(args.name, place, prof, reviews, answers, xhs_notes, args.my_notes)
