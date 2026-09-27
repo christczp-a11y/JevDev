@@ -29,11 +29,17 @@ def load_scene(path):
     """读剧本，并把它引用的场景（video/sets/<名字>.json）合进来。"""
     scene = json.loads(Path(path).read_text(encoding="utf-8"))
     scene["set"] = json.loads((ROOT / "sets" / f"{scene['set']}.json").read_text(encoding="utf-8"))
+    for a in scene["actors"].values():   # 纸偶角色：读部件和关节（video/assets/rig/<角色>/rig.json）
+        if a.get("rig"):
+            a["rigData"] = json.loads((ROOT / "assets/rig" / a["rig"] / "rig.json").read_text(encoding="utf-8"))
     return scene
 
 
 def assets_for(scene):
-    files = {n: ROOT / "assets/chars" / f"{n}.png" for a in scene["actors"].values() for n in a["sprites"].values()}
+    files = {n: ROOT / "assets/chars" / f"{n}.png" for a in scene["actors"].values() for n in a.get("sprites", {}).values()}
+    for a in scene["actors"].values():
+        if a.get("rig"):
+            files.update({f"rig:{a['rig']}:{n}": ROOT / "assets/rig" / a["rig"] / f"{n}.png" for n in a["rigData"]["parts"]})
     files.update({n: ROOT / "assets/props" / f"{n}.png" for n in PROPS})
     s = scene["set"]
     names = {s["far"]["img"], s["stage"]["ground"]["img"]} | {it[0] for k in ("mid", "stage", "fore") for it in s[k]["items"]}
@@ -84,6 +90,7 @@ def main():
                 print(f"  帧 {i}/{n}", flush=True)
         ff.stdin.close()
         ff.wait()
+        scene["_steps"] = page.evaluate("() => footsteps()")   # 纸偶的脚步时刻，给音效用
         browser.close()
 
     import audio  # video/audio.py

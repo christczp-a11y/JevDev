@@ -77,6 +77,19 @@ def sfx(scene, n):
             add(track, tone(150, 0.2, 0.6, 18) + np.pad(np.random.default_rng(1).uniform(-0.3, 0.3, 2000) *
                                                           np.exp(-np.arange(2000) / 300), (0, int(SR * 0.2) - 2000)), p["hitAt"])
             add(track, tone(880, 0.3, 0.25, 6, f_end=1320), p["hitAt"] + 0.1)     # 蹦出奖励
+        if p["type"] == "pole":   # 三丈木杆：扛起时木头「咯吱」一声，放下时「咚」地落地、再轻弹一下
+            add(track, tone(180, 0.35, 0.3, 9, f_end=140) + tone(420, 0.35, 0.08, 14, f_end=380), p["lift"][0] + 0.35)
+            add(track, tone(110, 0.4, 0.7, 11) + tone(70, 0.4, 0.4, 9), p["drop"][0] + 0.75 * (p["drop"][1] - p["drop"][0]))
+            add(track, tone(120, 0.2, 0.25, 16), p["drop"][1] - 0.05)
+    for steps in scene.get("_steps", {}).values():   # 脚步：跟着纸偶每只脚着地的时刻，走轻跑重
+        for i, (t, k) in enumerate(steps):
+            thud = tone(95 + 12 * (i % 2), 0.09, 0.18 + 0.22 * k, 38) + np.pad(np.random.default_rng(i).uniform(-0.06, 0.06, 900) *
+                                                                              np.exp(-np.arange(900) / 120), (0, int(SR * 0.09) - 900))
+            add(track, thud, t)
+    for ev in scene["events"]:
+        if ev["type"] == "gold":   # 金块一块块落进怀里：清脆的「叮」
+            for i in range(ev["n"]):
+                add(track, tone(2400 + 180 * (i % 3), 0.25, 0.18, 14) + tone(3600, 0.25, 0.07, 20), ev["t"] + i * 0.2 + 0.45)
     prev = None
     for t, v in scene["hud"]["coins"]:
         if prev is not None and v != prev:

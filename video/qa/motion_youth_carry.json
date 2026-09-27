@@ -1,0 +1,3 @@
+{"beat": "小伙决定去搬那根木头：把木头弄起来扛上肩，一路搬到北门去",
+ "before": {"scene": "video/scenes/ep01_ximulixin_demo.json", "t0": 10.8, "t1": 13.8, "actor": "youth", "who": "扛木头的小伙（灰头带、土黄短褂）"},
+ "after": {"scene": "video/scenes/test_puppet_youth.json", "t0": 8.0, "t1": 11.0, "actor": "youth", "who": "扛木头的小伙（灰头带、土黄短褂）"}}
