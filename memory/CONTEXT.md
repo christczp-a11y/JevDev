@@ -10,6 +10,12 @@
 - Claude in Chrome 已连接（Chris 本机 Chrome，带登录态）
 - TypeSafe 插件已装（user scope）
 
+## 外部数据渠道实测（2026-09-27）
+- Reddit：本机脚本访问 `search.json` 返回 403；Claude 的 WebSearch 也被 reddit.com 屏蔽；官方 API 现在需要审批（2–4 周）
+- Gemini CLI 0.56.0 已安装，但个人账号登录被停用（IneligibleTierError，提示改用 Antigravity）；Antigravity 是桌面 IDE，没找到命令行入口
+- Codex CLI 未安装（有 `~/.codex` 目录，可能来自桌面版）
+- Chris 只有 ChatGPT / Gemini 会员，没有付费 API key
+
 ## 本地小红书环境（先前会话搭建，2026-08）
 - 位置：`C:\Users\Chris\xhs\`；说明见 `~/.claude/projects/C--Users-Chris-xhs/memory/xiaohongshu-mcp-setup.md`
 - 服务：HTTP MCP `localhost:18060`（已写入 `~/.claude.json`，名为 `xiaohongshu-mcp`）；**必须用 `bin\start-mcp.cmd` 启动**，未启动时 MCP 显示 ECONNREFUSED
