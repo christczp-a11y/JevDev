@@ -65,7 +65,10 @@
 
 ## Google 评价：不登录拿不到（2026-09-27 实测）
 - 未登录的 Google 地图是「limited view」：只有「概览」和「简介」，**没有评价标签页**，只显示星级（如 4.1），连评价数都没有
-- → 不登录的无头浏览器抓评价这条路不通。备选：Places API（官方，每家店有评分、评价数和最多 5 条评价）/ 用一个单独的 Google 账号登录后抓取 / 不用 Google 的评价文本
+- 不登录时，Google 搜索页也会直接跳到验证码（/sorry/）→ 不登录这条路彻底走不通
+- **现行方案（已跑通）**：专用 Chrome 配置 `C:\Users\Chris\jevdev-browser\google-profile`，由 Chris 手动登录 Google 小号（Claude 不经手密码）；`scripts/google_reviews.py` 用 Playwright 复用这个登录态抓 Google 地图评价（按最新排序，约 50 条）
+- 登录态失效时：运行 `scripts/open_google_profile.cmd` 重新登录；这个配置被窗口占用时脚本会报「profile is already in use」
+- 实测：HK BBQ Master 抓到 50 条（33 条有正文），没有遇到验证码；Jev 判断 33 条只用了 1.6 秒
 
 ## 写稿用的 LLM
 - `claude -p`（npm 版 CLI）登录已过期：「OAuth session expired」→ 需要 Chris 在终端运行 `claude` 重新登录一次

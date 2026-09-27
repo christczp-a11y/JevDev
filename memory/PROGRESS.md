@@ -20,7 +20,7 @@
 
 ## 下一步
 - [ ] 同龄追踪脚本（「最新」笔记在第 3、7 天再抓一次）+ 扩大样本
-- [ ] Google 评价抓取（Playwright，不登录）
+- [x] Google 评价抓取（专用 Chrome 配置 + 小号登录）+ 餐厅画像（`jevdev/restaurant.py`、`rubrics/review_v1.json`）
 - [ ] 写稿（`claude -p`）→ 卡片渲染 → Jev 审稿和选稿 → MCP 发布（先用「仅自己可见」测试，发布前先问 Chris）
 - [ ] 定时任务（Windows 任务计划程序）：MCP 常驻 + 每日采集 / 追踪（改系统配置前先问 Chris）
 
