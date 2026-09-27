@@ -7,7 +7,8 @@
   items       列表项 [{"name": ..., "meta": ...}]（可为空）
   footer_left 左下角文字，如「人均 $25–40」
   image       （可选）封面主图的本地路径：AI 插画或实拍，见 jevdev/images.py
-  image_label （可选）图上的来源标注，如「AI 插画 · 仅示意」「实拍」
+  image_label （可选）图上的来源标注，如「AI 插画 · 仅示意」「实拍」「示意图」
+  cutout      （可选）抠好的实物照片 PNG（透明背景），有它就用抠图封面版式（templates/cover_cutout.html）
 """
 import base64
 import html
@@ -18,6 +19,8 @@ from string import Template
 from playwright.sync_api import sync_playwright
 
 TEMPLATE = Path(__file__).resolve().parent.parent / "templates" / "card.html"
+CUTOUT_TEMPLATE = TEMPLATE.with_name("cover_cutout.html")
+CUTOUT_COLORS = {"bg": "#ffd84d", "accent": "#d93a14"}  # 抠图封面固定用亮黄底
 THEMES = {
     "warm": {"bg": "#f6ead8", "accent": "#d2461e"},
     "fresh": {"bg": "#e3efe6", "accent": "#1f7a4d"},
@@ -32,6 +35,12 @@ def _html(card, theme):
         f'<div class="item"><span class="no">{i}</span><div><div class="name">{esc(it["name"])}</div>'
         f'<div class="meta">{esc(it.get("meta", ""))}</div></div></div>'
         for i, it in enumerate(card.get("items") or [], 1))
+    if card.get("cutout"):  # 抠图封面（jevdev/stock.py）：实物照片抠图 + 亮色背景
+        return Template(CUTOUT_TEMPLATE.read_text(encoding="utf-8")).substitute(
+            **CUTOUT_COLORS, kicker=esc(card.get("kicker", "")), title_html=title_html,
+            subtitle=esc(card.get("subtitle", "")), footer_left=esc(card.get("footer_left", "")),
+            cutout_b64=base64.b64encode(Path(card["cutout"]).read_bytes()).decode(),
+            label=esc(card.get("image_label", "")))
     hero_html = ""
     if card.get("image"):
         items_html = ""  # 带图封面只放标签、大标题和副标题（单一焦点）；要点留给内页
@@ -60,7 +69,8 @@ _FIT_JS = """() => {
     document.querySelectorAll('.item .name').forEach(e => e.style.fontSize = (46 * scale) + 'px');
     document.querySelectorAll('.item .meta').forEach(e => e.style.fontSize = (34 * scale) + 'px');
     document.querySelectorAll('.item').forEach(e => e.style.padding = (26 * scale) + 'px 34px');
-    document.querySelector('.items').style.gap = (26 * scale) + 'px';
+    const its = document.querySelector('.items');  // 抠图封面没有列表
+    if (its) its.style.gap = (26 * scale) + 'px';
   }
   let dropped = 0;
   while (!fits()) {

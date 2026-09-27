@@ -282,16 +282,11 @@ def pick(ok):
 # ---------- 输出 ----------
 
 def finalize(chosen, out_dir, photo_dir):
-    """选中的那篇：配封面主图（实拍优先，否则 AI 插画）→ 重新渲染卡片到草稿包根目录（publish.py 读这里）。"""
-    extra = []
-    log("配封面主图（" + ("实拍" if photo_dir else "Codex 画插画，约 1 分钟") + "）…")
-    try:
-        img, label, extra = images.cover_image(chosen, out_dir / "_img", photo_dir)
-        chosen["cover"] = dict(chosen["cover"], image=img, image_label=label)
-        if label == images.AI_LABEL:
-            chosen["body"] += "\n🎨 封面为 AI 插画，仅作示意"
-    except Exception as e:  # 出图失败时退回纯文字封面，草稿包照样生成，发布前人工会看到
-        log(f"  ⚠ 封面配图失败，暂用纯文字封面：{e}")
+    """选中的那篇：配封面（实拍 → 图库实物抠图 → AI 插画 → 纯文字，见 images.dress_cover）
+    → 重新渲染卡片到草稿包根目录（publish.py 读这里）。"""
+    log("配封面图…")
+    extra = images.dress_cover(chosen, out_dir / "_img", photo_dir, log)
+    log(f"  封面来源：{chosen['cover_source']['type']}")
     chosen["images"] = cards.render([chosen["cover"]] + chosen["pages"], out_dir)
     chosen["images"] += images.photo_pages(extra, out_dir, len(chosen["images"]) + 1)
 

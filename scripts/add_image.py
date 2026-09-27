@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.stdout.reconfigure(encoding="utf-8")
 
 import make_post  # noqa: E402
+from jevdev import stock  # noqa: E402
 
 
 def main():
@@ -23,8 +24,11 @@ def main():
     pkg_dir = Path(args.package)
     pkg = json.loads((pkg_dir / "package.json").read_text(encoding="utf-8"))
     chosen = pkg["drafts"][pkg["chosen_index"]]
-    # 重新配图时去掉上一次加的插画说明，免得重复
-    chosen["body"] = chosen["body"].replace("\n🎨 封面为 AI 插画，仅作示意", "")
+    # 重新配图：去掉上一次的图和图片说明，免得重复
+    for note in ("\n🎨 封面为 AI 插画，仅作示意", "\n" + stock.BODY_NOTE):
+        chosen["body"] = chosen["body"].replace(note, "")
+    for k in ("image", "image_label", "cutout"):
+        chosen["cover"].pop(k, None)
     for old in pkg_dir.glob("card_*.png"):
         old.unlink()
     make_post.finalize(chosen, pkg_dir, args.photos)

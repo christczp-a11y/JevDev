@@ -126,3 +126,38 @@ def cover_image(draft, out_dir, photo_dir=None):
         if photos:
             return _to_jpeg(photos[0], Path(out_dir) / "cover.jpg"), PHOTO_LABEL, photos[1:]
     return illustrate(draft, out_dir), AI_LABEL, []
+
+
+def dress_cover(draft, out_dir, photo_dir=None, log=print):
+    """给选中的草稿配封面，按优先级：Chris 实拍 → 图库实物抠图（stock.py，Jev 选图）→ AI 插画 → 纯文字。
+    直接修改 draft（cover、body），返回其余实拍列表（接在信息卡后面）。"""
+    from jevdev import cards, stock
+    out_dir = Path(out_dir)
+    if photo_dir and photos_in(photo_dir):
+        img, label, extra = cover_image(draft, out_dir, photo_dir)
+        draft["cover"] = dict(draft["cover"], image=img, image_label=label)
+        draft["cover_source"] = {"type": "photo", "dir": str(photo_dir)}
+        return extra
+    try:
+        log("  图库找实物图 → Jev 选图 → 抠图 → 自检…")
+
+        def render(cut):
+            c = dict(draft["cover"], cutout=cut, image_label=stock.LABEL)
+            return cards.render([c], out_dir / "check")[0]
+        cut, meta = stock.make_cover(draft, out_dir / "stock", render)
+        draft["cover"] = dict(draft["cover"], cutout=cut, image_label=stock.LABEL)
+        draft["cover_source"] = dict(meta, type="stock")
+        draft["body"] += "\n" + stock.BODY_NOTE
+        return []
+    except Exception as e:
+        log(f"  图库这条路没成：{e}")
+    try:
+        log("  改用 Codex 画插画…")
+        img = illustrate(draft, out_dir)
+        draft["cover"] = dict(draft["cover"], image=img, image_label=AI_LABEL)
+        draft["cover_source"] = {"type": "ai_illustration"}
+        draft["body"] += "\n🎨 封面为 AI 插画，仅作示意"
+    except Exception as e:  # 都失败时退回纯文字封面，草稿包照样生成，发布前人工会看到
+        log(f"  ⚠ 插画也没成，暂用纯文字封面：{e}")
+        draft["cover_source"] = {"type": "text_only"}
+    return []

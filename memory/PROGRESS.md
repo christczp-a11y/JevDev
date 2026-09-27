@@ -18,7 +18,7 @@
 4. 数据：`scripts/collect_xhs.py`（采集赛道笔记）、`scripts/track.py`（第 1/3/7 天追踪）
 5. 自我优化（每 1–2 周）：`scripts/covers.py --download --describe`（封面转文字）→ `scripts/autoresearch.py --rounds 2`（Claude 提题、Jev 作答、交叉验证去留）→ `scripts/composite.py --build --eval`（重建选稿复合分）；`scripts/rule_catalog.py` 输出所有题的逐条检验总账。留出测试集只在最后看一次（`autoresearch.py --final`）
 - 需要：环境变量 `TYPESAFE_API_KEY`（Jev）；`claude` CLI 已登录（写稿，Opus 5.5）；Codex CLI 已登录（Reddit）；Google 专用 Chrome 配置已登录小号（`scripts/open_google_profile.cmd`）
-- Git Bash 里 export key：`export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`
+- Git Bash 里 export key（PEXELS_API_KEY 同理）：`export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`
 
 ## 已完成
 - [x] 记忆系统、产品方向、执行计划；切换到本地会话
@@ -42,7 +42,8 @@
 - [ ] 阶段 1 扩样本：同龄追踪积累「第 7 天互动」→ 用新数据做一次干净的复合分检验（测试集已经看过两次）
 - [ ] 【等 Chris 决定】要不要用 MCP 查作者粉丝数（284 个作者主页），控制大号效应
 - [ ] 【等 Chris】亲自去吃，用 --my-notes 写入体验（数据显示「真人亲历感」和互动正相关，我们不能冒充）；封面实拍图 vs 文字卡做 A/B
-- [x] 配图：封面主图 = 实拍（--photos）或 Codex 插画（带自检和标注）；`scripts/add_image.py` 可以给已有草稿包补图或换图；断行和页脚孤字已修
+- [x] 配图：封面优先级 = 实拍（--photos）→ 图库实物抠图（Jev 选图，亮黄底爆款模板）→ Codex 插画 → 纯文字；`scripts/add_image.py` 可以给已有草稿包补图或换图；断行和页脚孤字已修
+- [ ] 【等 Chris】注册 Pexels API key，存进用户环境变量 PEXELS_API_KEY（没有它，图库抠图基本拿不到能用的图）
 
 ## 阻塞 / 待 Chris 处理
 - [ ] 同意试发（仅自己可见）
