@@ -13,7 +13,6 @@ import argparse
 import json
 import random
 import re
-import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -27,7 +26,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 import collect_xhs  # noqa: E402
 import google_reviews  # noqa: E402
-from jevdev import db, engagement, jev, restaurant, writer, xhs  # noqa: E402
+from jevdev import cards, db, engagement, images, jev, restaurant, writer, xhs  # noqa: E402
 
 # 极限词 / 诱导 / 导流的词表拦截（放过「最近、最后、第一次」这类普通用法）
 BANNED = re.compile(r"最(?!近|后|早|晚|初|终)|第一(?!次|口|眼|天|步)|唯一|顶级|天花板|封神|绝了|吊打|全网|No\.?1|神仙"
@@ -282,6 +281,21 @@ def pick(ok):
 
 # ---------- 输出 ----------
 
+def finalize(chosen, out_dir, photo_dir):
+    """选中的那篇：配封面主图（实拍优先，否则 AI 插画）→ 重新渲染卡片到草稿包根目录（publish.py 读这里）。"""
+    extra = []
+    log("配封面主图（" + ("实拍" if photo_dir else "Codex 画插画，约 1 分钟") + "）…")
+    try:
+        img, label, extra = images.cover_image(chosen, out_dir / "_img", photo_dir)
+        chosen["cover"] = dict(chosen["cover"], image=img, image_label=label)
+        if label == images.AI_LABEL:
+            chosen["body"] += "\n🎨 封面为 AI 插画，仅作示意"
+    except Exception as e:  # 出图失败时退回纯文字封面，草稿包照样生成，发布前人工会看到
+        log(f"  ⚠ 封面配图失败，暂用纯文字封面：{e}")
+    chosen["images"] = cards.render([chosen["cover"]] + chosen["pages"], out_dir)
+    chosen["images"] += images.photo_pages(extra, out_dir, len(chosen["images"]) + 1)
+
+
 def slug(s):
     return re.sub(r"[^A-Za-z0-9]+", "-", s).strip("-")[:40] or "post"
 
@@ -293,6 +307,8 @@ def main():
     ap.add_argument("--xhs-keyword", required=True, help="小红书搜索词（中文店名）")
     ap.add_argument("--my-notes", default="", help="Chris 的亲身体验（可选）")
     ap.add_argument("--no-reddit", action="store_true", help="跳过 Reddit（默认会通过 Codex 搜索）")
+    ap.add_argument("--photos", help="Chris 实拍照片的文件夹（可选；cover 开头的文件当封面，其余接在信息卡后面）。"
+                                     "不给就用 Codex 画插画当封面主图")
     ap.add_argument("--n", type=int, default=4)
     args = ap.parse_args()
 
@@ -317,11 +333,7 @@ def main():
     chosen, mode = pick(ok)
 
     if chosen:
-        chosen["images"] = []
-        for i, src in enumerate(chosen["card_paths"], 1):  # 选中那篇的卡片放到草稿包根目录（publish.py 读这里）
-            dst = out_dir / f"card_{i:02d}.png"
-            shutil.copy(src, dst)
-            chosen["images"].append(str(dst))
+        finalize(chosen, out_dir, args.photos)
         chosen["pick_mode"] = mode
     (out_dir / "package.json").write_text(json.dumps(
         {"query": args.query, "name": args.name, "facts": facts, "profile": prof, "drafts": drafts,

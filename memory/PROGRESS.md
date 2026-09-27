@@ -11,7 +11,8 @@
 ## 怎么跑（新会话先看这里）
 1. 启动小红书 MCP：`C:\Users\Chris\xhs\bin\start-mcp-rednote.cmd`（端口 18060；这是改装版，支持 rednote）
 2. 生成一篇（约 4–7 分钟）：
-   `.venv/Scripts/python scripts/make_post.py --query "<英文店名 城市>" --name "<写进笔记的店名>" --xhs-keyword "<中文店名>" [--my-notes "..."] [--no-reddit]`
+   `.venv/Scripts/python scripts/make_post.py --query "<英文店名 城市>" --name "<写进笔记的店名>" --xhs-keyword "<中文店名>" [--my-notes "..."] [--photos <实拍文件夹>] [--no-reddit]`
+   （没给 --photos 就用 Codex 画插画当封面主图；已有草稿包补图或换图：`scripts/add_image.py <草稿包> [--photos 文件夹]`）
    → 草稿包在 `data/posts/<时间>_<店>/`（package.json + card_*.png）
 3. 预览 / 发布：`.venv/Scripts/python scripts/publish.py <草稿包> [--yes] [--public]`（默认仅自己可见；不加 --yes 只预览）
 4. 数据：`scripts/collect_xhs.py`（采集赛道笔记）、`scripts/track.py`（第 1/3/7 天追踪）
@@ -41,7 +42,7 @@
 - [ ] 阶段 1 扩样本：同龄追踪积累「第 7 天互动」→ 用新数据做一次干净的复合分检验（测试集已经看过两次）
 - [ ] 【等 Chris 决定】要不要用 MCP 查作者粉丝数（284 个作者主页），控制大号效应
 - [ ] 【等 Chris】亲自去吃，用 --my-notes 写入体验（数据显示「真人亲历感」和互动正相关，我们不能冒充）；封面实拍图 vs 文字卡做 A/B
-- [ ] 卡片模板小问题：长词被从中间断开换行（「电话预/订」），页脚孤字
+- [x] 配图：封面主图 = 实拍（--photos）或 Codex 插画（带自检和标注）；`scripts/add_image.py` 可以给已有草稿包补图或换图；断行和页脚孤字已修
 
 ## 阻塞 / 待 Chris 处理
 - [ ] 同意试发（仅自己可见）

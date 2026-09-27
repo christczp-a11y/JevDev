@@ -6,7 +6,10 @@
   subtitle    副标题
   items       列表项 [{"name": ..., "meta": ...}]（可为空）
   footer_left 左下角文字，如「人均 $25–40」
+  image       （可选）封面主图的本地路径：AI 插画或实拍，见 jevdev/images.py
+  image_label （可选）图上的来源标注，如「AI 插画 · 仅示意」「实拍」
 """
+import base64
 import html
 import re
 from pathlib import Path
@@ -29,10 +32,18 @@ def _html(card, theme):
         f'<div class="item"><span class="no">{i}</span><div><div class="name">{esc(it["name"])}</div>'
         f'<div class="meta">{esc(it.get("meta", ""))}</div></div></div>'
         for i, it in enumerate(card.get("items") or [], 1))
+    hero_html = ""
+    if card.get("image"):
+        items_html = ""  # 带图封面只放标签、大标题和副标题（单一焦点）；要点留给内页
+        # 内嵌成 data URI：set_content 的页面不能直接读本地文件
+        data = base64.b64encode(Path(card["image"]).read_bytes()).decode()
+        badge = f'<span class="badge">{esc(card["image_label"])}</span>' if card.get("image_label") else ""
+        hero_html = f'<div class="hero"><img src="data:image/jpeg;base64,{data}">{badge}</div>'
     return Template(TEMPLATE.read_text(encoding="utf-8")).substitute(
         **THEMES[theme], kicker=esc(card.get("kicker", "")), title_html=title_html,
         subtitle=esc(card.get("subtitle", "")), items_html=items_html,
-        footer_left=esc(card.get("footer_left", "")))
+        footer_left=esc(card.get("footer_left", "")),
+        body_class="with-image" if hero_html else "", hero_html=hero_html)
 
 
 # 内容放不下时逐步缩小：先缩大标题，再缩列表字号，最后才去掉末尾的列表项
@@ -40,8 +51,9 @@ _FIT_JS = """() => {
   const page = document.querySelector('.page');
   const fits = () => page.scrollHeight <= page.clientHeight;
   const h1 = document.querySelector('h1');
-  let fs = 118;
-  while (!fits() && fs > 78) { fs -= 6; h1.style.fontSize = fs + 'px'; }
+  let fs = parseFloat(getComputedStyle(h1).fontSize);  // 纯文字封面 118，带图封面 96
+  const minFs = fs * 0.66;
+  while (!fits() && fs > minFs) { fs -= 6; h1.style.fontSize = fs + 'px'; }
   let scale = 1;
   while (!fits() && scale > 0.75) {
     scale -= 0.05;
