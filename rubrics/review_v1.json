@@ -1,0 +1,44 @@
+{
+  "name": "review_v1",
+  "about": "单条餐厅评价的判断（一条评价一次请求）。汇总、加权、贝叶斯收缩都在代码里做（PLAN.md 评分规则）。",
+  "fields": ["restaurant", "review"],
+  "questions": {
+    "relevant": {
+      "type": "noul",
+      "instructions": "`review` 是在描述顾客在 `restaurant` 这家店的真实用餐或外带体验（而不是空洞的一两个字、无关内容或在说别的店）"
+    },
+    "ad_like": {
+      "type": "noul",
+      "instructions": "`review` 像商家推广、合作探店或刷的好评：例如提到合作、优惠码、报名字打折、引导关注，或者通篇营销话术而没有任何具体体验"
+    },
+    "taste": {
+      "type": "choice",
+      "instructions": "`review` 对食物口味的评价",
+      "criteria": {"na": "没有评价口味", "bad": "口味差、难吃、失望", "ok": "口味一般、普通", "good": "口味好", "great": "口味非常好、强烈称赞"}
+    },
+    "service": {
+      "type": "choice",
+      "instructions": "`review` 对服务（服务员态度、效率、结账）的评价",
+      "criteria": {"na": "没有评价服务", "bad": "服务差、态度不好", "ok": "服务一般", "good": "服务好", "great": "服务非常好、特别称赞"}
+    },
+    "value": {
+      "type": "choice",
+      "instructions": "`review` 对价格和性价比的评价",
+      "criteria": {"na": "没有评价价格或性价比", "bad": "太贵、不值", "ok": "价格一般、合理", "good": "性价比高、便宜", "great": "性价比极高、强烈称赞价格"}
+    },
+    "environment": {
+      "type": "choice",
+      "instructions": "`review` 对环境、卫生、座位的评价",
+      "criteria": {"na": "没有评价环境", "bad": "环境差、脏、拥挤", "ok": "环境一般", "good": "环境好", "great": "环境非常好"}
+    },
+    "wait": {
+      "type": "choice",
+      "instructions": "`review` 有没有提到排队或等待时间",
+      "criteria": {"na": "没有提到", "long": "排队或等待很久", "short": "不用等或很快"}
+    },
+    "cash_only": {
+      "type": "noul",
+      "instructions": "`review` 提到这家店只收现金或不收信用卡"
+    }
+  }
+}
