@@ -13,15 +13,18 @@
 - [x] Codex CLI 已装并登录，实测能搜到 Reddit
 - [x] TypeSafe key 到手，存为用户环境变量 `TYPESAFE_API_KEY`；Jev 中文评价测试通过（软广识别、口味分档都对）
 - [x] 新号养号流程 → `docs/新号养号流程.md`；日志模板 `data/养号日志.csv`
+- [x] 定发布方式：MCP 自动发布（Chris 接受风险），互动由 Chris 手动完成（见 DECISIONS）
+- [x] 项目骨架：`jevdev/`（xhs、db、jev）、`scripts/collect_xhs.py`、`scripts/phase1_eval.py`、`rubrics/`、`.venv`
+- [x] 外部调研 → `docs/research/爆文逻辑-外部资料.md`（32 道 Jev 候选题）
+- [x] 阶段 1 初步结果 → `docs/research/阶段1-初步结果.md`：「最新」子集上 Jev 标题 Spearman ≈ +0.28，有信号但样本不足
 
 ## 下一步
-- [ ] 搭 Python 项目骨架 + SQLite
-- [ ] Google 评价抓取脚本（无头浏览器、不登录、遇到验证码就跳过）
-- [ ] 小红书采集：`search_feeds` + `get_feed_detail` → 入库
-- [ ] 阶段 1：离线验证 Jev 在温哥华美食赛道能否预测互动（需要 TypeSafe key）
+- [ ] 同龄追踪脚本（「最新」笔记在第 3、7 天再抓一次）+ 扩大样本
+- [ ] Google 评价抓取（Playwright，不登录）
+- [ ] 写稿（`claude -p`）→ 卡片渲染 → Jev 审稿和选稿 → MCP 发布（先用「仅自己可见」测试，发布前先问 Chris）
+- [ ] 定时任务（Windows 任务计划程序）：MCP 常驻 + 每日采集 / 追踪（改系统配置前先问 Chris）
 
 ## 阻塞 / 待 Chris 处理
-- [ ] 【需决定】小红书 2026-03 打击 AI 托管账号（全部笔记由 AI 代发 → 封禁）→ 发布方式是否改为 Chris 在手机上亲手发（见 `docs/新号养号流程.md` 第 0 节）
-- [ ] Chris 按养号流程第 1–5 天在手机上手动逛、每天记日志
+- [ ] Chris 在手机上手动做互动（可选：逛、回评论），每天在 `data/养号日志.csv` 记一行
 - [ ] TypeSafe key 已经出现在聊天记录里 → 流程跑稳后在控制台作废，重新生成
 - [ ] `.claude/settings.json` 与 `CLAUDE.md` 需 Chris 手动创建，内容见 `log/2026-09-27.md`（可选）
