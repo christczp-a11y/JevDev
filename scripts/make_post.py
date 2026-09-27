@@ -11,16 +11,14 @@
 """
 import argparse
 import json
-import math
 import random
 import re
+import shutil
 import subprocess
 import sys
-import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -29,8 +27,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 import collect_xhs  # noqa: E402
 import google_reviews  # noqa: E402
-import phase1_eval  # noqa: E402
-from jevdev import cards, db, jev, restaurant, writer, xhs  # noqa: E402
+from jevdev import db, engagement, jev, restaurant, writer, xhs  # noqa: E402
 
 # 极限词 / 诱导 / 导流的词表拦截（放过「最近、最后、第一次」这类普通用法）
 BANNED = re.compile(r"最(?!近|后|早|晚|初|终)|第一(?!次|口|眼|天|步)|唯一|顶级|天花板|封神|绝了|吊打|全网|No\.?1|神仙"
@@ -212,27 +209,6 @@ def code_checks(d):
     return problems
 
 
-def title_model(con):
-    """用阶段 1 的数据训练标题表现预测模型（Ridge）；返回 predict(draft_dict, jev_title_answers)。"""
-    X_code, X_jev, y = phase1_eval.load_dataset(con, "xhs_title_v1_zh")
-    code_keys = sorted({k for d in X_code for k in d})
-    jev_keys = sorted({k for d in X_jev for k in d if not k.endswith("__conf")})
-    from sklearn.linear_model import RidgeCV
-    from sklearn.pipeline import make_pipeline
-    from sklearn.preprocessing import StandardScaler
-    X = np.hstack([phase1_eval.to_matrix(X_code, code_keys), phase1_eval.to_matrix(X_jev, jev_keys)])
-    model = make_pipeline(StandardScaler(), RidgeCV(alphas=np.logspace(-2, 3, 20))).fit(X, y)
-
-    def predict(draft, title_answers):
-        n = {"title": draft["title"], "desc": draft["body"], "cover_w": 1080, "cover_h": 1440,
-             "note_type": "normal", "from_latest": 1, "from_top": 0,
-             "publish_ts": time.time() * 1000 - 7 * 86400000}   # 控制变量固定：同龄、未经热度筛选
-        xc = phase1_eval.to_matrix([phase1_eval.code_features(n)], code_keys)
-        xj = phase1_eval.to_matrix([jev.flatten(title_answers)], jev_keys)
-        return float(model.predict(np.hstack([xc, xj]))[0])
-    return predict
-
-
 def claim_lines(d):
     """草稿里所有可能含事实的文字：正文每一行 + 卡片上的文字。"""
     lines = [ln.strip() for ln in d["body"].splitlines() if ln.strip()]
@@ -251,10 +227,8 @@ def unsupported(d, evidence):
     return [(lines[i], round(a[f"line_{i}"]["noul"], 2)) for i in range(len(lines)) if a[f"line_{i}"]["noul"] < 0.5]
 
 
-def review_drafts(con, drafts, facts):
+def review_drafts(con, drafts, facts, work_dir):
     draft_rubric = jev.load_rubric("draft_v1")
-    title_rubric = jev.load_rubric("xhs_title_v1_zh")
-    predict = title_model(con)
     evidence = {k: v for k, v in facts.items() if not k.startswith("小红书上已有")}
 
     # 逐句核查 + 禁用词：有问题的句子让 Claude 修一次（并发），修完再核查
@@ -281,20 +255,20 @@ def review_drafts(con, drafts, facts):
     for d in drafts:
         d["code_problems"] = code_checks(d)
         a, _ = jev.ask({"title": d["title"], "body": d["body"], "evidence": evidence}, draft_rubric["questions"])
-        t, _ = jev.ask({**title_rubric["context"], "title": d["title"]}, title_rubric["questions"])
         d["jev"] = jev.flatten(a)
         d["gate_fail"] = [g for g in GATES if a[g]["noul"] > GATE_LIMITS.get(g, GATE_MAX)]
         if d["unsupported"]:
             d["gate_fail"].append("unsupported_claims")
         q = [a[k]["score"] / 4 for k in ("q_hook", "q_useful", "q_scan", "q_save", "q_voice")]
         d["quality"] = round((sum(q) / len(q) + a["q_balance"]["noul"] * 0.2 + a["q_deliver"]["noul"] * 0.2) / 1.4, 3)
-        d["pred_engagement"] = round(predict(d, t), 3)
+
+    # 选稿依据：赛道数据学到的互动预测（标题 + 正文 + 渲染后的封面，见 jevdev/engagement.py）
+    log("  渲染每篇的卡片，Claude 描述封面，Jev 按赛道模型打分…")
+    p = engagement.score_drafts(con, drafts, work_dir)
+    log(f"  （预测模型用 {p.n_train} 篇赛道笔记训练）")
     ok = [d for d in drafts if not d["gate_fail"] and not d["code_problems"]]
-    if ok:
-        preds = np.array([d["pred_engagement"] for d in ok])
-        z = (preds - preds.mean()) / (preds.std() or 1)
-        for d, zi in zip(ok, z):
-            d["rank_score"] = round(d["quality"] + 0.1 * float(zi), 3)
+    for d in ok:
+        d["rank_score"] = d["pred"]
     return ok
 
 
@@ -337,13 +311,17 @@ def main():
     log(f"Claude 写 {args.n} 篇草稿…")
     drafts, meta = writer.write_drafts(facts, args.n)
     log(f"  完成（{meta['duration_ms'] / 1000:.0f}s）。Jev 审稿…")
-    ok = review_drafts(con, drafts, facts)
-    chosen, mode = pick(ok)
-
     out_dir = ROOT / "data" / "posts" / f"{datetime.now():%Y%m%d-%H%M}_{slug(args.query)}"
     out_dir.mkdir(parents=True, exist_ok=True)
+    ok = review_drafts(con, drafts, facts, out_dir / "_drafts")
+    chosen, mode = pick(ok)
+
     if chosen:
-        chosen["images"] = cards.render([chosen["cover"]] + chosen["pages"], out_dir)
+        chosen["images"] = []
+        for i, src in enumerate(chosen["card_paths"], 1):  # 选中那篇的卡片放到草稿包根目录（publish.py 读这里）
+            dst = out_dir / f"card_{i:02d}.png"
+            shutil.copy(src, dst)
+            chosen["images"].append(str(dst))
         chosen["pick_mode"] = mode
     (out_dir / "package.json").write_text(json.dumps(
         {"query": args.query, "name": args.name, "facts": facts, "profile": prof, "drafts": drafts,
@@ -353,7 +331,7 @@ def main():
     print("\n===== 草稿审稿结果 =====")
     for i, d in enumerate(drafts):
         flag = "✅" if d is chosen else ("·" if d in ok else "❌")
-        print(f"{flag} [{i}] {d['angle']} | 《{d['title']}》 质量 {d['quality']} 预测 {d['pred_engagement']}"
+        print(f"{flag} [{i}] {d['angle']} | 《{d['title']}》 质量 {d['quality']} 预测互动 {d['pred']}"
               f"{' 排序分 ' + str(d.get('rank_score')) if d in ok else ''}")
         if d.get("unsupported_before"):
             print(f"     首轮无依据 {len(d['unsupported_before'])} 句 → 修改后剩 {len(d['unsupported'])} 句")
