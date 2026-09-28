@@ -117,6 +117,10 @@ function buildSet(set) {
   cache.farW = fw;
   if (set.hills) cache.hills = offscreen(set.hills.width, set.hills.filter, g => { for (const [n, x, b, h] of set.hills.items) put(g, n, x, b, h); });
   cache.mid = offscreen(set.mid.width, set.mid.filter, g => {
+    for (const f of set.mid.fields || []) {   // 城门外的田野：只从门洞里露出来的一块草地（远景松树的树根就站在它的上沿）
+      const gr = g.createLinearGradient(0, f.top, 0, f.bottom); gr.addColorStop(0, f.far); gr.addColorStop(1, f.near);
+      g.fillStyle = gr; g.fillRect(f.x0, f.top, f.x1 - f.x0, f.bottom - f.top);
+    }
     for (const [n, x, b, h] of set.mid.behind || []) put(g, n, x, b, h);   // 城墙后面的东西（旗杆脚藏在垛墙后，看着像插在墙上）
     const ws = set.mid.wallStrip;
     if (ws) {
