@@ -1,0 +1,119 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+</head><body>
+<script type="module">
+// 3D 立体书舞台样片：纸片从书页上弹起（带回弹），镜头俯冲 → 贴地仰拍木杆 → 绕到人群推近
+import * as THREE from 'three';
+const q = new URLSearchParams(location.search), W = +q.get('w') || 540, H = +q.get('h') || 960;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H); renderer.setPixelRatio(1);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xe7d3b0);   // 暖色的房间墙面，低角度时背后不再是一片黑
+scene.fog = new THREE.Fog(0xe7d3b0, 40, 95);
+const cam = new THREE.PerspectiveCamera(42, W / H, 0.1, 200);
+scene.add(new THREE.HemisphereLight(0xfff4e0, 0x6b4a33, 1.5));
+const sun = new THREE.DirectionalLight(0xfff0d8, 2.4);
+sun.position.set(-9, 20, 12); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -18, right: 18, top: 18, bottom: -18, near: 1, far: 70 });
+sun.shadow.bias = -0.0006; sun.shadow.radius = 5;
+scene.add(sun);
+
+function paperTex(base, seed) {   // 程序生成的纸纹
+  const c = document.createElement('canvas'); c.width = c.height = 512;
+  const g = c.getContext('2d'); g.fillStyle = base; g.fillRect(0, 0, 512, 512);
+  let s = seed; const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 12000; i++) {
+    const v = rnd() < 0.5 ? 0 : 255;
+    g.fillStyle = `rgba(${v},${v},${v},${0.05 * rnd()})`;
+    g.fillRect(rnd() * 512, rnd() * 512, 1 + rnd() * 3, 1 + rnd() * 1.5);
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+}
+
+// 桌面 + 书（封面、左右两叠书页）
+const table = new THREE.Mesh(new THREE.PlaneGeometry(140, 140), new THREE.MeshStandardMaterial({ color: 0x5b3c27, roughness: 0.9 }));
+table.rotation.x = -Math.PI / 2; table.position.y = -0.65; table.receiveShadow = true; scene.add(table);
+const cover = new THREE.Mesh(new THREE.BoxGeometry(23, 0.5, 16), new THREE.MeshStandardMaterial({ color: 0x31405e, roughness: 0.8 }));
+cover.position.y = -0.4; cover.receiveShadow = true; cover.castShadow = true; scene.add(cover);
+const pageTex = paperTex('#f4ead3', 7); pageTex.repeat.set(2, 2);
+const pageMat = new THREE.MeshStandardMaterial({ map: pageTex, roughness: 0.95 });
+for (const s of [-1, 1]) {
+  const pg = new THREE.Mesh(new THREE.BoxGeometry(11.2, 0.4, 15.2), pageMat);
+  pg.position.set(s * 5.65, 0, 0); pg.rotation.z = -s * 0.025; pg.receiveShadow = true; scene.add(pg);
+}
+
+// 纸片：[图片, x, z, 高度, 弹起时刻, 朝向, 宽度（可选，默认按原比例）]
+const A = '../assets/';
+const ITEMS = [
+  [A + 'sets/qin_gate/far.png', 0, -7.3, 12.5, 0.1, 0, 26],   // 远景：最先弹起的一整张背景纸
+  [A + 'sets/qin_gate/wall.png', -5.2, -6.2, 2.6, 0.25, 0],
+  [A + 'sets/qin_gate/wall.png', 5.2, -6.2, 2.6, 0.35, 0],
+  [A + 'sets/qin_gate/gate.png', 5.6, -5.2, 5.2, 0.45, -0.15],
+  [A + 'sets/qin_gate/pine.png', -9.0, -3.2, 6.0, 0.55, 0.3],
+  [A + 'sets/qin_gate/flag.png', 2.2, -4.6, 4.2, 0.6, 0],
+  [A + 'sets/qin_gate/stall.png', -7.4, 0.5, 2.8, 0.75, 0.35],
+  [A + 'props/log.png', -2.6, -1.4, 9.5, 0.95, 0, 1.0],
+  [A + 'props/board.png', -0.6, -1.0, 2.1, 1.1, -0.1],
+  [A + 'props/crow.png', -2.6, -1.35, 1.0, 1.9, 0],
+  [A + 'chars/sy2_point.png', 1.2, 0.8, 2.7, 1.25, -0.25],
+  [A + 'chars/dad2_doubt.png', 4.4, 2.2, 2.7, 1.4, -0.35],
+  [A + 'chars/d2_shock.png', 5.9, 2.9, 1.9, 1.5, -0.4],
+  [A + 'chars/auntie_gossip.png', 7.6, 1.2, 2.6, 1.6, -0.45],
+  [A + 'chars/farmer_doubt.png', -5.6, 3.0, 2.5, 1.55, 0.35],
+  [A + 'chars/youth_excited.png', -4.6, 2.4, 2.5, 1.75, 0.25],
+  [A + 'chars/sgm_book.png', 8.4, 5.4, 3.0, 2.3, -0.5],
+];
+const loader = new THREE.TextureLoader();
+const pops = [];
+const ready = Promise.all(ITEMS.map(async ([url, x, z, h, t0, ry, wFix]) => {
+  const tex = await loader.loadAsync(url);
+  tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  const w = wFix || h * tex.image.width / tex.image.height;
+  const geo = new THREE.PlaneGeometry(w, h); geo.translate(0, h / 2, 0);   // 铰链在底边
+  const mat = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.85 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  mesh.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: 0.5 });
+  const hinge = new THREE.Group(); hinge.position.set(x, 0.21, z); hinge.rotation.y = ry;
+  hinge.add(mesh); scene.add(hinge);
+  pops.push({ mesh, t0 });
+}));
+
+const clamp = v => Math.max(0, Math.min(1, v));
+const easeOutBack = u => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * (u - 1) ** 3 + c1 * (u - 1) ** 2; };
+const smooth = u => u * u * (3 - 2 * u);
+
+// 镜头关键帧：时间、位置、看向（Catmull-Rom 平滑穿过，不在关键帧停顿）
+const KEYS = [
+  [0.0, [0, 15, 17], [0, 1.0, -2]],
+  [1.7, [-1.5, 9, 14.5], [-0.5, 2.0, -1]],
+  [3.1, [-0.8, 1.3, 7.6], [-2.6, 7.2, -1.4]],   // 贴地仰拍 7 米木杆
+  [4.6, [4.6, 3.2, 10.5], [1.0, 2.0, 1.5]],      // 绕到人群
+  [6.0, [2.2, 2.4, 8.2], [0.6, 1.9, 2.4]],       // 推近
+];
+const posCurve = new THREE.CatmullRomCurve3(KEYS.map(k => new THREE.Vector3(...k[1])), false, 'centripetal');
+const tgtCurve = new THREE.CatmullRomCurve3(KEYS.map(k => new THREE.Vector3(...k[2])), false, 'centripetal');
+function camU(t) {   // 时间 → 曲线参数（按关键帧分段线性），首尾缓入缓出
+  const T = KEYS.map(k => k[0]), n = T.length - 1;
+  const tt = T[0] + (T[n] - T[0]) * smooth(clamp((t - T[0]) / (T[n] - T[0])));
+  let i = 0; while (i < n - 1 && tt > T[i + 1]) i++;
+  return (i + clamp((tt - T[i]) / (T[i + 1] - T[i]))) / n;
+}
+
+window.renderFrame = t => {
+  for (const p of pops) p.mesh.rotation.x = -Math.PI / 2 * (1 - easeOutBack(clamp((t - p.t0) / 0.55)));
+  const u = camU(t);
+  cam.position.copy(posCurve.getPoint(u)); cam.lookAt(tgtCurve.getPoint(u));
+  renderer.render(scene, cam);
+};
+window.ready = ready.then(() => { window.renderFrame(0); return true; });
+</script>
+</body></html>

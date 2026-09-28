@@ -1,0 +1,449 @@
+{
+ "scores": {
+  "S0 现版本：2D 横版卷轴": {
+   "s_kid": 1.87,
+   "s_kid__conf": 0.45,
+   "s_fresh": 3.62,
+   "s_fresh__conf": 0.68,
+   "s_clarity": 2.16,
+   "s_clarity__conf": 0.18,
+   "s_impact": 1.63,
+   "s_impact__conf": 0.57,
+   "s_brand": 2.74,
+   "s_brand__conf": 0.33,
+   "s_parent": 2.55,
+   "s_parent__conf": 0.43,
+   "n_overload": 0.41,
+   "n_cheap": 0.54
+  },
+  "S1 3D 立体书舞台": {
+   "s_kid": 3.43,
+   "s_kid__conf": 0.62,
+   "s_fresh": 3.96,
+   "s_fresh__conf": 0.96,
+   "s_clarity": 3.2,
+   "s_clarity__conf": 0.53,
+   "s_impact": 3.24,
+   "s_impact__conf": 0.66,
+   "s_brand": 3.85,
+   "s_brand__conf": 0.87,
+   "s_parent": 3.79,
+   "s_parent__conf": 0.82,
+   "n_overload": 0.46,
+   "n_cheap": 0.17
+  },
+  "S2 动态漫画分格": {
+   "s_kid": 3.17,
+   "s_kid__conf": 0.82,
+   "s_fresh": 3.8,
+   "s_fresh__conf": 0.83,
+   "s_clarity": 3.48,
+   "s_clarity__conf": 0.57,
+   "s_impact": 2.9,
+   "s_impact__conf": 0.78,
+   "s_brand": 1.74,
+   "s_brand__conf": 0.18,
+   "s_parent": 3.11,
+   "s_parent__conf": 0.58,
+   "n_overload": 0.48,
+   "n_cheap": 0.37
+  },
+  "S3 等距游戏地图": {
+   "s_kid": 3.11,
+   "s_kid__conf": 0.75,
+   "s_fresh": 3.83,
+   "s_fresh__conf": 0.86,
+   "s_clarity": 3.04,
+   "s_clarity__conf": 0.41,
+   "s_impact": 1.62,
+   "s_impact__conf": 0.52,
+   "s_brand": 0.45,
+   "s_brand__conf": 0.63,
+   "s_parent": 2.35,
+   "s_parent__conf": 0.21,
+   "n_overload": 0.64,
+   "n_cheap": 0.48
+  },
+  "S4 皮影纸影剧场": {
+   "s_kid": 3.01,
+   "s_kid__conf": 0.73,
+   "s_fresh": 3.76,
+   "s_fresh__conf": 0.8,
+   "s_clarity": 2.15,
+   "s_clarity__conf": 0.4,
+   "s_impact": 2.22,
+   "s_impact__conf": 0.54,
+   "s_brand": 0.93,
+   "s_brand__conf": 0.49,
+   "s_parent": 3.11,
+   "s_parent__conf": 0.26,
+   "n_overload": 0.56,
+   "n_cheap": 0.27
+  },
+  "S5 桌面微缩模型": {
+   "s_kid": 3.07,
+   "s_kid__conf": 0.82,
+   "s_fresh": 3.94,
+   "s_fresh__conf": 0.95,
+   "s_clarity": 2.93,
+   "s_clarity__conf": 0.55,
+   "s_impact": 2.58,
+   "s_impact__conf": 0.58,
+   "s_brand": 3.83,
+   "s_brand__conf": 0.86,
+   "s_parent": 3.61,
+   "s_parent__conf": 0.68,
+   "n_overload": 0.42,
+   "n_cheap": 0.24
+  },
+  "S6 电影分镜式 2D": {
+   "s_kid": 3.22,
+   "s_kid__conf": 0.78,
+   "s_fresh": 3.87,
+   "s_fresh__conf": 0.89,
+   "s_clarity": 3.01,
+   "s_clarity__conf": 0.57,
+   "s_impact": 3.22,
+   "s_impact__conf": 0.73,
+   "s_brand": 3.39,
+   "s_brand__conf": 0.49,
+   "s_parent": 3.74,
+   "s_parent__conf": 0.78,
+   "n_overload": 0.47,
+   "n_cheap": 0.15
+  },
+  "S7 分屏平行结局": {
+   "s_kid": 3.02,
+   "s_kid__conf": 0.82,
+   "s_fresh": 3.8,
+   "s_fresh__conf": 0.83,
+   "s_clarity": 3.06,
+   "s_clarity__conf": 0.22,
+   "s_impact": 2.34,
+   "s_impact__conf": 0.49,
+   "s_brand": 3.15,
+   "s_brand__conf": 0.29,
+   "s_parent": 3.26,
+   "s_parent__conf": 0.51,
+   "n_overload": 0.52,
+   "n_cheap": 0.34
+  },
+  "S8 纸片物理动效": {
+   "s_kid": 3.45,
+   "s_kid__conf": 0.61,
+   "s_fresh": 3.92,
+   "s_fresh__conf": 0.94,
+   "s_clarity": 3.3,
+   "s_clarity__conf": 0.42,
+   "s_impact": 3.23,
+   "s_impact__conf": 0.67,
+   "s_brand": 3.86,
+   "s_brand__conf": 0.88,
+   "s_parent": 3.66,
+   "s_parent__conf": 0.72,
+   "n_overload": 0.55,
+   "n_cheap": 0.2
+  },
+  "S9 司马光书桌画中画": {
+   "s_kid": 3.1,
+   "s_kid__conf": 0.83,
+   "s_fresh": 3.9,
+   "s_fresh__conf": 0.91,
+   "s_clarity": 2.6,
+   "s_clarity__conf": 0.45,
+   "s_impact": 2.19,
+   "s_impact__conf": 0.56,
+   "s_brand": 3.98,
+   "s_brand__conf": 0.98,
+   "s_parent": 3.47,
+   "s_parent__conf": 0.56,
+   "n_overload": 0.5,
+   "n_cheap": 0.25
+  },
+  "S10 扁平 MG 信息图": {
+   "s_kid": 1.72,
+   "s_kid__conf": 0.31,
+   "s_fresh": 3.39,
+   "s_fresh__conf": 0.49,
+   "s_clarity": 1.45,
+   "s_clarity__conf": 0.48,
+   "s_impact": 0.97,
+   "s_impact__conf": 0.66,
+   "s_brand": 0.21,
+   "s_brand__conf": 0.82,
+   "s_parent": 1.03,
+   "s_parent__conf": 0.14,
+   "n_overload": 0.55,
+   "n_cheap": 0.73
+  },
+  "S11 混合：立体书舞台 + 分镜 + 纸片物理": {
+   "s_kid": 3.44,
+   "s_kid__conf": 0.63,
+   "s_fresh": 3.96,
+   "s_fresh__conf": 0.97,
+   "s_clarity": 3.38,
+   "s_clarity__conf": 0.48,
+   "s_impact": 3.46,
+   "s_impact__conf": 0.55,
+   "s_brand": 3.72,
+   "s_brand__conf": 0.77,
+   "s_parent": 3.71,
+   "s_parent__conf": 0.76,
+   "n_overload": 0.59,
+   "n_cheap": 0.17
+  },
+  "C 对照：静态插画幻灯片": {
+   "s_kid": 1.29,
+   "s_kid__conf": 0.59,
+   "s_fresh": 3.41,
+   "s_fresh__conf": 0.51,
+   "s_clarity": 2.11,
+   "s_clarity__conf": 0.38,
+   "s_impact": 1.44,
+   "s_impact__conf": 0.53,
+   "s_brand": 2.16,
+   "s_brand__conf": 0.0,
+   "s_parent": 2.12,
+   "s_parent__conf": 0.17,
+   "n_overload": 0.17,
+   "n_cheap": 0.77
+  }
+ },
+ "top": [
+  "S1 3D 立体书舞台",
+  "S6 电影分镜式 2D",
+  "S11 混合：立体书舞台 + 分镜 + 纸片物理",
+  "S8 纸片物理动效",
+  "S5 桌面微缩模型",
+  "S9 司马光书桌画中画",
+  "S0 现版本：2D 横版卷轴"
+ ],
+ "pairs": [
+  [
+   "S1 3D 立体书舞台",
+   "S6 电影分镜式 2D",
+   {
+    "p_watch": 0.69,
+    "p_parent": 0.675,
+    "p_series": 0.935
+   }
+  ],
+  [
+   "S1 3D 立体书舞台",
+   "S11 混合：立体书舞台 + 分镜 + 纸片物理",
+   {
+    "p_watch": 0.28500000000000003,
+    "p_parent": 0.435,
+    "p_series": 0.525
+   }
+  ],
+  [
+   "S1 3D 立体书舞台",
+   "S8 纸片物理动效",
+   {
+    "p_watch": 0.405,
+    "p_parent": 0.665,
+    "p_series": 0.8200000000000001
+   }
+  ],
+  [
+   "S1 3D 立体书舞台",
+   "S5 桌面微缩模型",
+   {
+    "p_watch": 0.77,
+    "p_parent": 0.95,
+    "p_series": 0.905
+   }
+  ],
+  [
+   "S1 3D 立体书舞台",
+   "S9 司马光书桌画中画",
+   {
+    "p_watch": 0.895,
+    "p_parent": 0.6699999999999999,
+    "p_series": 0.435
+   }
+  ],
+  [
+   "S1 3D 立体书舞台",
+   "S0 现版本：2D 横版卷轴",
+   {
+    "p_watch": 1.0,
+    "p_parent": 1.0,
+    "p_series": 0.915
+   }
+  ],
+  [
+   "S6 电影分镜式 2D",
+   "S11 混合：立体书舞台 + 分镜 + 纸片物理",
+   {
+    "p_watch": 0.04,
+    "p_parent": 0.19,
+    "p_series": 0.225
+   }
+  ],
+  [
+   "S6 电影分镜式 2D",
+   "S8 纸片物理动效",
+   {
+    "p_watch": 0.22999999999999998,
+    "p_parent": 0.5800000000000001,
+    "p_series": 0.315
+   }
+  ],
+  [
+   "S6 电影分镜式 2D",
+   "S5 桌面微缩模型",
+   {
+    "p_watch": 0.56,
+    "p_parent": 0.835,
+    "p_series": 0.405
+   }
+  ],
+  [
+   "S6 电影分镜式 2D",
+   "S9 司马光书桌画中画",
+   {
+    "p_watch": 0.7949999999999999,
+    "p_parent": 0.5800000000000001,
+    "p_series": 0.11499999999999999
+   }
+  ],
+  [
+   "S6 电影分镜式 2D",
+   "S0 现版本：2D 横版卷轴",
+   {
+    "p_watch": 0.99,
+    "p_parent": 1.0,
+    "p_series": 0.61
+   }
+  ],
+  [
+   "S11 混合：立体书舞台 + 分镜 + 纸片物理",
+   "S8 纸片物理动效",
+   {
+    "p_watch": 0.575,
+    "p_parent": 0.71,
+    "p_series": 0.625
+   }
+  ],
+  [
+   "S11 混合：立体书舞台 + 分镜 + 纸片物理",
+   "S5 桌面微缩模型",
+   {
+    "p_watch": 0.85,
+    "p_parent": 0.925,
+    "p_series": 0.7949999999999999
+   }
+  ],
+  [
+   "S11 混合：立体书舞台 + 分镜 + 纸片物理",
+   "S9 司马光书桌画中画",
+   {
+    "p_watch": 0.9199999999999999,
+    "p_parent": 0.71,
+    "p_series": 0.4
+   }
+  ],
+  [
+   "S11 混合：立体书舞台 + 分镜 + 纸片物理",
+   "S0 现版本：2D 横版卷轴",
+   {
+    "p_watch": 1.0,
+    "p_parent": 1.0,
+    "p_series": 0.8400000000000001
+   }
+  ],
+  [
+   "S8 纸片物理动效",
+   "S5 桌面微缩模型",
+   {
+    "p_watch": 0.83,
+    "p_parent": 0.78,
+    "p_series": 0.64
+   }
+  ],
+  [
+   "S8 纸片物理动效",
+   "S9 司马光书桌画中画",
+   {
+    "p_watch": 0.89,
+    "p_parent": 0.63,
+    "p_series": 0.385
+   }
+  ],
+  [
+   "S8 纸片物理动效",
+   "S0 现版本：2D 横版卷轴",
+   {
+    "p_watch": 0.985,
+    "p_parent": 0.97,
+    "p_series": 0.7150000000000001
+   }
+  ],
+  [
+   "S5 桌面微缩模型",
+   "S9 司马光书桌画中画",
+   {
+    "p_watch": 0.79,
+    "p_parent": 0.435,
+    "p_series": 0.21500000000000002
+   }
+  ],
+  [
+   "S5 桌面微缩模型",
+   "S0 现版本：2D 横版卷轴",
+   {
+    "p_watch": 0.97,
+    "p_parent": 0.965,
+    "p_series": 0.8400000000000001
+   }
+  ],
+  [
+   "S9 司马光书桌画中画",
+   "S0 现版本：2D 横版卷轴",
+   {
+    "p_watch": 0.8899999999999999,
+    "p_parent": 0.97,
+    "p_series": 0.95
+   }
+  ]
+ ],
+ "win": {
+  "S1 3D 立体书舞台": {
+   "p_watch": 4.045,
+   "p_parent": 4.395,
+   "p_series": 4.535
+  },
+  "S6 电影分镜式 2D": {
+   "p_watch": 2.925,
+   "p_parent": 3.51,
+   "p_series": 1.7349999999999999
+  },
+  "S11 混合：立体书舞台 + 分镜 + 纸片物理": {
+   "p_watch": 5.02,
+   "p_parent": 4.72,
+   "p_series": 3.91
+  },
+  "S8 纸片物理动效": {
+   "p_watch": 4.495,
+   "p_parent": 3.425,
+   "p_series": 2.9799999999999995
+  },
+  "S5 桌面微缩模型": {
+   "p_watch": 2.75,
+   "p_parent": 1.9100000000000001,
+   "p_series": 2.31
+  },
+  "S9 司马光书桌画中画": {
+   "p_watch": 1.6,
+   "p_parent": 2.9450000000000003,
+   "p_series": 4.4
+  },
+  "S0 现版本：2D 横版卷轴": {
+   "p_watch": 0.16500000000000015,
+   "p_parent": 0.09500000000000008,
+   "p_series": 1.1299999999999997
+  }
+ }
+}
