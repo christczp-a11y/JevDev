@@ -21,6 +21,7 @@ sys.path.insert(0, str(ROOT))
 sys.stdout.reconfigure(encoding="utf-8")
 FFMPEG = str(next((Path.home() / "AppData/Local/Microsoft/WinGet/Packages").glob("Gyan.FFmpeg*/ffmpeg-*/bin/ffmpeg.exe"), None)
              or shutil.which("ffmpeg") or "ffmpeg")   # 本地 Windows（WinGet 装的）/ 云端 Linux（apt install ffmpeg）
+CHROMIUM = "/opt/pw-browsers/chromium" if Path("/opt/pw-browsers/chromium").exists() else None   # 云端预装的 Chromium（Playwright 下载被网络策略拦截）；本地为 None，用 Playwright 自带的
 FPS = 30
 
 
@@ -54,7 +55,7 @@ def assets_for(scene):
 
 
 def open_page(p, scene):
-    browser = p.chromium.launch()
+    browser = p.chromium.launch(executable_path=CHROMIUM)
     page = browser.new_page(viewport={"width": 1080, "height": 1920})
     page.goto((ROOT / "engine.html").as_uri(), wait_until="networkidle")
     page.evaluate("([s, a]) => init(s, a)", [scene, assets_for(scene)])

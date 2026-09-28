@@ -18,6 +18,8 @@ from string import Template
 
 from playwright.sync_api import sync_playwright
 
+CHROMIUM = "/opt/pw-browsers/chromium" if Path("/opt/pw-browsers/chromium").exists() else None   # 云端预装的 Chromium（Playwright 下载被网络策略拦截）；本地为 None，用 Playwright 自带的
+
 TEMPLATE = Path(__file__).resolve().parent.parent / "templates" / "card.html"
 CUTOUT_TEMPLATE = TEMPLATE.with_name("cover_cutout.html")
 CUTOUT_COLORS = {"bg": "#ffd84d", "accent": "#d93a14"}  # 抠图封面固定用亮黄底
@@ -89,7 +91,7 @@ def render(cards, out_dir, theme="warm"):
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = []
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(executable_path=CHROMIUM)
         page = browser.new_page(viewport={"width": 1080, "height": 1440})
         for i, card in enumerate(cards, 1):
             page.set_content(_html(card, theme), wait_until="networkidle")

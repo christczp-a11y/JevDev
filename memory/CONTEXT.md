@@ -33,6 +33,12 @@
 - 同一账号不能在多个网页端同时登录：MCP 登录期间别在 Chrome 登网页版，否则会被踢下线
 - 发帖 / 评论 / 点赞等对外操作，动手前先跟 Chris 确认
 
+## 云端环境（2026-09-28 实测）
+- 装机：`bash scripts/cloud_setup.sh`；Python 一律用 `.venv/bin/python`（3.12）
+- 渲染：19 秒测试片段约 100 秒；ffmpeg 6.1（apt 装的）；Chromium 141 用预装的那个
+- 网络：pypi、fonts.googleapis.com、fonts.gstatic.com 通；api.typesafe.ai、docs.typesafe.ai、playwright 下载地址被拦（在旧容器里测的，环境设置改完要开新会话才生效）
+- Jev 相关（logic_qa / motion_qa / story）需要 `TYPESAFE_API_KEY` 加上 api.typesafe.ai 放行
+
 ## 能力边界（云端会话时期，仅供参考）
 - 云端可用：无头 Chromium + Playwright 1.56.1（无用户登录态；受网络策略限制）
 - 不能操作 Chris 本地电脑；需要本地操作时用 Claude Desktop 或本地 `claude remote-control`
