@@ -128,11 +128,15 @@ def render_shot(k):
     srv = serve()
     OUT.mkdir(parents=True, exist_ok=True)
     out = OUT / f"shot{k}.mp4"
+    done = OUT / f"shot{k}.done"
+    if done.exists() and out.exists():   # 断点续渲：已经渲完的场次跳过（云端 worker 可能被重启）
+        return k, 0, 0.0
+    tmp = OUT / f"shot{k}.part.mp4"
     with sync_playwright() as p:
         browser, page, scene = open_stage(p, k, srv)
         n = int(round(scene["duration"] * FPS))
         ff = subprocess.Popen([render.FFMPEG, "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", str(FPS), "-vcodec", "mjpeg", "-i", "-",
-                               "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", str(out)], stdin=subprocess.PIPE)
+                               "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", str(tmp)], stdin=subprocess.PIPE)
         t0 = time.time()
         for i in range(n):
             page.evaluate(f"window.renderFrame({i / FPS})")
@@ -143,6 +147,8 @@ def render_shot(k):
         ff.wait()
         browser.close()
     srv.shutdown()
+    tmp.replace(out)
+    done.write_text(str(n))
     return k, n, time.time() - t0
 
 
@@ -200,7 +206,7 @@ def main():
     t0 = time.time()
     with ProcessPoolExecutor(max_workers=2) as ex:
         for k, n, el in ex.map(render_shot, shots):
-            print(f"第 {k} 场：{n} 帧，{el:.0f} 秒（每秒成片 {el / (n / FPS):.0f} 秒）", flush=True)
+            print(f"第 {k} 场：{n} 帧，{el:.0f} 秒" + (f"（每秒成片 {el / (n / FPS):.0f} 秒）" if n else "（已渲过，跳过）"), flush=True)
     (OUT / "list.txt").write_text("".join(f"file 'shot{k}.mp4'\n" for k in SHOTS), encoding="utf-8")
     subprocess.run([render.FFMPEG, "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(OUT / "list.txt"), "-c", "copy", str(OUT / "silent.mp4")], check=True)
     subprocess.run([render.FFMPEG, "-y", "-loglevel", "error", "-i", str(OUT / "silent.mp4"), "-i", str(AUDIO), "-map", "0:v", "-map", "1:a",
