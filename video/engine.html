@@ -426,6 +426,64 @@ function drawBoss(ev, t) {
   ctx.fillStyle = '#e0483a'; ctx.beginPath(); roundRect(ctx, -130, -12, Math.max(0, 370 * hp), 24, 12); ctx.fill();
   ctx.restore();
 }
+// 观众选择题：两个大纸按钮从下方弹出，中间一圈倒计时；到 reveal 时揭晓（pick = 答案的序号，null = 不揭晓、只让观众想一想）
+function drawChoice(ev, t) {
+  const t1 = ev.t1 ?? (ev.reveal + 1.2); if (t < ev.t0 || t > t1) return;
+  const a = Math.min(clamp((t - ev.t0) / 0.25, 0, 1), clamp((t1 - t) / 0.3, 0, 1)), shown = ev.reveal != null && t >= ev.reveal;
+  ctx.save(); ctx.globalAlpha = a * 0.3; ctx.fillStyle = '#2a2320'; ctx.fillRect(0, 0, BAND.w, BAND.h); ctx.restore();
+  const cy = BAND.h - 150;
+  ev.options.forEach((label, i) => {
+    const pop = easeOutBack(clamp((t - ev.t0 - i * 0.12) / 0.35, 0, 1)), win = shown && ev.pick === i, lose = shown && ev.pick != null && ev.pick !== i;
+    const cx = BAND.w / 2 + (i ? 1 : -1) * 250, pulse = win ? 1 + 0.12 * Math.sin(clamp((t - ev.reveal) / 0.35, 0, 1) * Math.PI) : 1;
+    const wob = shown ? 0 : Math.sin(t * 5 + i * 1.7) * 0.03;
+    ctx.save(); ctx.globalAlpha = a * (lose ? 0.45 : 1); ctx.translate(cx, cy + (1 - pop) * 260); ctx.rotate(wob + (i ? 0.03 : -0.03)); ctx.scale(pulse, pulse);
+    ctx.font = `900 ${label.length > 2 ? 58 : 72}px "Noto Sans SC"`; const w = Math.max(220, ctx.measureText(label).width + 90);
+    card(() => deckle(ctx, -w / 2, -62, w, 124, 30, 11 + i), lose ? '#8d8278' : (i ? '#3f7fb5' : RED), { outline: 7, shadow: 12 });
+    ctx.fillStyle = '#fffaf0'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, 0, 4);
+    if (win) { ctx.strokeStyle = '#ffd24a'; ctx.lineWidth = 8; ctx.beginPath(); deckle(ctx, -w / 2 - 12, -74, w + 24, 148, 36, 5); ctx.stroke(); }
+    ctx.restore();
+  });
+  if (!shown && ev.reveal != null && t > ev.t0 + 0.3) {   // 倒计时：一圈在缩短的圆环
+    const u = clamp((t - ev.t0 - 0.3) / (ev.reveal - ev.t0 - 0.3), 0, 1);
+    ctx.save(); ctx.globalAlpha = a; ctx.translate(BAND.w / 2, cy);
+    card(() => ctx.arc(0, 0, 46, 0, Math.PI * 2), '#fffaf0', { outline: 5, shadow: 8 });
+    ctx.strokeStyle = '#f2c14e'; ctx.lineWidth = 12; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(0, 0, 30, -Math.PI / 2, -Math.PI / 2 + (1 - u) * Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = INK; ctx.font = '900 30px "Noto Sans SC"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', 0, 2);
+    ctx.restore();
+  }
+  if (ev.label) { ctx.save(); ctx.globalAlpha = a; ctx.translate(BAND.w / 2, cy - 118); ctx.font = '900 40px "Noto Sans SC"';
+    const w = ctx.measureText(ev.label).width + 60; card(() => deckle(ctx, -w / 2, -32, w, 64, 20, 3), '#fffaf0', { outline: 5, shadow: 8 });
+    ctx.fillStyle = INK; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ev.label, 0, 3); ctx.restore(); }
+}
+// 反例卡：灰色纸片弹出，接着盖上一个红叉（「要是……？不行」）
+function drawNope(ev, t) {
+  if (t < ev.t0 || t > ev.t1) return;
+  const a = Math.min(clamp((t - ev.t0) / 0.25, 0, 1), clamp((ev.t1 - t) / 0.3, 0, 1));
+  ev.items.forEach(([tu, tx, label], i) => {
+    if (t < tu) return;
+    const k = easeOutBack(clamp((t - tu) / 0.35, 0, 1)), cx = BAND.w / 2 + (i - (ev.items.length - 1) / 2) * 420, cy = BAND.h / 2 + 10;
+    ctx.save(); ctx.globalAlpha = a; ctx.translate(cx, cy); ctx.rotate(i ? 0.04 : -0.04); ctx.scale(k, k);
+    ctx.font = '900 54px "Noto Sans SC"'; const w = Math.max(300, ctx.measureText(label).width + 80);
+    card(() => deckle(ctx, -w / 2, -80, w, 160, 26, 21 + i), '#e8dccb', { outline: 7, shadow: 12 });
+    ctx.fillStyle = INK; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, 0, 4);
+    if (t >= tx) { const x = easeOutBack(clamp((t - tx) / 0.25, 0, 1)); ctx.scale(x, x); ctx.strokeStyle = RED; ctx.lineWidth = 22; ctx.lineCap = 'round';
+      ctx.globalAlpha = a * 0.9; ctx.beginPath(); ctx.moveTo(-90, -70); ctx.lineTo(90, 70); ctx.moveTo(90, -70); ctx.lineTo(-90, 70); ctx.stroke(); }
+    ctx.restore();
+  });
+}
+// 纸片彩带：从上面撒下来
+function drawConfetti(ev, t) {
+  const u = t - ev.t; if (u < 0 || u > (ev.d || 3)) return;
+  const r = mulberry32(ev.seed || 5), cols = ['#e0483a', '#f2c14e', '#3f9e5a', '#3f7fb5', '#fffaf0'];
+  const fade = clamp(((ev.d || 3) - u) / 0.6, 0, 1);
+  for (let i = 0; i < (ev.n || 60); i++) {
+    const x0 = r() * BAND.w, delay = r() * 0.6, sp = 260 + r() * 260, sw = r() * 6, c = cols[Math.floor(r() * 5)], tt = u - delay;
+    if (tt < 0) continue;
+    const x = x0 + Math.sin(tt * 3 + sw) * 40, y = -30 + sp * tt, rot = tt * (4 + sw);
+    if (y > BAND.h + 20) continue;
+    ctx.save(); ctx.globalAlpha = fade; ctx.translate(x, y); ctx.rotate(rot); ctx.scale(1, Math.cos(rot * 1.7)); ctx.fillStyle = c; ctx.fillRect(-9, -5, 18, 10); ctx.restore();
+  }
+}
 // 三个上锁的徽章：先发抖，说到哪条就「叮」地解锁、露出字
 function drawBadges(ev, t) {
   if (t < ev.t0 || t > ev.t1) return;
@@ -539,10 +597,13 @@ function drawBand(t) {
   for (const ev of scene.events) if (ev.type === 'eyes') drawEyes(ev, t);   // 门缝里的眼睛画在门上面
   for (const ev of scene.events) if (ev.type === 'birds') drawBirds(ev, t);
   for (const ev of scene.events) if (ev.type === 'badges') drawBadges(ev, t);
+  for (const ev of scene.events) if (ev.type === 'nope') drawNope(ev, t);
+  for (const ev of scene.events) if (ev.type === 'confetti') drawConfetti(ev, t);
   for (const ev of scene.events) if (ev.type === 'stamp') drawStamp(ev, t);  // 印章固定在画面中央，不跟镜头走
   if (scene.hud) drawHud(t);
   for (const ev of scene.events) if (ev.type === 'boss') drawBoss(ev, t);
   for (const ev of scene.events) if (ev.type === 'banner') drawBanner(ev, t);
+  for (const ev of scene.events) if (ev.type === 'choice') drawChoice(ev, t);   // 选择题在最上层（盖住 HUD 以外的一切）
   ctx.save(); ctx.globalAlpha = 0.06; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = noise; ctx.fillRect(0, 0, BAND.w, BAND.h); ctx.restore();
 }
 function coinRain(ev, t) {

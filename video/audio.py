@@ -155,6 +155,22 @@ def extra_sfx(scene, track):
         if k == "birds":                               # 纸鸟：一串轻快的「扑棱」
             for i in range(ev["n"]):
                 add(track, noise_burst(0.08, 0.12, 50, 20 + i), ev["t"] + 0.2 * i)
+        if k == "choice":                              # 选择题：按钮「啵啵」弹出；倒计时「嘀嗒」；揭晓「叮咚」
+            for i in range(len(ev["options"])):
+                add(track, tone(600 + 200 * i, 0.12, 0.22, 22, f_end=900 + 200 * i), ev["t0"] + 0.12 * i)
+            if ev.get("reveal") is not None:
+                t = ev["t0"] + 0.5
+                while t < ev["reveal"] - 0.1:
+                    add(track, tone(1800, 0.05, 0.12, 60), t)
+                    t += 0.5
+                add(track, (tone(784, 0.3, 0.3, 8), tone(1175, 0.45, 0.25, 6)), ev["reveal"])
+        if k == "nope":                                # 反例卡：弹出「啵」，红叉「嘟」
+            for tu, tx, _lab in ev["items"]:
+                add(track, tone(700, 0.1, 0.2, 25, f_end=1100), tu)
+                add(track, tone(220, 0.3, 0.35, 10, f_end=150), tx)
+        if k == "confetti":                            # 彩带：一串亮晶晶
+            for i, f in enumerate([1046, 1318, 1568, 2093, 2637]):
+                add(track, tone(f, 0.4, 0.14, 6), ev["t"] + i * 0.08)
         if k == "seasons":                             # 四季翻页：翻纸声
             per = (ev["t1"] - ev["t0"]) / (ev.get("loops", 2) * 4)
             t = ev["t0"]
