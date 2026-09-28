@@ -466,8 +466,8 @@ function drawNope(ev, t) {
     ctx.font = '900 54px "Noto Sans SC"'; const w = Math.max(300, ctx.measureText(label).width + 80);
     card(() => deckle(ctx, -w / 2, -80, w, 160, 26, 21 + i), '#e8dccb', { outline: 7, shadow: 12 });
     ctx.fillStyle = INK; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, 0, 4);
-    if (t >= tx) { const x = easeOutBack(clamp((t - tx) / 0.25, 0, 1)); ctx.scale(x, x); ctx.strokeStyle = RED; ctx.lineWidth = 22; ctx.lineCap = 'round';
-      ctx.globalAlpha = a * 0.9; ctx.beginPath(); ctx.moveTo(-90, -70); ctx.lineTo(90, 70); ctx.moveTo(90, -70); ctx.lineTo(-90, 70); ctx.stroke(); }
+    if (t >= tx) { const x = easeOutBack(clamp((t - tx) / 0.25, 0, 1)); ctx.scale(x, x); ctx.strokeStyle = RED; ctx.lineWidth = 15; ctx.lineCap = 'round';
+      ctx.globalAlpha = a * 0.75; ctx.beginPath(); ctx.moveTo(-90, -70); ctx.lineTo(90, 70); ctx.moveTo(90, -70); ctx.lineTo(-90, 70); ctx.stroke(); }
     ctx.restore();
   });
 }
@@ -715,9 +715,29 @@ function buildTitle(T) {
   tg.globalCompositeOperation = 'source-atop'; tg.globalAlpha = 0.5; tg.fillStyle = fiber; tg.fillRect(0, 0, W, 520);
   g.drawImage(txt, 0, 0); return c;
 }
+// 字幕换行：放得下就一行；两行时优先在标点后面断、断在最靠中间的位置；标点永远不放在行首
+const PUNCT = '，。？！：；、…—）」』”,.?!:;';
 function wrap(text, maxW) {
+  const fits = s => ctx.measureText(s).width <= maxW;
+  if (fits(text)) return [text];
+  const chars = [...text];
+  let best = -1, bestD = 1e9;
+  for (let i = 1; i < chars.length - 1; i++)
+    if (PUNCT.includes(chars[i - 1]) && !PUNCT.includes(chars[i])) {
+      const a = chars.slice(0, i).join(''), b = chars.slice(i).join(''), d = Math.abs(a.length - b.length);
+      if (fits(a) && fits(b) && d < bestD) { best = i; bestD = d; }
+    }
+  if (best > 0) return [chars.slice(0, best).join(''), chars.slice(best).join('')];
+  // 三行及以上：按分句装行（一句放不下再逐字排），行首的标点挂到上一行末尾
+  const clauses = []; let c = '';
+  for (const ch of chars) { c += ch; if (PUNCT.includes(ch)) { clauses.push(c); c = ''; } }
+  if (c) clauses.push(c);
   const out = []; let cur = '';
-  for (const ch of text) { if (ctx.measureText(cur + ch).width > maxW) { out.push(cur); cur = ch; } else cur += ch; }
+  for (const cl of clauses) {
+    if (fits(cur + cl)) { cur += cl; continue; }
+    if (cur) { out.push(cur); cur = ''; }
+    for (const ch of cl) { if (!fits(cur + ch) && cur && !PUNCT.includes(ch)) { out.push(cur); cur = ch; } else cur += ch; }
+  }
   if (cur) out.push(cur); return out;
 }
 
