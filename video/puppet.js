@@ -5,7 +5,8 @@
 //   parts: { 名字: { pivot: [x,y] 这块纸片绕着转的关节, tip: [x,y] 骨头的另一端, size 单独缩放, ...附着点 } }
 //   torso 上的附着点：neck、shoulderF/shoulderB、hipF/hipB（F = 靠近观众的一侧，B = 远的一侧）
 //   head 上：knot（飘带）、mouth [x,y,宽]、eyes [[x,y,rx,ry],...]、skin（取肤色的点）
-//   手臂：upper → forearm → 手（hands 把手形 open/fist/point/up/wave 映射到部件），手腕能单独转
+//   手臂：upper → fore_<手形>（前臂和手是一张纸片，video/merge_limbs.py 合成，手腕不单独转；hands 把手形 open/fist/point/up/wave 映射到部件）
+//   腿：thigh → shin → foot。脚踝要转（鞋底才能一直贴地），bare 里的部件另有不带白边的纸芯图，用来盖掉鞋口压在小腿上的白边
 //   scale：部件像素 → 画面像素；ankleH：脚踝到鞋底的高度（部件像素）
 // 角度约定（面朝右的局部坐标，画布 y 向下）：0 = 竖直向下，正 = 往前转，方向 d(θ) = (sin θ, cos θ)。
 // 面朝左时整个角色水平镜像；换视角时像纸片一样翻个面（0.22 秒）。
@@ -46,19 +47,19 @@ const P = (() => {
 
   // ---------- 动作层 ----------
   // 返回要覆盖的姿势字段：lean 身体前倾, head 点头, look 朝向（1 朝前 / -1 回头，连续值 = 纸片翻面）,
-  // drop 下蹲(0–1), lift 离地, armF/armB [肩角, 肘弯], handF/handB 手形, wristF/wristB 手腕转角,
+  // drop 下蹲(0–1), lift 离地, armF/armB [肩角, 肘弯], handF/handB 手形,
   // grip 双手握道具的权重, reach 伸手够的世界坐标, eyes 'open'|'happy'|'wide', smile, laugh, happy
   const flip = (s, s0, dur = 0.16) => Math.cos(Math.PI * smooth((s - s0) / dur));
   const ACTIONS = {
     talk: (u, d, a, t, p, view) => { const b = Math.sin(t * 7 + a.phase), b2 = Math.sin(t * 3.1 + 1);
       return view === 'q'   // 半正面：近侧的手在胸前摊开比划，手腕跟着节拍翻
-        ? { armF: [0.55 + 0.25 * b, 1.35 + 0.3 * b2], handF: 'open', wristF: -0.35 + 0.35 * b, head: 0.05 * b, lean: 0.02 }
-        : { armF: [0.75 + 0.3 * b, 1.1 + 0.35 * b2], handF: 'open', wristF: -0.2 + 0.3 * b, head: 0.05 * b, lean: 0.03 }; },
+        ? { armF: [0.55 + 0.25 * b, 1.35 + 0.3 * b2], handF: 'open', head: 0.05 * b, lean: 0.02 }
+        : { armF: [0.75 + 0.3 * b, 1.1 + 0.35 * b2], handF: 'open', head: 0.05 * b, lean: 0.03 }; },
     fist: (u, d) => { const s = u * d, up = smooth(s / 0.22), pump = Math.sin(Math.min(1, s / 0.5) * Math.PI);
       // 胸前「耶！」：手肘往下往后一拉，拳头停在胸口高度（不挡脸）
       return { armF: [lerp(0.2, -0.45, up) - 0.2 * pump, lerp(0.8, 2.5, up)], armB: [0.2, 1.8], handF: 'fist', handB: 'fist', drop: 0.2 * pump, lean: 0.06 * pump - 0.03, eyes: 'wide', smile: 1 }; },
     reach: (u, d, a, t, p) => { const k = Math.min(p.stop ?? 1, smooth(u * d / 0.55));
-      return { reach: p.target, reachW: k, lean: 0.22 * k, drop: 0.2 * k, handF: 'open', wristF: 0.25 }; },
+      return { reach: p.target, reachW: k, lean: 0.22 * k, drop: 0.2 * k, handF: 'open' }; },
     look: (u, d) => { const s = u * d;   // 回头看一眼身后、转回来，再看一眼、转回来
       const l = s < 0.55 ? flip(s, 0.08) : s < 1.0 ? -flip(s, 0.55) : s < 1.45 ? flip(s, 1.0) : -flip(s, 1.45);
       return { look: l, head: -0.06, eyes: 'wide', lean: -0.04 }; },
@@ -77,7 +78,7 @@ const P = (() => {
       for (const [h0, n] of p.hops || []) if (s > h0 && s < h0 + n * 0.42) hop = Math.abs(Math.sin((s - h0) / 0.42 * Math.PI));
       return { grip: 1, handF: 'up', handB: 'up', happy: smooth(s / 0.15), smile: 1, laugh: smooth(s / 0.3), armBFront: true,
                lean: -0.08 + 0.06 * b, head: -0.12 + 0.12 * b, lift: 5 * b + 22 * hop }; },
-    wave: (u, d, a, t) => ({ armF: [2.4, 0.5], handF: 'wave', wristF: 0.35 * Math.sin(t * 11), smile: 1, head: -0.06 }),
+    wave: (u, d, a, t) => ({ armF: [2.4, 0.5 + 0.35 * Math.sin(t * 11)], handF: 'wave', smile: 1, head: -0.06 }),   // 手腕不单独转：整条前臂左右摆
     cheer: (u, d, a, t) => { const hop = Math.abs(Math.sin(u * d * 5.2));
       return { armF: [2.75 + 0.15 * hop, 0.25], armB: [2.55 + 0.15 * hop, 0.35], handF: 'fist', handB: 'fist', lift: 30 * hop, eyes: 'happy', smile: 1, lean: -0.1 }; },
   };
@@ -95,7 +96,7 @@ const P = (() => {
     const lean0 = moving * lerp(0.05, 0.2, run);
     const pose = {
       lean: lean0 + Math.sin(t * 2.2 + a.phase) * 0.015, head: -lean0 * 0.45 + Math.sin(t * 1.7 + a.phase) * 0.02,
-      look: 1, drop: 0, lift: 0, grip: 0, reachW: 0, wristF: 0, wristB: 0,
+      look: 1, drop: 0, lift: 0, grip: 0, reachW: 0,
       handF: 'open', handB: 'open', eyes: 'open', smile: 0, laugh: 0, happy: 0, strain: 0, armBFront: false,
     };
     const swing = moving * lerp(0.4, 0.85, run), elbow = lerp(0.3, 1.7, run * moving), R0 = REST[view] || REST.side;
@@ -155,25 +156,16 @@ const P = (() => {
     }
     // 手里的道具（木杆、金子）：场景给出双手要握的点（局部坐标）、画法和画在哪一层
     const held = a.hook ? a.hook(t, { x: st.x, face: Math.sign(dirn), sh, neck, head, st, toLocal, view }) : null;
-    // 手臂：上臂 → 前臂 → 手；握东西时用反向运动学让手（握点）够到目标
+    // 手臂：上臂 → 前臂连手（一张纸片）；握东西、伸手够东西时用反向运动学让握点够到目标
     const arm = side => {
       const A = sh[side], fk = pose['arm' + side];
       let a1 = fk[0], a2 = fk[0] + fk[1];
       const i = side === 'F' ? 0 : 1, hn = rig.hands[pose['hand' + side]] || rig.hands.open;
       const tgt = pose.grip > 0 && held && held.grips ? [held.grips[i], pose.grip]
         : side === 'F' && pose.reachW > 0 && pose.reach ? [toLocal(pose.reach), pose.reachW] : null;
-      const hA = tgt && pose.grip > 0 && held.handAngles ? held.handAngles[i] : null;
-      if (tgt) {
-        let ij;
-        if (hA != null) {   // 手的朝向由道具决定：从握点反推手腕，前臂只够到手腕
-          const w = add(tgt[0], dir(hA), -boneLen(rig, hn));
-          ij = ik(A, w, L.upper, L.forearm, -1);
-        } else ij = ik(A, tgt[0], L.upper, L.fore, -1);
-        a1 = lerp(a1, ij[0], tgt[1]); a2 = lerp(a2, ij[1], tgt[1]);
-      }
-      const up = place(rig, 'upper', A, a1), fo = place(rig, 'forearm', up.map(rig.parts.upper.tip), a2);
-      const hd = place(rig, hn, fo.map(rig.parts.forearm.tip), hA != null ? lerp(a2, hA, tgt[1]) : a2 + (tgt ? 0 : pose['wrist' + side]));
-      return [up, fo, hd];
+      if (tgt) { const ij = ik(A, tgt[0], L.upper, boneLen(rig, hn), -1); a1 = lerp(a1, ij[0], tgt[1]); a2 = lerp(a2, ij[1], tgt[1]); }
+      const up = place(rig, 'upper', A, a1);
+      return [up, place(rig, hn, up.map(rig.parts.upper.tip), a2)];
     };
     const armF = arm('F'), armB = arm('B');
     // 飘带：结在头上，跑得越快越往后飘，带一点抖动
@@ -185,17 +177,31 @@ const P = (() => {
     g.fillStyle = 'rgba(60,40,20,0.32)'; g.beginPath();
     g.ellipse(0, GROUND + 4, st.legLen * 0.75 * (1 - Math.min(0.5, (st.jy + pose.lift) / 250)), 7, 0, 0, TAU); g.fill();
     const shadowOn = () => { g.shadowColor = 'rgba(50,30,10,0.26)'; g.shadowBlur = 6; g.shadowOffsetX = 3; g.shadowOffsetY = 3; };
-    const put = (pl, dark) => {
-      const im = (dark ? V.dark : V.img)[pl.name], p = rig.parts[pl.name];
-      g.save(); g.translate(pl.at[0], pl.at[1]); g.rotate(pl.phi); g.scale(pl.s, pl.s);
-      g.drawImage(im, -p.pivot[0] - V.pad, -p.pivot[1] - V.pad); g.restore();
+    const putOn = (ctx, pl, dark, bare) => {
+      const im = (bare ? (dark ? V.bareDark : V.bare) : (dark ? V.dark : V.img))[pl.name], p = rig.parts[pl.name], pad = bare ? V.barePad : V.pad;
+      ctx.save(); ctx.translate(pl.at[0], pl.at[1]); ctx.rotate(pl.phi); ctx.scale(pl.s, pl.s);
+      ctx.drawImage(im, -p.pivot[0] - pad, -p.pivot[1] - pad); ctx.restore();
+    };
+    const put = (pl, dark) => putOn(g, pl, dark, false);
+    // 腿：鞋盖住小腿末端。鞋口那圈白边压在小腿上会像断成两截 → 在离屏画布上把小腿的纸芯（不带白边）再画一遍、
+    // 挖掉鞋身，盖回去：白边被盖掉，腿仍插在鞋里（脚踝照样能转）
+    const putLeg = (lg, dark) => {
+      put(lg.th, dark); put(lg.sn, dark); put(lg.ft, dark);
+      if (!V.bare.shin || !V.bare.foot) return;
+      const c = g.canvas;
+      if (!V.tmp || V.tmp.width !== c.width || V.tmp.height !== c.height) V.tmp = Object.assign(document.createElement('canvas'), { width: c.width, height: c.height });
+      const tg = V.tmp.getContext('2d');
+      tg.setTransform(1, 0, 0, 1, 0, 0); tg.clearRect(0, 0, c.width, c.height); tg.setTransform(g.getTransform());
+      putOn(tg, lg.sn, dark, true);
+      tg.globalCompositeOperation = 'destination-out'; putOn(tg, lg.ft, dark, true); tg.globalCompositeOperation = 'source-over';
+      g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.shadowColor = 'transparent'; g.drawImage(V.tmp, 0, 0); g.restore();
     };
     const drawHeld = layer => { if (held && held.draw && (held.layer || 'afterHead') === layer) { g.shadowColor = 'rgba(50,30,10,0.3)'; held.draw(g); shadowOn(); } };
     shadowOn();
     if (!pose.armBFront) armB.forEach(p => put(p, true));
-    put(legs.B.th, true); put(legs.B.sn, true); put(legs.B.ft, true);
+    putLeg(legs.B, true);
     if (tails) put(tails, false);
-    put(legs.F.th, false); put(legs.F.sn, false); put(legs.F.ft, false);
+    putLeg(legs.F, false);
     put(torso, false);
     drawHeld('mid');
     const onShoulder = held && held.layer === 'shoulder';
@@ -209,7 +215,7 @@ const P = (() => {
     if (pose.armBFront) armB.forEach(p => put(p, false));   // 半正面捧东西时，远侧手臂绕到身前
     if (!onShoulder) put(armF[0], false);
     drawHeld('overUpper');
-    put(armF[1], false); put(armF[2], false);
+    put(armF[1], false);
     drawHeld('front');
     if (pose.strain > 0.5) {   // 汗珠：从头顶两侧甩出去（吃力的信号）
       const top = head.map([rig.parts.head.pivot[0], rig.parts.head.pivot[1] * 0.25]);
@@ -268,17 +274,19 @@ const P = (() => {
     const keep = new Set(['size']);
     const rig = { scale: raw.scale / k, ankleH: raw.ankleH * k, hands: raw.hands, parts: {} };
     for (const [n, p] of Object.entries(raw.parts)) rig.parts[n] = Object.fromEntries(Object.entries(p).map(([kk, v]) => [kk, keep.has(kk) ? v : mul(v)]));
-    const V = { rig, img: {}, dark: {}, pad: 7 };
-    V.L = { thigh: boneLen(rig, 'thigh'), shin: boneLen(rig, 'shin'), upper: boneLen(rig, 'upper'),
-            fore: boneLen(rig, 'forearm') + boneLen(rig, rig.hands.fist), forearm: boneLen(rig, 'forearm') };   // fore = 前臂 + 手（到握点）
-    for (const n of Object.keys(raw.parts)) {
-      const src = images[n], c = document.createElement('canvas');
+    const V = { rig, img: {}, dark: {}, bare: {}, bareDark: {}, pad: 7, barePad: 2 };   // pad = paperize 的 edge + 2
+    V.L = { thigh: boneLen(rig, 'thigh'), shin: boneLen(rig, 'shin'), upper: boneLen(rig, 'upper') };
+    const mk = (src, edge) => {
+      const c = document.createElement('canvas');
       c.width = Math.round(src.width * k); c.height = Math.round(src.height * k);
       const cg = c.getContext('2d'); cg.imageSmoothingQuality = 'high'; cg.drawImage(src, 0, 0, c.width, c.height);
-      V.img[n] = paperize(c, { edge: 5, sat: 0.88, grain: 0.28 });
-      const d = document.createElement('canvas'); d.width = V.img[n].width; d.height = V.img[n].height;
-      const dg = d.getContext('2d'); dg.filter = 'brightness(0.86) sepia(0.12) saturate(1.1)'; dg.drawImage(V.img[n], 0, 0); V.dark[n] = d;
-    }
+      const im = paperize(c, { edge, sat: 0.88, grain: 0.28 });
+      const d = document.createElement('canvas'); d.width = im.width; d.height = im.height;
+      const dg = d.getContext('2d'); dg.filter = 'brightness(0.86) sepia(0.12) saturate(1.1)'; dg.drawImage(im, 0, 0);
+      return [im, d];
+    };
+    for (const n of Object.keys(raw.parts)) [V.img[n], V.dark[n]] = mk(images[n], 5);
+    for (const n of raw.bare || []) [V.bare[n], V.bareDark[n]] = mk(images[n + '_bare'], 0);   // 纸芯：不加纸边
     if (rig.parts.tails) { const p = rig.parts.tails; V.tailRest = ang(p.tip[0] - p.pivot[0], p.tip[1] - p.pivot[1]); }
     const hc = document.createElement('canvas'); hc.width = images.head.width; hc.height = images.head.height;
     const hg = hc.getContext('2d'); hg.drawImage(images.head, 0, 0);

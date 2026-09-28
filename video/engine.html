@@ -117,6 +117,7 @@ function buildSet(set) {
   cache.farW = fw;
   if (set.hills) cache.hills = offscreen(set.hills.width, set.hills.filter, g => { for (const [n, x, b, h] of set.hills.items) put(g, n, x, b, h); });
   cache.mid = offscreen(set.mid.width, set.mid.filter, g => {
+    for (const [n, x, b, h] of set.mid.behind || []) put(g, n, x, b, h);   // 城墙后面的东西（旗杆脚藏在垛墙后，看着像插在墙上）
     const ws = set.mid.wallStrip;
     if (ws) {
       const src = img[ws.img + '_raw'], [c0, c1] = ws.crop, k = ws.height / src.height, seg = (c1 - c0) * k;
@@ -221,7 +222,7 @@ function drawPoleAt(g, p, Pt, th, f) {
   g.save(); g.translate(Pt[0], Pt[1]); g.rotate(Math.PI / 2 - th);
   g.drawImage(cache.pole, -f * p.height - 7, -p.thick / 2 - 9); g.restore();
 }
-function poleState(p, t, info) {   // info = 扛的人此刻的局部信息（纸偶的 hook 提供）；返回局部坐标下的木杆状态、双手握点和手的朝向
+function poleState(p, t, info) {   // info = 扛的人此刻的局部信息（纸偶的 hook 提供）；返回局部坐标下的木杆状态和双手握点
   const H = p.height, [l0, l1] = p.lift, [d0, d1] = p.drop, T = p.thick;
   const Ps = [(p.x - info.x) * info.face, GROUND + 6 - 0.18 * H];
   const bounce = Math.sin(info.st.phase * Math.PI * 4) * info.st.moving;
@@ -248,12 +249,12 @@ function poleState(p, t, info) {   // info = 扛的人此刻的局部信息（�
   // 两端都不能扎进地里：低于地面就整根往上抬
   const low = Math.max(Pn[1] - f * H * Math.cos(th), Pn[1] + (1 - f) * H * Math.cos(th));
   if (low > GROUND + 12) Pn = [Pn[0], Pn[1] - (low - GROUND - 12)];
-  // 握点：两只手都从下面兜住杆子；手顺着杆的方向
+  // 握点：两只手都从下面兜住杆子
   const up = [Math.cos(th), -Math.sin(th)];
   const grips = [[p.gF, -0.95], [p.gB, -0.95]].map(([[a, b], k]) => { const o = P.lerp(a, b, u) * H;
     return [Pn[0] + Math.sin(th) * o + up[0] * T * k * u, Pn[1] + Math.cos(th) * o + up[1] * T * k * u]; });
   // 起杆时木杆在头后面（不挡脸），快落到肩上时再压到上臂上面
-  return { P: Pn, th, f, grips, handAngles: u > 0.5 ? [th, th] : null, layer: u < 0.85 ? 'mid' : 'afterHead' };   // 起杆时在头后面；抱住以后在身体前面、手臂后面（手臂兜着它）
+  return { P: Pn, th, f, grips, layer: u < 0.85 ? 'mid' : 'afterHead' };   // 起杆时在头后面；抱住以后在身体前面、手臂后面（手臂兜着它）
 }
 function drawPoleWorld(p, t, front) {   // 没被扛着的时候：立在集市南门口，或者放倒在地上
   if (t < p.lift[0]) { if (!front) drawPoleAt(ctx, p, [p.x, GROUND + 6], Math.PI, 0); }
@@ -486,13 +487,13 @@ async function init(sceneData, assets) {
   cache.ingot = makeIngot();
   for (const [id, a] of Object.entries(scene.actors)) if (a.rigData) {   // 纸偶角色
     const views = Object.fromEntries(Object.entries(a.rigs).map(([v, d]) => [v, { raw: a.rigData[v],
-      images: Object.fromEntries(Object.keys(a.rigData[v].parts).map(n => [n, img[`rig:${d}:${n}`]])) }]));
+      images: Object.fromEntries([...Object.keys(a.rigData[v].parts), ...(a.rigData[v].bare || []).map(b => b + '_bare')].map(n => [n, img[`rig:${d}:${n}`]])) }]));
     P.setup(a, views, scene.subtitles, paperize);
     const poles = scene.props.filter(p => p.type === 'pole' && p.by === id), golds = scene.events.filter(e => e.type === 'gold' && e.by === id);
     for (const p of poles) { cache.pole = makePole(p.height, p.thick); p.rest = p.rest || [40, GROUND + 44 - p.thick / 2]; p.gF = p.gF || [0.0, 0.02]; p.gB = p.gB || [0.04, 0.075]; }
     a.hook = (t, info) => {   // 手里拿着的东西：木杆（扛起到放下之间）、金块
       const p = poles.find(p => t >= p.lift[0] && t < p.drop[1]);
-      if (p) { const st = poleState(p, t, info); return { grips: st.grips, handAngles: st.handAngles, layer: st.layer, draw: g => drawPoleAt(g, p, st.P, st.th, st.f) }; }
+      if (p) { const st = poleState(p, t, info); return { grips: st.grips, layer: st.layer, draw: g => drawPoleAt(g, p, st.P, st.th, st.f) }; }
       const e = golds.find(e => t >= e.t - 0.6);
       return e ? goldState(e, t, info) : null;
     };
@@ -501,7 +502,7 @@ async function init(sceneData, assets) {
   const skip = new Set([scene.set.far.img, scene.set.stage.ground.img]);   // 远景和地面是整块拼接的，不加边
   img.wall_raw = img.wall;   // 拼整条城墙用原图（拼好再统一加纸边）
   pz('wall', { edge: 4, sat: 0.72 });
-  for (const k of ['hills', 'mid', 'stage', 'fore', 'frame']) for (const [n] of (scene.set[k] || { items: [] }).items) if (!skip.has(n)) pz(n, { edge: 5, sat: 0.8 });
+  for (const k of ['hills', 'mid', 'stage', 'fore', 'frame']) for (const [n] of [...((scene.set[k] || {}).items || []), ...((scene.set[k] || {}).behind || [])]) if (!skip.has(n)) pz(n, { edge: 5, sat: 0.8 });
   buildSet(scene.set);
   return true;
 }

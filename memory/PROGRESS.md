@@ -5,11 +5,13 @@
 ## 当前阶段：儿童历史动画「资治通鉴」第 1 集（徙木立信）
 - 剧本定稿 N5：`video/stories/ep01/N5_最终.json`（讨论和决策见 `docs/讲故事-方法与决策.md`）
 - 画风：纸艺立体书 + 横版闯关 + Q 版（Chris 认可）；资源集中在人物动作上
-- 人物：纸偶关节动画 `video/puppet.js`。小伙已完成侧面（`video/assets/rig/youth`）+ 45° 半正面（`youth_q`）两套、五种手形
+- 人物：纸偶关节动画 `video/puppet.js`。小伙已完成侧面（`video/assets/rig/youth`）+ 45° 半正面（`youth_q`）两套、五种手形；前臂和手合成一张（改了原图要重跑 `video/merge_limbs.py`）
 - 测试片段：`video/scenes/test_puppet_youth.json`（19 秒）。最后一轮合理性复查 13/17 通过，剩下 4 处都在「抱木杆」这一段
 - 每集必做：`video/logic_qa.py` 合理性复查（Chris 的要求）；动作改动用 `video/motion_qa.py` 做改前 vs 改后
 
 ### 下一步（按顺序）
+0. 【等 Chris】看第三轮修改后的测试片段：旗杆插在城墙后面；手腕合成一张纸片；脚踝接缝去掉（脚踝仍会转，理由见 DECISIONS 2026-09-28）
+   - Jev 质检还没跑（云端 key 未生效）：新会话里补跑 `video/motion_qa.py`（改前 vs 改后）和 `video/logic_qa.py`
 1. 【等 Chris】看 `test_puppet_youth.mp4`：接不接受「抱在腰前」代替「扛在肩上」（Q 版扛肩一定横过下巴）；45° 视角和手部动作方向对不对
 2. 收尾抱杆段（复查剩下的 4 处）：远侧前臂和手画到木杆前面（上臂仍在身体后面）；木杆带一点下垂弧度；抱着时后仰更明显；放杆时杆头要真正着地
 3. 其余角色做纸偶（侧面 + 45° 各一张 Codex 部件图，astra low）：商鞅、小豆子、爹、大婶、现代小孩、同桌、司马光、两位老师 ——**Codex 只能在本地跑**，云端先做别的

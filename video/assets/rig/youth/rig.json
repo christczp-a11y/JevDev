@@ -1,27 +1,44 @@
 {
- "about": "壮小伙·侧面纸偶（走、跑、干活用）。部件来自 Codex 的 youth_parts.png（头、身体、上臂、腿、鞋、飘带）和 hands_parts.png（前臂、五种手）；坐标都是部件图片里的像素。F = 靠近观众的一侧，B = 远的一侧。size = 部件单独缩放（调 Q 版比例、让两张部件图的比例对上）。手从前臂上分开，手腕能转；hands 把手形名映射到部件",
+ "about": "壮小伙·侧面纸偶（走、跑、干活用）。部件来自 Codex 的 youth_parts.png（头、身体、上臂、腿、鞋、飘带）和 hands_parts.png（前臂、五种手）；坐标都是部件图片里的像素。F = 靠近观众的一侧，B = 远的一侧。size = 部件单独缩放（调 Q 版比例、让两张部件图的比例对上）。手和前臂合成一张纸片（fore_<手形>，video/merge_limbs.py 生成，手腕不单独转）；hands 把手形名映射到部件；bare 列出有纸芯图（不带白边）的部件，用来盖掉鞋口压在小腿上的白边",
  "scale": 0.18,
  "ankleH": 70,
  "hands": {
-  "open": "hand_open",
-  "fist": "hand_fist",
-  "point": "hand_point",
-  "up": "hand_up",
-  "wave": "hand_wave"
+  "open": "fore_open",
+  "fist": "fore_fist",
+  "point": "fore_point",
+  "up": "fore_up",
+  "wave": "fore_wave"
  },
  "parts": {
   "head": {"pivot": [230, 455], "tip": [230, 0], "knot": [40, 290], "mouth": [362, 386, 48], "eyes": [[313, 292, 36, 42]], "skin": [300, 400], "size": 1.15},
   "tails": {"pivot": [290, 45], "tip": [45, 160], "size": 1.1},
   "torso": {"pivot": [180, 360], "tip": [180, 40], "neck": [180, 45], "shoulderF": [65, 130], "shoulderB": [300, 115], "hipF": [120, 345], "hipB": [215, 352]},
   "upper": {"pivot": [75, 70], "tip": [238, 195], "size": 0.82},
-  "forearm": {"pivot": [80, 110], "tip": [393, 118], "size": 0.47},
-  "hand_open": {"pivot": [60, 100], "tip": [240, 100], "size": 0.5},
-  "hand_fist": {"pivot": [60, 125], "tip": [250, 125], "size": 0.5},
-  "hand_point": {"pivot": [65, 110], "tip": [260, 100], "size": 0.5},
-  "hand_up": {"pivot": [70, 85], "tip": [270, 120], "size": 0.5},
-  "hand_wave": {"pivot": [170, 360], "tip": [170, 200], "size": 0.5},
   "thigh": {"pivot": [60, 60], "tip": [245, 300], "size": 0.78},
   "shin": {"pivot": [90, 55], "tip": [95, 250], "size": 0.78},
-  "foot": {"pivot": [95, 28], "tip": [95, 98], "size": 0.8}
- }
+  "foot": {"pivot": [95, 28], "tip": [95, 98], "size": 0.8},
+  "fore_open": {"pivot": [83.0, 114.0], "tip": [453.6, 149.4], "size": 0.47},
+  "fore_fist": {"pivot": [83.0, 116.0], "tip": [456.1, 135.0], "size": 0.47},
+  "fore_point": {"pivot": [83.0, 114.0], "tip": [440.2, 141.2], "size": 0.47},
+  "fore_up": {"pivot": [83.0, 123.0], "tip": [491.2, 143.3], "size": 0.47},
+  "fore_wave": {"pivot": [83.0, 156.0], "tip": [504.9, 182.6], "size": 0.47}
+ },
+ "sources": {
+  "hands": {
+   "open": "hand_open",
+   "fist": "hand_fist",
+   "point": "hand_point",
+   "up": "hand_up",
+   "wave": "hand_wave"
+  },
+  "parts": {
+   "forearm": {"pivot": [80, 110], "tip": [393, 118], "size": 0.47},
+   "hand_open": {"pivot": [60, 100], "tip": [240, 100], "size": 0.5},
+   "hand_fist": {"pivot": [60, 125], "tip": [250, 125], "size": 0.5},
+   "hand_point": {"pivot": [65, 110], "tip": [260, 100], "size": 0.5},
+   "hand_up": {"pivot": [70, 85], "tip": [270, 120], "size": 0.5},
+   "hand_wave": {"pivot": [170, 360], "tip": [170, 200], "size": 0.5}
+  }
+ },
+ "bare": ["shin", "foot"]
 }

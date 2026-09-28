@@ -44,10 +44,11 @@ def assets_for(scene):
     files = {n: ROOT / "assets/chars" / f"{n}.png" for a in scene["actors"].values() for n in a.get("sprites", {}).values()}
     for a in scene["actors"].values():
         for v, d in a.get("rigs", {}).items():
-            files.update({f"rig:{d}:{n}": ROOT / "assets/rig" / d / f"{n}.png" for n in a["rigData"][v]["parts"]})
+            rd = a["rigData"][v]
+            files.update({f"rig:{d}:{n}": ROOT / "assets/rig" / d / f"{n}.png" for n in [*rd["parts"], *(f"{b}_bare" for b in rd.get("bare", []))]})
     files.update({n: ROOT / "assets/props" / f"{n}.png" for n in PROPS})
     s = scene["set"]
-    names = {s["far"]["img"], s["stage"]["ground"]["img"]} | {it[0] for k in ("hills", "mid", "stage", "fore", "frame") for it in s.get(k, {}).get("items", [])}
+    names = {s["far"]["img"], s["stage"]["ground"]["img"]} | {it[0] for k in ("hills", "mid", "stage", "fore", "frame") for it in s.get(k, {}).get("items", []) + s.get(k, {}).get("behind", [])}
     if s["mid"].get("wallStrip"):
         names.add(s["mid"]["wallStrip"]["img"])
     files.update({n: ROOT / "assets" / s["dir"] / f"{n}.png" for n in names})
