@@ -364,3 +364,11 @@ ref_douzi_now.png
 ref_style.png
 ref_dad_now.png
 
+exec
+/bin/bash -lc 'cp /root/.codex/generated_images/01a0e677-25e8-7571-a97a-da09f93614ec/exec-fd4f969c-7e24-4242-89db-38d97a43ae3d.png concept_v2.png' in /home/user/JevDev/video/assets/codex_ep01
+ succeeded in 0ms:
+codex
+已保存：concept_v2.png
+tokens used
+37,613
+已保存：concept_v2.png
