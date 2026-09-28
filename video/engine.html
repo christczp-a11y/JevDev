@@ -359,7 +359,7 @@ function drawActor(a, t) {
   const tilt = (s.moving && !s.jy ? Math.sin(t * 14) * 0.05 : 0) + rot;
   const baseY = GROUND + (a.y || 0) + riseY;
   ctx.save();
-  if (a.enter !== 'rise') { ctx.fillStyle = `rgba(60,40,20,${0.25 * grow})`; ctx.beginPath();
+  if (a.enter !== 'rise' && !window.solo3d) { ctx.fillStyle = `rgba(60,40,20,${0.25 * grow})`; ctx.beginPath();
     ctx.ellipse(s.x + dx, baseY + 6, Math.max(1, w * 0.34 * grow * (1 - s.jy / 400)), 9 * grow, 0, 0, 7); ctx.fill(); }
   ctx.translate(s.x + dx, baseY - bob - s.jy); ctx.rotate(tilt);
   ctx.scale((a.native === -1 ? -s.flip : s.flip) * grow, grow * (1 - squash + talk));
@@ -823,6 +823,28 @@ function layoutBoxes(t) {
   return { cam, boxes: out };
 }
 window.layoutBoxes = layoutBoxes;
+// 3D 舞台（video/stage3d）：把一个角色单独画到透明底的 out 画布上（角色脚底中心在 out 的 [宽/2, 高-FOOT]），
+// 给 Three.js 当贴图用。地上的影子、投影都不画（3D 里有真的影子）；说话气泡照画
+const FOOT = 60;
+function renderSolo(id, t, out, k = 1) {   // k：放大倍数（特写不糊：素材图本身比 2D 画面里用到的大）
+  const a = scene.actors[id], [s0, s1] = a.show || [-1e9, 1e9], OW = out.width, OH = out.height, o = out.getContext('2d');
+  if (C.width < OW || C.height < OH) { C.width = Math.max(C.width, OW); C.height = Math.max(C.height, OH); }
+  o.clearRect(0, 0, OW, OH);
+  if (t < s0 || t > s1) return null;
+  const x = a.rigData ? a.xAt(t) : actorState(a, t).x;
+  window.solo3d = true;
+  Object.defineProperty(ctx, 'shadowColor', { configurable: true, get: () => 'transparent', set: () => {} });
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, OW, OH);
+  ctx.translate(OW / 2, OH - FOOT * k); ctx.scale(k, k); ctx.translate(-x, -GROUND);
+  const pos = a.rigData ? P.draw(ctx, a, t) : drawActor(a, t);
+  for (const [t0, t1, text] of a.bubbles || [])
+    if (pos && t >= t0 && t <= t1) bubble(pos.x, pos.top - 14, text, Math.min((t - t0) / 0.25, (t1 - t) / 0.2));
+  ctx.restore();
+  delete ctx.shadowColor; window.solo3d = false;
+  o.drawImage(C, 0, 0, OW, OH, 0, 0, OW, OH);
+  return { x, top: pos ? pos.top : null };
+}
+window.renderSolo = renderSolo;
 // 质检截图用：某个角色在 t 时刻位于闯关画面里的横坐标
 function actorScreenX(id, t) { const a = scene.actors[id]; return (a.rigData ? a.xAt(t) : actorState(a, t).x) - interp(scene.camera, t); }
 window.init = init; window.renderFrame = renderFrame; window.footsteps = footsteps; window.actorScreenX = actorScreenX;

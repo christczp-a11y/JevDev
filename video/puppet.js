@@ -183,8 +183,8 @@ const P = (() => {
       V.tailRest - 0.5 * flow + 0.15 * (pose.lean + pose.head) + Math.sin(t * lerp(2.6, 14, flow) + a.phase) * lerp(0.11, 0.13, flow) + Math.sin(t * 1.1 + a.phase * 2) * 0.06 * (1 - flow));
 
     g.save(); g.translate(st.x, 0); g.scale(face, 1);
-    g.fillStyle = 'rgba(60,40,20,0.32)'; g.beginPath();
-    g.ellipse(0, GROUND + 4, st.legLen * 0.75 * (1 - Math.min(0.5, (st.jy + pose.lift) / 250)), 7, 0, 0, TAU); g.fill();
+    if (!window.solo3d) { g.fillStyle = 'rgba(60,40,20,0.32)'; g.beginPath();
+    g.ellipse(0, GROUND + 4, st.legLen * 0.75 * (1 - Math.min(0.5, (st.jy + pose.lift) / 250)), 7, 0, 0, TAU); g.fill(); }
     const shadowOn = () => { g.shadowColor = 'rgba(50,30,10,0.26)'; g.shadowBlur = 6; g.shadowOffsetX = 3; g.shadowOffsetY = 3; };
     const putOn = (ctx, pl, dark, bare) => {
       const im = (bare ? (dark ? V.bareDark : V.bare) : (dark ? V.dark : V.img))[pl.name], p = rig.parts[pl.name], pad = bare ? V.barePad : V.pad;
