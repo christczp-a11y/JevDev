@@ -5,6 +5,7 @@
   - AI 图一律画成「一眼就是插画」的风格，并在图上标「AI 插画 · 仅示意」：画的是这类菜，不冒充这家店的实物
 """
 import re
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -13,8 +14,9 @@ from pillow_heif import register_heif_opener
 
 register_heif_opener()  # iPhone 照片默认是 HEIC
 
-CODEX_EXE = (Path.home() / "AppData/Roaming/npm/node_modules/@openai/codex/node_modules/@openai/codex-win32-x64"
-             / "vendor/x86_64-pc-windows-msvc/bin/codex.exe")
+_WIN_CODEX = (Path.home() / "AppData/Roaming/npm/node_modules/@openai/codex/node_modules/@openai/codex-win32-x64"
+              / "vendor/x86_64-pc-windows-msvc/bin/codex.exe")
+CODEX_EXE = _WIN_CODEX if _WIN_CODEX.exists() else shutil.which("codex") or "codex"   # 本地 Windows / 云端 Linux（npm i -g @openai/codex）
 AI_LABEL = "AI 插画 · 仅示意"
 PHOTO_LABEL = "实拍"
 PHOTO_EXT = {".jpg", ".jpeg", ".png", ".webp", ".heic"}

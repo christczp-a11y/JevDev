@@ -38,6 +38,7 @@
 - 渲染：19 秒测试片段约 100 秒；ffmpeg 6.1（apt 装的）；Chromium 141 用预装的那个
 - 网络：pypi、fonts.googleapis.com、fonts.gstatic.com 通；api.typesafe.ai、docs.typesafe.ai、playwright 下载地址被拦（在旧容器里测的，环境设置改完要开新会话才生效）
 - Jev 相关（logic_qa / motion_qa / story）需要 `TYPESAFE_API_KEY` 加上 api.typesafe.ai 放行
+- Codex：`npm i -g @openai/codex` 可以装（0.157.1）；登录用 `codex login --device-auth`（Chris 在自己的设备上输入验证码）；需要放行 auth.openai.com、chatgpt.com、api.openai.com（可能还有别的域名，遇到 403 再补）；登录状态存在容器的 ~/.codex，容器回收后要重新登录
 
 ## 能力边界（云端会话时期，仅供参考）
 - 云端可用：无头 Chromium + Playwright 1.56.1（无用户登录态；受网络策略限制）

@@ -210,17 +210,16 @@ const P = (() => {
     shadowOn();
     put(armB[0], true); if (!pose.armBFront) put(armB[1], true);   // 远侧上臂总在身体后面
     putLeg(legs.B, true);
-    if (tails) put(tails, false);
+    // 回头：头这张纸片绕脖子翻面；发带结在头上，跟着一起翻（不然回头时发带会跑到脸前面）
+    const lk = Math.abs(pose.look) < 0.06 ? 0.06 * Math.sign(pose.look || 1) : pose.look;
+    const withHead = fn => { g.save(); g.translate(neck[0], 0); g.scale(lk, 1); g.translate(-neck[0], 0); fn(); g.restore(); };
+    if (tails) withHead(() => put(tails, false));
     putLeg(legs.F, false);
     put(torso, false);
     drawHeld('mid');
     const onShoulder = held && held.layer === 'shoulder';
     if (onShoulder) { put(armF[0], false); drawHeld('shoulder'); }
-    g.save();   // 回头：头这张纸片绕脖子翻面
-    const lk = Math.abs(pose.look) < 0.06 ? 0.06 * Math.sign(pose.look || 1) : pose.look;
-    g.translate(neck[0], 0); g.scale(lk, 1); g.translate(-neck[0], 0);
-    put(head, false); drawFace(g, V, head, pose, t, a);
-    g.restore();
+    withHead(() => { put(head, false); drawFace(g, V, head, pose, t, a); });
     drawHeld('afterHead');
     if (pose.armBFront) put(armB[1], true);   // 半正面捧东西时，远侧前臂绕到身前（压在近侧手臂和东西下面）
     if (!onShoulder) put(armF[0], false);

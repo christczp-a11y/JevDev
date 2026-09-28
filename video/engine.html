@@ -123,6 +123,7 @@ function buildSet(set) {
       const src = img[ws.img + '_raw'], [c0, c1] = ws.crop, k = ws.height / src.height, seg = (c1 - c0) * k;
       const strip = document.createElement('canvas'); strip.width = Math.ceil(ws.to - ws.from); strip.height = ws.height; const sg = strip.getContext('2d');
       for (let x = 0; x < strip.width; x += seg - 1) sg.drawImage(src, c0, 0, c1 - c0, src.height, x, 0, seg, ws.height);
+      for (const [x0, x1] of ws.gaps || []) sg.clearRect(x0 - ws.from, 0, x1 - x0, ws.height);   // 城门门洞后面不能有墙（不然门被堵死）
       const pz = paperize(strip, { edge: 4, sat: 0.72 });
       g.drawImage(pz, ws.from - 6, ws.base - ws.height - 6);
     }
@@ -364,13 +365,14 @@ function drawBand(t) {
     if (p.type === 'deco') put(ctx, p.img, p.x, GROUND + 10, p.height);
   }
   const pos = {};
-  for (const [id, a] of Object.entries(scene.actors)) pos[id] = a.rigData ? P.draw(ctx, a, t) : drawActor(a, t);
+  if (!window.hideActors)   // 合理性复查查背景时把人物藏起来（人物常常正好挡住门洞、接缝）
+    for (const [id, a] of Object.entries(scene.actors)) pos[id] = a.rigData ? P.draw(ctx, a, t) : drawActor(a, t);
   for (const p of scene.props) if (p.type === 'log') drawLog(p, t, true);
   for (const p of scene.props) if (p.type === 'pole') drawPoleWorld(p, t, true);   // 放倒的木杆躺在人前面
   for (const ev of scene.events) if (ev.type === 'coinRain') coinRain(ev, t);
   for (const [id, a] of Object.entries(scene.actors))
     for (const [t0, t1, text] of a.bubbles || [])
-      if (t >= t0 && t <= t1) bubble(pos[id].x, pos[id].top - 14, text, Math.min((t - t0) / 0.25, (t1 - t) / 0.2));
+      if (pos[id] && t >= t0 && t <= t1) bubble(pos[id].x, pos[id].top - 14, text, Math.min((t - t0) / 0.25, (t1 - t) / 0.2));
   ctx.restore();
   drawLayerCache(cache.fore, set.fore.parallax, camX);
   if (cache.frame) ctx.drawImage(cache.frame, 0, 0);   // 立体书纸框：固定在画框上
