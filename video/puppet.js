@@ -163,9 +163,17 @@ const P = (() => {
       const i = side === 'F' ? 0 : 1, hn = rig.hands[pose['hand' + side]] || rig.hands.open;
       const tgt = pose.grip > 0 && held && held.grips ? [held.grips[i], pose.grip]
         : side === 'F' && pose.reachW > 0 && pose.reach ? [toLocal(pose.reach), pose.reachW] : null;
-      if (tgt) { const ij = ik(A, tgt[0], L.upper, boneLen(rig, hn), -1); a1 = lerp(a1, ij[0], tgt[1]); a2 = lerp(a2, ij[1], tgt[1]); }
-      const up = place(rig, 'upper', A, a1);
-      return [up, place(rig, hn, up.map(rig.parts.upper.tip), a2)];
+      // 半正面捧东西时远侧手臂从身体外侧绕到身前：手明显伸到远侧肩膀前面（接东西）时手肘照常往后弯；
+      // 收回怀里（手在肩膀下方附近）时手肘往外撑、前臂朝里——往后弯就会横穿胸口。两种弯法在很窄的范围里过渡
+      const wrap = side === 'B' && pose.armBFront;
+      if (tgt) {
+        let ij = ik(A, tgt[0], L.upper, boneLen(rig, hn), -1);
+        if (wrap) { const o = ik(A, tgt[0], L.upper, boneLen(rig, hn), 1), w = smooth((A[0] + 14 - tgt[0][0]) / 4 + 0.5); ij = [lerp(ij[0], o[0], w), lerp(ij[1], o[1], w)]; }
+        a1 = lerp(a1, ij[0], tgt[1]); a2 = lerp(a2, ij[1], tgt[1]);
+      }
+      const up = place(rig, 'upper', A, a1), fo = place(rig, hn, up.map(rig.parts.upper.tip), a2);
+      fo.mirror = wrap && Math.sin(a2) < 0;   // 前臂朝后指时纸片翻个面，托东西的手心才朝上（只转不翻会变成手背朝上）
+      return [up, fo];
     };
     const armF = arm('F'), armB = arm('B');
     // 飘带：结在头上，跑得越快越往后飘，带一点抖动
@@ -179,7 +187,9 @@ const P = (() => {
     const shadowOn = () => { g.shadowColor = 'rgba(50,30,10,0.26)'; g.shadowBlur = 6; g.shadowOffsetX = 3; g.shadowOffsetY = 3; };
     const putOn = (ctx, pl, dark, bare) => {
       const im = (bare ? (dark ? V.bareDark : V.bare) : (dark ? V.dark : V.img))[pl.name], p = rig.parts[pl.name], pad = bare ? V.barePad : V.pad;
-      ctx.save(); ctx.translate(pl.at[0], pl.at[1]); ctx.rotate(pl.phi); ctx.scale(pl.s, pl.s);
+      ctx.save(); ctx.translate(pl.at[0], pl.at[1]); ctx.rotate(pl.phi);
+      if (pl.mirror) { const b = Math.atan2(p.tip[1] - p.pivot[1], p.tip[0] - p.pivot[0]); ctx.rotate(b); ctx.scale(1, -1); ctx.rotate(-b); }   // 沿骨头翻面
+      ctx.scale(pl.s, pl.s);
       ctx.drawImage(im, -p.pivot[0] - pad, -p.pivot[1] - pad); ctx.restore();
     };
     const put = (pl, dark) => putOn(g, pl, dark, false);
@@ -198,7 +208,7 @@ const P = (() => {
     };
     const drawHeld = layer => { if (held && held.draw && (held.layer || 'afterHead') === layer) { g.shadowColor = 'rgba(50,30,10,0.3)'; held.draw(g); shadowOn(); } };
     shadowOn();
-    if (!pose.armBFront) armB.forEach(p => put(p, true));
+    put(armB[0], true); if (!pose.armBFront) put(armB[1], true);   // 远侧上臂总在身体后面
     putLeg(legs.B, true);
     if (tails) put(tails, false);
     putLeg(legs.F, false);
@@ -212,7 +222,7 @@ const P = (() => {
     put(head, false); drawFace(g, V, head, pose, t, a);
     g.restore();
     drawHeld('afterHead');
-    if (pose.armBFront) armB.forEach(p => put(p, false));   // 半正面捧东西时，远侧手臂绕到身前
+    if (pose.armBFront) put(armB[1], true);   // 半正面捧东西时，远侧前臂绕到身前（压在近侧手臂和东西下面）
     if (!onShoulder) put(armF[0], false);
     drawHeld('overUpper');
     put(armF[1], false);

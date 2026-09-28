@@ -272,7 +272,7 @@ function goldState(ev, t, info) {   // 金块从正上方一块块落进怀里�
   let meet = 0;   // 金块快到的时候手先往上迎，接住后往下一沉
   slots.forEach((_, i) => { const l = t - (ev.t + i * gap + fall); if (l > 0 && l < 0.3) dip = Math.max(dip, Math.sin(l / 0.3 * Math.PI) * 11);
     if (l > -0.45 && l <= 0) meet = Math.max(meet, P.smooth((l + 0.45) / 0.45) * 14); });
-  const reachOut = t < ev.t + fall ? 22 * P.smooth((t - ev.t + 0.5) / 0.5) : 0;   // 第一块到之前：双手往金块飞来的方向伸
+  const reachOut = 22 * P.smooth((t - ev.t + 0.5) / 0.5) * (1 - P.smooth((t - ev.t - fall) / 0.25));   // 第一块到之前：双手往金块飞来的方向伸；接住后 0.25 秒收回怀里
   const base = info.view === 'q' ? [(info.sh.F[0] + info.sh.B[0]) / 2 + 10, Math.max(info.sh.F[1], info.sh.B[1]) + 26] : [info.sh.F[0] + 34, info.sh.F[1] + 40];
   const C = [base[0] + reachOut, base[1] + landed * 1.5 + dip - meet - reachOut * 0.5];
   const R = mulberry32(ev.seed || 9);
