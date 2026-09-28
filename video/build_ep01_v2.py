@@ -222,15 +222,14 @@ def shot5():   # 回到现代：你说的每句话，都是一根木头
                 [sprite("school_desk", 545, 506, 175, [0.1, 99])])
 
 
-def shot6():   # 下集预告
+def shot6():   # 下集预告：按《资治通鉴》顺序，下一个故事是齐魏比宝（卷二·周显王十四年）
     S = B[5]
     r = lambda g: round(g - S, 2)
     end = round(B[6] - S, 2)
-    return base(5, "qin_gate", [[0, 150], [end, 190]], None, {},
-                [sprite("door", 540, 560, 330, [0.6, end + 1], layer="overlay", enter="fade")],
+    return base(5, "qin_gate", [[0, 150], [end, 190]], None, {}, [],
                 [{"type": "tint", "t0": -1, "t1": end + 1, "color": "#140d0a", "a": 0.7},
                  {"type": "banner", "t": 0.3, "d": 2.4, "text": "下集预告", "color": "#3a2f2a"},
-                 {"type": "eyes", "t0": r(at(37, "他会")), "t1": end + 1, "x": 540, "y": 380, "slit": True}])
+                 {"type": "pearl", "t0": r(at(37, "我有")), "t1": end + 1, "card": r(at(37, "是什么")), "x": 380, "y": 290, "cx": 800, "cy": 300}])
 
 
 SHOTS = [shot1, shot2, shot3, shot4, shot5, shot6]

@@ -540,6 +540,35 @@ function drawBirds(ev, t) {
   }
 }
 // 门缝里的一双眼睛：慢慢亮起、眨眼
+// 下集预告：一颗发光的宝珠，光照亮身后一排马车剪影；最后翻出一张问号纸牌（齐魏比宝，《资治通鉴》卷二·周显王十四年）
+function drawPearl(ev, t) {
+  if (t < ev.t0 || t > ev.t1) return;
+  const a = clamp((t - ev.t0) / 0.5, 0, 1), cx = ev.x || 380, cy = ev.y || 300, pulse = 1 + 0.06 * Math.sin(t * 5);
+  const glow = clamp((t - ev.t0 - 0.4) / 1.2, 0, 1);   // 光慢慢铺开，照亮车
+  ctx.save(); ctx.globalAlpha = a;
+  const R = 90 + 330 * glow, gr = ctx.createRadialGradient(cx, cy, 10, cx, cy, R);
+  gr.addColorStop(0, 'rgba(255,248,210,0.95)'); gr.addColorStop(0.25, 'rgba(255,230,150,0.45)'); gr.addColorStop(1, 'rgba(255,220,130,0)');
+  ctx.fillStyle = gr; ctx.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+  for (let i = 0; i < 6; i++) {   // 马车剪影：车厢 + 轮子（左右各 3 辆，越远越小）
+    const side = i < 3 ? -1 : 1, k = i % 3, sc = 1 - k * 0.2, x = cx + side * (150 + k * 110), y = cy + 150 - k * 18, lit = clamp(glow * 1.6 - k * 0.3, 0, 1);
+    ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc); ctx.globalAlpha = a * (0.25 + 0.75 * lit);
+    ctx.fillStyle = '#3b2a22'; ctx.fillRect(-46, -52, 92, 40); ctx.fillRect(side > 0 ? 40 : -70, -32, 30, 6);
+    ctx.beginPath(); ctx.arc(-26, -8, 20, 0, 7); ctx.arc(26, -8, 20, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+  ctx.globalAlpha = a; ctx.translate(cx, cy); ctx.scale(pulse, pulse);
+  const pg = ctx.createRadialGradient(-12, -14, 4, 0, 0, 44); pg.addColorStop(0, '#ffffff'); pg.addColorStop(0.5, '#fff1c4'); pg.addColorStop(1, '#e8c56a');
+  ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(0, 0, 44, 0, 7); ctx.fill(); ctx.strokeStyle = '#fffaf0'; ctx.lineWidth = 6; ctx.stroke();
+  ctx.restore();
+  if (t >= ev.card) {   // 问号纸牌翻出来
+    const u = easeOutBack(clamp((t - ev.card) / 0.4, 0, 1)), x = ev.cx || 800, y = ev.cy || 300;
+    ctx.save(); ctx.translate(x, y); ctx.scale(u, u); ctx.rotate(0.05);
+    card(() => deckle(ctx, -120, -150, 240, 300, 22, 17), '#fffaf0', { outline: 7, shadow: 12 });
+    ctx.fillStyle = RED; ctx.font = '900 150px "Noto Sans SC"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', 0, -20);
+    ctx.fillStyle = INK; ctx.font = '40px "ZCOOL KuaiLe"'; ctx.fillText('齐王的宝贝', 0, 100);
+    ctx.restore();
+  }
+}
 function drawEyes(ev, t) {
   if (t < ev.t0 || t > ev.t1) return;
   const a = clamp((t - ev.t0) / 0.8, 0, 1), blink = ((t - ev.t0) % 2.6) < 0.14 ? 0.15 : 1;
@@ -607,6 +636,7 @@ function drawBand(t) {
   for (const ev of scene.events) if (ev.type === 'seasons') drawSeasons(ev, t);
   spriteProps(t, 'overlay');
   for (const ev of scene.events) if (ev.type === 'eyes') drawEyes(ev, t);   // 门缝里的眼睛画在门上面
+  for (const ev of scene.events) if (ev.type === 'pearl') drawPearl(ev, t);
   for (const ev of scene.events) if (ev.type === 'birds') drawBirds(ev, t);
   for (const ev of scene.events) if (ev.type === 'badges') drawBadges(ev, t);
   for (const ev of scene.events) if (ev.type === 'nope') drawNope(ev, t);
@@ -868,6 +898,7 @@ function renderOverlay(t, out) {
   for (const ev of scene.events) if (ev.type === 'seasons') drawSeasons(ev, t);
   spriteProps(t, 'overlay');
   for (const ev of scene.events) if (ev.type === 'eyes') drawEyes(ev, t);
+  for (const ev of scene.events) if (ev.type === 'pearl') drawPearl(ev, t);
   for (const ev of scene.events) if (ev.type === 'birds') drawBirds(ev, t);
   for (const ev of scene.events) if (ev.type === 'badges') drawBadges(ev, t);
   for (const ev of scene.events) if (ev.type === 'nope') drawNope(ev, t);
