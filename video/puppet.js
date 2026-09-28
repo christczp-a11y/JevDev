@@ -284,15 +284,22 @@ const P = (() => {
     const hp = V.rig.parts.head, s = head.s;
     g.save(); g.shadowColor = 'transparent';
     g.translate(head.at[0], head.at[1]); g.rotate(head.phi); g.scale(s, s); g.translate(-hp.pivot[0], -hp.pivot[1]);
-    const happy = pose.eyes === 'happy' ? 1 : pose.happy, closed = window.qaEyesClosed ? 1 : Math.max(happy, a.blinkAt(t), 0.45 * pose.strain);   // 质检：强制闭眼，查眼白有没有漏出来
+    const happy = pose.eyes === 'happy' ? 1 : pose.happy, closed = window.qaEyesClosed ? window.qaEyesClosed : Math.max(happy, a.blinkAt(t), 0.45 * pose.strain);   // 质检：强制闭眼（1 = 全闭，0.4 = 半闭），查眼白有没有漏出来
     // 眼皮一张图盖两只眼：要在画闭眼线之前一次画完（放在循环里会把前一只眼的闭眼线盖掉）
-    if (closed > 0 && V.eyeLid) { g.save(); g.globalAlpha = Math.min(1, closed * 1.6); g.drawImage(V.eyeLid, 0, 0, V.eyeLid.width * V.k, V.eyeLid.height * V.k); g.restore(); }
+    // 眼皮永远不透明（Chris 2026-09-28：半闭眼时用半透明盖，底下的眼睛会透出来）。
+    // 半闭（使劲、眨眼中途）：眼皮从上往下盖到 closed 的位置，眼皮下沿就是那条眼线；全闭或笑眯眼：整只眼盖住
+    const full = closed >= 0.9 || happy > 0.5, lidY = (ey, ry) => ey - ry * 1.4 + ry * 2.8 * closed;
+    if (closed > 0 && V.eyeLid) {
+      g.save(); g.beginPath();
+      for (const [ex, ey, rx, ry] of hp.eyes) { const y0 = ey - ry * 1.6; g.rect(ex - rx * 2, y0, rx * 4, full ? ry * 3.4 : lidY(ey, ry) - y0); }
+      g.clip(); g.drawImage(V.eyeLid, 0, 0, V.eyeLid.width * V.k, V.eyeLid.height * V.k); g.restore();
+    }
     for (const [ex, ey, rx, ry] of hp.eyes) {
       if (closed > 0) {
         if (!V.eyeLid) { g.fillStyle = V.skin; g.beginPath(); g.ellipse(ex, ey - ry * (1 - closed) * 0.9, rx * 1.18, ry * 1.12 * Math.max(closed, 0.15), 0, 0, TAU); g.fill(); }
         g.strokeStyle = '#2a1a14'; g.lineWidth = 6 / Math.max(0.5, s * 4); g.lineCap = 'round'; g.beginPath();
         if (happy > 0.5) g.arc(ex, ey + ry * 0.45, rx * 0.85, Math.PI * 1.15, Math.PI * 1.85);
-        else { const y = ey + ry * (closed - 0.3); g.moveTo(ex - rx * 1.05, y - ry * 0.1); g.quadraticCurveTo(ex, y + ry * 0.25, ex + rx * 1.05, y - ry * 0.1); }
+        else { const y = full ? ey + ry * (closed - 0.3) : lidY(ey, ry); g.moveTo(ex - rx * 1.05, y - ry * 0.1); g.quadraticCurveTo(ex, y + ry * 0.25, ex + rx * 1.05, y - ry * 0.1); }
         g.stroke();
       } else if (pose.eyes === 'wide') {   // 睁大眼：眼白外一圈亮边
         g.strokeStyle = 'rgba(255,255,255,0.85)'; g.lineWidth = 3; g.beginPath(); g.ellipse(ex, ey, rx * 1.1, ry * 1.1, 0, 0, TAU); g.stroke();

@@ -13,7 +13,8 @@
 内部描边不一定是错（近侧手臂压在身子上，手臂外轮廓本来就该有描边），所以检查图要逐张看：
 同一条肢体「内部横穿」的红线（手肘、膝盖、脖子、手腕、鞋口）才是错。
 
-用法：python video/puppet_qa.py <剧本.json> [角色 id，默认所有纸偶]
+用法：python video/puppet_qa.py <剧本.json> [角色 id，默认所有纸偶] [--eyes=0.4]
+交付前全闭（默认）和半闭（--eyes=0.4）各跑一次：半闭眼漏过一次（Chris 2026-09-28）
 输出：video/out/puppet_qa_<剧本名>/<角色>_XX.png 和 summary.json
 """
 import json
@@ -61,17 +62,26 @@ def analyse(im):
     return inner_line, white, body
 
 
+EYES = 1.0
+
+
 def main():
+    global EYES
+    args = [a for a in sys.argv[1:] if not a.startswith("--eyes=")]
+    for a in sys.argv[1:]:
+        if a.startswith("--eyes="):   # --eyes=0.4 查半闭眼（使劲、眨眼中途）；默认 1 = 全闭
+            EYES = float(a.split("=")[1])
+    sys.argv[1:] = args
     scene_path = Path(sys.argv[1])
     scene = render.load_scene(scene_path)
     scene["qaOutline"] = "#00ffff"
     ids = sys.argv[2:] or [k for k, a in scene["actors"].items() if a.get("rigData")]
-    out = render.ROOT / "out" / f"puppet_qa_{scene_path.stem}"
+    out = render.ROOT / "out" / f"puppet_qa_{scene_path.stem}_eyes{EYES}"
     out.mkdir(parents=True, exist_ok=True)
     summary = {}
     with sync_playwright() as p:
         browser, page = render.open_page(p, scene)
-        page.evaluate("window.qaEyesClosed = true")
+        page.evaluate(f"window.qaEyesClosed = {EYES}")
         for aid in ids:
             page.evaluate(f"window.soloActor = {json.dumps(aid)}")
             cells, rows = [], []
