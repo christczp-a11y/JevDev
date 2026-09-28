@@ -451,9 +451,10 @@ function drawChoice(ev, t) {
     ctx.fillStyle = INK; ctx.font = '900 30px "Noto Sans SC"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', 0, 2);
     ctx.restore();
   }
-  if (ev.label) { ctx.save(); ctx.globalAlpha = a; ctx.translate(BAND.w / 2, cy - 118); ctx.font = '900 40px "Noto Sans SC"';
-    const w = ctx.measureText(ev.label).width + 60; card(() => deckle(ctx, -w / 2, -32, w, 64, 20, 3), '#fffaf0', { outline: 5, shadow: 8 });
-    ctx.fillStyle = INK; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ev.label, 0, 3); ctx.restore(); }
+  const lab = shown && ev.after ? ev.after : ev.label;   // 揭晓后换成正向的话（不管观众选了哪个都不说「答错了」）
+  if (lab) { ctx.save(); ctx.globalAlpha = a; ctx.translate(BAND.w / 2, cy - 118); ctx.font = '900 40px "Noto Sans SC"';
+    const w = ctx.measureText(lab).width + 60; card(() => deckle(ctx, -w / 2, -32, w, 64, 20, 3), '#fffaf0', { outline: 5, shadow: 8 });
+    ctx.fillStyle = INK; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(lab, 0, 3); ctx.restore(); }
 }
 // 反例卡：灰色纸片弹出，接着盖上一个红叉（「要是……？不行」）
 function drawNope(ev, t) {

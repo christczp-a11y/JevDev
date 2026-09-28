@@ -44,6 +44,8 @@ async def synth(text, who, path):
 
 def main():
     story, out = Path(sys.argv[1]), Path(sys.argv[2])
+    if os.environ.get("NARRATOR_RATE"):   # 第 2 版起旁白稍快（+6%），第 1 版沿用默认
+        CAST["旁白"] = ("zh-CN-XiaoxiaoNeural", os.environ["NARRATOR_RATE"], "+0Hz")
     out.mkdir(parents=True, exist_ok=True)
     if os.environ.get("HTTPS_PROXY") and not os.environ.get("WSS_PROXY"):
         os.environ["WSS_PROXY"] = os.environ["HTTPS_PROXY"]   # 云端：Edge TTS 走 wss://，aiohttp 只从 WSS_PROXY 读代理

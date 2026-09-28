@@ -1,7 +1,7 @@
 """第 1 集第 2 版（N6「你搬不搬」，按 docs/短视频留存-调研与ep01重构建议.md 方案 A 重写）：冷开场奇观 + 观众下注 + 4 次选择/预测。
 第 1 版（N5，video/build_ep01.py）保留不动，输出在 video/out/ep01/。
 
-先跑配音：python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice 2=1.5 9=1.8 13=7.9 22=1.8 29=3.0
+先跑配音：NARRATOR_RATE=+6% python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice 2=2.0 9=2.0 13=7.9 22=2.0 29=4.5
 再跑本脚本：python video/build_ep01_v2.py [--only 场号,...] [--no-render]
   --no-render 只写出每场的剧本（video/scenes/ep01/*.json），不渲染；--only 2,3 只渲染这几场（其余沿用已渲染的片段）
 
@@ -80,8 +80,9 @@ def youth(off):
                         [sh(16.55), sh(60), "hold"]]}   # 金子一直捧在怀里，直到这场戏结束
 
 
-def choice(t0, options, reveal=None, pick=None, t1=None, label="你来选"):
-    ev = {"type": "choice", "t0": t0, "options": options, "reveal": reveal, "pick": pick, "label": label}
+def choice(t0, options, reveal=None, pick=None, t1=None, label="考你！", after="看答案！"):
+    """四次提问用同一个仪式（儿童动画调研规则 2）：同一句「考你！」、同一种按钮、同一组提示音；揭晓后只说「看答案！」，不说谁错。"""
+    ev = {"type": "choice", "t0": t0, "options": options, "reveal": reveal, "pick": pick, "label": label, "after": after}
     if t1 is not None:
         ev["t1"] = t1
     return ev
@@ -129,9 +130,9 @@ def shot1():   # 冷开场 + 第 1 关：南门立木
                         say=[[r(at(3, "没一个人")) + 0.8, r(T1(3)) + 0.6, "嘎——"]]),
                  *sy_icons],
                 [{"type": "shake", "t": 0.3, "amp": 10},
-                 choice(r(T0(1)), ["搬", "不搬"], reveal=r(T1(2)) - 0.1, t1=r(T1(2)) + 0.2),
+                 choice(r(at(1, "你搬")), ["搬", "不搬"], reveal=r(T1(2)) - 0.1, t1=r(T1(2)) + 0.2, after="想好了吗？"),
                  {"type": "banner", "t": r(T0(4)) + 0.3, "d": 2.6, "text": "第 1 关：一根木头"},
-                 choice(r(at(8, "你猜")), ["不给了", "给更多"], reveal=r(T1(9)) - 0.3, pick=1, t1=r(T0(10)) + 0.9, label="商鞅会怎么办？"),
+                 choice(r(at(8, "考你")), ["不给了", "给更多"], reveal=r(T1(9)) - 0.3, pick=1, t1=r(T0(10)) + 0.9),
                  {"type": "gold", "t": off + 12.5, "n": 5, "by": "youth", "seed": 4, "gap": 0.38},
                  {"type": "nope", "t0": r(T0(16)), "t1": r(T1(16)) + 0.2,
                   "items": [[r(T0(16)) + 0.1, r(at(16, "没人敢")), "打仗才给"], [r(at(16, "偷偷")), r(at(16, "没人看")), "偷偷给"]]},
@@ -161,16 +162,16 @@ def shot2():   # 第 2 关：太子犯法
                               "bubbles": [[r(at(24, "那就")) + 0.6, r(T1(24)) + 0.8, "啊？我们？"]]}},
                 [sprite("prince_hat", gate_x, 486, 56, [r(at(20, "太子")), end], layer="mid", enter="rise", bob=2)],
                 [{"type": "banner", "t": r(at(19, "可是")), "d": 2.3, "text": "第 2 关：太子犯法"},
-                 choice(r(T0(21)), ["敢", "不敢"], reveal=r(T1(22)) - 0.3, pick=0, t1=r(T0(23)) + 0.4, label="商鞅敢不敢罚？"),
+                 choice(r(T0(21)), ["敢", "不敢"], reveal=r(T1(22)) - 0.3, pick=0, t1=r(T0(23)) + 0.4),
                  {"type": "shake", "t": r(T0(23)) + 0.35, "amp": 12},
-                 {"type": "banner", "t": r(T0(26)) + 1.2, "d": r(T1(26)) - r(T0(26)) - 0.6, "text": "有奖一定给，犯法谁都罚！", "color": "#3a2f2a"}])
+                 {"type": "banner", "t": r(T0(26)) + 1.2, "d": r(T1(26)) - r(T0(26)) - 0.6, "text": "说到做到，别人才会信！", "color": "#3a2f2a"}])
 
 
 def shot3():   # 第 3 关：十年
     S = B[2]
     r = lambda g: round(g - S, 2)
     end = round(B[3] - S, 2)
-    rev = r(T0(29)) + 1.5            # 揭晓「不拿」
+    rev = r(T0(29)) + 2.8            # 揭晓「不拿」（要想的题停 3 秒：儿童动画调研规则 1）
     return base(2, "qin_gate", [[0, 80], [end, 260]],
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 2], [r(T0(31)) + 0.3, 3]]},
                 {"teen": {"keys": [[r(T0(28)) - 0.2, 250, "", 1], [r(T0(28)) + 1.6, 560, "", 1], [rev + 0.2, 560, "", 1], [r(T1(30)), 980, "", 1], [end, 980, "", 1]],
@@ -179,7 +180,7 @@ def shot3():   # 第 3 关：十年
                 [sprite("bundle", 690, 512, 56, [r(T0(28)) - 0.4, end], enter="drop")],
                 [{"type": "banner", "t": r(T0(27)), "d": 2.0, "text": "第 3 关：十年"},
                  {"type": "seasons", "t0": r(T0(27)) + 0.3, "t1": r(T1(27)) + 0.3, "loops": 1},
-                 choice(r(at(28, "你拿")), ["拿走", "不拿"], reveal=rev, pick=1, t1=rev + 1.0, label="考考你"),
+                 choice(r(at(28, "你拿")), ["拿走", "不拿"], reveal=rev, pick=1, t1=rev + 1.0),
                  {"type": "confetti", "t": r(T0(31)) + 0.3, "d": 3.0, "n": 70}])
 
 
@@ -204,7 +205,7 @@ def shot5():   # 回到现代：你说的每句话，都是一根木头
     S = B[4]
     r = lambda g: round(g - S, 2)
     end = round(B[5] - S, 2)
-    give = r(at(34, "说到做到"))
+    give = r(at(34, "第二天"))
     return base(4, "classroom", [[0, 0], [end, 0]],
                 {"label": "信用值", "hearts": 1, "credit": [[0, 0], [give + 0.6, 1]]},
                 {"kid": actor(360, "kid_bag", [0.2, 99], px=0.6, speaker="小孩", phase=0.3, poses=[[0, "kid_bag"], [give, "kid_give"]]),
