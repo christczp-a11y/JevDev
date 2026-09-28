@@ -29,6 +29,8 @@ mkdir -p "$SKILL_DIR"
 
 # 3. 按 skill 的写法运行：一条前台命令。LLM 用 claude_code（本机已登录的 claude 命令行，不需要 API key）；
 #    素材用本地的 8 段镜头，按顺序拼（默认随机会打乱故事顺序）；其余都用 skill 的默认值（中文 9:16、Edge TTS 晓晓、字幕、随机背景音乐）
+# 云端只能通过代理上网：Edge TTS 走 wss://，aiohttp 只从 WSS_PROXY 读代理（容器里默认只有 HTTPS_PROXY）
+[ -n "${HTTPS_PROXY:-}" ] && export WSS_PROXY="${WSS_PROXY:-$HTTPS_PROXY}"
 cd "$SKILL_DIR"
 MPT_LLM_PROVIDER=claude_code uv run --no-project --python 3.11 python mpt_agent.py \
   --subject "徙木立信：一根木头，怎么让秦国人开始相信？" -- \

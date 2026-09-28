@@ -1,0 +1,94 @@
+{
+    "script": "秦国都城南门竖起一根木头，卫鞅说谁扛去北门，赏十金。大家你看我我看你，没人敢动。十金加到五十金，一个小伙咬咬牙：\"搬根木头，又不会少块肉，我来！\"他伸手刚碰又缩回来，左看右看，才把木头扛起，一步步走向北门放下。话音刚落，五十金真的送到他怀里！这下全城都信了：卫鞅说话，算数！",
+    "search_terms": "",
+    "params": {
+        "video_subject": "徙木立信：一根木头，怎么让秦国人开始相信？",
+        "video_script": "",
+        "video_terms": null,
+        "video_aspect": "9:16",
+        "video_fit_mode": "cover",
+        "video_concat_mode": "sequential",
+        "video_transition_mode": null,
+        "video_clip_duration": 5,
+        "video_clip_speed": 1.0,
+        "match_materials_to_script": false,
+        "video_count": 1,
+        "video_source": "local",
+        "video_materials": [
+            {
+                "provider": "local",
+                "url": "/root/MoneyPrinterTurbo/storage/local_videos/xumu/shot01.mp4",
+                "duration": 0,
+                "source_info": null
+            },
+            {
+                "provider": "local",
+                "url": "/root/MoneyPrinterTurbo/storage/local_videos/xumu/shot02.mp4",
+                "duration": 0,
+                "source_info": null
+            },
+            {
+                "provider": "local",
+                "url": "/root/MoneyPrinterTurbo/storage/local_videos/xumu/shot03.mp4",
+                "duration": 0,
+                "source_info": null
+            },
+            {
+                "provider": "local",
+                "url": "/root/MoneyPrinterTurbo/storage/local_videos/xumu/shot04.mp4",
+                "duration": 0,
+                "source_info": null
+            },
+            {
+                "provider": "local",
+                "url": "/root/MoneyPrinterTurbo/storage/local_videos/xumu/shot05.mp4",
+                "duration": 0,
+                "source_info": null
+            },
+            {
+                "provider": "local",
+                "url": "/root/MoneyPrinterTurbo/storage/local_videos/xumu/shot06.mp4",
+                "duration": 0,
+                "source_info": null
+            },
+            {
+                "provider": "local",
+                "url": "/root/MoneyPrinterTurbo/storage/local_videos/xumu/shot07.mp4",
+                "duration": 0,
+                "source_info": null
+            },
+            {
+                "provider": "local",
+                "url": "/root/MoneyPrinterTurbo/storage/local_videos/xumu/shot08.mp4",
+                "duration": 0,
+                "source_info": null
+            }
+        ],
+        "custom_audio_file": null,
+        "video_language": "",
+        "voice_name": "zh-CN-XiaoxiaoNeural-Female",
+        "voice_volume": 1.0,
+        "voice_rate": 1.0,
+        "bgm_type": "random",
+        "bgm_file": "",
+        "bgm_volume": 0.2,
+        "video_music_prompt": "",
+        "sonilo_bgm_prompt": "",
+        "subtitle_enabled": true,
+        "subtitle_position": "bottom",
+        "subtitle_display_mode": "sentence",
+        "subtitle_animation": "none",
+        "custom_position": 70.0,
+        "font_name": "STHeitiMedium.ttc",
+        "text_fore_color": "#FFFFFF",
+        "text_background_color": false,
+        "rounded_subtitle_background": false,
+        "font_size": 60,
+        "stroke_color": "#000000",
+        "stroke_width": 1.5,
+        "n_threads": 2,
+        "paragraph_number": 1,
+        "video_script_prompt": "给 6–10 岁的小朋友讲《资治通鉴》里「徙木立信」的故事。旁白 70–90 个字（大约 20 秒），只写旁白正文，不要标题、不要括号里的画面说明。\n画面按顺序是：① 都城集市南门口竖着一根三丈（约 7 米）高的木杆，一个小伙走过来；② 小伙说「搬根木头，又不会少块肉。我来！」并握拳给自己打气；③ 他伸手去碰木杆，又停下来回头张望，怕是陷阱；④ 他把木杆放倒、抱起来；⑤ 抱着木杆一步步走向北门；⑥ 放下木杆；⑦ 五十金从天而降，落进他怀里；⑧ 盖章「过关」。\n史实要求：悬赏是商鞅（当时叫卫鞅）定的，先说十金没人敢搬，加到五十金才有人搬；秦国那时还没有铸钱，只说「金」；不要说官府以前骗过老百姓。",
+        "custom_system_prompt": ""
+    }
+}

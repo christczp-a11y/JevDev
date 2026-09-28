@@ -34,6 +34,8 @@
 - 发帖 / 评论 / 点赞等对外操作，动手前先跟 Chris 确认
 
 ## 云端环境（2026-09-28 实测）
+- 网络：Chris 已改成 Full（改完当前会话立即生效）；环境变量（如 TYPESAFE_API_KEY）要开新会话才生效
+- 走 wss:// 的 Python 客户端（aiohttp）要设置 WSS_PROXY=$HTTPS_PROXY 才能走代理（例：Edge TTS）
 - 装机：`bash scripts/cloud_setup.sh`；Python 一律用 `.venv/bin/python`（3.12）
 - 渲染：19 秒测试片段约 100 秒；ffmpeg 6.1（apt 装的）；Chromium 141 用预装的那个
 - 网络：pypi、fonts.googleapis.com、fonts.gstatic.com 通；api.typesafe.ai、docs.typesafe.ai、playwright 下载地址被拦（在旧容器里测的，环境设置改完要开新会话才生效）
