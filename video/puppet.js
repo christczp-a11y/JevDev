@@ -78,11 +78,12 @@ const P = (() => {
       for (const [h0, n] of p.hops || []) if (s > h0 && s < h0 + n * 0.42) hop = Math.abs(Math.sin((s - h0) / 0.42 * Math.PI));
       return { grip: 1, handF: 'up', handB: 'up', happy: smooth(s / 0.15), smile: 1, laugh: smooth(s / 0.3), armBFront: true,
                lean: -0.08 + 0.06 * b, head: -0.12 + 0.12 * b, lift: 5 * b + 22 * hop }; },
+    hold: (u, d, a, t) => ({ grip: 1, handF: 'up', handB: 'up', happy: 1, smile: 0.8, armBFront: true, lean: -0.04, head: -0.06 }),   // 笑完了还捧着金子（手不能放下，不然金子悬空）
     wave: (u, d, a, t) => ({ armF: [2.4, 0.5 + 0.35 * Math.sin(t * 11)], handF: 'wave', smile: 1, head: -0.06 }),   // 手腕不单独转：整条前臂左右摆
     cheer: (u, d, a, t) => { const hop = Math.abs(Math.sin(u * d * 5.2));
       return { armF: [2.75 + 0.15 * hop, 0.25], armB: [2.55 + 0.15 * hop, 0.35], handF: 'fist', handB: 'fist', lift: 30 * hop, eyes: 'happy', smile: 1, lean: -0.1 }; },
   };
-  const FADE = { talk: 0.25, fist: 0.12, reach: 0.25, look: 0.1, crouch: 0.08, lift: 0.1, carry: 0.1, drop: 0.05, lookup: 0.3, catch: 0.45, hug: 0.15, wave: 0.2, cheer: 0.15 };
+  const FADE = { talk: 0.25, fist: 0.12, reach: 0.25, look: 0.1, crouch: 0.08, lift: 0.1, carry: 0.1, drop: 0.05, lookup: 0.3, catch: 0.45, hug: 0.15, hold: 0.15, wave: 0.2, cheer: 0.15 };
   const REST = { side: { F: [0.1, 0.3], B: [0.06, 0.3] }, q: { F: [-0.16, 0.3], B: [0.16, -0.3] } };   // 站着时手臂自然下垂（半正面时微微往两边张）
 
   function solve(a, t, V, view) {

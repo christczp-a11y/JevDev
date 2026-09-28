@@ -83,7 +83,8 @@ def youth(off):
             "views": [[0, "side"], [sh(2.55), "q"], [sh(6.05), "side"], [sh(14.55), "q"]], "jumps": [],
             "actions": [[sh(2.6), sh(5.9), "talk"], [sh(5.1), sh(6.0), "fist"], [sh(6.1), sh(7.6), "reach", {"target": [632, 370], "stop": 0.8}],
                         [sh(6.3), sh(8.0), "look"], [sh(8.0), sh(8.9), "lift"], [sh(8.9), sh(12.7), "carry"], [sh(12.7), sh(13.8), "drop"],
-                        [sh(13.55), sh(14.5), "lookup"], [sh(14.55), sh(15.2), "catch"], [sh(15.15), sh(18.6), "hug", {"hops": [[0.05, 1]]}]]}
+                        [sh(13.55), sh(14.5), "lookup"], [sh(14.55), sh(15.2), "catch"], [sh(15.15), sh(18.6), "hug", {"hops": [[0.05, 1]]}],
+                        [sh(18.45), sh(40), "hold"]]}   # 金子一直捧在怀里，直到这场戏结束
 
 
 def shot2():   # 第 1 关：南门立木
@@ -92,6 +93,7 @@ def shot2():   # 第 1 关：南门立木
     end = round(B[2] - S, 2)
     off = r(T0(13)) - 1.45           # 小伙在「我来」之前 1.45 秒开始走进画面
     lift = off + 8.0
+    # 木杆 460 约 2.3 个人高（原先 740 约 4 个人高，Chris 说太长）；gB 后手握点按比例外移，两手间距不变
     # 站位规则：画框左边那棵大松树挡住画面左侧约 260 像素，人物和道具都要站在它右边
     sy_icons = [sprite("medal", 505, 300, 105, [r(T0(3)) + 2.2, r(T0(5))], sfx="pop", gray=r(T0(4)) + 1.8, text=[["奖", 0, 14, 44, "#c8372d"]]),
                 sprite("token", 385, 300, 62, [r(T0(3)) + 3.4, r(T0(5))], sfx="pop", gray=r(T0(4)) + 3.6, text=[["罚", 0, 2, 44, "#c8372d"]]),
@@ -116,7 +118,7 @@ def shot2():   # 第 1 关：南门立木
                             "bubbles": [[r(T0(17)) + 0.6, r(T1(17)), "？"]]},
                  "auntie": actor(1920, "auntie_gossip", [r(T0(20)), end], flip=-1, px=0.38, speaker="大婶", phase=0.5),
                  "youth": {**youth(off), "show": [off - 0.1, end]}},
-                [{"type": "pole", "x": 632, "height": 740, "thick": 18, "appear": r(T0(6)) + 2.1, "lift": [lift, lift + 0.9],
+                [{"type": "pole", "x": 632, "height": 460, "thick": 18, "gB": [0.065, 0.12], "appear": r(T0(6)) + 2.1, "lift": [lift, lift + 0.9],
                   "drop": [lift + 4.7, lift + 5.8], "by": "youth"},
                  {"type": "board", "x": 810, "height": 170, "show": [r(T0(7)) + 0.3, end],
                   "texts": [[0, ["谁把木杆", "搬到北门", "!赏 十金"]], [r(T0(11)) + 2.2, ["谁把木杆", "搬到北门", "!赏 五十金"]]]},
