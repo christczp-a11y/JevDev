@@ -1,4 +1,4 @@
-"""把 Codex 生成的「绿底素材图」抠掉绿色、切成单件 PNG。
+"""把 Codex 生成的「绿底素材图」抠掉绿色（或直接用已经透明的底）、切成单件 PNG。
 
 用法：python video/split_sheet.py <素材图.png> <输出目录> <名字1> <名字2> ...
 名字按「从上到下、从左到右」的顺序对应每一件素材（先打印一遍 --list 看顺序）。
@@ -23,8 +23,11 @@ def key_out(rgb):
 
 
 def pieces(path, min_area=3000):
-    im = np.array(Image.open(path).convert("RGB"))
-    rgba = key_out(im)
+    src = Image.open(path)
+    if src.mode == "RGBA" and (np.array(src)[..., 3] < 20).mean() > 0.2:   # Codex 有时自己把绿底抠成了透明：直接用透明度
+        rgba = np.array(src)
+    else:
+        rgba = key_out(np.array(src.convert("RGB")))
     mask = rgba[..., 3] > 60
     lab, n = ndimage.label(ndimage.binary_closing(mask, iterations=4))
     out = []
