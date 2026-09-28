@@ -88,7 +88,7 @@ function paperize(im, { edge = 7, sat = 0.85, grain = 0.3 } = {}) {
   // 厚白纸边：把剪影往 16 个方向各挪 edge 像素叠出一圈白边（参考图里每件东西都有明显的粗白纸边）
   const pad = edge + 2, w = im.width + 2 * pad, h = im.height + 2 * pad;
   const mk = () => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
-  const [sil, sg] = mk(); sg.drawImage(im, pad, pad); sg.globalCompositeOperation = 'source-in'; sg.fillStyle = '#fbf6ea'; sg.fillRect(0, 0, w, h);
+  const [sil, sg] = mk(); sg.drawImage(im, pad, pad); sg.globalCompositeOperation = 'source-in'; sg.fillStyle = window.QA_OUTLINE || '#fbf6ea'; sg.fillRect(0, 0, w, h);
   const [c, g] = mk();
   for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; g.drawImage(sil, Math.cos(a) * edge, Math.sin(a) * edge); }
   g.filter = `saturate(${sat})`; g.drawImage(im, pad, pad); g.filter = 'none';
@@ -565,6 +565,11 @@ function camShake(t) { let d = 0; for (const ev of scene.events) if (ev.type ===
 
 // ---------- 闯关画面 ----------
 function drawBand(t) {
+  if (window.soloActor) {   // 纸偶质检：品红底上只画这一个角色（和他手里的东西）
+    ctx.fillStyle = '#ff00ff'; ctx.fillRect(0, 0, BAND.w, BAND.h);
+    const a = scene.actors[window.soloActor]; ctx.save(); ctx.translate(-interp(scene.camera, t), 0);
+    if (a.rigData) P.draw(ctx, a, t); else drawActor(a, t); ctx.restore(); return;
+  }
   const camX = interp(scene.camera, t) + camShake(t), set = scene.set;
   const fx = -((camX * set.far.parallax) % cache.farW);
   ctx.drawImage(cache.far, Math.round(fx), 0);
@@ -751,6 +756,7 @@ function wrap(text, maxW) {
 // ---------- 初始化：render.py 传入剧本（含场景）和素材（data URI，避免本地文件把画布「污染」导不出帧） ----------
 async function init(sceneData, assets) {
   scene = sceneData; noise = makeNoise(); fiber = makeFiber();
+  if (scene.qaOutline) window.QA_OUTLINE = scene.qaOutline;   // 纸偶质检（video/puppet_qa.py）：描边换成青色
   await Promise.all(Object.entries(assets).map(([n, uri]) => new Promise((ok, bad) => {
     const i = new Image(); i.onload = () => { img[n] = i; ok(); }; i.onerror = bad; i.src = uri; })));
   for (const f of ['40px "ZCOOL KuaiLe"', '700 58px "Noto Sans SC"', '32px "Noto Sans SC"', '900 100px "Noto Sans SC"']) await document.fonts.load(f);

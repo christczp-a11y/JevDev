@@ -215,7 +215,7 @@ const P = (() => {
       const r = EDGE * P0[0].s * Math.hypot(M.a, M.b), og = V.oc.getContext('2d');
       og.setTransform(1, 0, 0, 1, 0, 0); og.clearRect(0, 0, GW, GH); og.globalCompositeOperation = 'source-over';
       for (let i = 0; i < 16; i++) { const an = i / 16 * TAU; og.drawImage(V.gc, Math.cos(an) * r, Math.sin(an) * r); }
-      og.globalCompositeOperation = 'source-in'; og.fillStyle = '#fbf6ea'; og.fillRect(0, 0, GW, GH);
+      og.globalCompositeOperation = 'source-in'; og.fillStyle = window.QA_OUTLINE || '#fbf6ea'; og.fillRect(0, 0, GW, GH);
       og.globalCompositeOperation = 'source-over'; og.drawImage(V.gc, 0, 0);
       g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(V.oc, ox, oy); g.restore();
     };
@@ -254,7 +254,15 @@ const P = (() => {
       withHead(() => { put(head, false); drawFace(g, V, head, pose, t, a); });
     }
     drawHeld('afterHead');
-    if (pose.armBFront) put(armB[1], true);   // 半正面捧东西时，远侧前臂绕到身前（压在近侧手臂和东西下面）
+    if (pose.armBFront) {   // 半正面捧东西时，远侧前臂绕到身前（压在近侧手臂和东西下面）
+      // 它整个压在身子上，描白边就是一道白缝（Chris 2026-09-28）→ 用纸芯，只留一点投影分层
+      const pl = armB[1], im = V.coreDark[pl.name], pp = rig.parts[pl.name];
+      if (im) { g.save(); g.shadowColor = 'rgba(50,30,10,0.35)'; g.shadowBlur = 4; g.shadowOffsetX = 1; g.shadowOffsetY = 2;
+        g.translate(pl.at[0], pl.at[1]); g.rotate(pl.phi);
+        if (pl.mirror) { const b = Math.atan2(pp.tip[1] - pp.pivot[1], pp.tip[0] - pp.pivot[0]); g.rotate(b); g.scale(1, -1); g.rotate(-b); }
+        g.scale(pl.s, pl.s); g.drawImage(im, -pp.pivot[0] - V.barePad, -pp.pivot[1] - V.barePad); g.restore(); }
+      else put(pl, true);
+    }
     const heldOverUpper = held && held.draw && held.layer === 'overUpper';
     if (!onShoulder && !heldOverUpper) putLimb(armF, false);   // 近侧手臂：上臂和前臂中间不夹东西时整条一起描边
     else { if (!onShoulder) put(armF[0], false); drawHeld('overUpper'); put(armF[1], false); }
@@ -276,10 +284,12 @@ const P = (() => {
     const hp = V.rig.parts.head, s = head.s;
     g.save(); g.shadowColor = 'transparent';
     g.translate(head.at[0], head.at[1]); g.rotate(head.phi); g.scale(s, s); g.translate(-hp.pivot[0], -hp.pivot[1]);
-    const happy = pose.eyes === 'happy' ? 1 : pose.happy, closed = Math.max(happy, a.blinkAt(t), 0.45 * pose.strain);
+    const happy = pose.eyes === 'happy' ? 1 : pose.happy, closed = window.qaEyesClosed ? 1 : Math.max(happy, a.blinkAt(t), 0.45 * pose.strain);   // 质检：强制闭眼，查眼白有没有漏出来
+    // 眼皮一张图盖两只眼：要在画闭眼线之前一次画完（放在循环里会把前一只眼的闭眼线盖掉）
+    if (closed > 0 && V.eyeLid) { g.save(); g.globalAlpha = Math.min(1, closed * 1.6); g.drawImage(V.eyeLid, 0, 0, V.eyeLid.width * V.k, V.eyeLid.height * V.k); g.restore(); }
     for (const [ex, ey, rx, ry] of hp.eyes) {
       if (closed > 0) {
-        g.fillStyle = V.skin; g.beginPath(); g.ellipse(ex, ey - ry * (1 - closed) * 0.9, rx * 1.18, ry * 1.12 * Math.max(closed, 0.15), 0, 0, TAU); g.fill();
+        if (!V.eyeLid) { g.fillStyle = V.skin; g.beginPath(); g.ellipse(ex, ey - ry * (1 - closed) * 0.9, rx * 1.18, ry * 1.12 * Math.max(closed, 0.15), 0, 0, TAU); g.fill(); }
         g.strokeStyle = '#2a1a14'; g.lineWidth = 6 / Math.max(0.5, s * 4); g.lineCap = 'round'; g.beginPath();
         if (happy > 0.5) g.arc(ex, ey + ry * 0.45, rx * 0.85, Math.PI * 1.15, Math.PI * 1.85);
         else { const y = ey + ry * (closed - 0.3); g.moveTo(ex - rx * 1.05, y - ry * 0.1); g.quadraticCurveTo(ex, y + ry * 0.25, ex + rx * 1.05, y - ry * 0.1); }
@@ -335,7 +345,39 @@ const P = (() => {
     const hc = document.createElement('canvas'); hc.width = images.head.width; hc.height = images.head.height;
     const hg = hc.getContext('2d'); hg.drawImage(images.head, 0, 0);
     const [r, gg, b] = hg.getImageData(raw.parts.head.skin[0], raw.parts.head.skin[1], 1, 1).data; V.skin = `rgb(${r},${gg},${b})`;
+    const pim = V.img.head, pg = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+    pg.canvas.width = pim.width; pg.canvas.height = pim.height; pg.drawImage(pim, 0, 0);
+    const sk = [0, 0, 0], n = 7; let cnt = 0;   // 皮肤点周围取平均（纸纹有颗粒）
+    for (let dy = -n; dy <= n; dy += 2) for (let dx = -n; dx <= n; dx += 2) {
+      const q = pg.getImageData(Math.round(raw.parts.head.skin[0] * k) + V.pad + dx, Math.round(raw.parts.head.skin[1] * k) + V.pad + dy, 1, 1).data;
+      sk[0] += q[0]; sk[1] += q[1]; sk[2] += q[2]; cnt++; }
+    const skin = sk.map(v => Math.round(v / cnt)); V.skin = `rgb(${skin.join(',')})`;
+    V.k = k; V.eyeLid = eyeLid(hg, hc.width, hc.height, raw.parts.head, [r, gg, b], skin);
     return V;
+  }
+
+  // 闭眼用的「眼皮」：从每只眼睛中心往外找所有「不是皮肤色」的连通像素（眼白、眼珠、高光），外扩 3 像素，涂成皮肤色。
+  // 眼睛多大、什么形状都按原图来，闭眼时一点眼白都不会露出来
+  function eyeLid(hg, w, h, hp, skin, paint) {
+    const d = hg.getImageData(0, 0, w, h).data, mask = new Uint8Array(w * h);
+    const notSkin = i => d[i * 4 + 3] > 40 && Math.hypot(d[i * 4] - skin[0], d[i * 4 + 1] - skin[1], d[i * 4 + 2] - skin[2]) > 55;
+    for (const [ex, ey, rx, ry] of hp.eyes) {
+      const x0 = Math.max(0, Math.round(ex - rx * 1.9)), x1 = Math.min(w - 1, Math.round(ex + rx * 1.9));
+      const y0 = Math.max(0, Math.round(ey - ry * 1.3)), y1 = Math.min(h - 1, Math.round(ey + ry * 1.35));
+      const st = [Math.round(ey) * w + Math.round(ex)];
+      while (st.length) { const i = st.pop(), x = i % w, y = (i / w) | 0;
+        if (x < x0 || x > x1 || y < y0 || y > y1 || mask[i] || !notSkin(i)) continue;
+        mask[i] = 1; st.push(i + 1, i - 1, i + w, i - w); }
+    }
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const cg = c.getContext('2d'), out = cg.createImageData(w, h), R = 3;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+      let hit = false;
+      for (let dy = -R; dy <= R && !hit; dy++) for (let dx = -R; dx <= R && !hit; dx++) { const xx = x + dx, yy = y + dy;
+        if (xx >= 0 && yy >= 0 && xx < w && yy < h && dx * dx + dy * dy <= R * R && mask[yy * w + xx]) hit = true; }
+      if (hit) { const o = (y * w + x) * 4; out.data[o] = paint[0]; out.data[o + 1] = paint[1]; out.data[o + 2] = paint[2]; out.data[o + 3] = 255; }
+    }
+    cg.putImageData(out, 0, 0); return c;
   }
 
   // views: { side: {raw, images}, q: {raw, images} }
