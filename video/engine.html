@@ -755,7 +755,7 @@ async function init(sceneData, assets) {
   cache.ingot = makeIngot();
   for (const [id, a] of Object.entries(scene.actors)) if (a.rigData) {   // 纸偶角色
     const views = Object.fromEntries(Object.entries(a.rigs).map(([v, d]) => [v, { raw: a.rigData[v],
-      images: Object.fromEntries([...Object.keys(a.rigData[v].parts), ...(a.rigData[v].bare || []).map(b => b + '_bare')].map(n => [n, img[`rig:${d}:${n}`]])) }]));
+      images: Object.fromEntries([...Object.keys(a.rigData[v].parts), ...(a.rigData[v].bare || []).map(b => b + '_bare'), ...Object.keys(a.rigData[v].parts).map(n => n + '_core')].map(n => [n, img[`rig:${d}:${n}`]])) }]));
     P.setup(a, views, scene.subtitles, paperize);
     const poles = scene.props.filter(p => p.type === 'pole' && p.by === id), golds = scene.events.filter(e => e.type === 'gold' && e.by === id);
     for (const p of poles) { cache.pole = makePole(p.height, p.thick); p.rest = p.rest || [40, GROUND + 44 - p.thick / 2]; p.gF = p.gF || [0.0, 0.02]; p.gB = p.gB || [0.04, 0.075]; }

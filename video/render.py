@@ -46,6 +46,8 @@ def assets_for(scene):
         for v, d in a.get("rigs", {}).items():
             rd = a["rigData"][v]
             files.update({f"rig:{d}:{n}": ROOT / "assets/rig" / d / f"{n}.png" for n in [*rd["parts"], *(f"{b}_bare" for b in rd.get("bare", []))]})
+            files.update({f"rig:{d}:{n}_core": ROOT / "assets/rig" / d / f"{n}_core.png" for n in rd["parts"]
+                          if (ROOT / "assets/rig" / d / f"{n}_core.png").exists()})   # 去掉白边的纸芯（strip_border.py）
     files.update({n: ROOT / "assets/props" / f"{n}.png" for n in PROPS})
     # 第 1 集起：姿势时间线里的人物图、纸片道具、纸鸟 —— 按名字在 chars / props 里找
     extra = {n for a in scene["actors"].values() for _t, n in a.get("poses", [])}

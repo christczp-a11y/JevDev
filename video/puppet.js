@@ -194,9 +194,34 @@ const P = (() => {
       ctx.drawImage(im, -p.pivot[0] - pad, -p.pivot[1] - pad); ctx.restore();
     };
     const put = (pl, dark) => putOn(g, pl, dark, false);
+    // 一整条肢体（上臂 + 前臂，大腿 + 小腿 + 脚）：先用纸芯（不带白边）在离屏画布上拼好，再沿拼好的整体外轮廓描一圈白纸边。
+    // 以前每块纸片各带一圈白边，手肘、膝盖、鞋口这些重叠处就会露出一道白线（Chris 2026-09-28）
+    const EDGE = 5, GW = 900, GH = 1000;
+    const putLimb = (pls, dark) => {
+      if (!pls.every(pl => V.core[pl.name])) { for (const pl of pls) put(pl, dark); return; }
+      const M = g.getTransform(), c0 = M.transformPoint(new DOMPoint(0, GROUND - 260));
+      const ox = Math.round(c0.x - GW / 2), oy = Math.round(c0.y - GH / 2);
+      if (!V.gc) for (const k of ['gc', 'oc']) V[k] = Object.assign(document.createElement('canvas'), { width: GW, height: GH });
+      const tg = V.gc.getContext('2d');
+      tg.setTransform(1, 0, 0, 1, 0, 0); tg.clearRect(0, 0, GW, GH);
+      tg.setTransform(M.a, M.b, M.c, M.d, M.e - ox, M.f - oy);
+      for (const pl of pls) {
+        const im = (dark ? V.coreDark : V.core)[pl.name], pp = rig.parts[pl.name];
+        tg.save(); tg.translate(pl.at[0], pl.at[1]); tg.rotate(pl.phi);
+        if (pl.mirror) { const b = Math.atan2(pp.tip[1] - pp.pivot[1], pp.tip[0] - pp.pivot[0]); tg.rotate(b); tg.scale(1, -1); tg.rotate(-b); }
+        tg.scale(pl.s, pl.s); tg.drawImage(im, -pp.pivot[0] - V.barePad, -pp.pivot[1] - V.barePad); tg.restore();
+      }
+      const r = EDGE * pls[0].s * Math.hypot(M.a, M.b), og = V.oc.getContext('2d');
+      og.setTransform(1, 0, 0, 1, 0, 0); og.clearRect(0, 0, GW, GH); og.globalCompositeOperation = 'source-over';
+      for (let i = 0; i < 16; i++) { const an = i / 16 * TAU; og.drawImage(V.gc, Math.cos(an) * r, Math.sin(an) * r); }
+      og.globalCompositeOperation = 'source-in'; og.fillStyle = '#fbf6ea'; og.fillRect(0, 0, GW, GH);
+      og.globalCompositeOperation = 'source-over'; og.drawImage(V.gc, 0, 0);
+      g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(V.oc, ox, oy); g.restore();
+    };
     // 腿：鞋盖住小腿末端。鞋口那圈白边压在小腿上会像断成两截 → 在离屏画布上把小腿的纸芯（不带白边）再画一遍、
     // 挖掉鞋身，盖回去：白边被盖掉，腿仍插在鞋里（脚踝照样能转）
     const putLeg = (lg, dark) => {
+      if (V.core.thigh && V.core.shin && V.core.foot) return putLimb([lg.th, lg.sn, lg.ft], dark);
       put(lg.th, dark); put(lg.sn, dark); put(lg.ft, dark);
       if (!V.bare.shin || !V.bare.foot) return;
       const c = g.canvas;
@@ -209,7 +234,7 @@ const P = (() => {
     };
     const drawHeld = layer => { if (held && held.draw && (held.layer || 'afterHead') === layer) { g.shadowColor = 'rgba(50,30,10,0.3)'; held.draw(g); shadowOn(); } };
     shadowOn();
-    put(armB[0], true); if (!pose.armBFront) put(armB[1], true);   // 远侧上臂总在身体后面
+    if (!pose.armBFront) putLimb(armB, true); else put(armB[0], true);   // 远侧上臂总在身体后面
     putLeg(legs.B, true);
     // 回头：头这张纸片绕脖子翻面；发带结在头上，跟着一起翻（不然回头时发带会跑到脸前面）
     const lk = Math.abs(pose.look) < 0.06 ? 0.06 * Math.sign(pose.look || 1) : pose.look;
@@ -223,9 +248,9 @@ const P = (() => {
     withHead(() => { put(head, false); drawFace(g, V, head, pose, t, a); });
     drawHeld('afterHead');
     if (pose.armBFront) put(armB[1], true);   // 半正面捧东西时，远侧前臂绕到身前（压在近侧手臂和东西下面）
-    if (!onShoulder) put(armF[0], false);
-    drawHeld('overUpper');
-    put(armF[1], false);
+    const heldOverUpper = held && held.draw && held.layer === 'overUpper';
+    if (!onShoulder && !heldOverUpper) putLimb(armF, false);   // 近侧手臂：上臂和前臂中间不夹东西时整条一起描边
+    else { if (!onShoulder) put(armF[0], false); drawHeld('overUpper'); put(armF[1], false); }
     drawHeld('front');
     if (pose.strain > 0.5) {   // 汗珠：从头顶两侧甩出去（吃力的信号）
       const top = head.map([rig.parts.head.pivot[0], rig.parts.head.pivot[1] * 0.25]);
@@ -297,6 +322,8 @@ const P = (() => {
     };
     for (const n of Object.keys(raw.parts)) [V.img[n], V.dark[n]] = mk(images[n], 5);
     for (const n of raw.bare || []) [V.bare[n], V.bareDark[n]] = mk(images[n + '_bare'], 0);   // 纸芯：不加纸边
+    V.core = {}; V.coreDark = {};
+    for (const n of Object.keys(raw.parts)) if (images[n + '_core']) [V.core[n], V.coreDark[n]] = mk(images[n + '_core'], 0);   // 整条肢体合成后统一描边用
     if (rig.parts.tails) { const p = rig.parts.tails; V.tailRest = ang(p.tip[0] - p.pivot[0], p.tip[1] - p.pivot[1]); }
     const hc = document.createElement('canvas'); hc.width = images.head.width; hc.height = images.head.height;
     const hg = hc.getContext('2d'); hg.drawImage(images.head, 0, 0);
