@@ -233,9 +233,15 @@ function poleState(p, t, info) {   // info = 扛的人此刻的局部信息（�
   const bounce = Math.sin(info.st.phase * Math.PI * 4) * info.st.moving;
   // 抱在腰前（Q 版肩膀就在下巴底下，扛在肩上一定横过脸）：两臂从下面兜住，杆前端略微翘起
   const Pc = [info.sh.F[0] + 24, info.st.hipY - 7 + 2 * bounce], thc = Math.PI / 2 + 0.05 + 0.02 * bounce;
-  const u = P.smooth((t - l0) / (l1 - l0)), u1 = P.smooth(u / 0.62), u2 = P.smooth((u - 0.62) / 0.38);
-  const Ps2 = [(p.x - info.x) * info.face, GROUND + 6 - 0.12 * H];
-  let Pn = [P.lerp(Ps2[0], Pc[0], u1), P.lerp(Ps2[1], Pc[1], u1)], th = P.lerp(Math.PI, thc, u1), f = P.lerp(0.12, 0.42, u2);
+  // 起杆（Chris 2026-09-28：动作不能粗糙）：① 双手在胸口高度抱住立着的杆，使劲往上拔出来一截（杆身抖）
+  // ② 以双手为支点，杆顶慢慢往前倒到水平，同时把握点挪到身前；到水平时回弹一下。杆始终在手里，不会先飞开再回来
+  const u = clamp((t - l0) / (l1 - l0), 0, 1), pull = P.smooth(u / 0.3), tip = P.smooth((u - 0.3) / 0.7);
+  const f0 = clamp((GROUND + 6 - Pc[1]) / H, 0.05, 0.6);                    // 握点离杆底的比例（手在胸口高度）
+  const Pg = [(p.x - info.x) * info.face, Pc[1] - 16 * pull];               // 握点：拔起 16 像素
+  const shake = Math.sin(t * 47) * 0.012 * (1 - tip) * pull;                 // 拔的时候杆在抖
+  const settle = Math.sin(clamp((u - 0.9) / 0.1, 0, 1) * Math.PI) * 0.05;   // 放平时回弹
+  let Pn = [P.lerp(Pg[0], Pc[0], tip), P.lerp(Pg[1], Pc[1], tip)], th = P.lerp(Math.PI, thc, tip) + shake - settle, f = P.lerp(f0, 0.42, tip);
+  const u1 = tip;
   if (t >= d0) {
     // 放下：① 抱着的杆放低一点 ② 压下前端着地 ③ 放下后端，平躺在脚前
     const v = (t - d0) / (d1 - d0);
@@ -259,7 +265,7 @@ function poleState(p, t, info) {   // info = 扛的人此刻的局部信息（�
   const grips = [[p.gF, -0.95], [p.gB, -0.95]].map(([[a, b], k]) => { const o = P.lerp(a, b, u) * H;
     return [Pn[0] + Math.sin(th) * o + up[0] * T * k * u, Pn[1] + Math.cos(th) * o + up[1] * T * k * u]; });
   // 起杆时木杆在头后面（不挡脸），快落到肩上时再压到上臂上面
-  return { P: Pn, th, f, grips, layer: u < 0.85 ? 'mid' : 'afterHead' };   // 起杆时在头后面；抱住以后在身体前面、手臂后面（手臂兜着它）
+  return { P: Pn, th, f, grips, layer: u1 < 0.85 ? 'mid' : 'afterHead' };   // 起杆时在头后面；抱住以后在身体前面、手臂后面（手臂兜着它）
 }
 function drawPoleWorld(p, t, front) {   // 没被扛着的时候：立在集市南门口，或者放倒在地上
   if (t < p.lift[0]) { if (!front && t >= (p.appear ?? -1e9)) {   // appear：从地里「咚」地竖起来（先冲出地面，再回弹）

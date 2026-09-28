@@ -1,7 +1,7 @@
 """第 1 集第 2 版（N6「你搬不搬」，按 docs/短视频留存-调研与ep01重构建议.md 方案 A 重写）：冷开场奇观 + 观众下注 + 4 次选择/预测。
 第 1 版（N5，video/build_ep01.py）保留不动，输出在 video/out/ep01/。
 
-先跑配音：NARRATOR_RATE=+6% python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice 2=1.0 9=1.2 13=7.9 22=1.2 29=3.3
+先跑配音：NARRATOR_RATE=+6% python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice 2=1.0 9=1.2 13=8.6 22=1.2 29=3.3
 再跑本脚本：python video/build_ep01_v2.py [--only 场号,...] [--no-render]
   --no-render 只写出每场的剧本（video/scenes/ep01/*.json），不渲染；--only 2,3 只渲染这几场（其余沿用已渲染的片段）
 
@@ -72,12 +72,12 @@ def youth(off):
     """纸偶小伙：测试片段的整套动作，压缩了伸手前的犹豫和搬运（调研：第 1 版中间有 9.4 秒空白）。"""
     sh = lambda v: round(v + off, 2)
     return {"speaker": "小伙", "phase": 0.3, "seed": 11, "rigs": {"side": "youth", "q": "youth_q"},
-            "keys": [[sh(0), 60, "", 1], [sh(2.4), 560, "", 1], [sh(7.0), 560, "", 1], [sh(10.4), 1480, "", 1], [sh(40), 1480, "", 1]],
-            "views": [[0, "side"], [sh(2.55), "q"], [sh(4.1), "side"], [sh(12.55), "q"]], "jumps": [],
-            "actions": [[sh(1.5), sh(4.1), "talk"], [sh(3.3), sh(4.1), "fist"], [sh(4.2), sh(5.7), "reach", {"target": [632, 370], "stop": 0.8}],
-                        [sh(4.4), sh(6.1), "look"], [sh(6.1), sh(7.0), "lift"], [sh(7.0), sh(10.8), "carry"], [sh(10.8), sh(11.9), "drop"],
-                        [sh(11.65), sh(12.6), "lookup"], [sh(12.65), sh(13.3), "catch"], [sh(13.25), sh(16.7), "hug", {"hops": [[0.05, 1]]}],
-                        [sh(16.55), sh(60), "hold"]]}   # 金子一直捧在怀里，直到这场戏结束
+            "keys": [[sh(0), 60, "", 1], [sh(2.4), 580, "", 1], [sh(7.7), 580, "", 1], [sh(11.1), 1480, "", 1], [sh(40), 1480, "", 1]],
+            "views": [[0, "side"], [sh(2.55), "q"], [sh(3.8), "side"], [sh(13.25), "q"]], "jumps": [],   # 转回侧面要在伸手之前做完（不然伸手时人是一条细线）
+            "actions": [[sh(1.5), sh(4.1), "talk"], [sh(3.3), sh(4.1), "fist"], [sh(4.3), sh(5.9), "reach", {"target": [632, 360], "stop": 0.9}],
+                        [sh(4.5), sh(6.1), "look"], [sh(6.1), sh(7.7), "lift"], [sh(7.7), sh(11.5), "carry"], [sh(11.5), sh(12.6), "drop"],
+                        [sh(12.35), sh(13.3), "lookup"], [sh(13.35), sh(14.0), "catch"], [sh(13.95), sh(17.4), "hug", {"hops": [[0.05, 1]]}],
+                        [sh(17.25), sh(60), "hold"]]}   # 金子一直捧在怀里，直到这场戏结束
 
 
 def choice(t0, options, reveal=None, pick=None, t1=None, label="考你！", after="看答案！"):
@@ -99,13 +99,13 @@ def shot1():   # 冷开场 + 第 1 关：南门立木
     sy_icons = [sprite("medal", 505, 300, 105, [r(T0(5)) + 0.6, r(T0(6))], sfx="pop", gray=r(at(5, "可没人信")), text=[["奖", 0, 14, 44, "#c8372d"]]),
                 sprite("token", 385, 300, 62, [r(at(5, "犯法")), r(T0(6))], sfx="pop", gray=r(at(5, "可没人信")) + 0.5, text=[["罚", 0, 2, 44, "#c8372d"]])]
     return base(0, "qin_gate",
-                [[0, 0], [r(T0(6)) - 0.8, 0], [r(T0(6)), 170], [lift + 1.0, 170], [lift + 5.0, 1060], [end, 1060]],
+                [[0, 0], [r(T0(6)) - 0.8, 0], [r(T0(6)), 170], [lift + 1.7, 170], [lift + 5.7, 1060], [end, 1060]],
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 0], [r(T1(14)) - 0.3, 1]],
                  "coins": [[0, None], [r(T0(0)) + 1.2, 10], [r(T0(10)) + 0.3, 50]]},
                 {"shangyang": actor(440, "shangyang_point", [0.1, lift - 1.0], speaker="商鞅", phase=0.7,
                                     poses=[[0, "shangyang_point"], [r(T0(5)), "sy_scroll"], [r(at(5, "可没人信")), "sy_worry"], [r(T0(10)), "shangyang_point"]],
                                     shakes=[[r(at(5, "可没人信")), r(T1(5)), 6]]),
-                 "shangyang2": actor(1700, "shangyang_point", [off + 11.9, end], flip=-1, speaker="商鞅", phase=0.7,
+                 "shangyang2": actor(1700, "shangyang_point", [off + 12.6, end], flip=-1, speaker="商鞅", phase=0.7,
                                      poses=[[0, "shangyang_point"], [r(T0(18)) + 1.0, "sy_raise"]]),
                  # 「没一个人敢搬」：围观的人一出来就往后缩
                  "auntie0": actor(900, "auntie_hands", [r(T0(3)) - 0.1, r(T0(6)) - 0.6], flip=-1, px=0.38, phase=0.5,
@@ -115,16 +115,16 @@ def shot1():   # 冷开场 + 第 1 关：南门立木
                                 keys=[[0, 960, "", -1], [r(at(3, "没一个人")), 960, "", -1], [r(at(3, "没一个人")) + 0.5, 1000, "", -1], [r(T0(6)), 960, "", -1]],
                                 poses=[[0, "douzi_puzzled"], [r(T0(6)), "douzi_gold"]], jumps=[[r(T0(6)) + 0.3, r(T0(6)) + 0.7, 26]]),
                  "dad": actor(1000, "dad_grab", [r(T0(7)), end], flip=-1, speaker="爹", phase=1.4,
-                              poses=[[0, "dad_grab"], [r(T0(11)), "dad_cover"], [lift + 2.4, "dad_doubt"]]),
+                              poses=[[0, "dad_grab"], [r(T0(11)), "dad_cover"], [lift + 3.1, "dad_doubt"]]),
                  # 小伙抱着木杆从爹面前经过以后，小豆子才挣脱、跟在后面跑
-                 "douzi2": {"keys": [[lift + 2.5, 960, "", 1], [lift + 5.0, 1360, "", 1], [end, 1360, "", 1]], "px": 0.25, "native": 1, "phase": 0.2,
-                            "poses": [[0, "douzi_run"], [lift + 5.1, "douzi_gold"], [r(at(15, "可是")), "douzi_puzzled"]],
-                            "show": [lift + 2.4, end], "speaker": "小豆子",
+                 "douzi2": {"keys": [[lift + 3.2, 960, "", 1], [lift + 5.7, 1360, "", 1], [end, 1360, "", 1]], "px": 0.25, "native": 1, "phase": 0.2,
+                            "poses": [[0, "douzi_run"], [lift + 5.8, "douzi_gold"], [r(at(15, "可是")), "douzi_puzzled"]],
+                            "show": [lift + 3.1, end], "speaker": "小豆子",
                             "bubbles": [[r(at(15, "可是")) + 0.4, r(T1(15)) + 0.3, "？"]]},
                  "auntie": actor(1920, "auntie_gossip", [r(T0(18)) - 0.2, end], flip=-1, px=0.38, speaker="大婶", phase=0.5),
                  "youth": {**youth(off), "show": [off - 0.1, end]}},
-                [{"type": "pole", "x": 632, "height": 460, "thick": 18, "gB": [0.065, 0.12], "appear": 0.05, "lift": [lift, lift + 0.9],
-                  "drop": [lift + 4.7, lift + 5.8], "by": "youth"},
+                [{"type": "pole", "x": 632, "height": 460, "thick": 18, "gB": [0.065, 0.12], "appear": 0.05, "lift": [lift, lift + 1.6],
+                  "drop": [lift + 5.4, lift + 6.5], "by": "youth"},
                  {"type": "board", "x": 810, "height": 170, "show": [r(T0(0)) + 1.0, end],
                   "texts": [[0, ["谁把木杆", "搬到北门", "!赏 十金"]], [r(T0(10)) + 0.3, ["谁把木杆", "搬到北门", "!赏 五十金"]]]},
                  sprite("crow", 830, 332, 58, [r(at(3, "没一个人")), end], enter="fly", from_=None,
@@ -134,7 +134,7 @@ def shot1():   # 冷开场 + 第 1 关：南门立木
                  choice(r(at(1, "你搬")), ["搬", "不搬"], reveal=r(T1(2)) - 0.1, t1=r(T1(2)) + 0.2, after="想好了吗？"),
                  {"type": "banner", "t": r(T0(4)) + 0.3, "d": 2.6, "text": "第 1 关：一根木头"},
                  choice(r(at(8, "考你")), ["不给了", "给更多"], reveal=r(T1(9)) - 0.3, pick=1, t1=r(T0(10)) + 0.9),
-                 {"type": "gold", "t": off + 12.5, "n": 5, "by": "youth", "seed": 4, "gap": 0.38},
+                 {"type": "gold", "t": off + 13.2, "n": 5, "by": "youth", "seed": 4, "gap": 0.38},
                  {"type": "nope", "t0": r(T0(16)), "t1": r(T1(16)) + 0.2,
                   "items": [[r(T0(16)) + 0.1, r(at(16, "没人敢")), "打仗才给"], [r(at(16, "偷偷")), r(at(16, "没人看")), "偷偷给"]]},
                  {"type": "badges", "t0": r(T0(17)), "t1": r(T1(17)) + 0.3,
@@ -179,7 +179,7 @@ def shot3():   # 第 3 关：十年
                           "poses": [[0, "douzi_teen"]], "px": 0.36, "native": 1, "phase": 0.3, "bob": 6, "show": [r(T0(28)) - 0.3, end]},
                  "dad": actor(1110, "dad_old", [r(T0(31)) - 0.4, end], flip=-1, speaker="爹", phase=1.2, nods=[[r(T0(31)), r(T1(31))]])},
                 [sprite("bundle", 690, 512, 56, [r(T0(28)) - 0.4, end], enter="drop")],
-                [{"type": "banner", "t": r(T0(27)), "d": 2.0, "text": "第 3 关：十年"},
+                [{"type": "banner", "t": r(T0(27)), "d": 2.0, "text": "第 3 关：很多年"},
                  {"type": "seasons", "t0": r(T0(27)) + 0.3, "t1": r(T1(27)) + 0.3, "loops": 1},
                  choice(r(at(28, "你拿")), ["拿走", "不拿"], reveal=rev, pick=1, t1=rev + 1.0),
                  {"type": "confetti", "t": r(T0(31)) + 0.3, "d": 3.0, "n": 70}])

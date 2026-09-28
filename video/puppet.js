@@ -198,20 +198,21 @@ const P = (() => {
     // 以前每块纸片各带一圈白边，手肘、膝盖、鞋口这些重叠处就会露出一道白线（Chris 2026-09-28）
     const EDGE = 5, GW = 900, GH = 1000;
     const putLimb = (pls, dark) => {
-      if (!pls.every(pl => V.core[pl.name])) { for (const pl of pls) put(pl, dark); return; }
+      const P0 = pls.map(it => it.pl || it);
+      if (!P0.every(pl => V.core[pl.name])) { for (const pl of P0) put(pl, dark); return; }
       const M = g.getTransform(), c0 = M.transformPoint(new DOMPoint(0, GROUND - 260));
       const ox = Math.round(c0.x - GW / 2), oy = Math.round(c0.y - GH / 2);
       if (!V.gc) for (const k of ['gc', 'oc']) V[k] = Object.assign(document.createElement('canvas'), { width: GW, height: GH });
       const tg = V.gc.getContext('2d');
       tg.setTransform(1, 0, 0, 1, 0, 0); tg.clearRect(0, 0, GW, GH);
       tg.setTransform(M.a, M.b, M.c, M.d, M.e - ox, M.f - oy);
-      for (const pl of pls) {
-        const im = (dark ? V.coreDark : V.core)[pl.name], pp = rig.parts[pl.name];
-        tg.save(); tg.translate(pl.at[0], pl.at[1]); tg.rotate(pl.phi);
+      for (const it of pls) {
+        const pl = it.pl || it, im = (dark ? V.coreDark : V.core)[pl.name], pp = rig.parts[pl.name];
+        tg.save(); if (it.pre) it.pre(tg); tg.translate(pl.at[0], pl.at[1]); tg.rotate(pl.phi);
         if (pl.mirror) { const b = Math.atan2(pp.tip[1] - pp.pivot[1], pp.tip[0] - pp.pivot[0]); tg.rotate(b); tg.scale(1, -1); tg.rotate(-b); }
         tg.scale(pl.s, pl.s); tg.drawImage(im, -pp.pivot[0] - V.barePad, -pp.pivot[1] - V.barePad); tg.restore();
       }
-      const r = EDGE * pls[0].s * Math.hypot(M.a, M.b), og = V.oc.getContext('2d');
+      const r = EDGE * P0[0].s * Math.hypot(M.a, M.b), og = V.oc.getContext('2d');
       og.setTransform(1, 0, 0, 1, 0, 0); og.clearRect(0, 0, GW, GH); og.globalCompositeOperation = 'source-over';
       for (let i = 0; i < 16; i++) { const an = i / 16 * TAU; og.drawImage(V.gc, Math.cos(an) * r, Math.sin(an) * r); }
       og.globalCompositeOperation = 'source-in'; og.fillStyle = '#fbf6ea'; og.fillRect(0, 0, GW, GH);
@@ -241,11 +242,17 @@ const P = (() => {
     const withHead = fn => { g.save(); g.translate(neck[0], 0); g.scale(lk, 1); g.translate(-neck[0], 0); fn(); g.restore(); };
     if (tails) withHead(() => put(tails, false));
     putLeg(legs.F, false);
-    put(torso, false);
-    drawHeld('mid');
-    const onShoulder = held && held.layer === 'shoulder';
-    if (onShoulder) { put(armF[0], false); drawHeld('shoulder'); }
-    withHead(() => { put(head, false); drawFace(g, V, head, pose, t, a); });
+    const onShoulder = held && held.layer === 'shoulder', heldMid = held && held.draw && (held.layer || 'afterHead') === 'mid';
+    if (!heldMid && !onShoulder && V.core.torso && V.core.head) {
+      // 身子和头一起拼好再描外轮廓：脖子那里不再有一道白边（Chris 2026-09-28）。头回头翻面的变换也在离屏画布上做
+      putLimb([torso, { pl: head, pre: c => { c.translate(neck[0], 0); c.scale(lk, 1); c.translate(-neck[0], 0); } }], false);
+      withHead(() => drawFace(g, V, head, pose, t, a));
+    } else {
+      put(torso, false);
+      drawHeld('mid');
+      if (onShoulder) { put(armF[0], false); drawHeld('shoulder'); }
+      withHead(() => { put(head, false); drawFace(g, V, head, pose, t, a); });
+    }
     drawHeld('afterHead');
     if (pose.armBFront) put(armB[1], true);   // 半正面捧东西时，远侧前臂绕到身前（压在近侧手臂和东西下面）
     const heldOverUpper = held && held.draw && held.layer === 'overUpper';

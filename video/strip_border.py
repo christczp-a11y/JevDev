@@ -39,10 +39,45 @@ def strip(im):
     return Image.fromarray(out.astype(np.uint8), "RGBA"), int(edge.sum())
 
 
+LIMBS = ("upper", "fore_", "thigh", "shin")
+
+
+def fill_rims(im):
+    """手肘、膝盖的关节圆片内部还有一圈浅色描边：用最近的非浅色像素（皮肤、布料）的颜色填掉。"""
+    a = np.asarray(im).astype(np.int16)
+    rgb, al = a[..., :3], a[..., 3]
+    rim = (al > 20) & (rgb.min(-1) > 212) & ((rgb.max(-1) - rgb.min(-1)) < 36)
+    if not rim.any():
+        return im
+    _, (iy, ix) = ndimage.distance_transform_edt(rim | (al <= 20), return_indices=True)
+    src = ~rim & (al > 20)
+    # 只用「非浅色的实心像素」当颜色来源：先求到最近来源像素的索引
+    _, (sy, sx) = ndimage.distance_transform_edt(~src, return_indices=True)
+    out = a.copy()
+    out[rim, :3] = a[sy[rim], sx[rim], :3]
+    return Image.fromarray(out.astype(np.uint8), "RGBA")
+
+
+def cut_skin(im):
+    """鞋上露出的那截脚脖子（皮肤色）挖掉：鞋口变空，小腿直接插进鞋里（Chris 2026-09-28：脚踝穿帮）。"""
+    a = np.asarray(im).astype(np.int16)
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    skin = (a[..., 3] > 20) & (r > 185) & (r - g > 28) & (r - b > 48)
+    skin = ndimage.binary_opening(skin, iterations=2)
+    skin = ndimage.binary_dilation(skin, iterations=2) & (a[..., 3] > 0)
+    out = a.copy()
+    out[skin, 3] = 0
+    return Image.fromarray(out.astype(np.uint8), "RGBA")
+
+
 for rig in sys.argv[1:]:
     d = ROOT / rig
     parts = json.loads((d / "rig.json").read_text(encoding="utf-8"))["parts"]
     for n in parts:
         im, k = strip(Image.open(d / f"{n}.png"))
+        if n.startswith(LIMBS):
+            im = fill_rims(im)
+        if n == "foot":
+            im = cut_skin(im)
         im.save(d / f"{n}_core.png")
         print(f"{rig}/{n}: 去掉 {k} 个白边像素")
