@@ -1,7 +1,7 @@
 """第 1 集第 2 版（N6「你搬不搬」，按 docs/短视频留存-调研与ep01重构建议.md 方案 A 重写）：冷开场奇观 + 观众下注 + 4 次选择/预测。
 第 1 版（N5，video/build_ep01.py）保留不动，输出在 video/out/ep01/。
 
-先跑配音：NARRATOR_RATE=+6% python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice 2=2.0 9=2.0 13=7.9 22=2.0 29=4.5
+先跑配音：NARRATOR_RATE=+6% python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice 2=1.0 9=1.2 13=7.9 22=1.2 29=3.3
 再跑本脚本：python video/build_ep01_v2.py [--only 场号,...] [--no-render]
   --no-render 只写出每场的剧本（video/scenes/ep01/*.json），不渲染；--only 2,3 只渲染这几场（其余沿用已渲染的片段）
 
@@ -34,7 +34,7 @@ T0 = lambda i: L[i]["t0"]
 T1 = lambda i: L[i]["t1"]
 mid = lambda i, j: round((T1(i) + T0(j)) / 2, 2)
 # 场次边界：冷开场 + 第 1 关（集市） | 第 2 关（太子） | 第 3 关（十年） | 司马光 | 回到现代 | 下集预告
-B = [0, mid(18, 19), mid(26, 27), mid(31, 32), mid(33, 34), mid(34, 35), TL["duration"]]
+B = [0, mid(18, 19), mid(26, 27), mid(31, 32), mid(33, 34), mid(36, 37), TL["duration"]]
 
 
 def at(i, word):
@@ -110,7 +110,8 @@ def shot1():   # 冷开场 + 第 1 关：南门立木
                  # 「没一个人敢搬」：围观的人一出来就往后缩
                  "auntie0": actor(900, "auntie_hands", [r(T0(3)) - 0.1, r(T0(6)) - 0.6], flip=-1, px=0.38, phase=0.5,
                                   keys=[[0, 900, "", -1], [r(at(3, "没一个人")), 900, "", -1], [r(at(3, "没一个人")) + 0.5, 960, "", -1]]),
-                 "douzi": actor(960, "douzi_puzzled", [r(T0(3)), lift + 2.45], flip=-1, px=0.25, speaker="小豆子", phase=0.2,
+                 "douzi": actor(960, "douzi_puzzled", [r(T0(3)), r(T0(7))], flip=-1,   # 爹的姿势图里自带小豆子：爹出场时退场（不然重影）
+                                px=0.25, speaker="小豆子", phase=0.2,
                                 keys=[[0, 960, "", -1], [r(at(3, "没一个人")), 960, "", -1], [r(at(3, "没一个人")) + 0.5, 1000, "", -1], [r(T0(6)), 960, "", -1]],
                                 poses=[[0, "douzi_puzzled"], [r(T0(6)), "douzi_gold"]], jumps=[[r(T0(6)) + 0.3, r(T0(6)) + 0.7, 26]]),
                  "dad": actor(1000, "dad_grab", [r(T0(7)), end], flip=-1, speaker="爹", phase=1.4,
@@ -171,7 +172,7 @@ def shot3():   # 第 3 关：十年
     S = B[2]
     r = lambda g: round(g - S, 2)
     end = round(B[3] - S, 2)
-    rev = r(T0(29)) + 2.8            # 揭晓「不拿」（要想的题停 3 秒：儿童动画调研规则 1）
+    rev = r(T0(29)) + 1.8            # 揭晓「不拿」（要想的题停 3 秒：儿童动画调研规则 1）
     return base(2, "qin_gate", [[0, 80], [end, 260]],
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 2], [r(T0(31)) + 0.3, 3]]},
                 {"teen": {"keys": [[r(T0(28)) - 0.2, 250, "", 1], [r(T0(28)) + 1.6, 560, "", 1], [rev + 0.2, 560, "", 1], [r(T1(30)), 980, "", 1], [end, 980, "", 1]],
@@ -205,7 +206,7 @@ def shot5():   # 回到现代：你说的每句话，都是一根木头
     S = B[4]
     r = lambda g: round(g - S, 2)
     end = round(B[5] - S, 2)
-    give = r(at(34, "第二天"))
+    give = r(T0(35))                 # 同桌问「带了吗？」→ 小孩「带啦！」掏出漫画书（结尾自带前因，不靠开头铺垫）
     return base(4, "classroom", [[0, 0], [end, 0]],
                 {"label": "信用值", "hearts": 1, "credit": [[0, 0], [give + 0.6, 1]]},
                 {"kid": actor(360, "kid_bag", [0.2, 99], px=0.6, speaker="小孩", phase=0.3, poses=[[0, "kid_bag"], [give, "kid_give"]]),
@@ -222,7 +223,7 @@ def shot6():   # 下集预告
                 [sprite("door", 540, 560, 330, [0.6, end + 1], layer="overlay", enter="fade")],
                 [{"type": "tint", "t0": -1, "t1": end + 1, "color": "#140d0a", "a": 0.7},
                  {"type": "banner", "t": 0.3, "d": 2.4, "text": "下集预告", "color": "#3a2f2a"},
-                 {"type": "eyes", "t0": r(at(35, "他会")), "t1": end + 1, "x": 540, "y": 380, "slit": True}])
+                 {"type": "eyes", "t0": r(at(37, "他会")), "t1": end + 1, "x": 540, "y": 380, "slit": True}])
 
 
 SHOTS = [shot1, shot2, shot3, shot4, shot5, shot6]
