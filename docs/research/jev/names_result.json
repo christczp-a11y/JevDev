@@ -1,0 +1,736 @@
+{
+ "scores": {
+  "纸上资治通鉴": {
+   "s_memorable": 2.85,
+   "s_memorable__conf": 0.87,
+   "s_curious": 3.18,
+   "s_curious__conf": 0.8,
+   "s_clear": 2.66,
+   "s_clear__conf": 0.51,
+   "s_kidfun": 1.48,
+   "s_kidfun__conf": 0.38,
+   "s_distinct": 2.68,
+   "s_distinct__conf": 0.64,
+   "n_misread": 0.11,
+   "n_adult": 0.43
+  },
+  "翻开资治通鉴": {
+   "s_memorable": 2.49,
+   "s_memorable__conf": 0.57,
+   "s_curious": 3.1,
+   "s_curious__conf": 0.86,
+   "s_clear": 2.07,
+   "s_clear__conf": 0.2,
+   "s_kidfun": 1.25,
+   "s_kidfun__conf": 0.48,
+   "s_distinct": 1.65,
+   "s_distinct__conf": 0.4,
+   "n_misread": 0.1,
+   "n_adult": 0.49
+  },
+  "会动的资治通鉴": {
+   "s_memorable": 2.85,
+   "s_memorable__conf": 0.87,
+   "s_curious": 3.22,
+   "s_curious__conf": 0.78,
+   "s_clear": 2.97,
+   "s_clear__conf": 0.56,
+   "s_kidfun": 2.33,
+   "s_kidfun__conf": 0.35,
+   "s_distinct": 2.66,
+   "s_distinct__conf": 0.64,
+   "n_misread": 0.1,
+   "n_adult": 0.24
+  },
+  "立体书里的资治通鉴": {
+   "s_memorable": 2.87,
+   "s_memorable__conf": 0.89,
+   "s_curious": 3.3,
+   "s_curious__conf": 0.73,
+   "s_clear": 3.02,
+   "s_clear__conf": 0.68,
+   "s_kidfun": 2.4,
+   "s_kidfun__conf": 0.42,
+   "s_distinct": 3.08,
+   "s_distinct__conf": 0.81,
+   "n_misread": 0.09,
+   "n_adult": 0.25
+  },
+  "一页通鉴": {
+   "s_memorable": 2.56,
+   "s_memorable__conf": 0.63,
+   "s_curious": 3.09,
+   "s_curious__conf": 0.86,
+   "s_clear": 1.97,
+   "s_clear__conf": 0.19,
+   "s_kidfun": 1.18,
+   "s_kidfun__conf": 0.5,
+   "s_distinct": 2.26,
+   "s_distinct__conf": 0.5,
+   "n_misread": 0.14,
+   "n_adult": 0.4
+  },
+  "通鉴立体书": {
+   "s_memorable": 2.79,
+   "s_memorable__conf": 0.82,
+   "s_curious": 3.18,
+   "s_curious__conf": 0.8,
+   "s_clear": 2.49,
+   "s_clear__conf": 0.38,
+   "s_kidfun": 2.39,
+   "s_kidfun__conf": 0.42,
+   "s_distinct": 2.83,
+   "s_distinct__conf": 0.74,
+   "n_misread": 0.11,
+   "n_adult": 0.26
+  },
+  "历史翻翻书": {
+   "s_memorable": 2.78,
+   "s_memorable__conf": 0.81,
+   "s_curious": 3.22,
+   "s_curious__conf": 0.78,
+   "s_clear": 1.7,
+   "s_clear__conf": 0.23,
+   "s_kidfun": 2.74,
+   "s_kidfun__conf": 0.66,
+   "s_distinct": 2.54,
+   "s_distinct__conf": 0.58,
+   "n_misread": 0.11,
+   "n_adult": 0.21
+  },
+  "资治通鉴翻翻乐": {
+   "s_memorable": 2.77,
+   "s_memorable__conf": 0.8,
+   "s_curious": 3.11,
+   "s_curious__conf": 0.86,
+   "s_clear": 3.29,
+   "s_clear__conf": 0.61,
+   "s_kidfun": 2.82,
+   "s_kidfun__conf": 0.68,
+   "s_distinct": 2.92,
+   "s_distinct__conf": 0.78,
+   "n_misread": 0.11,
+   "n_adult": 0.11
+  },
+  "翻书就闯关": {
+   "s_memorable": 2.85,
+   "s_memorable__conf": 0.86,
+   "s_curious": 3.26,
+   "s_curious__conf": 0.75,
+   "s_clear": 0.94,
+   "s_clear__conf": 0.22,
+   "s_kidfun": 3.26,
+   "s_kidfun__conf": 0.69,
+   "s_distinct": 3.14,
+   "s_distinct__conf": 0.81,
+   "n_misread": 0.13,
+   "n_adult": 0.13
+  },
+  "光爷爷讲资治通鉴": {
+   "s_memorable": 2.95,
+   "s_memorable__conf": 0.94,
+   "s_curious": 3.17,
+   "s_curious__conf": 0.81,
+   "s_clear": 3.17,
+   "s_clear__conf": 0.72,
+   "s_kidfun": 2.37,
+   "s_kidfun__conf": 0.42,
+   "s_distinct": 2.51,
+   "s_distinct__conf": 0.54,
+   "n_misread": 0.11,
+   "n_adult": 0.21
+  },
+  "光爷爷的立体书": {
+   "s_memorable": 2.99,
+   "s_memorable__conf": 0.96,
+   "s_curious": 3.22,
+   "s_curious__conf": 0.78,
+   "s_clear": 2.06,
+   "s_clear__conf": 0.11,
+   "s_kidfun": 3.1,
+   "s_kidfun__conf": 0.78,
+   "s_distinct": 3.18,
+   "s_distinct__conf": 0.78,
+   "n_misread": 0.1,
+   "n_adult": 0.09
+  },
+  "臣光曰": {
+   "s_memorable": 2.43,
+   "s_memorable__conf": 0.49,
+   "s_curious": 3.22,
+   "s_curious__conf": 0.75,
+   "s_clear": 1.68,
+   "s_clear__conf": 0.41,
+   "s_kidfun": 1.17,
+   "s_kidfun__conf": 0.59,
+   "s_distinct": 3.08,
+   "s_distinct__conf": 0.71,
+   "n_misread": 0.18,
+   "n_adult": 0.64
+  },
+  "臣光曰·资治通鉴动画": {
+   "s_memorable": 2.51,
+   "s_memorable__conf": 0.58,
+   "s_curious": 3.19,
+   "s_curious__conf": 0.8,
+   "s_clear": 2.8,
+   "s_clear__conf": 0.6,
+   "s_kidfun": 1.19,
+   "s_kidfun__conf": 0.55,
+   "s_distinct": 3.07,
+   "s_distinct__conf": 0.8,
+   "n_misread": 0.15,
+   "n_adult": 0.51
+  },
+  "砸缸之后": {
+   "s_memorable": 2.97,
+   "s_memorable__conf": 0.9,
+   "s_curious": 3.46,
+   "s_curious__conf": 0.6,
+   "s_clear": 2.32,
+   "s_clear__conf": 0.47,
+   "s_kidfun": 3.0,
+   "s_kidfun__conf": 0.73,
+   "s_distinct": 3.22,
+   "s_distinct__conf": 0.75,
+   "n_misread": 0.21,
+   "n_adult": 0.2
+  },
+  "司马光的书房": {
+   "s_memorable": 2.86,
+   "s_memorable__conf": 0.88,
+   "s_curious": 3.13,
+   "s_curious__conf": 0.83,
+   "s_clear": 1.61,
+   "s_clear__conf": 0.48,
+   "s_kidfun": 1.68,
+   "s_kidfun__conf": 0.36,
+   "s_distinct": 2.33,
+   "s_distinct__conf": 0.4,
+   "n_misread": 0.1,
+   "n_adult": 0.5
+  },
+  "古人为什么这么做": {
+   "s_memorable": 2.34,
+   "s_memorable__conf": 0.44,
+   "s_curious": 3.35,
+   "s_curious__conf": 0.68,
+   "s_clear": 1.44,
+   "s_clear__conf": 0.54,
+   "s_kidfun": 2.15,
+   "s_kidfun__conf": 0.27,
+   "s_distinct": 2.14,
+   "s_distinct__conf": 0.44,
+   "n_misread": 0.12,
+   "n_adult": 0.41
+  },
+  "历史里的为什么": {
+   "s_memorable": 2.36,
+   "s_memorable__conf": 0.54,
+   "s_curious": 3.3,
+   "s_curious__conf": 0.72,
+   "s_clear": 1.47,
+   "s_clear__conf": 0.54,
+   "s_kidfun": 2.25,
+   "s_kidfun__conf": 0.34,
+   "s_distinct": 1.94,
+   "s_distinct__conf": 0.51,
+   "n_misread": 0.11,
+   "n_adult": 0.27
+  },
+  "考考你·资治通鉴": {
+   "s_memorable": 2.6,
+   "s_memorable__conf": 0.66,
+   "s_curious": 3.14,
+   "s_curious__conf": 0.82,
+   "s_clear": 2.76,
+   "s_clear__conf": 0.67,
+   "s_kidfun": 2.2,
+   "s_kidfun__conf": 0.29,
+   "s_distinct": 2.74,
+   "s_distinct__conf": 0.72,
+   "n_misread": 0.15,
+   "n_adult": 0.19
+  },
+  "资治通鉴大冒险": {
+   "s_memorable": 2.87,
+   "s_memorable__conf": 0.88,
+   "s_curious": 3.19,
+   "s_curious__conf": 0.81,
+   "s_clear": 2.91,
+   "s_clear__conf": 0.61,
+   "s_kidfun": 3.05,
+   "s_kidfun__conf": 0.69,
+   "s_distinct": 2.56,
+   "s_distinct__conf": 0.59,
+   "n_misread": 0.09,
+   "n_adult": 0.15
+  },
+  "通鉴闯关记": {
+   "s_memorable": 2.89,
+   "s_memorable__conf": 0.9,
+   "s_curious": 3.12,
+   "s_curious__conf": 0.84,
+   "s_clear": 2.73,
+   "s_clear__conf": 0.52,
+   "s_kidfun": 2.96,
+   "s_kidfun__conf": 0.73,
+   "s_distinct": 2.93,
+   "s_distinct__conf": 0.83,
+   "n_misread": 0.09,
+   "n_adult": 0.12
+  },
+  "闯关吧资治通鉴": {
+   "s_memorable": 2.86,
+   "s_memorable__conf": 0.87,
+   "s_curious": 3.19,
+   "s_curious__conf": 0.8,
+   "s_clear": 3.11,
+   "s_clear__conf": 0.7,
+   "s_kidfun": 2.82,
+   "s_kidfun__conf": 0.64,
+   "s_distinct": 2.93,
+   "s_distinct__conf": 0.82,
+   "n_misread": 0.1,
+   "n_adult": 0.12
+  },
+  "陪娃看通鉴": {
+   "s_memorable": 2.73,
+   "s_memorable__conf": 0.78,
+   "s_curious": 3.4,
+   "s_curious__conf": 0.64,
+   "s_clear": 3.68,
+   "s_clear__conf": 0.74,
+   "s_kidfun": 1.42,
+   "s_kidfun__conf": 0.41,
+   "s_distinct": 2.02,
+   "s_distinct__conf": 0.49,
+   "n_misread": 0.11,
+   "n_adult": 0.16
+  },
+  "两分钟资治通鉴": {
+   "s_memorable": 2.59,
+   "s_memorable__conf": 0.66,
+   "s_curious": 3.21,
+   "s_curious__conf": 0.78,
+   "s_clear": 2.82,
+   "s_clear__conf": 0.59,
+   "s_kidfun": 1.24,
+   "s_kidfun__conf": 0.5,
+   "s_distinct": 2.33,
+   "s_distinct__conf": 0.4,
+   "n_misread": 0.11,
+   "n_adult": 0.31
+  },
+  "通鉴里的小故事": {
+   "s_memorable": 2.45,
+   "s_memorable__conf": 0.54,
+   "s_curious": 3.06,
+   "s_curious__conf": 0.86,
+   "s_clear": 2.66,
+   "s_clear__conf": 0.57,
+   "s_kidfun": 1.59,
+   "s_kidfun__conf": 0.38,
+   "s_distinct": 1.67,
+   "s_distinct__conf": 0.41,
+   "n_misread": 0.1,
+   "n_adult": 0.29
+  },
+  "一鉴钟情": {
+   "s_memorable": 2.77,
+   "s_memorable__conf": 0.77,
+   "s_curious": 3.13,
+   "s_curious__conf": 0.82,
+   "s_clear": 1.52,
+   "s_clear__conf": 0.43,
+   "s_kidfun": 1.64,
+   "s_kidfun__conf": 0.36,
+   "s_distinct": 2.8,
+   "s_distinct__conf": 0.7,
+   "n_misread": 0.56,
+   "n_adult": 0.4
+  },
+  "看鉴历史": {
+   "s_memorable": 2.5,
+   "s_memorable__conf": 0.58,
+   "s_curious": 3.01,
+   "s_curious__conf": 0.88,
+   "s_clear": 1.73,
+   "s_clear__conf": 0.39,
+   "s_kidfun": 1.48,
+   "s_kidfun__conf": 0.48,
+   "s_distinct": 1.9,
+   "s_distinct__conf": 0.55,
+   "n_misread": 0.14,
+   "n_adult": 0.43
+  },
+  "以史为鉴小剧场": {
+   "s_memorable": 2.62,
+   "s_memorable__conf": 0.68,
+   "s_curious": 3.09,
+   "s_curious__conf": 0.87,
+   "s_clear": 2.26,
+   "s_clear__conf": 0.55,
+   "s_kidfun": 1.85,
+   "s_kidfun__conf": 0.2,
+   "s_distinct": 2.2,
+   "s_distinct__conf": 0.54,
+   "n_misread": 0.11,
+   "n_adult": 0.35
+  },
+  "通鉴纸剧场": {
+   "s_memorable": 2.9,
+   "s_memorable__conf": 0.91,
+   "s_curious": 3.23,
+   "s_curious__conf": 0.77,
+   "s_clear": 2.99,
+   "s_clear__conf": 0.55,
+   "s_kidfun": 2.72,
+   "s_kidfun__conf": 0.65,
+   "s_distinct": 3.12,
+   "s_distinct__conf": 0.81,
+   "n_misread": 0.1,
+   "n_adult": 0.18
+  },
+  "纸片历史馆": {
+   "s_memorable": 2.83,
+   "s_memorable__conf": 0.86,
+   "s_curious": 3.1,
+   "s_curious__conf": 0.86,
+   "s_clear": 1.88,
+   "s_clear__conf": 0.75,
+   "s_kidfun": 2.4,
+   "s_kidfun__conf": 0.45,
+   "s_distinct": 2.76,
+   "s_distinct__conf": 0.74,
+   "n_misread": 0.1,
+   "n_adult": 0.21
+  },
+  "1362年故事书": {
+   "s_memorable": 1.59,
+   "s_memorable__conf": 0.45,
+   "s_curious": 2.83,
+   "s_curious__conf": 0.8,
+   "s_clear": 1.18,
+   "s_clear__conf": 0.58,
+   "s_kidfun": 1.33,
+   "s_kidfun__conf": 0.55,
+   "s_distinct": 3.22,
+   "s_distinct__conf": 0.66,
+   "n_misread": 0.17,
+   "n_adult": 0.45
+  },
+  "资治通鉴学习资料分享": {
+   "s_memorable": 1.16,
+   "s_memorable__conf": 0.55,
+   "s_curious": 2.3,
+   "s_curious__conf": 0.38,
+   "s_clear": 1.64,
+   "s_clear__conf": 0.4,
+   "s_kidfun": 0.3,
+   "s_kidfun__conf": 0.75,
+   "s_distinct": 0.99,
+   "s_distinct__conf": 0.52,
+   "n_misread": 0.38,
+   "n_adult": 0.73
+  },
+  "历史视频123": {
+   "s_memorable": 0.69,
+   "s_memorable__conf": 0.43,
+   "s_curious": 2.44,
+   "s_curious__conf": 0.53,
+   "s_clear": 0.43,
+   "s_clear__conf": 0.65,
+   "s_kidfun": 1.13,
+   "s_kidfun__conf": 0.59,
+   "s_distinct": 0.63,
+   "s_distinct__conf": 0.48,
+   "n_misread": 0.19,
+   "n_adult": 0.23
+  },
+  "国学经典诵读": {
+   "s_memorable": 1.03,
+   "s_memorable__conf": 0.44,
+   "s_curious": 2.6,
+   "s_curious__conf": 0.63,
+   "s_clear": 1.04,
+   "s_clear__conf": 0.92,
+   "s_kidfun": 0.55,
+   "s_kidfun__conf": 0.54,
+   "s_distinct": 0.35,
+   "s_distinct__conf": 0.7,
+   "n_misread": 0.28,
+   "n_adult": 0.74
+  }
+ },
+ "top": [
+  "闯关吧资治通鉴",
+  "资治通鉴翻翻乐",
+  "通鉴纸剧场",
+  "通鉴闯关记",
+  "光爷爷的立体书",
+  "资治通鉴大冒险",
+  "立体书里的资治通鉴",
+  "砸缸之后"
+ ],
+ "pairs": [
+  [
+   "闯关吧资治通鉴",
+   "资治通鉴翻翻乐",
+   {
+    "p_click": 0.615,
+    "p_kid": 0.9
+   }
+  ],
+  [
+   "闯关吧资治通鉴",
+   "通鉴纸剧场",
+   {
+    "p_click": 0.43,
+    "p_kid": 0.9199999999999999
+   }
+  ],
+  [
+   "闯关吧资治通鉴",
+   "通鉴闯关记",
+   {
+    "p_click": 0.64,
+    "p_kid": 0.79
+   }
+  ],
+  [
+   "闯关吧资治通鉴",
+   "光爷爷的立体书",
+   {
+    "p_click": 0.3,
+    "p_kid": 0.69
+   }
+  ],
+  [
+   "闯关吧资治通鉴",
+   "资治通鉴大冒险",
+   {
+    "p_click": 0.48,
+    "p_kid": 0.495
+   }
+  ],
+  [
+   "闯关吧资治通鉴",
+   "立体书里的资治通鉴",
+   {
+    "p_click": 0.32999999999999996,
+    "p_kid": 0.89
+   }
+  ],
+  [
+   "闯关吧资治通鉴",
+   "砸缸之后",
+   {
+    "p_click": 0.9450000000000001,
+    "p_kid": 0.9299999999999999
+   }
+  ],
+  [
+   "资治通鉴翻翻乐",
+   "通鉴纸剧场",
+   {
+    "p_click": 0.33499999999999996,
+    "p_kid": 0.5599999999999999
+   }
+  ],
+  [
+   "资治通鉴翻翻乐",
+   "通鉴闯关记",
+   {
+    "p_click": 0.29000000000000004,
+    "p_kid": 0.15
+   }
+  ],
+  [
+   "资治通鉴翻翻乐",
+   "光爷爷的立体书",
+   {
+    "p_click": 0.28,
+    "p_kid": 0.245
+   }
+  ],
+  [
+   "资治通鉴翻翻乐",
+   "资治通鉴大冒险",
+   {
+    "p_click": 0.28,
+    "p_kid": 0.04
+   }
+  ],
+  [
+   "资治通鉴翻翻乐",
+   "立体书里的资治通鉴",
+   {
+    "p_click": 0.33499999999999996,
+    "p_kid": 0.62
+   }
+  ],
+  [
+   "资治通鉴翻翻乐",
+   "砸缸之后",
+   {
+    "p_click": 0.895,
+    "p_kid": 0.7
+   }
+  ],
+  [
+   "通鉴纸剧场",
+   "通鉴闯关记",
+   {
+    "p_click": 0.52,
+    "p_kid": 0.075
+   }
+  ],
+  [
+   "通鉴纸剧场",
+   "光爷爷的立体书",
+   {
+    "p_click": 0.31,
+    "p_kid": 0.2
+   }
+  ],
+  [
+   "通鉴纸剧场",
+   "资治通鉴大冒险",
+   {
+    "p_click": 0.54,
+    "p_kid": 0.05
+   }
+  ],
+  [
+   "通鉴纸剧场",
+   "立体书里的资治通鉴",
+   {
+    "p_click": 0.495,
+    "p_kid": 0.7649999999999999
+   }
+  ],
+  [
+   "通鉴纸剧场",
+   "砸缸之后",
+   {
+    "p_click": 0.95,
+    "p_kid": 0.635
+   }
+  ],
+  [
+   "通鉴闯关记",
+   "光爷爷的立体书",
+   {
+    "p_click": 0.32,
+    "p_kid": 0.5700000000000001
+   }
+  ],
+  [
+   "通鉴闯关记",
+   "资治通鉴大冒险",
+   {
+    "p_click": 0.38,
+    "p_kid": 0.195
+   }
+  ],
+  [
+   "通鉴闯关记",
+   "立体书里的资治通鉴",
+   {
+    "p_click": 0.43,
+    "p_kid": 0.8999999999999999
+   }
+  ],
+  [
+   "通鉴闯关记",
+   "砸缸之后",
+   {
+    "p_click": 0.945,
+    "p_kid": 0.875
+   }
+  ],
+  [
+   "光爷爷的立体书",
+   "资治通鉴大冒险",
+   {
+    "p_click": 0.655,
+    "p_kid": 0.28
+   }
+  ],
+  [
+   "光爷爷的立体书",
+   "立体书里的资治通鉴",
+   {
+    "p_click": 0.655,
+    "p_kid": 0.925
+   }
+  ],
+  [
+   "光爷爷的立体书",
+   "砸缸之后",
+   {
+    "p_click": 0.955,
+    "p_kid": 0.8500000000000001
+   }
+  ],
+  [
+   "资治通鉴大冒险",
+   "立体书里的资治通鉴",
+   {
+    "p_click": 0.42000000000000004,
+    "p_kid": 0.9450000000000001
+   }
+  ],
+  [
+   "资治通鉴大冒险",
+   "砸缸之后",
+   {
+    "p_click": 0.935,
+    "p_kid": 0.955
+   }
+  ],
+  [
+   "立体书里的资治通鉴",
+   "砸缸之后",
+   {
+    "p_click": 0.97,
+    "p_kid": 0.59
+   }
+  ]
+ ],
+ "win": {
+  "闯关吧资治通鉴": {
+   "p_click": 3.74,
+   "p_kid": 5.614999999999999
+  },
+  "资治通鉴翻翻乐": {
+   "p_click": 2.8,
+   "p_kid": 2.415
+  },
+  "通鉴纸剧场": {
+   "p_click": 4.05,
+   "p_kid": 2.245
+  },
+  "通鉴闯关记": {
+   "p_click": 3.625,
+   "p_kid": 4.525
+  },
+  "光爷爷的立体书": {
+   "p_click": 5.055000000000001,
+   "p_kid": 4.35
+  },
+  "资治通鉴大冒险": {
+   "p_click": 4.02,
+   "p_kid": 5.84
+  },
+  "立体书里的资治通鉴": {
+   "p_click": 4.305,
+   "p_kid": 1.545
+  },
+  "砸缸之后": {
+   "p_click": 0.405,
+   "p_kid": 1.4650000000000003
+  }
+ }
+}
