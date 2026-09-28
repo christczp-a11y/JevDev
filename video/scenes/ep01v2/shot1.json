@@ -81,26 +81,26 @@
    "poses": [
     [
      0,
-     "shangyang_point"
+     "sy2_point"
     ],
     [
      16.02,
-     "sy_scroll"
+     "sy2_scroll"
     ],
     [
      19.76,
-     "sy_worry"
+     "sy2_worry"
     ],
     [
      36.77,
-     "shangyang_point"
+     "sy2_point"
     ]
    ],
    "show": [
     0.1,
     46.35
    ],
-   "px": 0.42,
+   "px": 0.4,
    "native": 1,
    "phase": 0.7,
    "speaker": "商鞅",
@@ -124,18 +124,18 @@
    "poses": [
     [
      0,
-     "shangyang_point"
+     "sy2_point"
     ],
     [
      75.99,
-     "sy_raise"
+     "sy2_raise"
     ]
    ],
    "show": [
     53.85,
     79.29
    ],
-   "px": 0.42,
+   "px": 0.4,
    "native": 1,
    "phase": 0.7,
    "speaker": "商鞅"
@@ -205,18 +205,18 @@
    "poses": [
     [
      0,
-     "douzi_puzzled"
+     "d2_puzzled"
     ],
     [
      23.09,
-     "douzi_gold"
+     "d2_gold"
     ]
    ],
    "show": [
     8.13,
     26.78
    ],
-   "px": 0.25,
+   "px": 0.28,
    "native": 1,
    "phase": 0.2,
    "speaker": "小豆子",
@@ -240,22 +240,22 @@
    "poses": [
     [
      0,
-     "dad_grab"
+     "dad2_grab"
     ],
     [
      39.16,
-     "dad_cover"
+     "dad2_cover"
     ],
     [
      50.45,
-     "dad_doubt"
+     "dad2_doubt"
     ]
    ],
    "show": [
     26.78,
     79.29
    ],
-   "px": 0.42,
+   "px": 0.356,
    "native": 1,
    "phase": 1.4,
    "speaker": "爹"
@@ -281,21 +281,21 @@
      1
     ]
    ],
-   "px": 0.25,
+   "px": 0.28,
    "native": 1,
    "phase": 0.2,
    "poses": [
     [
      0,
-     "douzi_run"
+     "d2_run"
     ],
     [
      53.15,
-     "douzi_gold"
+     "d2_gold"
     ],
     [
      58.02,
-     "douzi_puzzled"
+     "d2_puzzled"
     ]
    ],
    "show": [

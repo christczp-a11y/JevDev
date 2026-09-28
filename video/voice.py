@@ -26,7 +26,7 @@ CAST = {
     "小伙": ("zh-CN-YunxiNeural", "+4%", "+0Hz"),
     "小孩": ("zh-CN-YunxiaNeural", "+8%", "+14Hz"),
     "同桌": ("zh-CN-XiaoyiNeural", "+4%", "+16Hz"),
-    "司马光": ("zh-CN-YunxiaNeural", "-8%", "-12Hz"),
+    "司马光": ("zh-CN-YunxiNeural", "-10%", "-12Hz"),   # 系列讲解人（约 60 岁）：和小伙同一个声音，但更慢更低；两人不在同一场出现
 }
 GAP = 0.3   # 两句之间的停顿（秒）
 

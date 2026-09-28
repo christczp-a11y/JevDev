@@ -102,23 +102,23 @@ def shot1():   # 冷开场 + 第 1 关：南门立木
                 [[0, 0], [r(T0(6)) - 0.8, 0], [r(T0(6)), 170], [lift + 1.7, 170], [lift + 5.7, 1060], [end, 1060]],
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 0], [r(T1(14)) - 0.3, 1]],
                  "coins": [[0, None], [r(T0(0)) + 1.2, 10], [r(T0(10)) + 0.3, 50]]},
-                {"shangyang": actor(440, "shangyang_point", [0.1, lift - 1.0], speaker="商鞅", phase=0.7,
-                                    poses=[[0, "shangyang_point"], [r(T0(5)), "sy_scroll"], [r(at(5, "可没人信")), "sy_worry"], [r(T0(10)), "shangyang_point"]],
+                {"shangyang": actor(440, "sy2_point", [0.1, lift - 1.0], speaker="商鞅", phase=0.7,
+                                    poses=[[0, "sy2_point"], [r(T0(5)), "sy2_scroll"], [r(at(5, "可没人信")), "sy2_worry"], [r(T0(10)), "sy2_point"]],
                                     shakes=[[r(at(5, "可没人信")), r(T1(5)), 6]]),
-                 "shangyang2": actor(1700, "shangyang_point", [off + 12.6, end], flip=-1, speaker="商鞅", phase=0.7,
-                                     poses=[[0, "shangyang_point"], [r(T0(18)) + 1.0, "sy_raise"]]),
+                 "shangyang2": actor(1700, "sy2_point", [off + 12.6, end], flip=-1, speaker="商鞅", phase=0.7,
+                                     poses=[[0, "sy2_point"], [r(T0(18)) + 1.0, "sy2_raise"]]),
                  # 「没一个人敢搬」：围观的人一出来就往后缩
                  "auntie0": actor(900, "auntie_hands", [r(T0(3)) - 0.1, r(T0(6)) - 0.6], flip=-1, px=0.38, phase=0.5,
                                   keys=[[0, 900, "", -1], [r(at(3, "没一个人")), 900, "", -1], [r(at(3, "没一个人")) + 0.5, 960, "", -1]]),
-                 "douzi": actor(960, "douzi_puzzled", [r(T0(3)), r(T0(7))], flip=-1,   # 爹的姿势图里自带小豆子：爹出场时退场（不然重影）
+                 "douzi": actor(960, "d2_puzzled", [r(T0(3)), r(T0(7))], flip=-1,   # 爹的姿势图里自带小豆子：爹出场时退场（不然重影）
                                 px=0.25, speaker="小豆子", phase=0.2,
                                 keys=[[0, 960, "", -1], [r(at(3, "没一个人")), 960, "", -1], [r(at(3, "没一个人")) + 0.5, 1000, "", -1], [r(T0(6)), 960, "", -1]],
-                                poses=[[0, "douzi_puzzled"], [r(T0(6)), "douzi_gold"]], jumps=[[r(T0(6)) + 0.3, r(T0(6)) + 0.7, 26]]),
-                 "dad": actor(1000, "dad_grab", [r(T0(7)), end], flip=-1, speaker="爹", phase=1.4,
-                              poses=[[0, "dad_grab"], [r(T0(11)), "dad_cover"], [lift + 3.1, "dad_doubt"]]),
+                                poses=[[0, "d2_puzzled"], [r(T0(6)), "d2_gold"]], jumps=[[r(T0(6)) + 0.3, r(T0(6)) + 0.7, 26]]),
+                 "dad": actor(1000, "dad2_grab", [r(T0(7)), end], flip=-1, speaker="爹", phase=1.4,
+                              poses=[[0, "dad2_grab"], [r(T0(11)), "dad2_cover"], [lift + 3.1, "dad2_doubt"]]),
                  # 小伙抱着木杆从爹面前经过以后，小豆子才挣脱、跟在后面跑
                  "douzi2": {"keys": [[lift + 3.2, 960, "", 1], [lift + 5.7, 1360, "", 1], [end, 1360, "", 1]], "px": 0.25, "native": 1, "phase": 0.2,
-                            "poses": [[0, "douzi_run"], [lift + 5.8, "douzi_gold"], [r(at(15, "可是")), "douzi_puzzled"]],
+                            "poses": [[0, "d2_run"], [lift + 5.8, "d2_gold"], [r(at(15, "可是")), "d2_puzzled"]],
                             "show": [lift + 3.1, end], "speaker": "小豆子",
                             "bubbles": [[r(at(15, "可是")) + 0.4, r(T1(15)) + 0.3, "？"]]},
                  "auntie": actor(1920, "auntie_gossip", [r(T0(18)) - 0.2, end], flip=-1, px=0.38, speaker="大婶", phase=0.5),
@@ -152,11 +152,11 @@ def shot2():   # 第 2 关：太子犯法
     return base(1, "qin_gate", [[0, cam], [end, cam]],
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 1], [r(T0(25)) + 0.4, 2]]},
                 {"crowd1": actor(1320, "auntie_hands", [r(T0(20)) + 0.6, end], px=0.38, enter="rise", y=150, phase=0.4),
-                 "crowd2": actor(1610, "dad_doubt", [r(T0(20)) + 0.85, end], enter="rise", y=160, phase=1.0),
-                 "douzi": actor(1760, "douzi_puzzled", [r(T0(20)) + 0.4, end], flip=-1, px=0.25, speaker="小豆子", phase=0.2,
-                                poses=[[0, "douzi_puzzled"], [r(T0(25)), "douzi_shock"]]),
-                 "shangyang": actor(1930, "sy_slam", [r(T0(23)) - 0.1, end], flip=-1, speaker="商鞅", phase=0.7,
-                                    poses=[[0, "sy_slam"], [r(T1(23)) + 0.4, "shangyang_stand"]]),
+                 "crowd2": actor(1610, "dad2_doubt", [r(T0(20)) + 0.85, end], enter="rise", y=160, phase=1.0),
+                 "douzi": actor(1760, "d2_puzzled", [r(T0(20)) + 0.4, end], flip=-1, px=0.25, speaker="小豆子", phase=0.2,
+                                poses=[[0, "d2_puzzled"], [r(T0(25)), "d2_shock"]]),
+                 "shangyang": actor(1930, "sy2_slam", [r(T0(23)) - 0.1, end], flip=-1, speaker="商鞅", phase=0.7,
+                                    poses=[[0, "sy2_slam"], [r(T1(23)) + 0.4, "sy2_stand"]]),
                  "teachers": {"keys": [[0, gate_x, "", -1], [r(at(24, "那就")) + 2.2, gate_x, "", -1], [r(T1(24)) + 2.6, 1150, "", -1]],   # 在门口低头站一会儿，再被带走（走到松树后面）
                               "poses": [[0, "teachers"]], "px": 0.4, "native": 1, "phase": 0.9, "bob": 5,
                               "show": [r(at(24, "那就")) - 0.3, end],
@@ -176,8 +176,8 @@ def shot3():   # 第 3 关：十年
     return base(2, "qin_gate", [[0, 80], [end, 260]],
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 2], [r(T0(31)) + 0.3, 3]]},
                 {"teen": {"keys": [[r(T0(28)) - 0.2, 250, "", 1], [r(T0(28)) + 1.6, 560, "", 1], [rev + 0.2, 560, "", 1], [r(T1(30)), 980, "", 1], [end, 980, "", 1]],
-                          "poses": [[0, "douzi_teen"]], "px": 0.36, "native": 1, "phase": 0.3, "bob": 6, "show": [r(T0(28)) - 0.3, end]},
-                 "dad": actor(1110, "dad_old", [r(T0(31)) - 0.4, end], flip=-1, speaker="爹", phase=1.2, nods=[[r(T0(31)), r(T1(31))]])},
+                          "poses": [[0, "d2_teen"]], "px": 0.36, "native": 1, "phase": 0.3, "bob": 6, "show": [r(T0(28)) - 0.3, end]},
+                 "dad": actor(1110, "dad2_old", [r(T0(31)) - 0.4, end], flip=-1, speaker="爹", phase=1.2, nods=[[r(T0(31)), r(T1(31))]])},
                 [sprite("bundle", 690, 512, 56, [r(T0(28)) - 0.4, end], enter="drop")],
                 [{"type": "banner", "t": r(T0(27)), "d": 2.0, "text": "第 3 关：很多年"},
                  {"type": "seasons", "t0": r(T0(27)) + 0.3, "t1": r(T1(27)) + 0.3, "loops": 1},
@@ -185,21 +185,23 @@ def shot3():   # 第 3 关：十年
                  {"type": "confetti", "t": r(T0(31)) + 0.3, "d": 3.0, "n": 70}])
 
 
-def shot4():   # 司马光从书里跳出来
+def shot4():   # 讲解人司马光结尾点题（Chris 2026-09-28：司马光是频道主角和头像，每个故事结束出来点题）
     S = B[3]
     r = lambda g: round(g - S, 2)
     end = round(B[4] - S, 2)
     cam = 150
-    book = [sprite("big_book", 540 + cam, 560, 250, [r(T0(32)) + 0.4, end], sfx="pop"),
-            sprite("big_book", 540 + cam, 560, 250, [r(at(33, "我说")), end], enter="fade",
-                   text=[["信者，", -96, -44, 42, "#2a2320"], ["人君之", -96, 2, 36, "#2a2320"], ["大宝也", -96, 46, 36, "#c8372d"]])]
+    wake, say = r(at(32, "来了")), r(at(33, "我在书里说"))
+    book = [sprite("big_book", 430 + cam, 560, 250, [say - 0.2, end], sfx="pop",
+                   text=[["信者，", -96, -44, 42, "#2a2320"], ["人君之", -96, 2, 36, "#2a2320"], ["大宝也", -96, 46, 36, "#c8372d"]]),
+            sprite("sgm_pillow", 660 + cam, 500, 52, [wake, end], enter="drop")]   # 警枕：打瞌睡时圆木枕头一滚就醒（史料）
     return base(3, "qin_gate", [[0, cam], [end, cam]],
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 3]]},
-                {"sima": actor(610 + cam, "simaguang", [r(T0(33)), end], px=0.34, y=-70, speaker="司马光", phase=0.6,
-                               jumps=[[r(T0(33)), r(T0(33)) + 0.55, 90]])},
+                {"sima": actor(800 + cam, "sgm_wake", [wake - 0.1, end], px=0.48, speaker="司马光", phase=0.6,
+                               poses=[[0, "sgm_wake"], [r(T0(33)), "sgm_book"], [say, "sgm_finger"], [r(at(33, "最大")), "sgm_thumb"]],
+                               jumps=[[wake, wake + 0.45, 40]])},
                 book,
                 [{"type": "tint", "t0": -1, "t1": end + 1, "color": "#2a1f18", "a": 0.55, "under": True},
-                 {"type": "shake", "t": r(T0(32)) + 0.5, "amp": 6}])
+                 {"type": "shake", "t": wake + 0.05, "amp": 7}])
 
 
 def shot5():   # 回到现代：你说的每句话，都是一根木头
@@ -227,6 +229,20 @@ def shot6():   # 下集预告
 
 
 SHOTS = [shot1, shot2, shot3, shot4, shot5, shot6]
+
+
+PX = {"d2_teen": 0.40, "d2_": 0.28, "dad2_": 0.356, "sy2_": 0.40, "sgm_": 0.62}
+
+
+def restyle(scene):
+    """新角色（v2 设计）的素材比例和旧素材不同：按姿势图的名字统一设 px。"""
+    for a in scene["actors"].values():
+        poses = [n for _, n in a.get("poses", [])]
+        for pre, px in PX.items():
+            if poses and all(n.startswith(pre) for n in poses):
+                a["px"] = px
+                break
+    return scene
 
 
 def fix_fly(scene):
@@ -311,7 +327,7 @@ def main():
     SCENES.mkdir(parents=True, exist_ok=True)
     OUT.mkdir(parents=True, exist_ok=True)
     for k, fn in enumerate(SHOTS, 1):
-        (SCENES / f"shot{k}.json").write_text(json.dumps(fix_fly(fn()), ensure_ascii=False, indent=1), encoding="utf-8")
+        (SCENES / f"shot{k}.json").write_text(json.dumps(restyle(fix_fly(fn())), ensure_ascii=False, indent=1), encoding="utf-8")
     print("场次边界：", [round(b, 2) for b in B])
     if args.no_render:
         return

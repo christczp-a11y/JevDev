@@ -75,10 +75,10 @@
    "poses": [
     [
      0,
-     "douzi_teen"
+     "d2_teen"
     ]
    ],
-   "px": 0.36,
+   "px": 0.4,
    "native": 1,
    "phase": 0.3,
    "bob": 6,
@@ -99,14 +99,14 @@
    "poses": [
     [
      0,
-     "dad_old"
+     "dad2_old"
     ]
    ],
    "show": [
     15.770000000000001,
     18.41
    ],
-   "px": 0.42,
+   "px": 0.356,
    "native": 1,
    "phase": 1.2,
    "speaker": "爹",

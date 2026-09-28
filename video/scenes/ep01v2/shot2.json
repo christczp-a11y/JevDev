@@ -76,14 +76,14 @@
    "poses": [
     [
      0,
-     "dad_doubt"
+     "dad2_doubt"
     ]
    ],
    "show": [
     5.859999999999999,
     28.58
    ],
-   "px": 0.42,
+   "px": 0.356,
    "native": 1,
    "phase": 1.0,
    "enter": "rise",
@@ -101,18 +101,18 @@
    "poses": [
     [
      0,
-     "douzi_puzzled"
+     "d2_puzzled"
     ],
     [
      20.17,
-     "douzi_shock"
+     "d2_shock"
     ]
    ],
    "show": [
     5.41,
     28.58
    ],
-   "px": 0.25,
+   "px": 0.28,
    "native": 1,
    "phase": 0.2,
    "speaker": "小豆子"
@@ -129,18 +129,18 @@
    "poses": [
     [
      0,
-     "sy_slam"
+     "sy2_slam"
     ],
     [
      16.169999999999998,
-     "shangyang_stand"
+     "sy2_stand"
     ]
    ],
    "show": [
     12.15,
     28.58
    ],
-   "px": 0.42,
+   "px": 0.4,
    "native": 1,
    "phase": 0.7,
    "speaker": "商鞅"
