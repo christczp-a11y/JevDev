@@ -24,7 +24,8 @@ VOICE = ROOT / "out/ep01v2_voice"
 OUT = ROOT / "out/ep01v2"
 SCENES = ROOT / "scenes/ep01v2"
 BGM = Path.home() / "MoneyPrinterTurbo/resource/songs/output009.mp3"   # MPT 自带曲库（来源不明，仅内部预览，发布前必须换）
-TITLE = {"kicker": "资治通鉴 · 第 1 集", "lines": ["一根木头，怎么让", "秦国人开始[[相信]]？"]}
+TITLE = {"kicker": "资治通鉴 · 卷二",   # 不是第 1 集：系列按《资治通鉴》顺序，第 1 集是三家分晋（Chris 2026-09-28）
+          "lines": ["一根木头，怎么让", "秦国人开始[[相信]]？"]}
 FOOTER = "徙木立信 · 出自《资治通鉴》卷二"
 LABEL = {"农夫": "爹"}   # 字幕上显示的说话人
 
@@ -101,18 +102,18 @@ def shot1():   # 冷开场 + 第 1 关：南门立木
     return base(0, "qin_gate",
                 [[0, 0], [r(T0(6)) - 0.8, 0], [r(T0(6)), 170], [lift + 1.7, 170], [lift + 5.7, 1060], [end, 1060]],
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 0], [r(T1(14)) - 0.3, 1]],
-                 "coins": [[0, None], [r(T0(0)) + 1.2, 10], [r(T0(10)) + 0.3, 50]]},
-                {"shangyang": actor(440, "sy2_point", [0.1, lift - 1.0], speaker="商鞅", phase=0.7,
+                 "coins": [[0, None], [r(at(1, "十金")), 10], [r(T0(10)) + 0.3, 50]]},
+                {"shangyang": actor(440, "sy2_point", [r(T1(0)) + 0.1, lift - 1.0], speaker="商鞅", phase=0.7,
                                     poses=[[0, "sy2_point"], [r(T0(5)), "sy2_scroll"], [r(at(5, "可没人信")), "sy2_worry"], [r(T0(10)), "sy2_point"]],
                                     shakes=[[r(at(5, "可没人信")), r(T1(5)), 6]]),
                  "shangyang2": actor(1700, "sy2_point", [off + 12.6, end], flip=-1, speaker="商鞅", phase=0.7,
                                      poses=[[0, "sy2_point"], [r(T0(18)) + 1.0, "sy2_raise"]]),
                  # 「没一个人敢搬」：围观的人一出来就往后缩
                  "auntie0": actor(900, "auntie_hands", [r(T0(3)) - 0.1, r(T0(6)) - 0.6], flip=-1, px=0.38, phase=0.5,
-                                  keys=[[0, 900, "", -1], [r(at(3, "没一个人")), 900, "", -1], [r(at(3, "没一个人")) + 0.5, 960, "", -1]]),
+                                  keys=[[0, 1000, "", -1], [r(at(3, "没一个人")), 1000, "", -1], [r(at(3, "没一个人")) + 0.5, 1025, "", -1]]),   # 和小豆子、告示都不重叠（layout_qa）
                  "douzi": actor(960, "d2_puzzled", [r(T0(3)), r(T0(7))], flip=-1,   # 爹的姿势图里自带小豆子：爹出场时退场（不然重影）
                                 px=0.25, speaker="小豆子", phase=0.2,
-                                keys=[[0, 960, "", -1], [r(at(3, "没一个人")), 960, "", -1], [r(at(3, "没一个人")) + 0.5, 1000, "", -1], [r(T0(6)), 960, "", -1]],
+                                keys=[[0, 900, "", -1], [r(at(3, "没一个人")), 900, "", -1], [r(at(3, "没一个人")) + 0.5, 920, "", -1], [r(T0(6)), 915, "", -1]],
                                 poses=[[0, "d2_puzzled"], [r(T0(6)), "d2_gold"]], jumps=[[r(T0(6)) + 0.3, r(T0(6)) + 0.7, 26]]),
                  "dad": actor(1000, "dad2_grab", [r(T0(7)), end], flip=-1, speaker="爹", phase=1.4,
                               poses=[[0, "dad2_grab"], [r(T0(11)), "dad2_cover"], [lift + 3.1, "dad2_doubt"]]),
@@ -121,16 +122,20 @@ def shot1():   # 冷开场 + 第 1 关：南门立木
                             "poses": [[0, "d2_run"], [lift + 5.8, "d2_gold"], [r(at(15, "可是")), "d2_puzzled"]],
                             "show": [lift + 3.1, end], "speaker": "小豆子",
                             "bubbles": [[r(at(15, "可是")) + 0.4, r(T1(15)) + 0.3, "？"]]},
+                 # 系列固定开场（docs/开头3秒-司马光方案.md V2）：司马光从书页里弹出来「考考你！」，问完缩回书里
+                 "host": actor(860, "sgm_finger", [0.15, r(T0(3)) - 0.1], flip=-1, px=0.62, speaker="司马光", phase=0.6,
+                               jumps=[[0.15, 0.6, 70]], overlapOk=[["host", "prop:big_book:0"]]),
                  "auntie": actor(1920, "auntie_gossip", [r(T0(18)) - 0.2, end], flip=-1, px=0.38, speaker="大婶", phase=0.5),
                  "youth": {**youth(off), "show": [off - 0.1, end]}},
-                [{"type": "pole", "x": 632, "height": 460, "thick": 18, "gB": [0.065, 0.12], "appear": 0.05, "lift": [lift, lift + 1.6],
+                [sprite("big_book", 860, 560, 230, [0.0, r(T0(3)) + 0.1], sfx="pop"),
+                 {"type": "pole", "x": 632, "height": 460, "thick": 18, "gB": [0.065, 0.12], "appear": r(T1(0)), "lift": [lift, lift + 1.6],
                   "drop": [lift + 5.4, lift + 6.5], "by": "youth"},
-                 {"type": "board", "x": 810, "height": 170, "show": [r(T0(0)) + 1.0, end],
+                 {"type": "board", "x": 770, "height": 170, "show": [r(T0(3)), end],   # 司马光站在告示的位置：他回书里以后告示再弹出来
                   "texts": [[0, ["谁把木杆", "搬到北门", "!赏 十金"]], [r(T0(10)) + 0.3, ["谁把木杆", "搬到北门", "!赏 五十金"]]]},
-                 sprite("crow", 830, 332, 58, [r(at(3, "没一个人")), end], enter="fly", from_=None,
+                 sprite("crow", 790, 332, 58, [r(at(3, "没一个人")), end], enter="fly", from_=None,
                         say=[[r(at(3, "没一个人")) + 0.8, r(T1(3)) + 0.6, "嘎——"]]),
                  *sy_icons],
-                [{"type": "shake", "t": 0.3, "amp": 10},
+                [{"type": "shake", "t": r(T1(0)) + 0.2, "amp": 10},
                  choice(r(at(1, "你搬")), ["搬", "不搬"], reveal=r(T1(2)) - 0.1, t1=r(T1(2)) + 0.2, after="想好了吗？"),
                  {"type": "banner", "t": r(T0(4)) + 0.3, "d": 2.6, "text": "第 1 关：一根木头"},
                  choice(r(at(8, "考你")), ["不给了", "给更多"], reveal=r(T1(9)) - 0.3, pick=1, t1=r(T0(10)) + 0.9),
@@ -151,15 +156,15 @@ def shot2():   # 第 2 关：太子犯法
     gate_x = 1010 + cam * 0.45       # 中景视差 0.55：让太子帽正好在门洞里（换算成跟着镜头走的坐标）
     return base(1, "qin_gate", [[0, cam], [end, cam]],
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 1], [r(T0(25)) + 0.4, 2]]},
-                {"crowd1": actor(1320, "auntie_hands", [r(T0(20)) + 0.6, end], px=0.38, enter="rise", y=150, phase=0.4),
+                {"crowd1": actor(1400, "auntie_hands", [r(T0(20)) + 0.6, end], px=0.38, enter="rise", y=150, phase=0.4),
                  "crowd2": actor(1610, "dad2_doubt", [r(T0(20)) + 0.85, end], enter="rise", y=160, phase=1.0),
                  "douzi": actor(1760, "d2_puzzled", [r(T0(20)) + 0.4, end], flip=-1, px=0.25, speaker="小豆子", phase=0.2,
                                 poses=[[0, "d2_puzzled"], [r(T0(25)), "d2_shock"]]),
                  "shangyang": actor(1930, "sy2_slam", [r(T0(23)) - 0.1, end], flip=-1, speaker="商鞅", phase=0.7,
                                     poses=[[0, "sy2_slam"], [r(T1(23)) + 0.4, "sy2_stand"]]),
-                 "teachers": {"keys": [[0, gate_x, "", -1], [r(at(24, "那就")) + 2.2, gate_x, "", -1], [r(T1(24)) + 2.6, 1150, "", -1]],   # 在门口低头站一会儿，再被带走（走到松树后面）
+                 "teachers": {"keys": [[0, gate_x, "", -1], [r(at(24, "那就")) + 2.2, gate_x, "", -1], [r(T1(24)) + 2.6, 1150, "", -1]],   # 被带到松树后面就退场   # 在门口低头站一会儿，再被带走（走到松树后面）
                               "poses": [[0, "teachers"]], "px": 0.4, "native": 1, "phase": 0.9, "bob": 5,
-                              "show": [r(at(24, "那就")) - 0.3, end],
+                              "show": [r(at(24, "那就")) - 0.3, r(T1(24)) + 2.4],
                               "bubbles": [[r(at(24, "那就")) + 0.6, r(T1(24)) + 0.8, "啊？我们？"]]}},
                 [sprite("prince_hat", gate_x, 486, 56, [r(at(20, "太子")), end], layer="mid", enter="rise", bob=2)],
                 [{"type": "banner", "t": r(at(19, "可是")), "d": 2.3, "text": "第 2 关：太子犯法"},
@@ -198,7 +203,7 @@ def shot4():   # 讲解人司马光结尾点题（Chris 2026-09-28：司马光�
                 {"label": "秦国信用值", "hearts": 3, "credit": [[0, 3]]},
                 {"sima": actor(800 + cam, "sgm_wake", [wake - 0.1, end], px=0.48, speaker="司马光", phase=0.6,
                                poses=[[0, "sgm_wake"], [r(T0(33)), "sgm_book"], [say, "sgm_finger"], [r(at(33, "最大")), "sgm_thumb"]],
-                               jumps=[[wake, wake + 0.45, 40]])},
+                               jumps=[[wake, wake + 0.45, 40]], overlapOk=[["sima", "prop:sgm_pillow:1"]])},
                 book,
                 [{"type": "tint", "t0": -1, "t1": end + 1, "color": "#2a1f18", "a": 0.55, "under": True},
                  {"type": "shake", "t": wake + 0.05, "amp": 7}])

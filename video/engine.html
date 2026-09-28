@@ -791,6 +791,38 @@ async function init(sceneData, assets) {
 }
 // 给音效用：每个纸偶角色的脚步时刻 [秒, 力度]
 function footsteps() { return Object.fromEntries(Object.entries(scene.actors).filter(([, a]) => a.rigData).map(([id, a]) => [id, a.footsteps()])); }
+// 站位质检（video/layout_qa.py）：t 时刻每个看得见的人物、落地道具在画面里占的框（按素材不透明像素的范围算，不算透明边）
+function opaqueBox(name) {
+  if (cache['bb:' + name]) return cache['bb:' + name];
+  const im = img[name], c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+  const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0);
+  const d = g.getImageData(0, 0, im.width, im.height).data; let x0 = im.width, x1 = 0, y0 = im.height, y1 = 0;
+  for (let y = 0; y < im.height; y += 2) for (let x = 0; x < im.width; x += 2) if (d[(y * im.width + x) * 4 + 3] > 128) {
+    if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  return (cache['bb:' + name] = [x0 / im.width, x1 / im.width, y0 / im.height, y1 / im.height]);
+}
+function layoutBoxes(t) {
+  const cam = interp(scene.camera, t), out = [];
+  for (const [id, a] of Object.entries(scene.actors)) {
+    const [s0, s1] = a.show || [-1e9, 1e9]; if (t < s0 + 0.35 || t > s1 - 0.2) continue;   // 正在弹出 / 退场的不算
+    if (a.rigData) { const x = a.xAt(t) - cam; out.push({ id, kind: 'rig', pose: 'rig', x0: x - 60, x1: x + 60, y0: 180, y1: GROUND }); continue; }
+    const st = actorState(a, t), name = st.pose, im = img[name]; if (!im) continue;
+    const h = a.px ? (im.height - 18) * a.px : a.height, w = im.width * h / im.height, b = opaqueBox(name);
+    const flip = (a.native === -1 ? -st.flip : st.flip) < 0, fx0 = flip ? 1 - b[1] : b[0], fx1 = flip ? 1 - b[0] : b[1];
+    const bottom = GROUND + (a.y || 0) - st.jy, x = st.x - cam;
+    out.push({ id, kind: 'actor', pose: name, x0: x - w / 2 + fx0 * w, x1: x - w / 2 + fx1 * w, y0: bottom - h + b[2] * h, y1: bottom - h + b[3] * h });
+  }
+  for (const [i, p] of scene.props.entries()) {
+    if (p.type !== 'sprite' || (p.layer && p.layer !== 'back' && p.layer !== 'front') || p.y < 440) continue;   // 只查落在地上的道具
+    const [s0, s1] = p.show || [-1e9, 1e9]; if (t < s0 + 0.35 || t > s1) continue;
+    const im = img[p.img]; if (!im) continue; const w = im.width * p.h / im.height, x = p.x - cam;
+    out.push({ id: 'prop:' + p.img + ':' + i, kind: 'prop', pose: p.img, x0: x - w / 2, x1: x + w / 2, y0: p.y - p.h, y1: p.y });
+  }
+  for (const p of scene.props) if (p.type === 'board') { const [s0, s1] = p.show; if (t >= s0 + 0.35 && t <= s1) {
+    const x = p.x - cam; out.push({ id: 'board', kind: 'prop', pose: 'board', x0: x - 95, x1: x + 95, y0: GROUND - p.height - 40, y1: GROUND }); } }
+  return { cam, boxes: out };
+}
+window.layoutBoxes = layoutBoxes;
 // 质检截图用：某个角色在 t 时刻位于闯关画面里的横坐标
 function actorScreenX(id, t) { const a = scene.actors[id]; return (a.rigData ? a.xAt(t) : actorState(a, t).x) - interp(scene.camera, t); }
 window.init = init; window.renderFrame = renderFrame; window.footsteps = footsteps; window.actorScreenX = actorScreenX;
