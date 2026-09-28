@@ -47,8 +47,16 @@ def assets_for(scene):
             rd = a["rigData"][v]
             files.update({f"rig:{d}:{n}": ROOT / "assets/rig" / d / f"{n}.png" for n in [*rd["parts"], *(f"{b}_bare" for b in rd.get("bare", []))]})
     files.update({n: ROOT / "assets/props" / f"{n}.png" for n in PROPS})
+    # 第 1 集起：姿势时间线里的人物图、纸片道具、纸鸟 —— 按名字在 chars / props 里找
+    extra = {n for a in scene["actors"].values() for _t, n in a.get("poses", [])}
+    extra |= {p["img"] for p in scene["props"] if p["type"] == "sprite"}
+    if any(e["type"] == "birds" for e in scene["events"]):
+        extra.add("paper_bird")
+    for n in extra:
+        files[n] = next(d / f"{n}.png" for d in (ROOT / "assets/chars", ROOT / "assets/props") if (d / f"{n}.png").exists())
     s = scene["set"]
-    names = {s["far"]["img"], s["stage"]["ground"]["img"]} | {it[0] for k in ("hills", "mid", "stage", "fore", "frame") for it in s.get(k, {}).get("items", []) + s.get(k, {}).get("behind", [])}
+    ground = s["stage"].get("ground")
+    names = {s["far"]["img"]} | ({ground["img"]} if ground else set()) | {it[0] for k in ("hills", "mid", "stage", "fore", "frame") for it in s.get(k, {}).get("items", []) + s.get(k, {}).get("behind", [])}
     if s["mid"].get("wallStrip"):
         names.add(s["mid"]["wallStrip"]["img"])
     files.update({n: ROOT / "assets" / s["dir"] / f"{n}.png" for n in names})

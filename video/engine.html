@@ -135,7 +135,7 @@ function buildSet(set) {
   if (set.frame) cache.frame = offscreen(BAND.w, set.frame.filter, g => {
     g.shadowColor = 'rgba(40,25,10,0.5)'; g.shadowBlur = 18; g.shadowOffsetX = 6; g.shadowOffsetY = 6;
     for (const [n, x, b, h, flip] of set.frame.items) put(g, n, x, b, h, { flip: !!flip }); });
-  cache.stage = offscreen(set.stage.width, set.stage.filter || 'none', g => {
+  if (set.stage.ground) cache.stage = offscreen(set.stage.width, set.stage.filter || 'none', g => {
     g.translate(-set.stage.offset, 0);
     const gr = set.stage.ground, gim = img[gr.img], gw = gim.width * gr.height / gim.height;
     for (let x = set.stage.offset - gw; x < set.stage.offset + set.stage.width; x += gw - 2) g.drawImage(gim, x, GROUND + gr.top, gw, gr.height);
@@ -262,7 +262,9 @@ function poleState(p, t, info) {   // info = 扛的人此刻的局部信息（�
   return { P: Pn, th, f, grips, layer: u < 0.85 ? 'mid' : 'afterHead' };   // 起杆时在头后面；抱住以后在身体前面、手臂后面（手臂兜着它）
 }
 function drawPoleWorld(p, t, front) {   // 没被扛着的时候：立在集市南门口，或者放倒在地上
-  if (t < p.lift[0]) { if (!front) drawPoleAt(ctx, p, [p.x, GROUND + 6], Math.PI, 0); }
+  if (t < p.lift[0]) { if (!front && t >= (p.appear ?? -1e9)) {   // appear：从地里「咚」地竖起来（先冲出地面，再回弹）
+      const u = clamp((t - (p.appear ?? -1e9)) / 0.45, 0, 1), rise = (1 - easeOutBack(u)) * p.height;
+      drawPoleAt(ctx, p, [p.x, GROUND + 6 + rise], Math.PI, 0); } }
   else if (t >= p.drop[1] && front) {
     const a = scene.actors[p.by], x = a.xAt(p.drop[1]), face = Math.sign(a.facing(p.drop[1]));
     ctx.save(); ctx.translate(x, 0); ctx.scale(face, 1); ctx.shadowColor = 'rgba(50,30,10,0.4)'; ctx.shadowBlur = 6; ctx.shadowOffsetY = 4;
@@ -322,26 +324,43 @@ function actorState(a, t) {
     const k = a.keys[i], p = a.keys[i - 1]; if (t < k[0]) break;
     flip = k[3] === p[3] ? k[3] : p[3] * Math.cos(clamp((t - k[0]) / 0.25, 0, 1) * Math.PI);
   }
-  let pose = stepVal(a.keys.map(k => [k[0], k[2]]), t);
+  let pose = a.poses ? stepVal(a.poses, t) : stepVal(a.keys.map(k => [k[0], k[2]]), t);
   if (pose === 'auto') pose = moving ? 'run' : 'stand';
   let jy = 0;
   for (const [t0, t1, h] of a.jumps || []) if (t >= t0 && t <= t1) { const u = (t - t0) / (t1 - t0); jy = 4 * h * u * (1 - u); }
   return { x, moving, flip, pose, jy };
 }
 function drawActor(a, t) {
-  const s = actorState(a, t), im = img[a.sprites[s.pose] || a.sprites.stand];
-  const h = a.height, w = im.width * h / im.height;
-  const bob = s.moving && !s.jy ? Math.abs(Math.sin(t * 14)) * 12 : Math.sin(t * 2.2 + a.phase) * 2;
-  const tilt = s.moving && !s.jy ? Math.sin(t * 14) * 0.05 : 0;
+  // 出场 / 退场：show = [出现, 消失]；enter = 'pop'（弹出，默认）| 'rise'（从画面下沿冒上来）
+  const [s0, s1] = a.show || [-1e9, 1e9];
+  if (t < s0 || t > s1) return null;
+  const s = actorState(a, t), name = a.sprites ? (a.sprites[s.pose] || a.sprites.stand || s.pose) : s.pose, im = img[name];
+  // 同一个角色所有姿势用同一个比例（px = 画面像素 / 素材像素），姿势图大小不同也不会忽大忽小
+  const h = a.px ? (im.height - 18) * a.px : a.height, w = im.width * h / im.height;
+  const pin = clamp((t - s0) / 0.32, 0, 1), pout = clamp((s1 - t) / 0.2, 0, 1);
+  const grow = a.enter === 'rise' ? 1 : Math.min(easeOutBack(pin), pout);
+  const riseY = a.enter === 'rise' ? (1 - easeOutBack(pin)) * h * 0.9 + (1 - pout) * h * 0.9 : 0;
+  // 换姿势：纸片轻轻一压再弹回来
+  let squash = 0;
+  if (a.poses) { const ch = [...a.poses].reverse().find(k => t >= k[0] && k[0] > s0 + 0.05); if (ch && t - ch[0] < 0.22) squash = Math.sin((t - ch[0]) / 0.22 * Math.PI) * 0.1; }
+  // 说话：跟着语音一起一伏
+  const talking = a.speaker && scene.subtitles.some(x => x[2] === a.speaker && t >= x[0] && t <= x[1]);
+  const talk = talking ? Math.abs(Math.sin(t * 10.5 + a.phase)) * 0.03 : 0;
+  let dx = 0, rot = 0;
+  for (const [t0, t1, amp] of a.shakes || []) if (t >= t0 && t <= t1) dx += Math.sin(t * 38) * amp * Math.sin((t - t0) / (t1 - t0) * Math.PI);
+  for (const [t0, t1] of a.nods || []) if (t >= t0 && t <= t1) rot += Math.sin((t - t0) * 9) * 0.07;
+  const bob = s.moving && !s.jy ? Math.abs(Math.sin(t * 14)) * (a.bob ?? 12) : Math.sin(t * 2.2 + a.phase) * 2;
+  const tilt = (s.moving && !s.jy ? Math.sin(t * 14) * 0.05 : 0) + rot;
+  const baseY = GROUND + (a.y || 0) + riseY;
   ctx.save();
-  ctx.fillStyle = 'rgba(60,40,20,0.25)'; ctx.beginPath();
-  ctx.ellipse(s.x, GROUND + 6, w * 0.34 * (1 - s.jy / 400), 9, 0, 0, 7); ctx.fill();
-  ctx.translate(s.x, GROUND - bob - s.jy); ctx.rotate(tilt);
-  ctx.scale(a.native === 1 ? s.flip : -s.flip, 1);
+  if (a.enter !== 'rise') { ctx.fillStyle = `rgba(60,40,20,${0.25 * grow})`; ctx.beginPath();
+    ctx.ellipse(s.x + dx, baseY + 6, Math.max(1, w * 0.34 * grow * (1 - s.jy / 400)), 9 * grow, 0, 0, 7); ctx.fill(); }
+  ctx.translate(s.x + dx, baseY - bob - s.jy); ctx.rotate(tilt);
+  ctx.scale((a.native === -1 ? -s.flip : s.flip) * grow, grow * (1 - squash + talk));
   ctx.shadowColor = 'rgba(50,30,10,0.30)'; ctx.shadowBlur = 10; ctx.shadowOffsetX = 5; ctx.shadowOffsetY = 4;
   ctx.drawImage(im, -w / 2, -h, w, h);
   ctx.restore();
-  return { x: s.x, top: GROUND - h - bob - s.jy };
+  return { x: s.x, top: baseY - h * grow - bob - s.jy };
 }
 function bubble(x, y, text, a) {
   if (a <= 0) return;
@@ -352,15 +371,145 @@ function bubble(x, y, text, a) {
   ctx.restore();
 }
 
+
+// ---------- 第 1 集起新增：纸片道具、关卡横幅、BOSS、徽章、四季、纸鸟、眼睛 ----------
+// 纸片道具 {type:'sprite', img, x, y（底边）, h, show:[出现, 消失], enter:'pop'|'drop'|'rise'|'fly'|'fade', from:[dx,dy]（fly 用）,
+//   layer:'mid'（城门洞后面）|'back'（人物后面，默认）|'front'（人物前面）|'overlay'（最上层，不跟镜头）, screen:true 用画面坐标,
+//   flip, rot, bob（上下浮动幅度）, gray:时刻（之后变灰）, text:[[文字, dx, dy, 字号, 颜色], ...], say:[[t0,t1,文字], ...]}
+function spriteProp(p, t) {
+  const [s0, s1] = p.show || [-1e9, 1e9];
+  if (t < s0 || t > s1 + 0.3) return;
+  const u = clamp((t - s0) / (p.enter === 'fly' ? 0.8 : 0.4), 0, 1), out = t > s1 ? 1 - clamp((t - s1) / 0.3, 0, 1) : 1;
+  let x = p.x, y = p.y ?? GROUND + 8, sc = 1, sy = 1, alpha = out;
+  const e = p.enter || 'pop';
+  if (e === 'pop') sc = easeOutBack(u);
+  if (e === 'drop') y -= (1 - easeOutBack(u)) * 260;
+  if (e === 'rise') sy = easeOutBack(u);
+  if (e === 'fade') alpha *= u;
+  if (e === 'fly') { const [fx, fy] = p.from || [400, -200], k = ease(u); x += fx * (1 - k); y += fy * (1 - k) - Math.sin(k * Math.PI) * 60; }
+  if (p.bob) y += Math.sin(t * 3 + x) * p.bob;
+  const im = img[p.img], h = p.h, w = im.width * h / im.height;
+  ctx.save(); ctx.globalAlpha = alpha; ctx.translate(x, y); if (p.rot) ctx.rotate(p.rot); ctx.scale((p.flip ? -1 : 1) * sc, sc * sy);
+  if (p.gray != null && t >= p.gray) ctx.filter = `grayscale(${clamp((t - p.gray) / 0.4, 0, 1)}) brightness(0.9)`;
+  ctx.shadowColor = 'rgba(50,30,10,0.3)'; ctx.shadowBlur = 8; ctx.shadowOffsetX = 4; ctx.shadowOffsetY = 3;
+  ctx.drawImage(im, -w / 2, -h, w, h); ctx.filter = 'none'; ctx.shadowColor = 'transparent';
+  for (const [txt, dx, dy, size, color] of p.text || []) {
+    ctx.save(); if (p.flip) ctx.scale(-1, 1);
+    ctx.fillStyle = color || INK; ctx.font = `${size || 40}px "ZCOOL KuaiLe"`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(txt, dx || 0, -h / 2 + (dy || 0)); ctx.restore();
+  }
+  ctx.restore();
+  for (const [t0, t1, txt] of p.say || []) if (t >= t0 && t <= t1) bubble(x, y - h - 12, txt, Math.min((t - t0) / 0.25, (t1 - t) / 0.2));
+}
+function spriteProps(t, layer) { for (const p of scene.props) if (p.type === 'sprite' && (p.layer || 'back') === layer) spriteProp(p, t); }
+
+// 关卡横幅：从上方落下，停一会儿，再往上飞走
+function drawBanner(ev, t) {
+  const u = t - ev.t, d = ev.d || 2; if (u < 0 || u > d) return;
+  const yIn = easeOutBack(clamp(u / 0.4, 0, 1)), yOut = ease(clamp((u - d + 0.35) / 0.35, 0, 1));
+  const y = -120 + 300 * yIn - 320 * yOut;
+  ctx.save(); ctx.font = '900 64px "Noto Sans SC"'; const w = ctx.measureText(ev.text).width + 110;
+  ctx.translate(BAND.w / 2, y); ctx.rotate(-0.03);
+  card(() => deckle(ctx, -w / 2, -58, w, 116, 30, 9), ev.color || RED, { outline: 7, shadow: 12 });
+  ctx.fillStyle = '#fffaf0'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ev.text, 0, 4);
+  ctx.restore();
+}
+// BOSS：顶部一条长血条，挨打时抖一下
+function drawBoss(ev, t) {
+  if (t < ev.t0 || t > ev.t1) return;
+  const hp = interp(ev.hp, t), hit = ev.hp.find(k => t >= k[0] && t - k[0] < 0.4 && k[0] > ev.t0);
+  const shake = hit ? Math.sin(t * 60) * 6 : 0, grow = easeOutBack(clamp((t - ev.t0) / 0.35, 0, 1));
+  ctx.save(); ctx.translate(BAND.w / 2 + shake, 120); ctx.scale(grow, grow);
+  card(() => deckle(ctx, -260, -34, 520, 68, 34, 4), 'rgba(40,30,28,0.92)', { outline: 5, shadow: 8 });
+  ctx.fillStyle = '#ffd24a'; ctx.font = '900 34px "Noto Sans SC"'; ctx.textBaseline = 'middle'; ctx.fillText('BOSS', -236, 2);
+  ctx.fillStyle = '#5a4640'; ctx.beginPath(); roundRect(ctx, -130, -12, 370, 24, 12); ctx.fill();
+  ctx.fillStyle = '#e0483a'; ctx.beginPath(); roundRect(ctx, -130, -12, Math.max(0, 370 * hp), 24, 12); ctx.fill();
+  ctx.restore();
+}
+// 三个上锁的徽章：先发抖，说到哪条就「叮」地解锁、露出字
+function drawBadges(ev, t) {
+  if (t < ev.t0 || t > ev.t1) return;
+  const a = Math.min(clamp((t - ev.t0) / 0.3, 0, 1), clamp((ev.t1 - t) / 0.3, 0, 1));
+  ctx.save(); ctx.globalAlpha = a * 0.45; ctx.fillStyle = '#2a2320'; ctx.fillRect(0, 0, BAND.w, BAND.h); ctx.restore();
+  ev.items.forEach(([tu, label], i) => {
+    const cx = BAND.w / 2 + (i - 1) * 300, cy = BAND.h / 2 + 10, open = t >= tu, k = open ? easeOutBack(clamp((t - tu) / 0.35, 0, 1)) : 0;
+    const jit = open ? 0 : Math.sin(t * 34 + i * 2) * 4;
+    ctx.save(); ctx.globalAlpha = a; ctx.translate(cx + jit, cy); ctx.scale(0.85 + 0.25 * k, 0.85 + 0.25 * k);
+    card(() => ctx.arc(0, 0, 110, 0, Math.PI * 2), open ? '#f2c14e' : '#8d8278', { outline: 7, shadow: 12 });
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (open) { ctx.fillStyle = INK; ctx.font = `900 ${label.length > 2 ? 46 : 60}px "Noto Sans SC"`; ctx.fillText(label, 0, 4); }
+    else {   // 锁
+      ctx.fillStyle = '#5a4f48'; ctx.beginPath(); roundRect(ctx, -34, -8, 68, 54, 8); ctx.fill();
+      ctx.strokeStyle = '#5a4f48'; ctx.lineWidth = 12; ctx.beginPath(); ctx.arc(0, -8, 24, Math.PI, 0); ctx.stroke();
+    }
+    ctx.restore();
+  });
+}
+// 四季纸片飞快翻过（第 3 关：十年）
+function drawSeasons(ev, t) {
+  if (t < ev.t0 || t > ev.t1) return;
+  const names = [['春', '#8fc46a'], ['夏', '#3f9e5a'], ['秋', '#e39a3b'], ['冬', '#9fc3e0']], per = (ev.t1 - ev.t0) / (ev.loops || 2) / 4;
+  const k = (t - ev.t0) / per, i = Math.floor(k) % 4, f = k % 1, [nm, col] = names[i];
+  ctx.save(); ctx.globalAlpha = 0.28; ctx.fillStyle = col; ctx.fillRect(0, 0, BAND.w, BAND.h); ctx.restore();
+  const sx = Math.max(0.05, Math.abs(Math.cos(f * Math.PI)));   // 纸片翻面
+  ctx.save(); ctx.translate(BAND.w - 170, BAND.h / 2); ctx.scale(sx, 1); ctx.rotate(-0.06);
+  card(() => deckle(ctx, -95, -120, 190, 240, 22, 3 + i), '#fffaf0', { outline: 6, shadow: 10 });
+  ctx.fillStyle = col; ctx.font = '900 130px "Noto Sans SC"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(nm, 0, 8);
+  ctx.restore();
+}
+// 纸鸟带着字条飞过全城
+function drawBirds(ev, t) {
+  const R = mulberry32(ev.seed || 5);
+  for (let i = 0; i < ev.n; i++) {
+    const d = R() * 1.6, y0 = 60 + R() * 300, sp = 330 + R() * 160, u = t - ev.t - d;
+    if (u < 0 || u > 4.5) continue;
+    const x = -140 + u * sp, y = y0 + Math.sin(u * 5 + i) * 18;
+    if (x > BAND.w + 200) continue;
+    const im = img.paper_bird, h = 64, w = im.width * h / im.height;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(u * 6 + i) * 0.08);
+    ctx.drawImage(im, -w / 2, -h / 2, w, h);
+    if (ev.text) { ctx.font = '26px "ZCOOL KuaiLe"'; const tw = ctx.measureText(ev.text).width + 20;
+      card(() => deckle(ctx, -w / 2 - tw - 6, -16, tw, 34, 10, i), '#fffdf6', { outline: 3, shadow: 3, under: false });
+      ctx.fillStyle = RED; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ev.text, -w / 2 - tw / 2 - 6, 2); }
+    ctx.restore();
+  }
+}
+// 门缝里的一双眼睛：慢慢亮起、眨眼
+function drawEyes(ev, t) {
+  if (t < ev.t0 || t > ev.t1) return;
+  const a = clamp((t - ev.t0) / 0.8, 0, 1), blink = ((t - ev.t0) % 2.6) < 0.14 ? 0.15 : 1;
+  if (ev.slit) {   // 门先开一条黑缝，眼睛在缝里
+    const w = 62 * clamp((t - ev.t0) / 0.6, 0, 1);
+    ctx.save(); const g = ctx.createLinearGradient(ev.x - w / 2, 0, ev.x + w / 2, 0);
+    g.addColorStop(0, '#050302'); g.addColorStop(0.5, '#140c08'); g.addColorStop(1, '#050302');
+    ctx.fillStyle = g; ctx.fillRect(ev.x - w / 2, ev.y - 70, w, 150); ctx.restore();
+  }
+  for (const dx of [-15, 15]) {
+    ctx.save(); ctx.globalAlpha = a; ctx.translate(ev.x + dx, ev.y);
+    ctx.shadowColor = 'rgba(255,230,120,0.9)'; ctx.shadowBlur = 16; ctx.fillStyle = '#fff4c2';
+    ctx.beginPath(); ctx.ellipse(0, 0, 9, 6 * blink, 0, 0, 7); ctx.fill();
+    ctx.shadowColor = 'transparent'; ctx.fillStyle = '#2a1a14'; ctx.beginPath(); ctx.ellipse(2, 0, 4, 4 * blink, 0, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+}
+function drawTint(ev, t) { if (t < ev.t0 || t > ev.t1) return;
+  const a = Math.min(clamp((t - ev.t0) / 0.5, 0, 1), clamp((ev.t1 - t) / 0.5, 0, 1));
+  ctx.save(); ctx.globalAlpha = a * (ev.a ?? 0.5); ctx.fillStyle = ev.color || '#1a1210'; ctx.fillRect(0, 0, BAND.w, BAND.h); ctx.restore(); }
+function camShake(t) { let d = 0; for (const ev of scene.events) if (ev.type === 'shake' && t >= ev.t && t < ev.t + (ev.d || 0.35))
+  d += Math.sin((t - ev.t) * 70) * (ev.amp || 10) * (1 - (t - ev.t) / (ev.d || 0.35)); return d; }
+
 // ---------- 闯关画面 ----------
 function drawBand(t) {
-  const camX = interp(scene.camera, t), set = scene.set;
+  const camX = interp(scene.camera, t) + camShake(t), set = scene.set;
   const fx = -((camX * set.far.parallax) % cache.farW);
   ctx.drawImage(cache.far, Math.round(fx), 0);
   if (cache.hills) drawLayerCache(cache.hills, set.hills.parallax, camX);
   drawLayerCache(cache.mid, set.mid.parallax, camX);
-  drawLayerCache(cache.stage, 1, camX, set.stage.offset);
+  ctx.save(); ctx.translate(-camX, 0); spriteProps(t, 'mid'); ctx.restore();   // 城门洞后面的东西（比如太子帽）
+  if (cache.stage) drawLayerCache(cache.stage, 1, camX, set.stage.offset);
+  for (const ev of scene.events) if (ev.type === 'tint' && ev.under) drawTint(ev, t);   // 只压暗背景（人物和道具不压）
   ctx.save(); ctx.translate(-camX, 0);
+  spriteProps(t, 'back');
   for (const p of scene.props) {
     if (p.type === 'block') drawBlock(p, t);
     if (p.type === 'board') drawBoard(p, t);
@@ -370,9 +519,13 @@ function drawBand(t) {
   }
   const pos = {};
   if (!window.hideActors)   // 合理性复查查背景时把人物藏起来（人物常常正好挡住门洞、接缝）
-    for (const [id, a] of Object.entries(scene.actors)) pos[id] = a.rigData ? P.draw(ctx, a, t) : drawActor(a, t);
+    for (const [id, a] of Object.entries(scene.actors)) {
+      if (a.rigData && a.show && (t < a.show[0] || t > a.show[1])) continue;   // 纸偶角色也可以只在一段时间里出场
+      pos[id] = a.rigData ? P.draw(ctx, a, t) : drawActor(a, t);
+    }
   for (const p of scene.props) if (p.type === 'log') drawLog(p, t, true);
   for (const p of scene.props) if (p.type === 'pole') drawPoleWorld(p, t, true);   // 放倒的木杆躺在人前面
+  spriteProps(t, 'front');
   for (const ev of scene.events) if (ev.type === 'coinRain') coinRain(ev, t);
   for (const [id, a] of Object.entries(scene.actors))
     for (const [t0, t1, text] of a.bubbles || [])
@@ -380,8 +533,16 @@ function drawBand(t) {
   ctx.restore();
   drawLayerCache(cache.fore, set.fore.parallax, camX);
   if (cache.frame) ctx.drawImage(cache.frame, 0, 0);   // 立体书纸框：固定在画框上
+  for (const ev of scene.events) if (ev.type === 'tint' && !ev.under) drawTint(ev, t);
+  for (const ev of scene.events) if (ev.type === 'seasons') drawSeasons(ev, t);
+  spriteProps(t, 'overlay');
+  for (const ev of scene.events) if (ev.type === 'eyes') drawEyes(ev, t);   // 门缝里的眼睛画在门上面
+  for (const ev of scene.events) if (ev.type === 'birds') drawBirds(ev, t);
+  for (const ev of scene.events) if (ev.type === 'badges') drawBadges(ev, t);
   for (const ev of scene.events) if (ev.type === 'stamp') drawStamp(ev, t);  // 印章固定在画面中央，不跟镜头走
-  drawHud(t);
+  if (scene.hud) drawHud(t);
+  for (const ev of scene.events) if (ev.type === 'boss') drawBoss(ev, t);
+  for (const ev of scene.events) if (ev.type === 'banner') drawBanner(ev, t);
   ctx.save(); ctx.globalAlpha = 0.06; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = noise; ctx.fillRect(0, 0, BAND.w, BAND.h); ctx.restore();
 }
 function coinRain(ev, t) {
@@ -413,19 +574,35 @@ function drawStamp(ev, t) {
   ctx.drawImage(im, -210, -100); ctx.restore();
 }
 function drawHud(t) {
-  const credit = stepVal(scene.hud.credit, t), coins = stepVal(scene.hud.coins, t);
+  // hud = {label:'信用', hearts: 5, credit: [[时刻, 红心数], ...], crack: [[裂开, 拼回], ...], coins: [[时刻, 赏金], ...] 或省略（不显示赏金）}
+  const H = scene.hud, credit = stepVal(H.credit, t), n = H.hearts || 5, label = H.label || '信用';
   ctx.save();
-  card(() => deckle(ctx, 44, 18, 300, 62, 31), 'rgba(255,250,240,0.93)', { outline: 5, shadow: 7 });
-  ctx.fillStyle = INK; ctx.font = '30px "ZCOOL KuaiLe"'; ctx.textBaseline = 'middle'; ctx.fillText('信用', 66, 50);
-  for (let i = 0; i < 5; i++) {
-    const cx = 150 + i * 38, cy = 50;
-    card(() => { ctx.moveTo(cx, cy + 13); ctx.bezierCurveTo(cx - 21, cy - 2, cx - 11, cy - 19, cx, cy - 7); ctx.bezierCurveTo(cx + 11, cy - 19, cx + 21, cy - 2, cx, cy + 13); ctx.closePath(); },
-         i < credit ? RED : '#efe2cc', { outline: 3, shadow: 3, under: false, grain: 0.5 });
+  ctx.font = '30px "ZCOOL KuaiLe"'; const lw = ctx.measureText(label).width;
+  card(() => deckle(ctx, 44, 18, lw + 56 + n * 38, 62, 31), 'rgba(255,250,240,0.93)', { outline: 5, shadow: 7 });
+  ctx.fillStyle = INK; ctx.textBaseline = 'middle'; ctx.fillText(label, 66, 50);
+  const gain = [...H.credit].reverse().find(k => t >= k[0] && k[0] > 0);
+  for (let i = 0; i < n; i++) {
+    const cx = 66 + lw + 30 + i * 38, cy = 50, fresh = gain && i === credit - 1 && t - gain[0] < 0.5 ? Math.sin((t - gain[0]) / 0.5 * Math.PI) * 0.45 : 0;
+    const crack = (H.crack || []).find(([c0, c1]) => t >= c0 && t < c1), cr = crack ? clamp((t - crack[0]) / 0.25, 0, 1) : 0;
+    const mend = (H.crack || []).find(([, c1]) => t >= c1 && t - c1 < 0.6);
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(1 + fresh, 1 + fresh);
+    const heart = dx => { ctx.moveTo(dx, 13); ctx.bezierCurveTo(dx - 21, -2, dx - 11, -19, dx, -7); ctx.bezierCurveTo(dx + 11, -19, dx + 21, -2, dx, 13); ctx.closePath(); };
+    if (crack && i === 0) {   // 裂成左右两半，往两边歪
+      for (const side of [-1, 1]) { ctx.save(); ctx.translate(side * 5 * cr, 2 * cr); ctx.rotate(side * 0.25 * cr);
+        ctx.beginPath(); ctx.rect(side < 0 ? -30 : 0, -30, 30, 60); ctx.clip();
+        card(() => heart(0), i < credit ? RED : '#efe2cc', { outline: 3, shadow: 3, under: false, grain: 0.5 }); ctx.restore(); }
+    } else card(() => heart(0), i < credit ? RED : '#efe2cc', { outline: 3, shadow: 3, under: false, grain: 0.5 });
+    if (mend && i === 0) { const m = (t - mend[1]) / 0.6; ctx.strokeStyle = `rgba(255,240,150,${1 - m})`; ctx.lineWidth = 3;
+      for (let j = 0; j < 6; j++) { const an = j * Math.PI / 3; ctx.beginPath(); ctx.moveTo(Math.cos(an) * (16 + 10 * m), Math.sin(an) * (16 + 10 * m));
+        ctx.lineTo(Math.cos(an) * (24 + 16 * m), Math.sin(an) * (24 + 16 * m)); ctx.stroke(); } }
+    ctx.restore();
   }
-  const last = [...scene.hud.coins].reverse().find(k => t >= k[0] && k[0] > 0), pop = last ? Math.max(0, 1 - (t - last[0]) / 0.3) : 0;
-  card(() => deckle(ctx, BAND.w - 270, 18, 226, 62, 31), 'rgba(255,250,240,0.93)', { outline: 5, shadow: 7 });
-  ctx.drawImage(cache.ingot, BAND.w - 262, 38, 40, 23);   // 赏金图标：金块（秦国那时还没有铸钱）
-  ctx.fillStyle = INK; ctx.font = `900 ${34 + pop * 12}px "Noto Sans SC"`; ctx.fillText(`赏金 ${coins}`, BAND.w - 206, 51);
+  if (H.coins && stepVal(H.coins, t) != null) {   // 赏金是 null 的时候不显示赏金面板
+    const coins = stepVal(H.coins, t), last = [...H.coins].reverse().find(k => t >= k[0] && k[0] > 0), pop = last ? Math.max(0, 1 - (t - last[0]) / 0.3) : 0;
+    card(() => deckle(ctx, BAND.w - 270, 18, 226, 62, 31), 'rgba(255,250,240,0.93)', { outline: 5, shadow: 7 });
+    ctx.drawImage(cache.ingot, BAND.w - 262, 38, 40, 23);   // 赏金图标：金块（秦国那时还没有铸钱）
+    ctx.fillStyle = INK; ctx.font = `900 ${34 + pop * 12}px "Noto Sans SC"`; ctx.fillText(`赏金 ${coins}`, BAND.w - 206, 51);
+  }
   ctx.restore();
 }
 
@@ -440,9 +617,12 @@ function renderFrame(t) {
   ctx.fillStyle = CREAM; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(T.kicker, W / 2, 187);
   ctx.restore();
   ctx.drawImage(cache.title || (cache.title = buildTitle(T)), 0, 0);
+  const [fin, fout] = scene.flip || [false, false];
+  const fx = Math.max(0.02, Math.min(fin ? ease(clamp(t / 0.28, 0, 1)) : 1, fout ? ease(clamp((scene.duration - t) / 0.28, 0, 1)) : 1));
+  ctx.save(); ctx.translate(W / 2, 0); ctx.scale(fx, 1); ctx.translate(-W / 2, 0);
   card(() => deckle(ctx, BAND.x + 18, BAND.y - 12, BAND.w - 36, BAND.h + 24, 26), '#fffaf0', { outline: 0, shadow: 16 });
   ctx.save(); ctx.beginPath(); roundRect(ctx, BAND.x + 30, BAND.y, BAND.w - 60, BAND.h, 18); ctx.clip();
-  ctx.translate(BAND.x, BAND.y); drawBand(t); ctx.restore();
+  ctx.translate(BAND.x, BAND.y); drawBand(t); ctx.restore(); ctx.restore();
   const sub = scene.subtitles.find(s => t >= s[0] && t <= s[1]);
   if (sub) {
     const [t0, t1, who, text] = sub, a = Math.min(1, (t - t0) / 0.15, (t1 - t) / 0.15);
@@ -505,9 +685,12 @@ async function init(sceneData, assets) {
     };
   }
   for (const n of ['block', 'log', 'coin', 'scroll', 'board']) pz(n, { edge: 6, sat: 0.8 });
-  const skip = new Set([scene.set.far.img, scene.set.stage.ground.img]);   // 远景和地面是整块拼接的，不加边
+  const skip = new Set([scene.set.far.img, scene.set.stage.ground && scene.set.stage.ground.img]);   // 远景和地面是整块拼接的，不加边
   img.wall_raw = img.wall;   // 拼整条城墙用原图（拼好再统一加纸边）
   pz('wall', { edge: 4, sat: 0.72 });
+  for (const p of scene.props) if (p.type === 'sprite' && !p.raw) pz(p.img, { edge: 6, sat: 0.85 });
+  for (const a of Object.values(scene.actors)) for (const [, n] of a.poses || []) pz(n, { edge: 7, sat: 0.85 });
+  if (scene.events.some(e => e.type === 'birds')) pz('paper_bird', { edge: 5, sat: 0.9 });
   for (const k of ['hills', 'mid', 'stage', 'fore', 'frame']) for (const [n] of [...((scene.set[k] || {}).items || []), ...((scene.set[k] || {}).behind || [])]) if (!skip.has(n)) pz(n, { edge: 5, sat: 0.8 });
   buildSet(scene.set);
   return true;

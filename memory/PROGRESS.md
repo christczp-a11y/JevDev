@@ -12,7 +12,8 @@
 ### 下一步（按顺序）
 0. ✅ Chris 认可第四轮测试片段（旗杆、手腕、脚踝、捧金子的双臂）。Jev 质检还没跑（云端 key 未生效）：新会话里补跑 `video/motion_qa.py`（改前 vs 改后）和 `video/logic_qa.py`
 0.5 ✅ Chris 确认标题「一根木头 / 怎么让秦国人开始相信？」和开场「同学之间的约定」
-0.6 【等 Chris】放行 auth.openai.com、chatgpt.com、api.openai.com，然后开新会话 → 跑 `codex login --device-auth`，把网址和验证码给 Chris，他在自己的设备上确认 → 在云端用 Codex 画 8 个新角色的纸偶
+0.6 ✅ Codex 云端已登录（设备码），第 1 集素材已画好（video/assets/codex_ep01、chars、props、sets/classroom）
+0.8 【进行中】第 1 集完整版：`python video/voice.py video/stories/ep01/N5_最终.json video/out/ep01_voice 14=2.0 15=6.5` → `python video/build_ep01.py` → video/out/ep01/ep01_full.mp4（背景音乐只用于内部预览，发布前必须换）
 0.65 ✅ MoneyPrinterTurbo 对比实验（按 Chris 原意重做）：用我们生成的 15 张图片素材 → `experiments/mpt/output/mpt_images_2026-09-28.mp4`（`bash experiments/mpt/run_images.sh`），结论见 `experiments/mpt/README.md`。第一次把渲染好的动画喂给它是理解错了，已标注作废
 0.7 【等 Chris】配乐方案（见 log 2026-09-28）：推荐 ElevenLabs（音乐和 9 种中文配音可以用同一家，需要付费和 API key）+ Claude 按剧本写每段的配乐说明 + Jev 从几个候选里挑；不花钱的备选是本地开源模型 ACE-Step（要看本地有没有 NVIDIA 显卡）
 1. 【等 Chris】看 `test_puppet_youth.mp4`：接不接受「抱在腰前」代替「扛在肩上」（Q 版扛肩一定横过下巴）；45° 视角和手部动作方向对不对

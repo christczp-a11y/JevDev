@@ -91,8 +91,8 @@ def sfx(scene, n):
             for i in range(ev["n"]):
                 add(track, tone(2400 + 180 * (i % 3), 0.25, 0.18, 14) + tone(3600, 0.25, 0.07, 20), ev["t"] + i * 0.2 + 0.45)
     prev = None
-    for t, v in scene["hud"]["coins"]:
-        if prev is not None and v != prev:
+    for t, v in ((scene.get("hud") or {}).get("coins") or []):
+        if prev is not None and v is not None and prev is not None and v != prev:
             for i, f in enumerate([1318, 1760]):
                 add(track, tone(f, 0.35, 0.3, 7), t + i * 0.09)                    # 赏金变化：「叮叮」
         prev = v
@@ -106,7 +106,58 @@ def sfx(scene, n):
             add(track, tone(90, 0.3, 0.8, 12) + tone(60, 0.3, 0.5, 10), ev["t"] + 0.2)   # 盖章：「咚」
             for i, f in enumerate([523, 659, 784, 1046]):
                 add(track, pluck(f, 0.8, 0.3, seed=300 + i), ev["t"] + 0.35 + i * 0.1)  # 过关琶音
+    extra_sfx(scene, track)
     return track
+
+
+def noise_burst(dur, amp, decay, seed=0):
+    n = int(SR * dur)
+    return np.random.default_rng(seed).uniform(-1, 1, n) * np.exp(-np.arange(n) / (SR / decay)) * amp
+
+
+def extra_sfx(scene, track):
+    """第 1 集起新增的画面事件的音效。"""
+    hud = scene.get("hud") or {}
+    for t, _v in (hud.get("credit") or [])[1:]:      # 爱心变红：上行的「叮～」
+        for i, f in enumerate([988, 1318, 1760]):
+            add(track, tone(f, 0.4, 0.22, 6), t + i * 0.07)
+    for c0, c1 in hud.get("crack") or []:             # 爱心裂开：「咔」；拼回来：亮晶晶的上行音
+        if c0 > 0:
+            add(track, noise_burst(0.12, 0.5, 40, 3) + tone(200, 0.12, 0.3, 30, f_end=120), c0)
+        if c1 < scene["duration"]:
+            for i, f in enumerate([1046, 1318, 1568, 2093]):
+                add(track, tone(f, 0.35, 0.15, 7), c1 + i * 0.06)
+    for p in scene["props"]:
+        if p["type"] == "pole" and "appear" in p:     # 木杆「咚」地竖起来
+            add(track, tone(90, 0.5, 0.8, 8) + tone(55, 0.5, 0.5, 6), p["appear"] + 0.2)
+        if p["type"] == "sprite" and p.get("sfx") == "pop":
+            add(track, tone(700, 0.1, 0.2, 25, f_end=1100), p["show"][0])
+        if p["type"] == "board":
+            add(track, tone(160, 0.25, 0.4, 12, f_end=240), p["show"][0])
+    for ev in scene["events"]:
+        k = ev["type"]
+        if k == "banner":                              # 横幅落下：「嗖——」+ 小鼓
+            add(track, noise_burst(0.35, 0.15, 6, 7) * np.linspace(0.2, 1, int(SR * 0.35)), ev["t"])
+            add(track, tone(130, 0.25, 0.5, 14), ev["t"] + 0.35)
+        if k == "badges":                              # 徽章解锁：「叮」
+            for tu, _lab in ev["items"]:
+                add(track, tone(1568, 0.5, 0.25, 6) + tone(2349, 0.5, 0.12, 8), tu)
+        if k == "boss":                                # BOSS 登场：低沉的两下鼓；血条掉：「砰」
+            add(track, tone(70, 0.5, 0.8, 7), ev["t0"])
+            add(track, tone(62, 0.5, 0.8, 7), ev["t0"] + 0.35)
+            for t, _v in ev["hp"][1:]:
+                add(track, tone(110, 0.3, 0.6, 12, f_end=60) + noise_burst(0.2, 0.2, 20, 9), t)
+        if k == "shake":
+            add(track, tone(80, 0.3, 0.7, 12) + noise_burst(0.15, 0.25, 30, 11), ev["t"])
+        if k == "birds":                               # 纸鸟：一串轻快的「扑棱」
+            for i in range(ev["n"]):
+                add(track, noise_burst(0.08, 0.12, 50, 20 + i), ev["t"] + 0.2 * i)
+        if k == "seasons":                             # 四季翻页：翻纸声
+            per = (ev["t1"] - ev["t0"]) / (ev.get("loops", 2) * 4)
+            t = ev["t0"]
+            while t < ev["t1"]:
+                add(track, noise_burst(0.09, 0.2, 45, int(t * 10)), t)
+                t += per
 
 
 def build(scene, out_path):
