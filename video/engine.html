@@ -845,6 +845,43 @@ function renderSolo(id, t, out, k = 1) {   // k：放大倍数（特写不糊：
   return { x, top: pos ? pos.top : null };
 }
 window.renderSolo = renderSolo;
+// 3D 舞台：一个道具（纸片道具 / 告示牌）单独画成透明底贴图；x 是它在 2D 世界里的横坐标
+function renderSoloProp(i, t, out, k = 1) {
+  const p = scene.props[i], OW = out.width, OH = out.height, o = out.getContext('2d');
+  o.clearRect(0, 0, OW, OH);
+  if (p.show && (t < p.show[0] || t > p.show[1] + 0.35)) return null;
+  if (C.width < OW || C.height < OH) { C.width = Math.max(C.width, OW); C.height = Math.max(C.height, OH); }
+  window.solo3d = true;
+  Object.defineProperty(ctx, 'shadowColor', { configurable: true, get: () => 'transparent', set: () => {} });
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, OW, OH);
+  ctx.translate(OW / 2, OH - FOOT * k); ctx.scale(k, k); ctx.translate(-p.x, -GROUND);
+  if (p.type === 'board') drawBoard(p, t); else spriteProp(p, t);
+  ctx.restore(); delete ctx.shadowColor; window.solo3d = false;
+  o.drawImage(C, 0, 0, OW, OH, 0, 0, OW, OH);
+  return { x: p.x };
+}
+// 3D 舞台：画在最上层的 2D 元素（选择题、横幅、徽章、印章、纸鸟、彩带、四季、门缝眼睛、计分牌……），透明底，闯关画面大小
+function renderOverlay(t, out) {
+  const o = out.getContext('2d'); o.clearRect(0, 0, out.width, out.height);
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, BAND.w, BAND.h);
+  for (const ev of scene.events) if (ev.type === 'tint' && !ev.under) drawTint(ev, t);
+  for (const ev of scene.events) if (ev.type === 'seasons') drawSeasons(ev, t);
+  spriteProps(t, 'overlay');
+  for (const ev of scene.events) if (ev.type === 'eyes') drawEyes(ev, t);
+  for (const ev of scene.events) if (ev.type === 'birds') drawBirds(ev, t);
+  for (const ev of scene.events) if (ev.type === 'badges') drawBadges(ev, t);
+  for (const ev of scene.events) if (ev.type === 'nope') drawNope(ev, t);
+  for (const ev of scene.events) if (ev.type === 'confetti') drawConfetti(ev, t);
+  for (const ev of scene.events) if (ev.type === 'stamp') drawStamp(ev, t);
+  if (scene.hud) drawHud(t);
+  for (const ev of scene.events) if (ev.type === 'boss') drawBoss(ev, t);
+  for (const ev of scene.events) if (ev.type === 'banner') drawBanner(ev, t);
+  for (const ev of scene.events) if (ev.type === 'choice') drawChoice(ev, t);
+  ctx.restore();
+  o.drawImage(C, 0, 0, BAND.w, BAND.h, 0, 0, out.width, out.height);
+}
+window.renderSoloProp = renderSoloProp; window.renderOverlay = renderOverlay; window.camShake = camShake;
+window.underTint = t => { let a = 0; for (const ev of scene.events) if (ev.type === 'tint' && ev.under && t >= ev.t0 && t <= ev.t1) a = Math.max(a, ev.a); return a; };
 // 质检截图用：某个角色在 t 时刻位于闯关画面里的横坐标
 function actorScreenX(id, t) { const a = scene.actors[id]; return (a.rigData ? a.xAt(t) : actorState(a, t).x) - interp(scene.camera, t); }
 window.init = init; window.renderFrame = renderFrame; window.footsteps = footsteps; window.actorScreenX = actorScreenX;

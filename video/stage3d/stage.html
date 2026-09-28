@@ -1,10 +1,12 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <!-- 3D 立体书舞台（docs/画面改版-纸片马里奥风格-给云端.md，接法 A）：
-     角色照旧由 video/engine.html + puppet.js 画（藏在 iframe 里），每帧把每个角色单独画成透明底的图，
-     作为 CanvasTexture 贴到 3D 纸片上（纸片马力欧新作的做法：一块贴图长方形）。
-     场景是立在书页上的纸片 + 几个有体积的卡纸盒子；电影分镜：每 2–4 秒换机位，讲知识点时镜头稳住。
-     由 video/stage3d/render_stage.py 逐帧调用 renderFrame(t) 截图。 -->
+     角色、道具、2D 特效（选择题、横幅、徽章……）照旧由 video/engine.html + puppet.js 画（藏在 iframe 里），
+     每帧把每个角色 / 道具单独画成透明底的图，作为 CanvasTexture 贴到 3D 纸片上（纸片马力欧新作的做法：一块贴图长方形）；
+     2D 特效画成一层透明图叠在最上面。
+     场景：书桌上一本打开的立体书；书页上立着纸片（城墙、城门、树……）和有体积的卡纸模型；远景是一圈弯曲的背景纸（任何机位都拍不到边）。
+     镜头（docs/research/纸艺作品-运镜场景叙事.md）：每一页先用书桌机位交代，再切电影镜头；讲知识点时镜头稳住；结尾拉远回到书桌。
+     由 video/stage3d/build_stage3d.py 逐帧调用 renderFrame(t) 截图。 -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;700;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 <style>
 html, body { margin: 0; background: #000; overflow: hidden; }
@@ -18,10 +20,11 @@ html, body { margin: 0; background: #000; overflow: hidden; }
 <script type="module">
 import * as THREE from 'three';
 const q = new URLSearchParams(location.search), W = +q.get('w') || 1080, H = +q.get('h') || 1920, K = W / 1080;
-const S = 1 / 100;                 // 2D 世界坐标（像素）→ 3D 单位
-const X0 = 1100;                   // 2D 世界 x=1100 对应书页中线
-const SS = 2;                           // 角色贴图放大倍数（特写不糊）
-const OW = 1000 * SS, OH = 760 * SS, FOOT = 60 * SS;   // 角色贴图尺寸（和 engine.html 的 renderSolo 一致）
+const S = 1 / 100;                        // 2D 世界坐标（像素）→ 3D 单位
+const SS = 2;                             // 角色 / 道具贴图放大倍数（特写不糊）
+const OW = 1000 * SS, OH = 760 * SS, FOOT = 60 * SS;   // 贴图尺寸（和 engine.html 的 renderSolo 一致）
+const BAND_Y = 470;                       // 2D 特效层（原来的闯关画面大小 1080×608）叠在竖屏上的位置
+const GY = 0.35;                          // 书页上站立面的高度
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(W, H); renderer.setPixelRatio(1);
@@ -31,15 +34,16 @@ renderer.domElement.id = 'gl'; document.body.insertBefore(renderer.domElement, d
 const ui = document.getElementById('ui'); ui.width = W; ui.height = H; const U = ui.getContext('2d');
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xe9d6b4);
-scene.fog = new THREE.Fog(0xe9d6b4, 45, 110);
+const ROOM = 0xe9d6b4;
+scene.background = new THREE.Color(ROOM);
+scene.fog = new THREE.Fog(ROOM, 60, 140);
 const cam = new THREE.PerspectiveCamera(40, W / H, 0.1, 300);
-// 光：暖色主光从左前上方打过来（影子落在纸片后面的书页上）+ 天光补光
-scene.add(new THREE.HemisphereLight(0xfff4e2, 0x7a5a40, 1.35));
+// 光：暖色主光从左前上方打过来。光源和影子范围固定不动（跟着镜头动会让影子每帧跳，城墙上一闪一闪）
+const hemi = new THREE.HemisphereLight(0xfff4e2, 0x7a5a40, 1.35); scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xffeccc, 2.6);
-sun.position.set(-8, 18, 14); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
-Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 14, bottom: -14, near: 1, far: 70 });
-sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.02; sun.shadow.radius = 4;
+sun.position.set(-9, 20, 16); sun.target.position.set(0, 0, 0); sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096);
+Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 80 });
+sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.03; sun.shadow.radius = 3;
 scene.add(sun); scene.add(sun.target);
 
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
@@ -56,17 +60,16 @@ function paperTex(base, seed, size = 512) {   // 程序生成的纸纹
     const v = rnd() < 0.5 ? 0 : 255; g.fillStyle = `rgba(${v},${v},${v},${0.05 * rnd()})`;
     g.fillRect(rnd() * size, rnd() * size, 1 + rnd() * 3, 1 + rnd() * 1.5);
   }
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; return t;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; return t;
 }
-// 卡纸盒子：纸纹 + 每条棱一圈浅色纸边（有体积的纸艺模型）
-function cardBox(w, h, d, color, seed) {
+function cardBox(w, h, d, color, seed) {   // 卡纸盒子：纸纹 + 每条棱一圈浅色纸边
   const tex = paperTex(color, seed, 256); tex.repeat.set(Math.max(1, w / 2), Math.max(1, h / 2));
   const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92 }));
   m.castShadow = m.receiveShadow = true;
-  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), new THREE.LineBasicMaterial({ color: 0xfbf3e2 }));
-  m.add(edges); return m;
+  m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry), new THREE.LineBasicMaterial({ color: 0xfbf3e2 })));
+  return m;
 }
-function roofPrism(w, h, d, color, seed) {   // 三角屋顶（挤出的三角形）
+function roofPrism(w, h, d, color, seed) {
   const sh = new THREE.Shape(); sh.moveTo(-w / 2, 0); sh.lineTo(w / 2, 0); sh.lineTo(0, h); sh.lineTo(-w / 2, 0);
   const geo = new THREE.ExtrudeGeometry(sh, { depth: d, bevelEnabled: false }); geo.translate(0, 0, -d / 2);
   const tex = paperTex(color, seed, 256); tex.repeat.set(0.3, 0.3);
@@ -75,150 +78,182 @@ function roofPrism(w, h, d, color, seed) {   // 三角屋顶（挤出的三角�
   return m;
 }
 
-// ---- 桌面 + 打开的立体书 ----
+// ---- 桌面 + 打开的立体书（书外面的东西在质检时涂成品红：故事镜头里拍到品红 = 穿帮）----
+const outside = [];
 const table = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ map: paperTex('#5e3d27', 3), roughness: 0.9 }));
-table.material.map.repeat.set(20, 20); table.rotation.x = -Math.PI / 2; table.position.y = -0.7; table.receiveShadow = true; scene.add(table);
-const cover = cardBox(26.5, 0.5, 17.6, '#34425f', 11); cover.position.y = -0.42; scene.add(cover);
+table.material.map.repeat.set(20, 20); table.rotation.x = -Math.PI / 2; table.position.y = -0.7; table.receiveShadow = true; scene.add(table); outside.push(table);
+const cover = cardBox(26.5, 0.5, 17.6, '#34425f', 11); cover.position.y = -0.42; scene.add(cover); outside.push(cover);
 const pageMat = new THREE.MeshStandardMaterial({ map: paperTex('#f3e8cf', 7), roughness: 0.95 }); pageMat.map.repeat.set(3, 2);
 for (const s of [-1, 1]) {
   const pg = new THREE.Mesh(new THREE.BoxGeometry(12.9, 0.36, 16.8), pageMat);
-  pg.position.set(s * 6.5, -0.02, 0); pg.rotation.z = -s * 0.02; pg.receiveShadow = true; scene.add(pg);
+  pg.position.set(s * 6.46, -0.02, 0); pg.receiveShadow = true; scene.add(pg);   // 两页平放、在书脊处接上（斜着放会在书脊露出一条缝）
 }
-// 书页上的「地面」：一块草地卡纸 + 一条土路（纸片人都站在路上）
-const grass = cardBox(25.4, 0.12, 12.5, '#9dbb6a', 21); grass.position.set(0, 0.22, -1.2); scene.add(grass);
-const road = cardBox(25.4, 0.1, 2.6, '#d9b98a', 22); road.position.set(0, 0.3, 1.9); scene.add(road);
-const GY = 0.35;   // 站立面高度
 
-// ---- 竖立的纸片（从书页上弹起：铰链在底边）----
 const loader = new THREE.TextureLoader();
-const pops = [];
-async function flat(url, x, z, h, t0, ry = 0, wFix = null, opts = {}) {
-  const tex = await loader.loadAsync(url); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
-  const w = wFix || h * tex.image.width / tex.image.height;
+const pops = [];                          // 翻页时弹起 / 折倒的东西：{obj, t0, kind: 'hinge' | 'group'}
+const stage = new THREE.Group(); scene.add(stage);   // 这一页上的所有东西
+async function loadTex(url) { const t = await loader.loadAsync(url); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; }
+function flatMesh(tex, w, h, crop = 1) {
   const geo = new THREE.PlaneGeometry(w, h); geo.translate(0, h / 2, 0);
-  const mat = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.88, ...opts });
+  if (crop < 1) { const uv = geo.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setX(i, uv.getX(i) * crop); }
+  const mat = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.88 });
   const mesh = new THREE.Mesh(geo, mat); mesh.castShadow = true; mesh.receiveShadow = true;
   mesh.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: 0.5 });
-  const hinge = new THREE.Group(); hinge.position.set(x, GY, z); hinge.rotation.y = ry; hinge.add(mesh); scene.add(hinge);
-  pops.push({ obj: mesh, t0 }); return hinge;
+  return mesh;
 }
-function popGroup(obj, t0) { pops.push({ obj, t0 }); return obj; }
+// 竖立的纸片：铰链在底边，翻页时从书页上弹起
+async function flat(url, x, z, h, t0, ry = 0, opts = {}) {
+  const tex = await loadTex(url);
+  const full = h * tex.image.width / tex.image.height, w = opts.w || full;
+  const mesh = flatMesh(tex, w, h, opts.w && opts.crop ? w / full : 1);
+  const hinge = new THREE.Group(); hinge.position.set(x, GY + (opts.y || 0), z); hinge.rotation.y = ry; hinge.add(mesh); stage.add(hinge);
+  pops.push({ obj: mesh, t0, kind: 'hinge' }); return hinge;
+}
+function popGroup(obj, t0) { obj.userData.s = obj.scale.y; pops.push({ obj, t0, kind: 'group' }); return obj; }
 
-// ---- 角色：engine 画好的透明图 → 3D 纸片 ----
-const actors = {};   // id → { mesh, canvas, tex, z }
-function actorPlane(id, z) {
+// 远景：一圈弯曲的背景纸（圆柱内壁），远山图左右循环贴三遍，上面补一段天空。任何故事镜头都拍不到它的边
+async function backdrop(url, R = 14, cz = 1.5, Hh = 21, opts = {}) {
+  const img = (await loadTex(url)).image, reps = 3, cw = img.width * reps, arc = Math.PI * 1.25;
+  const ch = Math.round(cw * Hh / (R * arc));
+  const c = document.createElement('canvas'); c.width = cw; c.height = ch; const g = c.getContext('2d');
+  const probe = document.createElement('canvas'); probe.width = img.width; probe.height = 4; const pg = probe.getContext('2d'); pg.drawImage(img, 0, 0);
+  const d = pg.getImageData(0, 1, img.width, 1).data; let r = 0, gg = 0, b = 0; for (let i = 0; i < d.length; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; }
+  const n = d.length / 4, top = `rgb(${r / n | 0},${gg / n | 0},${b / n | 0})`;
+  const grad = g.createLinearGradient(0, 0, 0, ch - img.height); grad.addColorStop(0, '#bfe0f2'); grad.addColorStop(1, top);
+  g.fillStyle = grad; g.fillRect(0, 0, cw, ch - img.height + 2);
+  for (let i = 0; i < reps; i++) g.drawImage(img, i * img.width, ch - img.height);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+  const geo = new THREE.CylinderGeometry(R, R, Hh, 96, 1, true, Math.PI - arc / 2, arc);
+  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: tex, side: THREE.BackSide, roughness: 1, fog: false }));
+  m.position.set(0, GY + Hh / 2 - 0.2, cz); m.receiveShadow = false;
+  // 背景纸脚下铺一圈草地（从书页后沿铺到背景纸）：透过城门洞、从低处看出去都不会看到书外面的桌子
+  const ringTex = paperTex(opts.ground || '#93b262', 24); ringTex.repeat.set(6, 6);
+  const ring = new THREE.Mesh(new THREE.RingGeometry(8.6, R + 0.05, 96, 1, 0, Math.PI * 2), new THREE.MeshStandardMaterial({ map: ringTex, roughness: 1 }));
+  ring.rotation.x = -Math.PI / 2; ring.position.set(0, 0.12, cz); ring.receiveShadow = true;
+  const hinge = new THREE.Group(); hinge.add(m); hinge.add(ring); stage.add(hinge); popGroup(hinge, 0.02);
+  return m;
+}
+
+// ---- 场景 ----
+const SETS = {
+  async qin_gate(o) {
+    const A = '../assets/sets/qin_gate/';
+    await backdrop(A + 'far.png');
+    const grass = cardBox(25.6, 0.12, 16.6, '#9dbb6a', 21); grass.position.set(0, 0.22, 0); stage.add(grass);   // 铺满整页
+    const road = cardBox(25.4, 0.1, 2.6, '#d9b98a', 22); road.position.set(0, 0.3, 1.9); stage.add(road);
+    const gx = o.gateX ?? 5.2, gz = -5.4, gh = 5.4, gw = gh * 780 / 547;
+    const path = cardBox(1.9, 0.1, 6.4, '#d9b98a', 23); path.position.set(gx, 0.3, -2.2); stage.add(path);   // 从大路通到城门，穿过门洞往外
+    await flat(A + 'gate.png', gx, gz, gh, 0.35);
+    // 城墙只砌在城门两边：门洞后面不能有墙（不然门被堵死）
+    const wh = 2.4, ww = wh * 1542 / 242, left = gx - gw / 2 + 0.15, right = gx + gw / 2 - 0.15;
+    await flat(A + 'wall.png', left - (left + 12.8) / 2, gz - 0.05, wh, 0.2, 0, { w: left + 12.8, crop: true });
+    if (right < 12.8) await flat(A + 'wall.png', right + (12.8 - right) / 2, gz - 0.05, wh, 0.25, 0, { w: 12.8 - right, crop: true });
+    await Promise.all([
+      flat(A + 'pine.png', -11.3, -2.6, 6.2, 0.45, 0.35), flat(A + 'pine.png', 11.4, -2.0, 5.4, 0.5, -0.35),
+      flat(A + 'flag.png', gx - gw / 2 - 1.2, gz + 0.6, 3.8, 0.55), flat(A + 'flag.png', gx + gw / 2 + 0.8, gz + 0.6, 3.8, 0.6),
+      flat(A + 'stall.png', -9.2, -1.4, 2.8, 0.7, 0.3), flat(A + 'bush.png', 10.4, 3.4, 1.2, 0.8, -0.2), flat(A + 'rock.png', -10.6, 3.4, 0.9, 0.85, 0.2),
+    ]);
+    const house = new THREE.Group(); const hb = cardBox(3.2, 2.2, 2.4, '#e6cfa4', 31); hb.position.y = 1.1; house.add(hb);
+    const rf = roofPrism(3.8, 1.3, 2.8, '#8f4a3a', 32); rf.position.y = 2.2; house.add(rf);
+    const door = cardBox(0.8, 1.3, 0.05, '#6b4630', 33); door.position.set(0.5, 0.65, 1.22); house.add(door);
+    house.position.set(-5.4, GY, -3.7); house.rotation.y = 0.15; stage.add(house); popGroup(house, 0.3);
+    const crates = new THREE.Group();
+    [[0, 0.45, 0], [0.95, 0.45, 0.1], [0.45, 1.3, 0.05]].forEach(([x, y, z], i) => { const b = cardBox(0.9, 0.9, 0.9, '#b98a55', 40 + i); b.position.set(x, y, z); crates.add(b); });
+    crates.position.set(-8.4, GY, 0.2); stage.add(crates); popGroup(crates, 0.75);
+  },
+  async classroom(o) {
+    const A = '../assets/sets/classroom/';
+    const floor = cardBox(25.4, 0.12, 16, '#c9965e', 51); floor.position.set(0, 0.22, 0); stage.add(floor);
+    await flat(A + 'far.png', 0, -4.2, 9.5, 0.05, 0, {});   // 教室后墙（黑板、窗户）
+    const side = await loadTex(A + 'far.png');
+    for (const s of [-1, 1]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(9, 9.5), new THREE.MeshStandardMaterial({ color: 0xe8dcc4, roughness: 1 }));
+      m.position.set(s * 8.4, GY + 4.75, 0.3); m.rotation.y = -s * Math.PI / 2; m.receiveShadow = true; stage.add(m); }
+  },
+};
+
+// ---- 角色、道具：engine 画好的透明图 → 3D 纸片 ----
+const actors = {}, props = [];
+function texPlane(z) {
   const c = document.createElement('canvas'); c.width = OW; c.height = OH;
   const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
   const geo = new THREE.PlaneGeometry(OW * S / SS, OH * S / SS); geo.translate(0, (OH / 2 - FOOT) * S / SS, 0);   // 脚底在原点
   const mat = new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.85 });
   const mesh = new THREE.Mesh(geo, mat); mesh.castShadow = true;
   mesh.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: 0.45 });
-  mesh.position.z = z; scene.add(mesh);
-  return (actors[id] = { mesh, canvas: c, tex, z, x: 0, top: 0 });
+  mesh.position.z = z; stage.add(mesh);
+  return { mesh, canvas: c, tex, z, x: 0, h: 2.5 };
 }
-
-// ---- 木杆（3D 圆柱）：立着 / 放倒；被扛着的时候画在小伙的贴图里 ----
 let pole, poleLie, POLE;
 function makePole(p, z) {
   const H = p.height * S, r = p.thick * S * 0.55;
   const mat = new THREE.MeshStandardMaterial({ map: paperTex('#9a6a3c', 5, 256), roughness: 0.8 });
   const mk = () => { const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.08, H, 20), mat); m.castShadow = m.receiveShadow = true; return m; };
-  pole = mk(); pole.position.set((p.x - X0) * S, GY + H / 2, z); scene.add(pole);
-  poleLie = mk(); poleLie.rotation.z = Math.PI / 2; poleLie.visible = false; scene.add(poleLie);
+  pole = mk(); pole.userData = { x: (p.x - X0) * S, z, H }; stage.add(pole);
+  poleLie = mk(); poleLie.rotation.z = Math.PI / 2; poleLie.visible = false; stage.add(poleLie);
 }
 
-// ---- 告示牌：board.png + 字 ----
-async function boardFlat(p) {
-  const img = await loader.loadAsync('../assets/props/board.png');
-  const c = document.createElement('canvas'); c.width = img.image.width; c.height = img.image.height;
-  const g = c.getContext('2d'); g.drawImage(img.image, 0, 0);
-  await document.fonts.load('40px "ZCOOL KuaiLe"');
-  const lines = p.texts[p.texts.length - 1][1];
-  g.textAlign = 'center'; g.textBaseline = 'middle';
-  const fs = c.height * 0.095;
-  lines.forEach((ln, i) => { const hot = ln.startsWith('!'); g.fillStyle = hot ? '#c8372d' : '#2a2320';
-    g.font = `${hot ? fs * 1.15 : fs}px "ZCOOL KuaiLe"`; g.fillText(hot ? ln.slice(1) : ln, c.width / 2, c.height * (0.28 + i * 0.145)); });
-  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
-  const h = 2.3, w = h * c.width / c.height, geo = new THREE.PlaneGeometry(w, h); geo.translate(0, h / 2, 0);
-  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: tex, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.9 }));
-  m.castShadow = true; m.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: tex, alphaTest: 0.5 });
-  const hinge = new THREE.Group(); hinge.position.set((p.x - X0) * S, GY, -0.9); hinge.add(m); scene.add(hinge); pops.push({ obj: m, t0: 0.5 });
-}
-
-let ENG, SC, T0 = 0, SHOTS = [], SUBS = [];
+let ENG, SC, X0 = 1100, SHOTS = [], SUBS = [], DUR = 0, FLIP = [true, true], overlayC;
 window.stageInit = async (sceneData, assets, opts) => {
-  SC = sceneData; T0 = opts.t0; SHOTS = opts.shots; SUBS = sceneData.subtitles;
+  // 2D 里「从画面下沿冒出来」的围观群众（enter: 'rise' + y 下沉），在 3D 里改成直接站在地上，不然会半截埋进土里
+  for (const a of Object.values(sceneData.actors)) if (a.enter === 'rise') { a.enter = 'pop'; a.y = 0; }
+  SC = sceneData; SHOTS = opts.shots; SUBS = sceneData.subtitles; X0 = opts.x0 ?? 1100; DUR = sceneData.duration; FLIP = opts.flip || [true, true];
   ENG = document.getElementById('engine').contentWindow;
   await ENG.init(sceneData, assets);
-  const sky = new THREE.Mesh(new THREE.PlaneGeometry(90, 40), new THREE.MeshBasicMaterial({ map: paperTex('#8fc3e6', 9), fog: false }));
-  sky.material.map.repeat.set(6, 3); sky.position.set(0, 14, -9.5); scene.add(sky);   // 天空底纸（低机位仰拍时背后不穿帮）
-  const A = '../assets/';
-  // 场景纸片：[图, x, z, 高, 弹起时刻, 朝向, 宽]
-  await Promise.all([
-    flat(A + 'sets/qin_gate/far.png', 0, -7.6, 11.5, 0.05, 0, 27),
-    flat(A + 'sets/qin_gate/wall.png', -7.0, -5.8, 2.4, 0.2),
-    flat(A + 'sets/qin_gate/wall.png', -1.6, -5.8, 2.4, 0.25),
-    flat(A + 'sets/qin_gate/gate.png', 5.2, -5.4, 5.4, 0.35, -0.08),
-    flat(A + 'sets/qin_gate/pine.png', -11.2, -2.6, 6.2, 0.45, 0.35),
-    flat(A + 'sets/qin_gate/pine.png', 11.0, -3.4, 5.4, 0.5, -0.35),
-    flat(A + 'sets/qin_gate/flag.png', -3.2, -4.3, 3.8, 0.55),
-    flat(A + 'sets/qin_gate/flag.png', 2.4, -4.3, 3.8, 0.6),
-    flat(A + 'sets/qin_gate/stall.png', -9.0, -1.4, 2.8, 0.7, 0.3),
-    flat(A + 'sets/qin_gate/bush.png', 9.6, 2.8, 1.2, 0.8, -0.2),
-    flat(A + 'sets/qin_gate/rock.png', -10.4, 2.9, 0.9, 0.85, 0.2),
-  ]);
-  (await flat(A + 'props/crow.png', (790 - X0) * S + 0.05, -0.75, 0.55, 0.9)).position.y += 2.05;   // 乌鸦站在告示牌顶上
-  // 有体积的卡纸模型：两间小屋、一摞木箱
-  const house = new THREE.Group(); const hb = cardBox(3.2, 2.2, 2.4, '#e6cfa4', 31); hb.position.y = 1.1; house.add(hb);
-  const rf = roofPrism(3.8, 1.3, 2.8, '#8f4a3a', 32); rf.position.y = 2.2; house.add(rf);
-  const door = cardBox(0.8, 1.3, 0.05, '#6b4630', 33); door.position.set(0.5, 0.65, 1.22); house.add(door);
-  house.position.set(-5.2, GY, -3.6); house.rotation.y = 0.15; scene.add(house); popGroup(house, 0.3);
-  const house2 = house.clone(); house2.position.set(8.8, GY, -3.2); house2.rotation.y = -0.25; house2.scale.setScalar(0.9); house2.userData.s = 0.9; scene.add(house2); popGroup(house2, 0.4);
-  const crates = new THREE.Group();
-  [[0, 0.45, 0], [0.95, 0.45, 0.1], [0.45, 1.3, 0.05]].forEach(([x, y, z], i) => { const b = cardBox(0.9, 0.9, 0.9, '#b98a55', 40 + i); b.position.set(x, y, z); crates.add(b); });
-  crates.position.set(-8.2, GY, 0.4); scene.add(crates); popGroup(crates, 0.75);
-  const Z0 = opts.z || {};
-  for (const p of SC.props) if (p.type === 'pole') { POLE = p; makePole(p, Z0[p.by] ?? 1.0); } else if (p.type === 'board') await boardFlat(p);
+  await SETS[opts.set || sceneData.set.name || 'qin_gate'](opts);
   const Z = opts.z || {};
-  for (const id of Object.keys(SC.actors)) actorPlane(id, Z[id] ?? 1.0);
+  for (const id of Object.keys(SC.actors)) actors[id] = texPlane(Z[id] ?? 1.0);
+  SC.props.forEach((p, i) => {
+    if (p.type === 'pole') { POLE = p; makePole(p, Z[p.by] ?? 1.0); return; }
+    if (p.type === 'sprite' && p.layer === 'overlay') return;   // 画在 2D 特效层
+    if (p.type !== 'sprite' && p.type !== 'board') return;
+    const z = (p.z3 ?? (p.layer === 'mid' ? -5.6 : p.layer === 'front' ? 2.7 : p.type === 'board' ? -0.6 : (Z['prop:' + p.img] ?? -0.3))) + 0.02 * i;   // 同一张图的两个道具（比如空书和写了字的书）错开一点，不然互相闪
+    props.push({ i, ...texPlane(z) });
+  });
+  overlayC = document.createElement('canvas'); overlayC.width = 1080; overlayC.height = 608;
   await document.fonts.load('700 58px "Noto Sans SC"'); await document.fonts.load('40px "ZCOOL KuaiLe"');
   return true;
 };
-
-// ---- 镜头：每一镜 [开始, 结束, 机位函数]；机位函数给出 {pos, look}，可以跟着角色走 ----
-function actorAt(id) { const a = actors[id]; return V3((a.x - X0) * S, GY, a.z); }
-const CAMS = {
-  // 开场：书页弹起，斜上方中景
-  open: (u, t) => ({ pos: V3(lerp(-4.2, -5.2, u), lerp(9, 6.2, smooth(u)), lerp(15, 12.5, smooth(u))), look: V3(-5.1, 2.0, -0.2) }),
-  // 贴地仰拍木杆：表现高度
-  lowPole: u => ({ pos: V3(-2.9, 0.55, 6.4 - 0.5 * u), look: V3(-4.9, 3.0, 1.6) }),
-  // 起杆：侧前方中景，轻推
-  lift: u => ({ pos: V3(lerp(-1.6, -2.4, u), 2.4, lerp(8.6, 7.4, u)), look: V3(-4.9, 2.0, 1.2) }),
-  // 跟拍搬运：相机在小伙斜前方，跟着他走
-  follow: (u, t) => { const p = actorAt('youth'); return { pos: V3(p.x + 3.4, 2.6, p.z + 8.2), look: V3(p.x + 0.8, 1.6, p.z) }; },
-  // 俯瞰：全城围观
-  top: u => ({ pos: V3(lerp(6.6, 6.0, u), lerp(5.6, 5.0, u), lerp(9.0, 8.4, u)), look: V3(3.6, 1.0, 1.2) }),   // 斜上方高机位：小伙放下木杆，商鞅从城门那边走来
-  // 推近领赏
-  push: (u, t) => { const p = actorAt('youth'); return { pos: V3(p.x + lerp(1.2, 0.7, smooth(u)), lerp(2.3, 2.0, u), p.z + lerp(7.2, 4.4, smooth(u))), look: V3(p.x + 0.3, 1.7, p.z) }; },
-  // 反应特写：小豆子
-  douzi: u => { const p = actorAt('douzi2'); return { pos: V3(p.x - 0.6, 1.35, p.z + 4.0 - 0.3 * u), look: V3(p.x, 1.15, p.z) }; },
-  // 讲知识点：稳定中景
-  hold: u => ({ pos: V3(4.4, 3.0, 12.6), look: V3(4.4, 1.6, 0.6) }),
+window.qaLeak = on => {   // 质检：书外面的东西和房间背景涂成品红
+  scene.background = new THREE.Color(on ? 0xff00ff : ROOM); scene.fog.color.set(on ? 0xff00ff : ROOM);
+  for (const m of outside) { m.material.emissive = new THREE.Color(on ? 0xff00ff : 0); m.material.map = on ? null : m.material.map; m.material.color.set(on ? 0x000000 : 0xffffff); m.material.needsUpdate = true; }
 };
+
+// ---- 镜头类型：参数化，可以跟着角色走 ----
+function A_(id) { const a = actors[id]; return { x: (a.x - X0) * S, z: a.z, h: a.h }; }
+const CAMS = {
+  // 书桌机位：斜上方看整页（交代谁在哪）
+  desk: (u, p) => ({ pos: V3((p.x ?? 0) * 0.6 + lerp(-0.6, 0.6, u), lerp(12.5, 11.5, u), lerp(17.5, 16.5, u)), look: V3((p.x ?? 0) * 0.8, 1.2, -0.8), fov: 42 }),
+  // 稳定中景：讲事情、选择题、知识点时用（几乎不动）
+  wide: (u, p) => ({ pos: V3(p.x + lerp(-0.15, 0.15, u), p.y ?? 3.0, p.d ?? 11.5), look: V3(p.x, p.ly ?? 1.6, 0.6), fov: p.fov ?? 40 }),
+  // 贴地仰拍：高度、威严
+  low: (u, p) => ({ pos: V3(p.x, 0.6, (p.d ?? 6.4) - 0.5 * u), look: V3(p.tx, p.ty, p.tz ?? 1.2), fov: p.fov ?? 50 }),
+  // 斜上方高机位：人群、全局
+  high: (u, p) => ({ pos: V3(p.x + lerp(3.0, 2.4, u), lerp(5.6, 5.0, u), lerp(9.4, 8.6, u)), look: V3(p.x, 1.0, 1.2), fov: 40 }),
+  // 特写：跟着角色（反应镜头）
+  close: (u, p) => { const a = A_(p.id), d = p.d ?? a.h * 1.6 + 0.9; return { pos: V3(a.x + (p.dx ?? -0.5), a.h * 0.62 + 0.3, a.z + d - 0.3 * u), look: V3(a.x, a.h * 0.55 + 0.25, a.z), fov: 36 }; },
+  // 跟拍：在角色斜前方跟着走
+  follow: (u, p) => { const a = A_(p.id); return { pos: V3(a.x + (p.dx ?? 3.2), 2.6, a.z + (p.d ?? 8.0)), look: V3(a.x + 0.8, 1.6, a.z), fov: 42 }; },
+  // 推近
+  push: (u, p) => { const a = A_(p.id), v = smooth(u); return { pos: V3(a.x + lerp(1.2, 0.7, v), lerp(2.3, 2.0, u), a.z + lerp(p.d0 ?? 7.2, p.d1 ?? 4.4, v)), look: V3(a.x + 0.3, 1.7, a.z), fov: 36 }; },
+  // 起杆（搬木头那场专用）：侧前方轻推
+  lift: (u, p) => ({ pos: V3(lerp(-1.6, -2.4, u), 2.4, lerp(8.6, 7.4, u)), look: V3(-4.9, 2.0, 1.2), fov: 40 }),
+  // 结尾拉远：从近处拉到书桌，原来这是桌上摊开的一本书
+  pullback: (u, p) => { const v = smooth(u); return { pos: V3(lerp(p.x ?? 0, 0, v), lerp(2.6, 17, v), lerp(9, 24, v)), look: V3(lerp(p.x ?? 0, 0, v), lerp(1.8, 0.2, v), lerp(0.5, -1, v)), fov: 40 }; },
+};
+window.camFor = t => { const sh = SHOTS.find(s => t >= s[0] && t < s[1]) || SHOTS[SHOTS.length - 1]; return sh; };
 
 function drawUI(t) {
   U.clearRect(0, 0, W, H);
   U.save(); U.scale(K, K);
-  // 顶部：系列标签
+  ENG.renderOverlay(t, overlayC); U.drawImage(overlayC, 0, BAND_Y);   // 2D 特效层
   U.font = '40px "ZCOOL KuaiLe"'; const kw = U.measureText(SC.title.kicker).width + 60;
   U.fillStyle = 'rgba(42,35,32,0.88)'; roundRect(U, (1080 - kw) / 2, 90, kw, 66, 33); U.fill();
   U.fillStyle = '#f4e8d0'; U.textAlign = 'center'; U.textBaseline = 'middle'; U.fillText(SC.title.kicker, 540, 124);
-  // 字幕：说话人 + 台词（纸卡）
   const sub = SUBS.find(s => t >= s[0] && t <= s[1]);
   if (sub) {
     const [t0, t1, who, text] = sub, a = Math.min(1, (t - t0) / 0.15, (t1 - t) / 0.15);
     U.globalAlpha = a; U.font = '700 58px "Noto Sans SC"';
-    const lines = wrap(U, text, 880), bh = 40 + lines.length * 76, y0 = 1580 - bh / 2;
+    const lines = wrap(U, text, 880), bh = 40 + lines.length * 76, y0 = 1600 - bh / 2;
     U.fillStyle = 'rgba(251,243,226,0.95)'; roundRect(U, 70, y0, 940, bh, 22); U.fill();
     U.strokeStyle = '#fffaf0'; U.lineWidth = 5; U.stroke();
     U.fillStyle = '#2a2320'; lines.forEach((ln, i) => U.fillText(ln, 540, y0 + 20 + 76 * (i + 0.5)));
@@ -239,36 +274,43 @@ function wrap(g, text, maxW) {   // 两行时在标点后面断
   const out = []; let cur = ''; for (const c of ch) { if (g.measureText(cur + c).width > maxW && cur && !P.includes(c)) { out.push(cur); cur = c; } else cur += c; } if (cur) out.push(cur); return out;
 }
 
-window.renderFrame = t => {   // t：剧本里的时间（秒）；T0 是这一段的开始
-  const lt = t - T0;
-  // 书页上的纸片弹起（翻页进场）
+window.renderFrame = (t, opts = {}) => {
+  // 翻页：开头书页上的纸片依次弹起，结尾最后 0.45 秒折倒
+  const fold = FLIP[1] ? smooth((t - (DUR - 0.45)) / 0.45) : 0;
   for (const p of pops) {
-    const u = easeOutBack(clamp((lt - p.t0) / 0.55));
-    if (p.obj.isMesh && p.obj.parent && p.obj.parent.isGroup && !p.obj.parent.parent?.isGroup) p.obj.rotation.x = -Math.PI / 2 * (1 - u);
-    else if (p.obj.isGroup) p.obj.scale.y = Math.max(0.001, u) * (p.obj.userData.s || 1);
+    const u = FLIP[0] ? easeOutBack(clamp((t - p.t0) / 0.55)) : 1, up = u * (1 - fold);
+    if (p.kind === 'hinge') p.obj.rotation.x = -Math.PI / 2 * (1 - up); else p.obj.scale.y = Math.max(0.001, up) * (p.obj.userData.s || 1);
   }
-  // 角色贴图
+  const standUp = 1 - fold;
   for (const [id, a] of Object.entries(actors)) {
     const r = ENG.renderSolo(id, t, a.canvas, SS);
-    a.mesh.visible = !!r; if (!r) continue;
-    a.x = r.x; a.tex.needsUpdate = true;
-    a.mesh.position.set((r.x - X0) * S, GY, a.z);
+    a.mesh.visible = !!r && !opts.hideActors; if (!r) continue;
+    a.x = r.x; if (r.top != null) a.h = (500 - r.top) * S; a.tex.needsUpdate = true;
+    a.mesh.position.set((r.x - X0) * S, GY, a.z); a.mesh.scale.y = Math.max(0.001, standUp);
   }
-  // 木杆：扛起之前立着，放下之后躺在小伙脚前（和 2D 引擎同一套规则）
-  if (POLE) {
-    pole.visible = t < POLE.lift[0];
-    poleLie.visible = t >= POLE.drop[1];
-    if (poleLie.visible) { const y = actors[POLE.by]; const H = POLE.height;
-      poleLie.position.set((y.x + 40 - 0.42 * H + H / 2 - X0) * S, GY + POLE.thick * S * 0.55, y.z + 0.35); }
+  for (const p of props) {
+    const r = ENG.renderSoloProp(p.i, t, p.canvas, SS);
+    p.mesh.visible = !!r; if (!r) continue;
+    p.tex.needsUpdate = true; p.mesh.position.set((r.x - X0) * S, GY, p.z); p.mesh.scale.y = Math.max(0.001, standUp);
   }
+  if (POLE) {   // 木杆：扛起之前立着（带「咚」地冒出来），放下之后躺在小伙脚前；扛着时画在小伙的贴图里
+    const H = POLE.height * S, ap = POLE.appear ?? -1e9, rise = (1 - easeOutBack(clamp((t - ap) / 0.45))) * H;
+    pole.visible = t < POLE.lift[0] && t >= ap && !opts.hideActors;
+    pole.position.set(pole.userData.x, GY + H / 2 - rise, pole.userData.z); pole.scale.y = Math.max(0.001, standUp);
+    poleLie.visible = t >= POLE.drop[1] && !opts.hideActors;
+    if (poleLie.visible) { const y = actors[POLE.by];
+      poleLie.position.set((y.x + 40 - 0.42 * POLE.height + POLE.height / 2 - X0) * S, GY + POLE.thick * S * 0.55, y.z + 0.35); }
+  }
+  // 只压暗背景（司马光出场那种）：把灯调暗
+  const dim = 1 - 0.75 * ENG.underTint(t);
+  hemi.intensity = 1.35 * dim; sun.intensity = 2.6 * dim;
   // 镜头
-  const sh = SHOTS.find(s => t >= s[0] && t < s[1]) || SHOTS[SHOTS.length - 1];
-  const c = CAMS[sh[2]]((t - sh[0]) / (sh[1] - sh[0]), t);
-  cam.position.copy(c.pos); cam.lookAt(c.look);
-  cam.fov = sh[3] || 40; cam.updateProjectionMatrix();
-  sun.target.position.copy(c.look); sun.position.copy(c.look).add(V3(-8, 18, 14));
+  const sh = window.camFor(t), c = CAMS[sh[2]]((t - sh[0]) / (sh[1] - sh[0]), sh[3] || {});
+  const shake = ENG.camShake(t) * S * 0.6;
+  cam.position.copy(c.pos).add(V3(shake, 0, 0)); cam.lookAt(c.look.clone().add(V3(shake, 0, 0)));
+  cam.fov = c.fov || 40; cam.updateProjectionMatrix();
   renderer.render(scene, cam);
-  drawUI(t);
+  if (opts.noUI) U.clearRect(0, 0, W, H); else drawUI(t);
 };
 window.ready = true;
 </script>
