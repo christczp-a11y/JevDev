@@ -1,0 +1,529 @@
+{
+ "scores": {
+  "B0 现版本（商鞅冷开场 + 小豆子考你，司马光不出现）": {
+   "hook": 3.73,
+   "hook__conf": 0.77,
+   "s_stop": 2.96,
+   "s_stop__conf": 0.71,
+   "s_host": 0.21,
+   "s_host__conf": 0.83,
+   "s_clarity": 3.37,
+   "s_clarity__conf": 0.56,
+   "s_parent": 3.1,
+   "s_parent__conf": 0.84,
+   "n_intro": 0.13,
+   "n_accuracy": 0.17,
+   "n_unsafe": 0.03,
+   "n_promise": 0.1
+  },
+  "V1 警枕惊醒": {
+   "hook": 2.1,
+   "hook__conf": 0.23,
+   "s_stop": 2.96,
+   "s_stop__conf": 0.91,
+   "s_host": 3.92,
+   "s_host__conf": 0.93,
+   "s_clarity": 2.44,
+   "s_clarity__conf": 0.39,
+   "s_parent": 3.35,
+   "s_parent__conf": 0.67,
+   "n_intro": 0.16,
+   "n_accuracy": 0.22,
+   "n_unsafe": 0.03,
+   "n_promise": 0.09
+  },
+  "V2 爷爷考孙子（司马光考你）": {
+   "hook": 3.6,
+   "hook__conf": 0.67,
+   "s_stop": 3.93,
+   "s_stop__conf": 0.94,
+   "s_host": 3.64,
+   "s_host__conf": 0.7,
+   "s_clarity": 3.23,
+   "s_clarity__conf": 0.59,
+   "s_parent": 3.23,
+   "s_parent__conf": 0.76,
+   "n_intro": 0.09,
+   "n_accuracy": 0.27,
+   "n_unsafe": 0.03,
+   "n_promise": 0.12
+  },
+  "V3 先抛怪事": {
+   "hook": 3.0,
+   "hook__conf": 0.99,
+   "s_stop": 3.2,
+   "s_stop__conf": 0.81,
+   "s_host": 3.58,
+   "s_host__conf": 0.65,
+   "s_clarity": 2.73,
+   "s_clarity__conf": 0.53,
+   "s_parent": 3.33,
+   "s_parent__conf": 0.67,
+   "n_intro": 0.19,
+   "n_accuracy": 0.32,
+   "n_unsafe": 0.04,
+   "n_promise": 0.1
+  },
+  "V4 结果前置": {
+   "hook": 2.99,
+   "hook__conf": 0.98,
+   "s_stop": 2.67,
+   "s_stop__conf": 0.6,
+   "s_host": 3.32,
+   "s_host__conf": 0.54,
+   "s_clarity": 2.97,
+   "s_clarity__conf": 0.57,
+   "s_parent": 3.28,
+   "s_parent__conf": 0.73,
+   "n_intro": 0.06,
+   "n_accuracy": 0.29,
+   "n_unsafe": 0.04,
+   "n_promise": 0.1
+  },
+  "V5 砸缸认人": {
+   "hook": 2.98,
+   "hook__conf": 0.97,
+   "s_stop": 3.0,
+   "s_stop__conf": 0.98,
+   "s_host": 3.85,
+   "s_host__conf": 0.88,
+   "s_clarity": 2.55,
+   "s_clarity__conf": 0.45,
+   "s_parent": 3.4,
+   "s_parent__conf": 0.62,
+   "n_intro": 0.18,
+   "n_accuracy": 0.24,
+   "n_unsafe": 0.08,
+   "n_promise": 0.1
+  },
+  "V6 猜猜我是谁（剪影游戏）": {
+   "hook": 3.57,
+   "hook__conf": 0.64,
+   "s_stop": 2.15,
+   "s_stop__conf": 0.57,
+   "s_host": 3.74,
+   "s_host__conf": 0.78,
+   "s_clarity": 2.73,
+   "s_clarity__conf": 0.57,
+   "s_parent": 3.19,
+   "s_parent__conf": 0.77,
+   "n_intro": 0.16,
+   "n_accuracy": 0.18,
+   "n_unsafe": 0.03,
+   "n_promise": 0.15
+  },
+  "V7 司马光自己搬不动": {
+   "hook": 3.37,
+   "hook__conf": 0.65,
+   "s_stop": 2.71,
+   "s_stop__conf": 0.55,
+   "s_host": 3.85,
+   "s_host__conf": 0.88,
+   "s_clarity": 3.13,
+   "s_clarity__conf": 0.6,
+   "s_parent": 3.51,
+   "s_parent__conf": 0.59,
+   "n_intro": 0.05,
+   "n_accuracy": 0.52,
+   "n_unsafe": 0.04,
+   "n_promise": 0.22
+  },
+  "V8 和商鞅抬杠": {
+   "hook": 3.04,
+   "hook__conf": 0.84,
+   "s_stop": 1.12,
+   "s_stop__conf": 0.07,
+   "s_host": 3.25,
+   "s_host__conf": 0.38,
+   "s_clarity": 2.54,
+   "s_clarity__conf": 0.46,
+   "s_parent": 3.3,
+   "s_parent__conf": 0.69,
+   "n_intro": 0.07,
+   "n_accuracy": 0.35,
+   "n_unsafe": 0.03,
+   "n_promise": 0.16
+  },
+  "V9 生活代入（同桌不信你）": {
+   "hook": 3.67,
+   "hook__conf": 0.73,
+   "s_stop": 2.8,
+   "s_stop__conf": 0.75,
+   "s_host": 2.94,
+   "s_host__conf": 0.63,
+   "s_clarity": 2.9,
+   "s_clarity__conf": 0.57,
+   "s_parent": 3.19,
+   "s_parent__conf": 0.75,
+   "n_intro": 0.1,
+   "n_accuracy": 0.14,
+   "n_unsafe": 0.06,
+   "n_promise": 0.14
+  },
+  "V10 3 秒倒计时挑战": {
+   "hook": 3.61,
+   "hook__conf": 0.67,
+   "s_stop": 2.28,
+   "s_stop__conf": 0.12,
+   "s_host": 2.97,
+   "s_host__conf": 0.14,
+   "s_clarity": 3.0,
+   "s_clarity__conf": 0.59,
+   "s_parent": 3.06,
+   "s_parent__conf": 0.85,
+   "n_intro": 0.12,
+   "n_accuracy": 0.24,
+   "n_unsafe": 0.03,
+   "n_promise": 0.14
+  },
+  "V11 巨书奇观（1362 年）": {
+   "hook": 2.97,
+   "hook__conf": 0.97,
+   "s_stop": 3.01,
+   "s_stop__conf": 0.96,
+   "s_host": 3.23,
+   "s_host__conf": 0.71,
+   "s_clarity": 2.21,
+   "s_clarity__conf": 0.43,
+   "s_parent": 3.28,
+   "s_parent__conf": 0.72,
+   "n_intro": 0.67,
+   "n_accuracy": 0.23,
+   "n_unsafe": 0.04,
+   "n_promise": 0.09
+  },
+  "V12 表情包反应": {
+   "hook": 3.0,
+   "hook__conf": 0.99,
+   "s_stop": 2.32,
+   "s_stop__conf": 0.31,
+   "s_host": 3.31,
+   "s_host__conf": 0.42,
+   "s_clarity": 3.15,
+   "s_clarity__conf": 0.6,
+   "s_parent": 3.35,
+   "s_parent__conf": 0.65,
+   "n_intro": 0.05,
+   "n_accuracy": 0.3,
+   "n_unsafe": 0.03,
+   "n_promise": 0.11
+  },
+  "V13 课堂抽查": {
+   "hook": 3.49,
+   "hook__conf": 0.58,
+   "s_stop": 2.48,
+   "s_stop__conf": 0.42,
+   "s_host": 3.32,
+   "s_host__conf": 0.43,
+   "s_clarity": 2.96,
+   "s_clarity__conf": 0.6,
+   "s_parent": 3.23,
+   "s_parent__conf": 0.73,
+   "n_intro": 0.16,
+   "n_accuracy": 0.23,
+   "n_unsafe": 0.04,
+   "n_promise": 0.12
+  },
+  "V14 冷开场 + 帽翅剪影悬念": {
+   "hook": 3.69,
+   "hook__conf": 0.75,
+   "s_stop": 2.62,
+   "s_stop__conf": 0.58,
+   "s_host": 3.35,
+   "s_host__conf": 0.46,
+   "s_clarity": 3.17,
+   "s_clarity__conf": 0.58,
+   "s_parent": 3.08,
+   "s_parent__conf": 0.86,
+   "n_intro": 0.06,
+   "n_accuracy": 0.18,
+   "n_unsafe": 0.03,
+   "n_promise": 0.11
+  },
+  "V15 冷开场 + 司马光接过考你": {
+   "hook": 3.67,
+   "hook__conf": 0.72,
+   "s_stop": 2.78,
+   "s_stop__conf": 0.61,
+   "s_host": 3.13,
+   "s_host__conf": 0.27,
+   "s_clarity": 3.25,
+   "s_clarity__conf": 0.61,
+   "s_parent": 3.1,
+   "s_parent__conf": 0.84,
+   "n_intro": 0.1,
+   "n_accuracy": 0.25,
+   "n_unsafe": 0.03,
+   "n_promise": 0.1
+  },
+  "C1 对照：自我介绍开场": {
+   "hook": 1.0,
+   "hook__conf": 0.99,
+   "s_stop": 0.4,
+   "s_stop__conf": 0.67,
+   "s_host": 3.03,
+   "s_host__conf": 0.95,
+   "s_clarity": 3.04,
+   "s_clarity__conf": 0.49,
+   "s_parent": 2.43,
+   "s_parent__conf": 0.51,
+   "n_intro": 0.93,
+   "n_accuracy": 0.17,
+   "n_unsafe": 0.02,
+   "n_promise": 0.09
+  },
+  "C2 对照：交代背景开场": {
+   "hook": 0.38,
+   "hook__conf": 0.68,
+   "s_stop": 0.88,
+   "s_stop__conf": 0.78,
+   "s_host": 0.94,
+   "s_host__conf": 0.21,
+   "s_clarity": 2.15,
+   "s_clarity__conf": 0.41,
+   "s_parent": 2.28,
+   "s_parent__conf": 0.58,
+   "n_intro": 0.91,
+   "n_accuracy": 0.08,
+   "n_unsafe": 0.02,
+   "n_promise": 0.09
+  }
+ },
+ "top": [
+  "V2 爷爷考孙子（司马光考你）",
+  "V14 冷开场 + 帽翅剪影悬念",
+  "V15 冷开场 + 司马光接过考你",
+  "V9 生活代入（同桌不信你）",
+  "V6 猜猜我是谁（剪影游戏）",
+  "V4 结果前置",
+  "B0 现版本（商鞅冷开场 + 小豆子考你，司马光不出现）"
+ ],
+ "pairs": [
+  [
+   "V2 爷爷考孙子（司马光考你）",
+   "V14 冷开场 + 帽翅剪影悬念",
+   {
+    "p_keep": 0.8300000000000001,
+    "p_series": 0.995,
+    "p_parent": 0.925
+   }
+  ],
+  [
+   "V2 爷爷考孙子（司马光考你）",
+   "V15 冷开场 + 司马光接过考你",
+   {
+    "p_keep": 0.7949999999999999,
+    "p_series": 0.985,
+    "p_parent": 0.835
+   }
+  ],
+  [
+   "V2 爷爷考孙子（司马光考你）",
+   "V9 生活代入（同桌不信你）",
+   {
+    "p_keep": 0.6799999999999999,
+    "p_series": 0.65,
+    "p_parent": 0.505
+   }
+  ],
+  [
+   "V2 爷爷考孙子（司马光考你）",
+   "V6 猜猜我是谁（剪影游戏）",
+   {
+    "p_keep": 0.62,
+    "p_series": 0.29000000000000004,
+    "p_parent": 0.565
+   }
+  ],
+  [
+   "V2 爷爷考孙子（司马光考你）",
+   "V4 结果前置",
+   {
+    "p_keep": 0.6799999999999999,
+    "p_series": 0.96,
+    "p_parent": 0.755
+   }
+  ],
+  [
+   "V2 爷爷考孙子（司马光考你）",
+   "B0 现版本（商鞅冷开场 + 小豆子考你，司马光不出现）",
+   {
+    "p_keep": 0.61,
+    "p_series": 1.0,
+    "p_parent": 0.875
+   }
+  ],
+  [
+   "V14 冷开场 + 帽翅剪影悬念",
+   "V15 冷开场 + 司马光接过考你",
+   {
+    "p_keep": 0.175,
+    "p_series": 0.015,
+    "p_parent": 0.045
+   }
+  ],
+  [
+   "V14 冷开场 + 帽翅剪影悬念",
+   "V9 生活代入（同桌不信你）",
+   {
+    "p_keep": 0.42,
+    "p_series": 0.05500000000000001,
+    "p_parent": 0.345
+   }
+  ],
+  [
+   "V14 冷开场 + 帽翅剪影悬念",
+   "V6 猜猜我是谁（剪影游戏）",
+   {
+    "p_keep": 0.405,
+    "p_series": 0.005,
+    "p_parent": 0.22999999999999998
+   }
+  ],
+  [
+   "V14 冷开场 + 帽翅剪影悬念",
+   "V4 结果前置",
+   {
+    "p_keep": 0.59,
+    "p_series": 0.10500000000000001,
+    "p_parent": 0.635
+   }
+  ],
+  [
+   "V14 冷开场 + 帽翅剪影悬念",
+   "B0 现版本（商鞅冷开场 + 小豆子考你，司马光不出现）",
+   {
+    "p_keep": 0.1,
+    "p_series": 0.99,
+    "p_parent": 0.255
+   }
+  ],
+  [
+   "V15 冷开场 + 司马光接过考你",
+   "V9 生活代入（同桌不信你）",
+   {
+    "p_keep": 0.47,
+    "p_series": 0.20500000000000002,
+    "p_parent": 0.37
+   }
+  ],
+  [
+   "V15 冷开场 + 司马光接过考你",
+   "V6 猜猜我是谁（剪影游戏）",
+   {
+    "p_keep": 0.35,
+    "p_series": 0.02,
+    "p_parent": 0.315
+   }
+  ],
+  [
+   "V15 冷开场 + 司马光接过考你",
+   "V4 结果前置",
+   {
+    "p_keep": 0.58,
+    "p_series": 0.845,
+    "p_parent": 0.755
+   }
+  ],
+  [
+   "V15 冷开场 + 司马光接过考你",
+   "B0 现版本（商鞅冷开场 + 小豆子考你，司马光不出现）",
+   {
+    "p_keep": 0.365,
+    "p_series": 1.0,
+    "p_parent": 0.79
+   }
+  ],
+  [
+   "V9 生活代入（同桌不信你）",
+   "V6 猜猜我是谁（剪影游戏）",
+   {
+    "p_keep": 0.405,
+    "p_series": 0.105,
+    "p_parent": 0.51
+   }
+  ],
+  [
+   "V9 生活代入（同桌不信你）",
+   "V4 结果前置",
+   {
+    "p_keep": 0.49,
+    "p_series": 0.795,
+    "p_parent": 0.7150000000000001
+   }
+  ],
+  [
+   "V9 生活代入（同桌不信你）",
+   "B0 现版本（商鞅冷开场 + 小豆子考你，司马光不出现）",
+   {
+    "p_keep": 0.395,
+    "p_series": 0.995,
+    "p_parent": 0.5700000000000001
+   }
+  ],
+  [
+   "V6 猜猜我是谁（剪影游戏）",
+   "V4 结果前置",
+   {
+    "p_keep": 0.605,
+    "p_series": 0.975,
+    "p_parent": 0.77
+   }
+  ],
+  [
+   "V6 猜猜我是谁（剪影游戏）",
+   "B0 现版本（商鞅冷开场 + 小豆子考你，司马光不出现）",
+   {
+    "p_keep": 0.5449999999999999,
+    "p_series": 1.0,
+    "p_parent": 0.615
+   }
+  ],
+  [
+   "V4 结果前置",
+   "B0 现版本（商鞅冷开场 + 小豆子考你，司马光不出现）",
+   {
+    "p_keep": 0.17,
+    "p_series": 0.98,
+    "p_parent": 0.16
+   }
+  ]
+ ],
+ "win": {
+  "V2 爷爷考孙子（司马光考你）": {
+   "p_keep": 4.215,
+   "p_series": 4.88,
+   "p_parent": 4.46
+  },
+  "V14 冷开场 + 帽翅剪影悬念": {
+   "p_keep": 1.8599999999999999,
+   "p_series": 1.175,
+   "p_parent": 1.585
+  },
+  "V15 冷开场 + 司马光接过考你": {
+   "p_keep": 2.795,
+   "p_series": 3.0700000000000003,
+   "p_parent": 3.35
+  },
+  "V9 生活代入（同桌不信你）": {
+   "p_keep": 2.72,
+   "p_series": 3.985,
+   "p_parent": 3.575
+  },
+  "V6 猜猜我是谁（剪影游戏）": {
+   "p_keep": 3.3699999999999997,
+   "p_series": 5.555,
+   "p_parent": 3.7649999999999997
+  },
+  "V4 结果前置": {
+   "p_keep": 2.225,
+   "p_series": 2.3,
+   "p_parent": 1.5299999999999998
+  },
+  "B0 现版本（商鞅冷开场 + 小豆子考你，司马光不出现）": {
+   "p_keep": 3.8150000000000004,
+   "p_series": 0.03500000000000003,
+   "p_parent": 2.735
+  }
+ }
+}
