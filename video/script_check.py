@@ -1,0 +1,306 @@
+"""剧本结构自查（工作流第 2 步；PITFALLS S11、S17、S18、S19、S20、P10；待补 13）。
+story.py 的 --lint 只查秒数和禁用词，Jev 只打分；这里查「剧本长什么样」：结构规则里能用代码判断的那部分。
+只读，不调 Jev，不要 key。story.py 的读取函数（check_seconds、check_banned、checks、load_timeline）直接 import，不改 story.py。
+
+用法（Git Bash，Python 用 .venv/Scripts/python，设 PYTHONIOENCODING=utf-8）
+  python video/script_check.py video/stories/tj01/<剧本>.json [--timeline <voice.py 输出目录>/timeline.json]
+  退出码 0 = 没有错误（可以有警告），1 = 有错误。给了 --timeline，所有和时间有关的检查都按真实时间线算，不给就按剧本里估算的秒数。
+  同目录的 episode.json 提供 cast（声音）和 banned（禁用词）。
+
+剧本里要有的备注（顶层 "notes"，Jev 看不到）
+  pov            视角人物的名字（文本里要能搜到）
+  big_question   大问题，字面和剧本里念出来的那一句完全一样
+  level_starts   三关各自第一句的下标（从 0 数，和 voice.py 的行号一致），如 [8, 15, 34]；这三句的画面里要写「关」或「跟头」
+  golden         金句（≤ 12 字，全集恰好说 3 次）
+  stake_line     （可选）赌注那句里的关键词，默认「智家会没」，要在 20 秒前出现
+  half_close     （可选）大问题「先关一半」那句里的关键词，要在全片 40%–60% 处
+  ending_order   （可选）结尾各句的关键词，按先后顺序，例如 ["封为诸侯", "写书的人，来了", "德者，才之帅也", "下集"]
+
+查什么（✗ = 错误，退出码 1；⚠ = 警告，只提醒）
+  1  秒数和禁用词（story.py 的 check_seconds、check_banned，和 --lint 一样）
+  2  两句仪式句：第一句是司马光「考考你！」；旁白「写书的人，来了——」单独成句、只出现一次
+  3  大问题：恰好一句，**念完**（这一句的结束秒）≤ 7.0 秒（S20）
+  4  「考你」：一次「考你」 = 台词后面跟一行「停 X 秒」的动作行。共 4 次，停顿依次 1.0 / 1.2 / 1.2 / 1.8；
+     第 1 次在第 1 关之前（开头的二选一）；三关每关恰好一次（F-1）；「看答案！」也是 4 次
+  5  揭晓要念出答案（S18）：每个「看答案！」的画面里写出亮起的按钮（【…】亮起），这些按钮的字要在后面 1–2 句念出来的话里出现（去掉标点比）
+  6  视角人物（notes.pov）在每一关的时间段里，台词或画面至少出现一次（S17）
+  7  笑点：画面里标了「笑点」的句子，前后间隔（包括开头到第一个、最后一个到结尾）≤ 25 秒
+  8  单句 > 8 秒：警告
+  9  画面备注残留：出现「（某某版：…）」直接报错（S11）；道具第一次出现就已经「接住、握着、拿着、举着」也报错（前面没交代）
+  10 金句恰好 3 次；男声连着说不超过两句；说话人都有声音，同一版里没有两个角色同声音；旁白 / 司马光以外的说话人要在 cast 里；
+     台词里没有「然后」；每句语速 ≤ 每秒 5 字；赌注在 20 秒前；结尾顺序；大问题先关一半的位置
+"""
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT))
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
+
+import story  # noqa: E402  只 import 它的读取函数，不改它
+
+KAO, XIE = "考考你！", "写书的人，来了——"
+PAUSES = [1.0, 1.2, 1.2, 1.8]        # 四次「考你」的停顿（S10）
+MAX_BIGQ = 7.0                        # 大问题念完的最晚秒数（S20）
+MAX_GAG_GAP = 25.0                    # 两个笑点之间最长多少秒
+LONG_LINE = 8.0
+MALE_VOICES = {"zh-CN-YunjianNeural", "zh-CN-YunxiNeural", "zh-CN-YunxiaNeural", "zh-CN-YunyangNeural",
+               "zh-TW-YunJheNeural", "zh-HK-WanLungNeural"}
+PROPS = ("毛笔", "警枕", "手巾", "地图", "竹简", "帽子")          # 道具第一次出现不能已经拿在手里
+HOLD = ("接住", "握着", "拿着", "举着", "捧着", "抱着", "戴着")
+PAUSE_RE = re.compile(r"^停\s*([0-9.]+)\s*秒")
+VER_RE = re.compile(r"[（(][^（）()]{0,10}版[：:]")
+BTN_RE = re.compile(r"【([^】]+)】")
+
+
+def core(s):
+    return re.sub(r"[^\w]", "", s)
+
+
+def spoken(row):
+    return row[2] != "动作" and bool(row[3].strip())
+
+
+def load(path, timeline):
+    """返回 (剧本, 每句 [t0, t1, 谁, 台词, 画面], 全长, 目录, 台词原文)。给了 timeline 就用真实秒数换掉估算秒数。"""
+    p = Path(path)
+    text = p.read_text(encoding="utf-8")
+    tr = json.loads(text)
+    rows = [list(r) for r in tr["lines"]]
+    total = rows[-1][1] if rows else 0.0
+    if timeline:
+        tl_rows, total = story.load_timeline(timeline, p, tr)     # 对不上会直接退出
+        for r, t in zip(rows, tl_rows):
+            r[0], r[1] = t["t0"], t["t1"]
+    return tr, rows, total, p.parent, text
+
+
+def run(path, timeline=None):
+    tr, rows, total, folder, text = load(path, timeline)
+    p = Path(path)
+    errs, warns, info = [], [], []
+    notes = tr.get("notes") or {}
+    ep_path = folder / "episode.json"
+    ep = json.loads(ep_path.read_text(encoding="utf-8")) if ep_path.exists() else {}
+    cast = ep.get("cast", {}) or {}
+
+    def E(msg):
+        errs.append(msg)
+
+    def W(msg):
+        warns.append(msg)
+
+    def at(i):
+        return f"lines[{i}]（{rows[i][2]}）"
+
+    src = "真实时间线" if timeline else "剧本估算秒数"
+    info.append(f"{tr.get('id')}：{len(rows)} 句，全长 {total:.1f}s（{src}）")
+
+    # 1 秒数、禁用词
+    for e in story.check_seconds(p, text, tr):
+        E("秒数：" + e)
+    if ep_path.exists():
+        banned = story.read_banned(folder, ep)
+        for e in story.check_banned(p, text, tr, banned):
+            E("禁用词：" + e)
+
+    # 2 仪式句
+    if not (rows[0][2] == "司马光" and rows[0][3] == KAO):
+        E("第一句不是 司马光「考考你！」")
+    xs = [i for i, r in enumerate(rows) if r[3] == XIE]
+    if len(xs) != 1 or rows[xs[0]][2] != "旁白":
+        E("「写书的人，来了——」要由旁白单独成句、字面不差、全片只出现一次")
+
+    # 3 大问题念完
+    bq = notes.get("big_question")
+    if not bq:
+        E("notes.big_question 没写")
+    else:
+        hit = [i for i, r in enumerate(rows) if r[3] == bq]
+        if len(hit) != 1:
+            E(f"大问题「{bq}」要恰好出现一次（现在 {len(hit)} 次）")
+        else:
+            r = rows[hit[0]]
+            info.append(f"大问题「{bq}」{r[0]:.2f}–{r[1]:.2f}s")
+            if r[1] > MAX_BIGQ:
+                E(f"大问题在 {r[1]:.2f}s 才念完，超过 {MAX_BIGQ:g} 秒（S20：按真实时间线，念完算）")
+
+    # 4 考你：停顿行 = 一次考你
+    pause_idx = [i for i, r in enumerate(rows) if r[2] == "动作" and PAUSE_RE.match(r[4])]
+    pauses = [round(rows[i][1] - rows[i][0], 2) for i in pause_idx]
+    reveals = [i for i, r in enumerate(rows) if r[3] == "看答案！"]
+    info.append(f"考你 {len(pause_idx)} 次，停顿 {pauses}；「看答案！」{len(reveals)} 次")
+    if len(pause_idx) != 4 or any(abs(a - b) > 0.06 for a, b in zip(pauses, PAUSES)) or len(pauses) != 4:
+        E(f"考你要 4 次、停顿依次 {PAUSES}，现在是 {pauses}")
+    if len(reveals) != len(pause_idx):
+        E(f"「看答案！」{len(reveals)} 次，考你 {len(pause_idx)} 次，要一一对上")
+    for i in pause_idx:      # 停顿行前面要有提问的一句
+        if i == 0 or not spoken(rows[i - 1]):
+            E(f"lines[{i}] 的停顿行前面不是台词：一次考你 = 提问的一句 + 停顿行")
+    starts = notes.get("level_starts")
+    n_levels = 0
+    if not (isinstance(starts, list) and len(starts) == 3 and all(isinstance(x, int) and 0 <= x < len(rows) for x in starts)
+            and starts == sorted(starts)):
+        E("notes.level_starts 要写成三关各自第一句的下标，如 [8, 15, 34]")
+    else:
+        n_levels = 3
+        for k, s in enumerate(starts, 1):
+            if not re.search(r"关|跟头", rows[s][4]):
+                E(f"第 {k} 关的第一句 lines[{s}] 的画面里没有「关」或「跟头」（level_starts 是不是错位了）")
+        bounds = starts + [len(rows)]
+        before = [i for i in pause_idx if i < starts[0]]
+        if len(before) != 1:
+            E(f"第 1 关之前（开头）要恰好一次考你（二选一），现在 {len(before)} 次")
+        for k in range(3):
+            inside = [i for i in pause_idx if bounds[k] <= i < bounds[k + 1]]
+            if len(inside) != 1:
+                E(f"第 {k + 1} 关（lines[{bounds[k]}] 起）要恰好一次考你（F-1），现在 {len(inside)} 次")
+
+    # 5 揭晓要念出答案
+    for i in reveals:
+        vis = rows[i][4]
+        labels = BTN_RE.findall(vis) if "亮起" in vis else []
+        if not labels:
+            E(f"{at(i)} 揭晓的画面里要写出亮起的按钮，例如「【不听】亮起」")
+            continue
+        nxt, j = [], i + 1
+        while j < len(rows) and len(nxt) < 2:
+            if spoken(rows[j]):
+                nxt.append(rows[j])
+            j += 1
+        heard = "".join(core(r[3]) for r in nxt)
+        for lb in labels:
+            if core(lb) not in heard:
+                E(f"{at(i)} 揭晓后的 1–2 句里没有念出答案「{lb}」（S18：不识字的孩子只听得见声音）")
+
+    # 6 视角人物每关都在
+    pov = notes.get("pov")
+    if not pov:
+        E("notes.pov（视角人物）没写")
+    elif n_levels:
+        end = next((i for i, r in enumerate(rows) if "五十年后" in r[3]), len(rows))
+        bounds = starts + [end]
+        for k in range(3):
+            seg = rows[bounds[k]:bounds[k + 1]]
+            if not any(pov in r[3] or pov in r[4] for r in seg):
+                E(f"视角人物「{pov}」在第 {k + 1} 关（lines[{bounds[k]}]–lines[{bounds[k + 1] - 1}]，"
+                  f"{rows[bounds[k]][0]:.1f}–{rows[bounds[k + 1] - 1][1]:.1f}s）里台词和画面都没出现（S17）")
+
+    # 7 笑点间隔
+    gags = [r[0] for r in rows if "笑点" in r[4]]
+    if not gags:
+        E("没有标「笑点」的句子")
+    else:
+        marks = [0.0] + gags + [total]
+        worst = max(((b - a), a) for a, b in zip(marks, marks[1:]))
+        info.append(f"笑点 {len(gags)} 个，最长间隔 {worst[0]:.1f}s（从 {worst[1]:.1f}s 起）")
+        for a, b in zip(marks, marks[1:]):
+            if b - a > MAX_GAG_GAP:
+                E(f"笑点间隔 {b - a:.1f}s（{a:.1f}s → {b:.1f}s）超过 {MAX_GAG_GAP:g} 秒")
+
+    # 8 单句太长
+    for i, r in enumerate(rows):
+        if spoken(r) and r[1] - r[0] > LONG_LINE:
+            W(f"{at(i)} 单句 {r[1] - r[0]:.1f}s，超过 {LONG_LINE:g} 秒，考虑拆开：{r[3][:24]}")
+
+    # 9 画面备注残留、道具前面没交代
+    for i, r in enumerate(rows):
+        m = VER_RE.search(r[4])
+        if m:
+            E(f"{at(i)} 画面备注里有「{m.group(0)}…」这种某个版本的残留（S11）")
+    seen = set()
+    for i, r in enumerate(rows):
+        vis = r[4]
+        for prop in PROPS:
+            if prop in vis and prop not in seen:
+                if re.search("(?:" + "|".join(HOLD) + r")[^，；。（）]{0,6}" + prop, vis):
+                    E(f"{at(i)} 道具「{prop}」第一次出现就已经拿在手里，前面没有交代（S11）")
+                seen.add(prop)
+        for prop in PROPS:
+            if prop in r[3]:
+                seen.add(prop)
+
+    # 10 金句、男声、声音、语速、赌注、结尾、半关
+    g = notes.get("golden")
+    if not g:
+        E("notes.golden（金句）没写")
+    else:
+        cnt = sum(core(r[3]).count(core(g)) for r in rows if spoken(r))
+        info.append(f"金句「{g}」{cnt} 次（{len(core(g))} 字）")
+        if cnt != 3 or len(core(g)) > 12:
+            E(f"金句要恰好 3 次、≤ 12 字，现在 {cnt} 次、{len(core(g))} 字")
+    male = {"司马光"} | {w for w, v in cast.items() if isinstance(v, dict) and v.get("voice") in MALE_VOICES}
+    run_ = 0
+    for i, r in enumerate(rows):
+        if spoken(r) and r[2] in male:
+            run_ += 1
+            if run_ > 2:
+                E(f"{at(i)} 起男声连着说了 {run_} 句（儿童动画调研规则 11：每次最多两句，中间插旁白或音效）")
+        else:
+            run_ = 0
+    speakers = {r[2] for r in rows if spoken(r)}
+    miss = sorted(s for s in speakers if s not in ("旁白", "司马光") and s not in cast)
+    if miss:
+        E(f"说话人 {miss} 在 episode.json 的 cast 里没有声音")
+    by = {}
+    for s in speakers:
+        if s in cast and isinstance(cast[s], dict):
+            by.setdefault(cast[s].get("voice"), []).append(s)
+    for v, ws in by.items():
+        if len(ws) > 1:
+            E(f"同一个声音 {v} 给了 {sorted(ws)}（同一版里有两个角色同声音）")
+    if "zh-CN-YunxiNeural" in by:
+        E("cast 里的角色用了 YunxiNeural（只给司马光）")
+    info.append("说话的角色：" + "、".join(sorted(s for s in speakers if s in cast)))
+    if "然后" in "".join(r[3] for r in rows):
+        E("台词里有「然后」（转场只用「但是」「所以」）")
+    fast = story.checks({"lines": rows})["too_fast"]
+    for f in fast:
+        E(f"语速超过每秒 {story.MAX_RATE:g} 字：{f}")
+    sk = notes.get("stake_line", "智家会没")
+    st = [r for r in rows if sk in r[3]]
+    if not st or st[0][0] >= 20:
+        E(f"赌注（「{sk}」）要在第 20 秒前讲清" + (f"，现在在 {st[0][0]:.1f}s" if st else "，剧本里没有"))
+    eo = notes.get("ending_order")
+    if eo:
+        pos = []
+        for k in eo:
+            ix = [i for i, r in enumerate(rows) if k in r[3]]
+            pos.append(ix[0] if ix else -1)
+        if -1 in pos or pos != sorted(pos):
+            E(f"结尾顺序不对：{list(zip(eo, pos))}")
+    hc = notes.get("half_close")
+    if hc:
+        hs = [r for r in rows if hc in r[3]]
+        if not hs:
+            E(f"找不到大问题先关一半的那句「{hc}」")
+        else:
+            pct = hs[0][0] / total
+            info.append(f"大问题先关一半「{hc}」在 {hs[0][0]:.1f}s = {pct:.0%}")
+            if not 0.40 <= pct <= 0.60:
+                E(f"大问题先关一半在 {pct:.0%} 处，要在 40%–60%")
+    return errs, warns, info
+
+
+def main():
+    ap = argparse.ArgumentParser(description="剧本结构自查（第 2 步）")
+    ap.add_argument("script", help="剧本 JSON（同目录要有 episode.json）")
+    ap.add_argument("--timeline", help="voice.py 输出的 timeline.json：所有和时间有关的检查按真实时间线算")
+    a = ap.parse_args()
+    errs, warns, info = run(a.script, a.timeline)
+    for x in info:
+        print("  " + x)
+    for w in warns:
+        print("  ⚠ " + w)
+    for e in errs:
+        print("  ✗ " + e)
+    print(f"script_check：{'通过' if not errs else '有 ' + str(len(errs)) + ' 处错误'}，{len(warns)} 条警告")
+    sys.exit(1 if errs else 0)
+
+
+if __name__ == "__main__":
+    main()
