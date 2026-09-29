@@ -291,3 +291,9 @@ Chris 看 3D 整集：信用值跑到屏幕中间、有些人物跑出画面。
 - 对比测试（同一个提示词画 9 个贴纸）：比 gpt-6-astra 更干净，白纸边均匀，字更清楚，手机上一眼能看清；Chris 说这个模型的可用额度大。
 - 一律用系列统一脚本 `video/codex_gen.sh`（Codex CLI 要 0.159.0 或更新，才认得这个模型）。系列贴纸第一版就是它画的：`video/assets/codex_series/stickers_v1.png`。
 - 以前「Codex 一律用 astra low」的规定作废。
+
+## 2026-09-29 光爷爷的声音定稿（第 3 版，Chris 选 2 号）
+- 描述：「男声，七十岁左右的老学者爷爷，声音温厚、中气足，慈祥幽默，说话时带着呵呵的笑意，语速偏慢，吐字清楚。」默认语气「语气亲切、慈祥，带着笑意」。基频中位约 116 Hz，起伏 5.1 半音。
+- 前两版：第 1 版阴沉（约 84 Hz），第 2 版像年轻女声（约 212 Hz）（PITFALLS A7）。
+- 「考考你！」用光爷爷的默认声音录（约 134 Hz，尾音上扬）；试过「得意地卖关子」的语气变体，只有 88 Hz，不用。
+- Qwen 配音整套换进仓库：`video/voice.py`（克隆参考音 + 每个（角色，语气）一段语气变体参考音）、`video/tts/qwen_worker.py`、`video/series_voice.json`、`video/assets/audio/voices/`、测试 `video/tests/voice/`（离线全过，GPU 测试全过）、装机检查全过。

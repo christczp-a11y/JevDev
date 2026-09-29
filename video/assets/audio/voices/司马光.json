@@ -1,0 +1,15 @@
+{
+ "name": "司马光",
+ "vid": "司马光",
+ "variant_of": null,
+ "desc": "男声，七十岁左右的老学者爷爷，声音温厚、中气足，慈祥幽默，说话时带着呵呵的笑意，语速偏慢，吐字清楚。",
+ "tone": "语气亲切、慈祥，带着笑意",
+ "ref_text": "呵呵，孩子们好呀！今天爷爷给你们讲个有趣的故事。",
+ "instruct": "男声，七十岁左右的老学者爷爷，声音温厚、中气足，慈祥幽默，说话时带着呵呵的笑意，语速偏慢，吐字清楚。语气亲切、慈祥，带着笑意。",
+ "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+ "seed": 20260929,
+ "chosen": null,
+ "cands": null,
+ "made": "2026-09-29",
+ "note": "第 3 版。第 1 版阴沉（约 84 Hz），第 2 版像年轻女声（约 212 Hz，PITFALLS A7）；09-29 Chris 从 4 个候选里选了 2 号：基频中位约 116 Hz，起伏 5.1 半音（seed_off 0，video/out/tts_compare/sgm_v3/d5_s0.wav）"
+}

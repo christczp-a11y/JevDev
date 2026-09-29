@@ -4,7 +4,7 @@ import sys
 import unittest
 from pathlib import Path
 
-from harness import HERE, MALE, ROOT, make_case, read_log, run_voice, timeline, workdir
+from harness import HERE, KID, ROOT, make_case, read_log, run_voice, timeline, workdir
 
 SOURCE = (HERE / "fixtures" / "source_poly.md").read_text(encoding="utf-8")
 BANNED = {"知伯": "异名，通鉴写智伯", "豫让": "暴力情节，整段跳过（S13）"}
@@ -144,8 +144,8 @@ class SpeedAlarm(unittest.TestCase):
     def test_too_fast_line_is_reported_and_normal_lines_are_not(self):
         d = workdir("speed")
         fast = "快点快点再快点快点快点再快点快点快点再快点快点"
-        s = make_case(d, [("旁白", "从前有个小国家。"), ("快嘴", fast)], cast={"快嘴": dict(MALE, rate="+80%")})
-        r = run_voice(s, d / "out")
+        s = make_case(d, [("旁白", "从前有个小国家。"), ("快嘴", fast)], cast={"快嘴": KID})
+        r = run_voice(s, d / "out", env={"VOICE_TEST_SPEED": "快嘴=1.8"})
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertIn("语速报警：lines[1]（快嘴）", r.stdout)
         self.assertNotIn("lines[0]（旁白）", "".join(x for x in r.stdout.splitlines() if x.startswith("语速报警")))

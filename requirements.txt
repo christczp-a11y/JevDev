@@ -5,6 +5,5 @@ numpy==2.5.3
 scipy==1.18.1                 # 拆 Codex 素材表（split_sheet / split_alpha）
 pillow==12.3.0                # 画字、读写图片
 opencv-python-headless==5.0.0.93   # 合成器：仿射变换、模糊、合成
-edge-tts==7.2.8               # 配音
 fonttools==4.66.0             # 字体：固定字重、查缺字
 brotli==1.2.0

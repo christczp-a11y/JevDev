@@ -1,22 +1,40 @@
 {
-  "_说明": "系列人声的公共配置（工作流第七节「人声」一行）。这里的值是系列的脸：改动要先问 Chris，再记进 DECISIONS，改完还要重录 ceremony 里的仪式录音。files 是系列固定音频（相对 video/assets/）的 sha256，voice.py 和 audio.py 读的时候都会核对，文件被改过就报错；重录后把新的 sha256 写进来。用法和字段说明见 video/voice.py 顶部。",
-  "gap": 0.3,
-  "characters": {
-    "旁白": {"voice": "zh-CN-XiaoxiaoNeural", "rate": "+6%", "pitch": "+0Hz"},
-    "司马光": {"voice": "zh-CN-YunxiNeural", "rate": "-10%", "pitch": "-12Hz"}
+ "_说明": "系列人声的公共配置（工作流第七节「人声」一行）。引擎是 Qwen3-TTS：每个声音是一段中文的声音描述（desc）+ 默认语气（tone）+ 参考音念的那段话（ref_text）；参考音由 VoiceDesign 按 desc+tone 设计，存在 video/assets/audio/voices/<名字>.wav（.json 记着设计参数），之后每一句都克隆它。这里的值是系列的脸：改动要先问 Chris，再记进 DECISIONS，改完要 voice.py --make-series-voices --force 重设计参考音、--make-ceremony --force 重录仪式录音，并把新的 sha256 写进 files 和 ceremony 的 ref_sha256。声音描述和语气不许出现「低沉、沙哑、气声、阴森、阴冷、邪恶、恐怖、神秘、阴沉」（PITFALLS A7）。files 是系列固定音频（相对 video/assets/）的 sha256，voice.py 和 audio.py 读的时候都会核对，文件被改过就报错。用法和字段说明见 video/voice.py 顶部。",
+ "gap": 0.3,
+ "characters": {
+  "旁白": {
+   "desc": "一位年轻女性的讲故事声音，二十多岁，温柔清亮，吐字清晰，适合给小朋友讲历史故事。",
+   "tone": "语气温柔，像在讲故事，平稳清楚",
+   "ref_text": "很久很久以前，有一个故事，我们来慢慢地听。"
   },
-  "cast_forbidden_voices": {
-    "zh-CN-YunxiNeural": "YunxiNeural 只给司马光用（工作流第 2 步 cast 规则、第 0 步第 5 项）"
+  "司马光": {
+   "desc": "男声，七十岁左右的老学者爷爷，声音温厚、中气足，慈祥幽默，说话时带着呵呵的笑意，语速偏慢，吐字清楚。",
+   "tone": "语气亲切、慈祥，带着笑意",
+   "ref_text": "呵呵，孩子们好呀！今天爷爷给你们讲个有趣的故事。"
+  }
+ },
+ "files": {
+  "audio/sgm_pop.wav": "a9e7640b9c9cd3c47cdacce19d4c314b786e2bfafd660be3498aaed1a4217180",
+  "audio/voices/旁白.wav": "b7c059424f2973f1db0e0277d334c3c88ce99953e2983d9f051b7193f0c78663",
+  "audio/voices/旁白@带着期待有点郑重像在揭晓.wav": "979714a468e48c12b261d538af1de3e6414311c91fe16a3e88fc1964f714c1d4",
+  "audio/ceremony_xieshu_de_ren_lai_le.mp3": "b8137896ae7b8df5a450b555a9928f740611f60262b4b579a52339332d6fffc0",
+  "audio/voices/司马光.wav": "7ac6f15aabf4ee8c56601db6b278d40d385739b0bd59a9ca90edc6a191530b8e",
+  "audio/ceremony_kaokaoni.mp3": "e6cfcebfcd6dc23de95499d121d21309646e361aabe194cf9dec4c616c9c3ef7"
+ },
+ "ceremony": [
+  {
+   "who": "司马光",
+   "text": "考考你！",
+   "file": "audio/ceremony_kaokaoni.mp3",
+   "tone": "语气亲切、慈祥，带着笑意",
+   "ref_sha256": "7ac6f15aabf4ee8c56601db6b278d40d385739b0bd59a9ca90edc6a191530b8e"
   },
-  "files": {
-    "audio/ceremony_kaokaoni.mp3": "f589fad61b2c39065534401b01d1393937d238e760e5d2bfa1e4158a104a7c7c",
-    "audio/ceremony_xieshu_de_ren_lai_le.mp3": "e7249fb4fa1088c56855ab5af8aa48a36e06cbd436a1482aa0ea213b483d9c0c",
-    "audio/sgm_pop.wav": "a9e7640b9c9cd3c47cdacce19d4c314b786e2bfafd660be3498aaed1a4217180"
-  },
-  "ceremony": [
-    {"who": "司马光", "text": "考考你！", "file": "audio/ceremony_kaokaoni.mp3",
-     "voice": "zh-CN-YunxiNeural", "rate": "-10%", "pitch": "-12Hz"},
-    {"who": "旁白", "text": "写书的人，来了——", "file": "audio/ceremony_xieshu_de_ren_lai_le.mp3",
-     "voice": "zh-CN-XiaoxiaoNeural", "rate": "+6%", "pitch": "+0Hz"}
-  ]
+  {
+   "who": "旁白",
+   "text": "写书的人，来了——",
+   "file": "audio/ceremony_xieshu_de_ren_lai_le.mp3",
+   "tone": "带着期待，有点郑重，像在揭晓",
+   "ref_sha256": "979714a468e48c12b261d538af1de3e6414311c91fe16a3e88fc1964f714c1d4"
+  }
+ ]
 }

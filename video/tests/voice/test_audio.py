@@ -45,6 +45,8 @@ class Audio(unittest.TestCase):
 
     def scene_files(self):
         files = sorted(glob.glob(str(VIDEO / "scenes" / "ep01v2" / "shot*.json"))) + sorted(glob.glob(str(VIDEO / "scenes" / "ep01" / "*.json")))
+        if not files:
+            self.skipTest("试做集 ep01 的场景 JSON 在 09-29 清理仓库时删掉了（three.js 停用），这条回归测试没有输入")
         self.assertGreaterEqual(len(files), 10)
         return files
 
