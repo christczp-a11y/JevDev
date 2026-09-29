@@ -11,10 +11,10 @@
 | 自检 | 运行环境 | 通过 | — | — | 09-29 主会话：7 项里 1–6 全过（edge-tts 当场装上）；第 7 项显卡渲染等第 14 项 |
 | 0-1、0-2 | 剧本评分 v2、Jev key 检查、定基线 | 通过（小补丁也通过） | 1/3 | `video/story.py`、`rubrics/story_v2.json`、`logic_qa.py` / `motion_qa.py` 开头、N6 结尾三句秒数 | 09-29 第 1 轮通过，6 条全过。另有小问题不挡过关：report.json 不记标准（E9）、timeline 全长（E10）、禁用词硬拦截（待补 7）→ 小补丁 09-29 reviewer 通过（6 条全过）；主会话另补两行：说话人也查禁用词、词条前后带空格报错 |
 | 0-3、0-4 | 素材登记表、系列参考帧（+ 改代码前的 ep01v2 基线） | 待查（`video/assets/REGISTRY.md` 165 张、`video/registry_check.py`；coinRain 不改引擎，靠 registry_check 拦；试做集布景不标停用） | 1/3 | `video/assets/ref/series/`（8 张，含主会话补的两张横幅帧）、`video/stories/tj01/step0_baseline.md`（layout_qa 0 处、qa 0 处、frame 1 处：第 1 场 42.9 秒商鞅被挡，试做集原有，可复现） | |
-| 0-5、0-6 | 配音分层、仪式声音 | 做中（第 2 轮） | 2/3 | `video/voice.py`、`video/series_voice.json`、`video/assets/audio/`（两段仪式录音、`sgm_pop.wav`） | 第 1 轮不通过（09-29）：9 条过关条件都过，卡在 voice_text 不查禁用词（S13 漏洞）；另补仪式句近似警告（A5）等。等 Chris：司马光弹出音效要听；tone() 老 bug（A4）修不修 |
+| 0-5、0-6 | 配音分层、仪式声音 | **通过**（09-29 第 2 轮，b67f928）；补充：时间线去句尾静音做中 | 2/3 | `video/voice.py`、`video/series_voice.json`、`video/assets/audio/`（两段仪式录音、`sgm_pop.wav`） | 第 1 轮不通过（09-29）：9 条过关条件都过，卡在 voice_text 不查禁用词（S13 漏洞）；另补仪式句近似警告（A5）等。等 Chris：司马光弹出音效要听；tone() 老 bug（A4）修不修 |
 | 0-7、0-8、0-9、0-9a（+ 提前做 0-19 字体） | 分场模板、质检参数化、人名牌、2D 布景 | 做中（第 2 轮） | 2/3 | `video/episode_build.py`、`episode_config.py`、`episodes/`、`build_tj01.py`、`set_check.py`、`sets/README.md`；人名牌在 stage.html / engine.html | 第 1 轮不通过（09-29）：第 8、9a 项过；卡在人名牌标错人（T20）、主角牌子没出现（T21）、家族颜色进了每集配置（第七节）、测试在 video/out（P10）、单场混音崩溃（A6）。第 19 项（字体本地化）并进这一轮，做完重截参考帧 |
 | 1 | 史料简报 `source.md` | **通过**（09-29 第 2 轮；主会话按 reviewer 数据补改地图方位等，source_check 152 条 0 错） | 2/3 | `video/stories/tj01/source.md`；补检查 `video/source_check.py`（builder 做中） | 第 1 轮不通过（09-29）：53 处引文全部逐字找到；没过的是 1 条超 20 字、没有注音、马镫年份、「晋静公」、校勘说明、出处没逐条标、#9–#12 年代没标、缺地图方位。PITFALLS S2 再犯、S14 新坑 |
-| 2 | 剧本 | 做中（builder 写 episode.json + ≥ 6 版） | 1/3 | `video/stories/tj01/` | |
+| 2 | 剧本 | 待查 | 1/3 | `video/stories/tj01/episode.json` + 6 版（A 赵襄子、B 段规、C 张孟谈、D 智伯、E 要地、F 逃晋阳）；report `video/out/story_tj01/report.json` | builder 推荐 B（闸门 0.25/0.08/0.03、平淡段 8.2、pair 0.64/0.63/0.67）；D 差 0.01。真实配音试跑 B 213.6 秒；大问题 6.7 秒开口（句尾静音问题，C1 在改时间线） |
 | 检查点 1 | 复述剧本 | 没开始 | — | | |
 | 3–10 | | 没开始 | | | |
 
