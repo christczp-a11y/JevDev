@@ -26,8 +26,8 @@ TypeSafe 的官方用法和 API 细节看插件 skill `typesafe:typesafe-ai`（`
 | 步 | 做什么 | 工具 |
 |---|---|---|
 | 2 剧本 | 候选剧本打分、两两比较、三道闸门（史实、儿童不宜、两代人对立） | `video/story.py` |
-| 2 剧本 | 从候选里挑古今对照、「考你」题、金句 | `video/jev_pick.py`（施工 C 做） |
-| 4 分镜表 | 逐镜检查：画面主体是不是台词说到的人；孩子看不看得懂；有没有吓人的东西；梗是不是孩子的梗 | `video/motion/storyboard_jev.py`（施工 C 做） |
+| 2 剧本 | 从候选里挑古今对照、「考你」题、金句 | `video/jev_pick.py` |
+| 4 分镜表 | 逐镜检查：画面主体是不是台词说到的人；孩子看不看得懂；有没有吓人的东西；梗是不是孩子的梗 | `video/motion/storyboard_jev.py`（个别镜头要留难句时，在镜头 `notes` 里写 `{"jev_allow": ["kid"], "why": "..."}` 放行） |
 | 9 发布 | 标题和封面文字：孩子更想点、家长更想转，两两比较挑出第一 | `video/jev_pick.py` |
 | 9 复盘 | 评论分类：看懂了、没看懂、想看下一集、有意见 | `video/jev_pick.py classify` |
 
