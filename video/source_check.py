@@ -3,24 +3,33 @@
 """史料简报自动核对（工作流第 1 步；对应 PITFALLS S2「没有逐句对原文」、S14「简报里没有注音」）。
 
 用法：
-  .venv/Scripts/python video/source_check.py video/stories/tj01/source.md [--refresh] [--check-links]
+  .venv/Scripts/python video/source_check.py video/stories/tj01/source.md [--refresh] [--check-links] [--strict]
 
 查什么（简报 source.md 的写法）：
   1. 「…」只用来标古书原文，后面紧跟全角括号的出处短码：「天子之職莫大於禮」（鉴1）；
-     多个短码用全角分号：（鉴1；胡1），在任一本里找到就算。短码必须在「来源」一节登记。
+     多个短码用全角分号：（鉴1；胡1），每一个短码都要在它那本里找到，找不到的逐个报错
+     （简报用多个短码表示“几本书都这样写”）。短码必须在「来源」一节登记。
      去掉嵌套的『』（原文页面里的引号也一起去掉）后，逐字到下载的维基文库原文里找；
-     中间用「……」省略的，每段都要找到。
+     中间用「……」省略的，每段都要找到，而且要在原文的同一处：顺序和引文一致，
+     相邻两段之间最多隔 MAX_ELLIPSIS_GAP 个汉字，不能跨着正文和注文。
      逐字找不到时，再去掉标点、按下面的异体字表比一次；这样才找到的算通过，但标「异体匹配」，
-     请人看一眼。原文本身就写「歳」的，简报也写「歳」，是逐字通过，不算异体。
+     请人看一眼（加 --strict 就按错误算）。原文本身就写「歳」的，简报也写「歳」，是逐字通过，不算异体。
      去维基标记时：注文（原始标记里的 {{*|…}}，即胡注、韦昭注、战国策注等小字）保留，
      每条注文单独成段，引文不能跨着正文和注文拼出来，所以（胡1）能引胡注和反切；
+     {{參|字|说明}} 保留第一个参数「字」（正文里的字），说明不算原文；
      校勘记（<ref>…</ref>）是维基编辑者写的，不是古书原文，去掉，不能拿来核引文。
+     鉴1、鉴2 是校勘本：〔X〕是编者补的或改正的字，紧跟着的 (Y) 是被改掉的误字，
+     单独的 (Y) 是被删掉的字（校勘记里写「據刪」）；按校勘本的读法，保留 X，删掉 (Y)，
+     所以「智伯又求藺、皋狼之地」能过，把 X、Y 两个字都留下的「智伯又求藺蔡」找不到。
   2. 每处引文 <= 20 个汉字（只数汉字，不数标点；「……」连接的几段合计；嵌套『』里的字也算）。
-     里面一个汉字都没有的（说明文字里提到「」「……」这两个符号本身），不算引文，标「跳过」。
+     去掉「」『』、省略号和空白以后什么都不剩的（说明文字里提到「」「……」这两个符号本身），
+     不算引文，标「跳过」；里面有东西但没有汉字的（「Zhi Bo」、拼音、英文）要报错。
+     汉字和拼音、英文字母、数字混在一起的也报错：古书原文里不会有。
   3. 「来源」一节每行一条：`- 短码：完整URL`。维基文库的短码：鉴N、胡N、史N、国语N、策赵一、
      韩非喻老（下载 action=raw 原文，缓存在 video/out/<集>/source_check/）；其他网页写 网1、网2……
-     （只支持事实，不能被「」引用）。每个链接必须是完整的 http(s) URL；加 --check-links 时
-     对非维基链接发请求，不是 200 就报错。
+     （只支持事实，不能被「」引用）。每个链接必须是完整的 http(s) URL；短码要核到具体一卷：
+     鉴N、胡N、史N、国语N 看「卷N」，策赵一 要指到 趙/一（趙/二 不行），韩非喻老 要指到 韓非子/喻老。
+     加 --check-links 时对非维基链接发请求，不是 200 就报错（失败先重试一次，报错时写出原因）。
   4. 【未核实】只能写成【未核实，不进剧本】（【待查】可以有）。
   5. 第四节下面必须有 `### 注音（人名、地名、生僻字）` 和 `### 多音字（第 4 步配音用）`
      两个小节，各带一张不是空的表格。
@@ -31,6 +40,7 @@
 只读输入文件，不改简报；只往 video/out/<集>/source_check/ 写下载的原文。
 """
 import argparse
+import bisect
 import hashlib
 import re
 import sys
@@ -41,10 +51,12 @@ import urllib.request
 from pathlib import Path
 
 MAX_HAN = 20
+MAX_ELLIPSIS_GAP = 200  # 「A……B」两段在原文里最多隔多少个汉字（只数汉字）；再远就不是同一处了
+LINK_RETRIES = 1        # --check-links：失败后再试几次
 UA = "JevDev-source_check/1.0 (children's history animation; local research script)"
 BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
               "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
-HAN_RE = re.compile("[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\U00020000-\U0002ffff]")
+HAN_RE = re.compile("[\u3007\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\U00020000-\U0002ffff]")  # 〇（数字零）也算汉字
 NOTE_EDGE = "\ue000"  # 注文两头的隔断符（私用区字符），引文不会跨过它匹配
 ELLIPSIS_RE = re.compile(r"[…⋯]+|\.{3,}")
 QUOTE_MARKS = str.maketrans("", "", "「」『』")
@@ -93,16 +105,19 @@ def section_end(lines, start, level):
 
 def family_error(code, url, wiki):
     """维基文库短码：必须是维基文库链接，并指向对应的书和卷；返回错误说明，对得上返回 None。"""
-    u = urllib.parse.unquote(url)
+    u = urllib.parse.unquote(urllib.parse.urlparse(url).path).rstrip("/")  # 只看页面名，不看 ?# 后面
     juan = re.findall(r"卷(\d+)", u)
     n = int(juan[-1]) if juan else None
+    # 每个短码都要核到具体一卷 / 一篇：没有卷号的（策赵一、韩非喻老）看页面名的结尾
     rules = [
         (r"鉴(\d+)", lambda m: "資治通" in u and "胡三省" not in u and n == int(m[1]), "《資治通鑑》卷{0}"),
         (r"胡(\d+)", lambda m: "胡三省" in u and n == int(m[1]), "《資治通鑒（胡三省音注）》卷{0}"),
         (r"史(\d+)", lambda m: "史記" in u and n == int(m[1]), "《史記》卷{0}"),
         (r"国语(\d+)", lambda m: "國語" in u and n == int(m[1]), "《國語》卷{0}"),
-        (r"策赵一", lambda m: "戰國策" in u and "趙" in u, "《戰國策》趙策一"),
-        (r"韩非喻老", lambda m: "韓非子" in u and "喻老" in u, "《韓非子·喻老》"),
+        (r"策赵一", lambda m: "戰國策" in u and re.search(r"/趙(?:策)?/?一$", u) is not None,
+         "《戰國策》趙策一（页面名要以 /趙/一 结尾，趙/二 不行）"),
+        (r"韩非喻老", lambda m: "韓非子" in u and re.search(r"/喻老$", u) is not None,
+         "《韓非子》喻老（页面名要以 /喻老 结尾）"),
     ]
     for pat, ok, what in rules:
         m = re.fullmatch(pat, code)
@@ -207,12 +222,46 @@ def _close_of(s, i):
     return -1
 
 
+def _split_params(body):
+    """模板内容按最外层的 | 切开：'參|縣|說明' -> ['參', '縣', '說明']（{{}}、[[]] 里面的 | 不切）。"""
+    parts, cur, depth, i = [], [], 0, 0
+    while i < len(body):
+        two = body[i:i + 2]
+        if two in ("{{", "[["):
+            depth += 1
+            cur.append(two)
+            i += 2
+        elif two in ("}}", "]]"):
+            depth -= 1
+            cur.append(two)
+            i += 2
+        elif body[i] == "|" and depth == 0:
+            parts.append("".join(cur))
+            cur = []
+            i += 1
+        else:
+            cur.append(body[i])
+            i += 1
+    parts.append("".join(cur))
+    return parts
+
+
+def _shown_text(body):
+    """模板 {{body}} 在页面上显示成正文的那部分：{{參|字|說明}} 显示「字」，其余模板（页眉、
+    维基百科链接……）不算原文。"""
+    parts = _split_params(body)
+    if parts[0].strip() == "參" and len(parts) > 1:
+        return _drop_templates(parts[1])
+    return ""
+
+
 def _drop_templates(s):
     out, i = [], 0
     while i < len(s):
         if s.startswith("{{", i):
             j = _close_of(s, i)
             if j > 0:
+                out.append(_shown_text(s[i + 2:j - 2]))
                 i = j
                 continue
         out.append(s[i])
@@ -220,11 +269,18 @@ def _drop_templates(s):
     return "".join(out)
 
 
+# 校勘本（鉴1、鉴2）的记号：〔X〕 = 编者补的或改正的字；(Y) = 被改掉或删掉的字（校勘记写「據刪」「據……改」）。
+# 按校勘本读：保留 X，去掉 (Y)。(Y) 里只有汉字和标点（不含字母数字），免得误删别的括号。
+COLLATION_DEL_RE = re.compile(r"\(([^()\n\dA-Za-z]{1,30})\)")
+
+
 def _inline(s):
     s = s.replace("-{", "").replace("}-", "")
     s = re.sub(r"\[\[(?:[^\]|]*\|)?([^\]]*)\]\]", r"\1", s)
     s = s.replace("'''", "").replace("''", "")
     s = re.sub(r"<[^>]+>", "", s)
+    s = COLLATION_DEL_RE.sub("", s)
+    s = s.replace("〔", "").replace("〕", "")
     return s.translate(QUOTE_MARKS)  # 嵌套的「」『』两边都去掉，不算异体
 
 
@@ -241,6 +297,10 @@ def wiki_views(raw):
                 body = raw[i + 2:j - 2]
                 if body.startswith("*|"):
                     full.append(NOTE_EDGE + _drop_templates(body[2:]) + NOTE_EDGE)
+                else:  # {{參|字|說明}} 的「字」是正文
+                    shown = _shown_text(body)
+                    main.append(shown)
+                    full.append(shown)
                 i = j
                 continue
         main.append(raw[i])
@@ -263,24 +323,72 @@ class View:
                 han.append(ch)
                 idx.append(i)
         self.han, self.idx = "".join(han), idx
+        # 只算真汉字（不含注文隔断符）：han 里的下标 <-> text 里的下标
+        self._hpos = [k for k, ch in enumerate(self.han) if ch != NOTE_EDGE]
+        self._tpos = [idx[k] for k in self._hpos]
+
+    def occurrences(self, seg):
+        """seg 在这段文本里的所有位置：[(起, 止, 逐字?)]，起止是 han 里的下标，止不含。
+        逐字 = 连标点都和原文一样；否则只是去掉标点、按异体字表换字以后对得上。"""
+        key = han_key(seg)
+        if not key:
+            return []
+        exact = set()
+        i = self.text.find(seg)
+        while i >= 0:
+            j = bisect.bisect_left(self._tpos, i)
+            if j < len(self._hpos):
+                exact.add(self._hpos[j])
+            i = self.text.find(seg, i + 1)
+        res, p = [], self.han.find(key)
+        while p >= 0:
+            res.append((p, p + len(key), p in exact))
+            p = self.han.find(key, p + 1)
+        return res
+
+    def original(self, start, end):
+        """han 下标 [start, end) 在原文里对应的片段（含中间的标点）。"""
+        return self.text[self.idx[start]:self.idx[end - 1] + 1].replace("\n", " ")
 
 
 def han_key(s):
     return "".join(VARIANTS.get(c, c) for c in s if HAN_RE.match(c))
 
 
-def find_segment(seg, views):
-    """返回 ('exact', 片段) / ('variant', 原文里对应的片段) / None。"""
-    for v in views:
-        if seg in v.text:
-            return "exact", seg
-    key = han_key(seg)
-    if key:
-        for v in views:
-            p = v.han.find(key)
-            if p >= 0:
-                return "variant", v.text[v.idx[p]:v.idx[p + len(key) - 1] + 1].replace("\n", " ")
+def _chain(occ, v, exact_only, k=0, prev_end=None):
+    """从 occ[k:] 里各挑一个位置，顺序和引文一致，相邻两段之间最多隔 MAX_ELLIPSIS_GAP 个汉字、
+    不跨注文的边。找到返回 [(起, 止, 逐字?)…]，找不到返回 None。"""
+    for start, end, ex in occ[k]:
+        if exact_only and not ex:
+            continue
+        if prev_end is not None:
+            if start < prev_end or start - prev_end > MAX_ELLIPSIS_GAP:
+                continue
+            if NOTE_EDGE in v.han[prev_end:start]:
+                continue
+        if k == len(occ) - 1:
+            return [(start, end, ex)]
+        rest = _chain(occ, v, exact_only, k + 1, end)
+        if rest:
+            return [(start, end, ex)] + rest
     return None
+
+
+def match_code(segs, vs):
+    """引文的各段（「……」隔开）在一本书里找：返回 ('exact'|'variant', 异体处的原文片段列表)，
+    找不到返回 (None, 原因)。逐字的优先；每段都要找到，且在原文的同一处。"""
+    per_view = [[v.occurrences(g) for g in segs] for v in vs]
+    absent = [g for i, g in enumerate(segs) if not any(pv[i] for pv in per_view)]
+    if absent:
+        return None, "找不到「%s」" % "」「".join(absent)
+    for exact_only in (True, False):
+        for v, occ in zip(vs, per_view):
+            chain = _chain(occ, v, exact_only)
+            if chain:
+                return ("exact" if all(c[2] for c in chain) else "variant",
+                        [v.original(s, e) for s, e, ex in chain if not ex])
+    return None, ("「%s」每段都找得到，但不在原文的同一处（顺序和引文不一致，"
+                  "或者相邻两段隔了 %d 个汉字以上，或者跨着正文和注文）" % ("」「".join(segs), MAX_ELLIPSIS_GAP))
 
 
 # ---------------------------------------------------------------- 引文
@@ -328,10 +436,17 @@ def check_quote(q, sources, views):
         return "错误", ["「 没有配对的 」"]
     errs = []
     n = len(HAN_RE.findall(inner))
-    if n == 0:  # 「」「……」这样谈符号本身的说明文字，没有古书原文可核，不算引文
+    rest = re.sub(r"\s+", "", ELLIPSIS_RE.sub("", inner.translate(QUOTE_MARKS)))
+    if not rest:  # 「」「……」这样谈符号本身的说明文字，什么内容都没有，没有古书原文可核，不算引文
         return "跳过", ["没有汉字，不算引文"]
+    if n == 0:  # 有内容却没有汉字（拼音、英文、数字、标点）：不是古书原文，不能放进「」
+        shown = ELLIPSIS_RE.sub("……", inner.translate(QUOTE_MARKS)).strip()
+        return "错误", ["「」里没有汉字，只有「%s」：拼音、英文、数字不是古书原文，不要放进「」" % shown[:20]]
     if n > MAX_HAN:
         errs.append("引文 %d 字，超过 %d 字上限" % (n, MAX_HAN))
+    foreign = list(dict.fromkeys(re.findall(r"[^\W_]+", HAN_RE.sub(" ", inner))))  # 汉字以外的字母、数字
+    if foreign:  # 比对时会忽略非汉字，混着拼音、英文的引文会蒙混过关，所以直接报错
+        errs.append("引文里有汉字以外的字母或数字（%s）：古书原文里不会有" % "、".join(foreign[:6]))
     if not q["codes"]:
         errs.append("没有出处短码（「」后要紧跟（鉴1））")
         return "错误", errs
@@ -346,27 +461,21 @@ def check_quote(q, sources, views):
             errs.append("来源 %s 没有下载到原文，没法核对" % c)
         else:
             usable.append(c)
-    if not usable:
+    if not usable or foreign:
         return "错误", errs
     segs = [g.strip() for g in ELLIPSIS_RE.split(inner.translate(QUOTE_MARKS))]
-    segs = [g for g in segs if g]
-    best, miss = None, []
-    for c in usable:
-        found = [find_segment(g, views[c]) for g in segs]
-        if all(found):
-            exact = all(f[0] == "exact" for f in found)
-            cand = ("通过" if exact else "异体匹配", c,
-                    "" if exact else "；".join(f[1] for f in found if f[0] == "variant"))
-            if best is None or (cand[0] == "通过" and best[0] != "通过"):
-                best = cand
-        else:
-            miss.append("在 %s 里找不到「%s」" % (c, "」「".join(g for g, f in zip(segs, found) if not f)))
-    if best is None:
-        return "错误", errs + miss
+    segs = [g for g in segs if han_key(g)]
+    variants = []
+    for c in usable:  # 每个短码都要找到：一本找到不算数，找不到的逐个报错
+        kind, res = match_code(segs, views[c])
+        if kind is None:
+            errs.append("在 %s 里%s" % (c, res))
+        elif kind == "variant":
+            variants.append("%s 原文作：%s" % (c, "；".join(res)))
     if errs:
         return "错误", errs
-    if best[0] == "异体匹配":
-        return "异体匹配", ["%s 原文作：%s" % (best[1], best[2])]
+    if variants:
+        return "异体匹配", variants
     return "通过", []
 
 
@@ -421,21 +530,40 @@ def check_pinyin(lines, out):
             out.ok("注音", "「%s」小节和表格都在（第%d行）" % (short, pos[0] + 1))
 
 
+def probe(url):
+    """请求一次。返回 (HTTP 状态码 或 None, 原因)。"""
+    try:
+        status, _ = http_get(url, ua=BROWSER_UA, timeout=20)
+        return status, "HTTP %s" % status
+    except urllib.error.HTTPError as e:
+        return e.code, "HTTP %s" % e.code
+    except Exception as e:  # 连不上、超时、证书问题都算失败
+        return None, "%s：%s" % (type(e).__name__, getattr(e, "reason", None) or e)
+
+
 def check_links(sources, out):
+    """不是 200 就再试 LINK_RETRIES 次（网站偶尔抽风）；还不行才报错，写出每次的原因。"""
     for code, s in sources.items():
         if s["kind"] != "web":
             continue
-        try:
-            status, _ = http_get(s["url"], ua=BROWSER_UA, timeout=20)
-        except urllib.error.HTTPError as e:
-            status = e.code
-        except Exception as e:  # 连不上、超时、证书问题都算失败
-            out.err("链接", "%s 请求失败（%s）：%s" % (code, type(e).__name__, s["url"]))
+        tries = []
+        for attempt in range(1 + LINK_RETRIES):
+            if attempt:
+                time.sleep(1.5)
+            status, why = probe(s["url"])
+            tries.append((status, why))
+            if status == 200:
+                break
+        if tries[-1][0] == 200:
+            late = "" if len(tries) == 1 else "（第 1 次失败：%s，重试后成功）" % tries[0][1]
+            out.ok("链接", "%s 200 %s%s" % (code, s["url"], late))
             continue
-        if status == 200:
-            out.ok("链接", "%s 200 %s" % (code, s["url"]))
+        status, why = tries[-1]
+        detail = "（已重试 %d 次；每次的结果：%s）" % (LINK_RETRIES, "；".join(w for _, w in tries))
+        if status is None:
+            out.err("链接", "%s 请求失败%s：%s" % (code, detail, s["url"]))
         else:
-            out.err("链接", "%s 返回 HTTP %s：%s" % (code, status, s["url"]))
+            out.err("链接", "%s 返回 HTTP %s%s：%s" % (code, status, detail, s["url"]))
 
 
 # ---------------------------------------------------------------- 输出
@@ -475,7 +603,9 @@ def main():
     ap = argparse.ArgumentParser(description="史料简报自动核对（PITFALLS S2、S14）")
     ap.add_argument("md", help="简报，如 video/stories/tj01/source.md")
     ap.add_argument("--refresh", action="store_true", help="重新下载维基文库原文（默认用缓存）")
-    ap.add_argument("--check-links", action="store_true", help="对非维基链接发请求，不是 200 就报错")
+    ap.add_argument("--check-links", action="store_true",
+                    help="对非维基链接发请求，不是 200 就报错（失败先重试一次，报错时写出原因）")
+    ap.add_argument("--strict", action="store_true", help="异体匹配也按错误算（退出码 1）")
     a = ap.parse_args()
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
@@ -514,6 +644,9 @@ def main():
             out.errors += len(notes)
         elif status == "异体匹配":
             variant += 1
+            if a.strict:
+                out.errors += 1
+                notes = notes + ["--strict：异体匹配按错误算"]
         elif status == "跳过":
             skipped += 1
         tail = ("  <- " + "；".join(notes)) if notes else ""
@@ -525,7 +658,8 @@ def main():
     if a.check_links:
         check_links(sources, out)
 
-    out.note("（异体匹配 %d 条：字面上和原文不完全一样，请人看一眼）" % variant)
+    out.note("（异体匹配 %d 条：字面上和原文不完全一样，%s）" % (
+        variant, "--strict 已按错误算" if a.strict else "请人看一眼；加 --strict 就按错误算"))
     print("\n".join(out.lines))
     print("%d 条引文，%d 个错误" % (len(quotes) - skipped, out.errors))
     return 1 if out.errors else 0
