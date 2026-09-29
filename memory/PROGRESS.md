@@ -4,7 +4,8 @@
 
 ## 当前阶段：施工「动态漫画引擎」，然后做 tj01（三家分晋）
 - 方向：少儿版「古人云」动态漫画（DECISIONS 09-29 最后一条）。three.js 已停用、已删除。
-- **进行中（09-29 晚开工）**：A 合成器、C 前半（`video/jev_pick.py` + script_check 两项新警告，提前做）、tj01 台词改写第一轮，三个同时跑。第一场样片 Chris 通过了才做整集（DECISIONS 09-29「tj01 正式开工的顺序」）。
+- **已完成（09-29 晚）**：A 合成器（4bb8800）、C 前半 `video/jev_pick.py` + script_check 新警告（ae0d1f1）、tj01 台词定稿（c888d9c，Jev 挑了古今对照 / 考你 / 金句）。
+- **进行中**：B 特效包 + 样片合集、C 后半（storyboard_check / storyboard_jev / board.py）、tj01 Qwen 配音（输出 `video/out/tj01_voice_qwen/`）、复核素材 + 素材清单。第一场样片 Chris 通过了才做整集（DECISIONS 09-29「tj01 正式开工的顺序」）。
 - **顺序**：按 `docs/施工计划-动态漫画引擎.md`：
   1. A 合成器核心（`ep-builder`）；
   2. B 特效包 + C 检查工具（两个 `ep-builder`，同时做）；B 的特效样片合集发给 Chris 看；
