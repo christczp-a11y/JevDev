@@ -9,8 +9,10 @@
 
 用法：python video/motion_qa.py <配置.json>
 配置：{"beat": "这段剧情", "before": {"scene": ..., "t0": .., "t1": .., "actor": ..}, "after": {...}}
+一开头就检查环境变量 TYPESAFE_API_KEY，没有就非 0 退出（P8）：不等截图、观察员跑完才报。
 """
 import json
+import os
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -62,7 +64,16 @@ def observe(sheet, beat, who):
     return json.loads(proc.stdout)["structured_output"]
 
 
+def require_key():
+    """没有 Jev 的 key 就立刻退出：截图和观察员要跑很久，不许白跑之后才报（P8）。"""
+    if not os.environ.get("TYPESAFE_API_KEY"):
+        sys.exit("错误：环境变量 TYPESAFE_API_KEY 没有值，Jev 质检跑不了。质检不许跳过（P8）。\n"
+                 "Git Bash 里这样设：export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "
+                 "\"[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')\" | tr -d '\\r')")
+
+
 def main():
+    require_key()
     cfg_path = Path(sys.argv[1])
     cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
     out = ROOT / "out" / f"motion_{cfg_path.stem}"

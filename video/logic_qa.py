@@ -14,8 +14,10 @@ Chris 2026-09-28：旗杆悬空、回头时发带跑到脸前面、城墙把城�
      两个观察员都判「是」= 确定有问题；只有一个判「是」= 可能有问题，人来看
 
 用法：python video/logic_qa.py <剧本.json>
+一开头就检查环境变量 TYPESAFE_API_KEY，没有就非 0 退出（P8）：不等渲染、观察员跑完才报。
 """
 import json
+import os
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -138,7 +140,16 @@ def observe(band, zoom, t, beat, bg=None):
     return json.loads(proc.stdout)["structured_output"]
 
 
+def require_key():
+    """没有 Jev 的 key 就立刻退出：渲染和观察员要跑很久，不许白跑之后才报（P8）。放在 main() 开头：selfcheck.py 会 import 本文件借用 moments()，那时不需要 key。"""
+    if not os.environ.get("TYPESAFE_API_KEY"):
+        sys.exit("错误：环境变量 TYPESAFE_API_KEY 没有值，Jev 质检跑不了。质检不许跳过（P8）。\n"
+                 "Git Bash 里这样设：export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "
+                 "\"[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')\" | tr -d '\\r')")
+
+
 def main():
+    require_key()
     scene_path = Path(sys.argv[1])
     scene = render.load_scene(scene_path)
     out = ROOT / "out" / f"logic_{scene_path.stem}"
