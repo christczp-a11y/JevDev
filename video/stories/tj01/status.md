@@ -17,7 +17,7 @@
 | 2 | 剧本 | **通过**（09-29 第 2 轮 + 最后小改，reviewer 签字） | 2/3 | 定稿 `video/stories/tj01/B_段规.json`；配音试跑 `video/out/tj01/step2/voice_B3/`；`video/script_check.py` | 闸门 0.27 / 0.09 / 0.04；flat 估算 8.6（基线 8.9）、真实 8.6（基线 9.0）；pair 0.67 / 0.74 / 0.71（平均 0.707，最后小改前那版）；全长 200.9 秒；大问题 7.18 秒念完（S20：7.0 + 0.3）。备选 D 的 pair 平均 0.577，不满足「平均最高」 |
 | 检查点 1 | 复述剧本 + 待定事项 | **通过**（09-29 Chris：「你自己决定吧」→ Claude 按推荐定，见 DECISIONS 最后一条） | — | | |
 | 3 | 角色、布景、道具 | 做中（阵容图、剪影、布景总览、司马光圆领） | 1/3 | | 阵容图发 Chris 看，不等回复，接着画姿势图 |
-| 4 | 配音和时间线 | 做中（正式配音 + 人名试听 + 修 A4） | 1/3 | | |
+| 4 | 配音和时间线 | **完成**（09-29；A4 已修） | 1/3 | `video/out/tj01_voice/timeline.json`（200.9 秒） | script_check 0 警告；最长平淡段 8.6 ≤ 9.0 |
 | 0-10/11/14/21 | 3D 按集、布景数据化、GPU、3D bug、背景音乐、系列格式 | 做中 | 1/3 | | |
 | 5–10 | | 没开始 | | | |
 
@@ -28,6 +28,7 @@
 
 ## 重跑用的命令
 （每步做完补上：带环境变量和参数的完整命令）
+- 第 4 步配音：`.venv/Scripts/python video/voice.py video/stories/tj01/B_段规.json video/out/tj01_voice 2=1.0 9=1.5 11=1.2 20=1.0 25=1.2 34=1.5 36=1.8 42=2.0 46=1.2 49=1.4 52=1.5`
 - 基线估算：`.venv/Scripts/python video/story.py video/stories/ep01 --only N6 --out video/out/story_test/report_N6_v2_estimate_0929.json`
 - 基线真实时间线：先配音 `NARRATOR_RATE=+6% .venv/Scripts/python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice_0929 2=1.0 9=1.2 13=8.6 22=1.2 29=3.3`，再 `.venv/Scripts/python video/story.py video/stories/ep01 --only N6 --timeline video/out/ep01v2_voice_0929/timeline.json --out video/out/story_test/report_N6_v2_timeline_0929.json`
 - 环境（Git Bash）：`export PYTHONIOENCODING=utf-8; export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`，Python 用 `.venv/Scripts/python`

@@ -40,7 +40,7 @@ def pluck(freq, dur, amp=0.5, seed=0):
 
 def tone(freq, dur, amp, decay=8.0, f_end=None):
     t = np.arange(int(SR * dur)) / SR
-    f = freq if f_end is None else np.linspace(freq, f_end, len(t))
+    f = np.full(len(t), freq) if f_end is None else np.linspace(freq, f_end, len(t))   # A4：不给 f_end 时也要是逐点的频率，否则 cumsum(标量) 出来的是衰减的直流（09-29 Chris 同意修）
     return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * decay) * amp
 
 
@@ -213,7 +213,7 @@ def sgm_pop_clip():
     freq = (240 + 260 * (1 - np.exp(-40 * t))) * (1 + 0.10 * np.sin(2 * np.pi * 14 * t) * np.exp(-8 * t))
     ph = 2 * np.pi * np.cumsum(freq) / SR
     out[i0:i0 + len(t)] += (np.sin(ph) + 0.25 * np.sin(2 * ph) + 0.08 * np.sin(3 * ph)) * (1 - np.exp(-t / 0.002)) * np.exp(-7 * t) * 0.55
-    t4 = np.arange(int(SR * 0.09)) / SR   # 不用 tone()：它不给 f_end 时不是正弦（见交付报告），这里明确写正弦
+    t4 = np.arange(int(SR * 0.09)) / SR   # 这一段保持明确写正弦的原写法：sgm_pop.wav 有 sha256 登记，不随 tone() 的改动变
     out[i0:i0 + len(t4)] += np.sin(2 * np.pi * 110 * t4) * np.exp(-45 * t4) * 0.35
     fade = int(SR * 0.06)
     out[-fade:] *= np.linspace(1, 0, fade)
