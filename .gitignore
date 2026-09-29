@@ -9,3 +9,6 @@ data/tmp/
 data/research/
 video/out/
 experiments/mpt/skill/
+
+# Qwen3-TTS 配音试验环境（Python 3.12，独立于主环境 .venv）
+.venv-tts/
