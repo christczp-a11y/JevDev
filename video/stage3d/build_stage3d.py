@@ -4,7 +4,7 @@
   python video/stage3d/build_stage3d.py qa [场号...]        # 穿帮质检：每个故事镜头抽 3 帧，把书外面涂成品红，拍到品红就报错
   python video/stage3d/build_stage3d.py frame [场号...]     # 入画质检：说话的人、镜头对准的人在不在画面里；前景人物有没有被切一半
   python video/stage3d/build_stage3d.py stills 场号 秒...    # 截几张静帧看（video/out/stage3d/ep01/still_场号_秒.jpg）
-  python video/stage3d/build_stage3d.py render [场号...]     # 渲染（默认全部 6 场，2 场并行），再拼接、配上整集声音
+  python video/stage3d/build_stage3d.py render [并行数]      # 渲染整集：切成 20 秒的段，默认 4 段并行（可断点续渲），再拼接、配上整集声音
 输出：video/out/stage3d/ep01/ep01_3d.mp4
 
 镜头规则（docs/research/纸艺作品-运镜场景叙事.md、docs/画面改版-纸片马里奥风格-给云端.md）：
@@ -66,7 +66,7 @@ SHOTS = {
             [0.0, 5.0, "desk", {"x": 3.0}],
             [5.0, 7.6, "fit", {"ids": ["prop:prince_hat", "crowd1", "crowd2", "douzi"], "elev": "high"}],                                                # 城门里露出太子帽
             [7.6, 12.3, "fit", {"ids": ["douzi", "crowd1", "crowd2"]}],                   # 选择题
-            [12.3, 16.0, "fit", {"ids": ["shangyang"], "elev": "low"}],                   # 商鞅拍案：仰拍
+            [12.3, 16.0, "fit", {"ids": ["shangyang"], "az": -30}],   # 从左前方仰拍：右边的松树、灌木不挡住他                   # 商鞅拍案：仰拍
             [16.0, 20.2, "fit", {"ids": ["teachers", "crowd2"]}],                                   # 两位老师：啊？我们？
             [20.2, 23.0, "fit", {"ids": ["douzi"], "pad": 1.12}],                         # 连太子的老师都罚了！
             [23.0, 28.59, "fit", {"ids": ["crowd1", "crowd2", "douzi", "shangyang"]}],    # 金句：稳住
@@ -124,33 +124,42 @@ def open_stage(p, k, srv):
     return browser, page, scene
 
 
-def render_shot(k):
+SEG = 20.0   # 每段最多 20 秒成片：长场次切成几段并行渲染（原来按场次分，最长的第 1 场拖了整集一半时间）
+
+
+def segments():
+    """整集切成段：[(场号, 段号, 开始帧, 结束帧), ...]"""
+    out = []
+    for k in SHOTS:
+        n = int(round(json.loads((SCENES / f"shot{k}.json").read_text(encoding="utf-8"))["duration"] * FPS))
+        step = int(SEG * FPS)
+        for j, f0 in enumerate(range(0, n, step)):
+            out.append((k, j, f0, min(n, f0 + step)))
+    return out
+
+
+def render_seg(job):
+    k, j, f0, f1 = job
     from playwright.sync_api import sync_playwright
+    out, done, tmp = OUT / f"shot{k}_{j}.mp4", OUT / f"shot{k}_{j}.done", OUT / f"shot{k}_{j}.part.mp4"
+    if done.exists() and out.exists():   # 断点续渲：已经渲完的段跳过（云端 worker 可能被重启）
+        return job, 0.0
     srv = serve()
-    OUT.mkdir(parents=True, exist_ok=True)
-    out = OUT / f"shot{k}.mp4"
-    done = OUT / f"shot{k}.done"
-    if done.exists() and out.exists():   # 断点续渲：已经渲完的场次跳过（云端 worker 可能被重启）
-        return k, 0, 0.0
-    tmp = OUT / f"shot{k}.part.mp4"
     with sync_playwright() as p:
         browser, page, scene = open_stage(p, k, srv)
-        n = int(round(scene["duration"] * FPS))
         ff = subprocess.Popen([render.FFMPEG, "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", str(FPS), "-vcodec", "mjpeg", "-i", "-",
                                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", str(tmp)], stdin=subprocess.PIPE)
         t0 = time.time()
-        for i in range(n):
+        for i in range(f0, f1):
             page.evaluate(f"window.renderFrame({i / FPS})")
             ff.stdin.write(page.screenshot(type="jpeg", quality=92))
-            if i % 150 == 0:
-                print(f"shot{k} {i}/{n} {time.time() - t0:.0f}s", flush=True)
         ff.stdin.close()
         ff.wait()
         browser.close()
     srv.shutdown()
     tmp.replace(out)
-    done.write_text(str(n))
-    return k, n, time.time() - t0
+    done.write_text(str(f1 - f0))
+    return job, time.time() - t0
 
 
 def qa(shots):
@@ -184,7 +193,7 @@ def qa(shots):
 
 def frame_qa(shots, step=0.5):
     """入画质检（Chris 2026-09-29：有些人物跑出画面了）：每 0.5 秒查一次
-    1. 正在说话的人，必须至少 75% 在画面里；
+    1. 正在说话的人，必须至少 75% 在画面里，而且不能被前面的东西挡住 30% 以上；
     2. 特写、跟拍、推近镜头对准的人，必须至少 85% 在画面里；
     3. 其他人：占画面高度 25% 以上（在前景、很显眼）却只有 20%–70% 在画面里 = 被画框切了一半，也算错。
     同一个问题连续出现只报一次（报第一次出现的时刻和持续多久）。"""
@@ -212,6 +221,10 @@ def frame_qa(shots, step=0.5):
                         found.add(("镜头对准的人出画", id_, sh[2]))
                     elif h > 0.25 * 1920 and 0.2 < vis < 0.7:
                         found.add(("前景人物被切一半", id_, sh[2]))
+                    # 遮挡：说话的人、镜头对准的人被前面的树、房子、别人挡住超过 30%（Chris 2026-09-29 之后补：商鞅被松树挡住）
+                    if ((sub and speakers.get(sub[2]) == id_) or id_ in sh[3].get("ids", [])) and vis > 0.5:
+                        if page.evaluate(f"window.visibleFraction({json.dumps(id_)})") < 0.7:
+                            found.add(("被前面的东西挡住", id_, sh[2]))
                 for key in found:
                     open_.setdefault(key, [t, t])[1] = t
                 for key in list(open_):
@@ -251,12 +264,12 @@ def main():
     if cmd == "stills":
         stills(int(rest[0]), [float(x) for x in rest[1:]])
         return
-    shots = [int(x) for x in rest] or list(SHOTS)
+    jobs = segments()
     t0 = time.time()
-    with ProcessPoolExecutor(max_workers=2) as ex:
-        for k, n, el in ex.map(render_shot, shots):
-            print(f"第 {k} 场：{n} 帧，{el:.0f} 秒" + (f"（每秒成片 {el / (n / FPS):.0f} 秒）" if n else "（已渲过，跳过）"), flush=True)
-    (OUT / "list.txt").write_text("".join(f"file 'shot{k}.mp4'\n" for k in SHOTS), encoding="utf-8")
+    with ProcessPoolExecutor(max_workers=int(rest[0]) if rest else 4) as ex:   # 4 核：4 段并行
+        for (k, j, f0, f1), el in ex.map(render_seg, jobs):
+            print(f"第 {k} 场第 {j + 1} 段（{f1 - f0} 帧）：" + (f"{el:.0f} 秒" if el else "已渲过，跳过") + f"　累计 {time.time() - t0:.0f} 秒", flush=True)
+    (OUT / "list.txt").write_text("".join(f"file 'shot{k}_{j}.mp4'\n" for k, j, _, _ in jobs), encoding="utf-8")
     subprocess.run([render.FFMPEG, "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", str(OUT / "list.txt"), "-c", "copy", str(OUT / "silent.mp4")], check=True)
     subprocess.run([render.FFMPEG, "-y", "-loglevel", "error", "-i", str(OUT / "silent.mp4"), "-i", str(AUDIO), "-map", "0:v", "-map", "1:a",
                     "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", str(OUT / "ep01_3d.mp4")], check=True)

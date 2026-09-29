@@ -346,6 +346,19 @@ window.frameBoxes = () => {   // 入画质检：每个看得见的角色，不�
   }
   return out;
 };
+window.visibleFraction = id => {   // 遮挡质检：这个角色有多少像素没被前面的东西挡住（先整帧画一次数品红，再只画他一个人数一次）
+  const a = actors[id]; if (!a || !a.mesh.visible) return 1;
+  const gl = renderer.getContext(), count = () => { const px = new Uint8Array(1080 * 1920 * 4 * K * K | 0);
+    gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, px); let n = 0; for (let i = 0; i < px.length; i += 16) if (px[i] > 200 && px[i + 1] < 60 && px[i + 2] > 200) n++; return n; };
+  const mat = a.mesh.material, magenta = new THREE.MeshBasicMaterial({ color: 0xff00ff, map: mat.map, alphaTest: 0.45, side: THREE.DoubleSide });
+  magenta.map = null; magenta.alphaMap = mat.map; magenta.transparent = false;
+  const bg = scene.background; scene.background = new THREE.Color(0x000000);
+  a.mesh.material = magenta; renderer.render(scene, cam); const seen = count();
+  const hidden = []; scene.traverse(o => { if (o.isMesh && o !== a.mesh && o.visible) { hidden.push(o); o.visible = false; } });
+  renderer.render(scene, cam); const all = count();
+  hidden.forEach(o => o.visible = true); a.mesh.material = mat; scene.background = bg;
+  return all ? seen / all : 1;
+};
 window.renderFrame = (t, opts = {}) => {
   // 翻页：开头书页上的纸片依次弹起，结尾最后 0.45 秒折倒
   const fold = FLIP[1] ? smooth((t - (DUR - 0.45)) / 0.45) : 0;
