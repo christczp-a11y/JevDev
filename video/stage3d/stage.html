@@ -135,12 +135,21 @@ async function backdrop(url, R = 14, cz = 1.5, Hh = 21, opts = {}) {
   return m;
 }
 
+// 故事镜头里，地面往书页前面和两边再延伸一大片（同色），拉远构图时画面底部不会拍到书外面；
+// 书桌机位、结尾拉远时把它藏起来，才看得到「原来是书桌上的一本书」
+const aprons = [];
+function apron(color) {
+  const tex = paperTex(color, 61); tex.repeat.set(12, 12);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), new THREE.MeshStandardMaterial({ map: tex, roughness: 1 }));
+  m.rotation.x = -Math.PI / 2; m.position.set(0, 0.2, 0); m.receiveShadow = true; stage.add(m); aprons.push(m);
+}
 // ---- 场景 ----
 const SETS = {
   async qin_gate(o) {
     const A = '../assets/sets/qin_gate/';
     await backdrop(A + 'far.png');
     const grass = cardBox(25.6, 0.12, 16.6, '#9dbb6a', 21); grass.position.set(0, 0.22, 0); stage.add(grass);   // 铺满整页
+    apron('#9dbb6a');
     const road = cardBox(25.4, 0.1, 2.6, '#d9b98a', 22); road.position.set(0, 0.3, 1.9); stage.add(road);
     const gx = o.gateX ?? 5.2, gz = -5.4, gh = 5.4, gw = gh * 780 / 547;
     const path = cardBox(1.9, 0.1, 6.4, '#d9b98a', 23); path.position.set(gx, 0.3, -2.2); stage.add(path);   // 从大路通到城门，穿过门洞往外
@@ -165,10 +174,11 @@ const SETS = {
   async classroom(o) {
     const A = '../assets/sets/classroom/';
     const floor = cardBox(25.4, 0.12, 16, '#c9965e', 51); floor.position.set(0, 0.22, 0); stage.add(floor);
+    apron('#c9965e');
     await flat(A + 'far.png', 0, -4.2, 9.5, 0.05, 0, {});   // 教室后墙（黑板、窗户）
     const side = await loadTex(A + 'far.png');
     for (const s of [-1, 1]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(9, 9.5), new THREE.MeshStandardMaterial({ color: 0xe8dcc4, roughness: 1 }));
-      m.position.set(s * 8.4, GY + 4.75, 0.3); m.rotation.y = -s * Math.PI / 2; m.receiveShadow = true; stage.add(m); }
+      m.scale.x = 4; m.position.set(s * 8.4, GY + 4.75, 14); m.rotation.y = -s * Math.PI / 2; m.receiveShadow = true; stage.add(m); }
   },
 };
 
@@ -365,6 +375,7 @@ window.renderFrame = (t, opts = {}) => {
   const dim = 1 - 0.75 * ENG.underTint(t);
   hemi.intensity = 1.35 * dim; sun.intensity = 2.6 * dim;
   // 镜头
+  for (const m of window.__aprons || aprons) m.visible = !['desk', 'pullback'].includes(window.camFor(t)[2]);
   const sh = window.camFor(t), c = CAMS[sh[2]]((t - sh[0]) / (sh[1] - sh[0]), sh[3] || {}, sh, t);
   const shake = ENG.camShake(t) * S * 0.6;
   cam.position.copy(c.pos).add(V3(shake, 0, 0)); cam.lookAt(c.look.clone().add(V3(shake, 0, 0)));

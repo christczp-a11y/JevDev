@@ -64,10 +64,10 @@ SHOTS = {
         "z": {"crowd1": 0.8, "crowd2": 1.3, "douzi": 1.7, "shangyang": 1.2, "teachers": 0.3},
         "cams": [
             [0.0, 5.0, "desk", {"x": 3.0}],
-            [5.0, 7.6, "high", {"x": 4.4}],                                                # 城门里露出太子帽
+            [5.0, 7.6, "fit", {"ids": ["prop:prince_hat", "crowd1", "crowd2", "douzi"], "elev": "high"}],                                                # 城门里露出太子帽
             [7.6, 12.3, "fit", {"ids": ["douzi", "crowd1", "crowd2"]}],                   # 选择题
             [12.3, 16.0, "fit", {"ids": ["shangyang"], "elev": "low"}],                   # 商鞅拍案：仰拍
-            [16.0, 20.2, "fit", {"ids": ["teachers"]}],                                   # 两位老师：啊？我们？
+            [16.0, 20.2, "fit", {"ids": ["teachers", "crowd2"]}],                                   # 两位老师：啊？我们？
             [20.2, 23.0, "fit", {"ids": ["douzi"], "pad": 1.12}],                         # 连太子的老师都罚了！
             [23.0, 28.59, "fit", {"ids": ["crowd1", "crowd2", "douzi", "shangyang"]}],    # 金句：稳住
         ]},
@@ -78,7 +78,7 @@ SHOTS = {
             [2.8, 6.3, "fit", {"ids": ["teen"], "follow": True, "az": 15}],
             [6.3, 10.6, "fit", {"ids": ["teen", "prop:bundle"]}],                         # 选择题：拿不拿
             [10.6, 15.9, "fit", {"ids": ["teen"], "follow": True, "az": 15}],
-            [15.9, 18.41, "fit", {"ids": ["dad"], "pad": 1.12}],                          # 我信了
+            [15.9, 18.41, "fit", {"ids": ["dad", "teen"]}],                          # 我信了
         ]},
     4: {"set": "qin_gate", "x0": 850,
         "z": {"sima": 1.4, "prop:big_book": 0.4, "prop:sgm_pillow": 1.9},
