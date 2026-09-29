@@ -267,3 +267,6 @@ Chris 看 3D 整集：信用值跑到屏幕中间、有些人物跑出画面。
 - 声音：司马光弹出音效 `sgm_pop.wav` 定为系列固定；A4 的 `tone()` 修（揭晓、倒计时、进度 +1、过关恢复正常音高）。「考你」停顿按 S10 的动作行时长，不再单独问。
 - 流程（Chris 09-29）：额度用在生成。不做试听；reviewer 只在视频发给 Chris 之前看一次成片；各步 builder 只跑脚本自查，不再开 reviewer 轮次。检查点 2 不单独等 Chris，阵容图随进度发。
 - Chris 09-29：「你他妈给我一次做完」→ tj01 取消第一场样片关口和检查点 2，第 3–7 步一次做完整集，成片（每秒 30 帧、带声音）直接发 Chris；reviewer 只看一次成片。
+
+## 2026-09-29 放弃 three.js（Chris）
+- 「技术栈我要换 threejs不是办法」「其他都不要做了」：tj01 停在第 3 步，只等 Codex 把素材画完（`video/assets/codex_tj01/run_pending.sh`，12:01 自动跑，日志 `video/out/tj01/logs/codex_pending.log`）。3D 舞台改造、第 5 步分场已叫停，没提交的 three.js 改动留在工作区不提交。新技术栈由 Chris 定。

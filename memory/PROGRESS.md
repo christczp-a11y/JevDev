@@ -2,7 +2,7 @@
 
 > 最后更新：2026-09-29（本地会话：主会话 Opus 5.5 Extra 只指导，重活交给 ep-builder / ep-reviewer / ep-researcher）
 
-## 当前阶段：tj01 三家分晋：检查点 1（等 Chris）+ 第 0 步收尾，详见 `video/stories/tj01/status.md`
+## 当前阶段：tj01 暂停（Chris 09-29：换技术栈，three.js 不用了）。只等 Codex 补画素材；详见 `video/stories/tj01/status.md` 和 DECISIONS 最后一条
 - 流程照 `docs/自动化工作流-每集生成.md`；质检以 `memory/PITFALLS.md` 为准；Chris 09-29 的决定见 DECISIONS 最后几条
 - 09-29 开工自检全过（edge-tts 当场装上）；显卡渲染 `--gpu` 还没接（第 0 步第 14 项，第 7 步之前做）
 
