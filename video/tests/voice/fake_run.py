@@ -6,6 +6,8 @@
   VOICE_TEST_LOG     每次调用合成，往这个文件追加一行 JSON：{"text", "voice", "rate", "pitch", "file"}（证明真正发给 Edge TTS 的是什么）
   VOICE_TEST_SERIES  换一份系列配置（voice.SERIES），测「系列声音改了、录音没重录」这类情况
   VOICE_TEST_ASSETS  换一个 video/assets 目录（voice.ASSETS），测 --make-ceremony 不动真的系列录音
+  VOICE_TEST_TAIL    假 mp3 的结尾补这么多秒静音（模仿 Edge TTS 补的 0.5–1.0 秒），测时间线裁静音
+  VOICE_TEST_MUTE    =1：假 mp3 整段都是静音（音量 0），测「读不到声音就不裁」
 """
 import hashlib
 import importlib.util
@@ -45,8 +47,13 @@ async def synth(text, v, r, p, path):
     speed = 1 + float(r.rstrip("%")) / 100
     freq = 300 + int(hashlib.sha1(text.encode("utf-8")).hexdigest(), 16) % 500
     tmp = Path(path).with_name(Path(path).name + ".part")
+    af = []
+    if os.environ.get("VOICE_TEST_MUTE") == "1":
+        af.append("volume=0")
+    if float(os.environ.get("VOICE_TEST_TAIL", "0")) > 0:
+        af.append(f"apad=pad_dur={os.environ['VOICE_TEST_TAIL']}")
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"sine=frequency={freq}:duration={0.3 + 0.25 * n / speed:.3f}:sample_rate=24000",
-                    "-ac", "1", "-b:a", "48k", "-f", "mp3", str(tmp)], check=True)
+                    *(["-af", ",".join(af)] if af else []), "-ac", "1", "-b:a", "48k", "-f", "mp3", str(tmp)], check=True)
     os.replace(tmp, path)
 
 

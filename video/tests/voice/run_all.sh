@@ -10,7 +10,7 @@ export PYTHONIOENCODING=utf-8
 PY=.venv/Scripts/python
 [ -x "$PY" ] || PY=.venv/bin/python
 mods=("$@")
-[ ${#mods[@]} -eq 0 ] && mods=(test_cast test_cache test_text test_ceremony test_audio test_lint test_online)
+[ ${#mods[@]} -eq 0 ] && mods=(test_cast test_cache test_text test_ceremony test_trim test_audio test_lint test_online)
 cd video/tests/voice
 "../../../$PY" -m unittest -v "${mods[@]}"
 rc=$?

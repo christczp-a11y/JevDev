@@ -12,6 +12,15 @@
     只在系列声音定稿时用一次：合成两段仪式录音存进 video/assets/audio/。已有的文件不覆盖，要重录先问 Chris，再加 --force。
 输出：<目录>/NN.mp3（这次配音每句一个）、<目录>/cache/<哈希>.mp3（合成缓存）、<目录>/timeline.json
 
+时间线按「真正说完话的时刻」算（不按整段 mp3 的时长）
+  Edge TTS 给每句 mp3 的结尾补 0.5–1.0 秒静音（系列录音「考考你！」有声部分只到约 1.05 秒，后面 1.04 秒是静音）。
+  所以每句的 t1 = 有声部分的结束 + TAIL_KEEP（0.15 秒）；下一句仍是 t1 + 句间停顿（series_voice.json 的 gap，0.3 秒）接上。
+  有声部分怎么量：ffmpeg 把 mp3 解成 16 kHz 单声道 PCM，每 FRAME（10 毫秒）一帧，一帧里最大的采样比 SILENCE_DB（−50 dBFS）大就算有声，
+  最后一个有声帧的结束就是有声部分的结束。整段都在阈值以下（读不到声音）就不裁。
+  mp3 文件本身不改（NN.mp3、缓存、系列录音的 sha256 都不变）；混音照旧从 t0 放整段 mp3，被裁掉的只是结尾的静音，叠在下一句上没有声音。
+  句首的静音不裁。每句在 timeline.json 里另有 dur_raw（整段 mp3 的时长）、voiced_end（有声部分的结束，从句首算）、
+  trim（裁掉的静音长度 = dur_raw − (t1 − t0)），方便核对。语速报警也按裁掉之后的 t1 − t0 算。
+
 声音分两层
   1. 系列固定声音：旁白（zh-CN-XiaoxiaoNeural、+6%）、司马光（zh-CN-YunxiNeural、-10%、-12Hz）、句间停顿 0.3 秒，
      都在 video/series_voice.json（工作流第七节；改动要先问 Chris）。
@@ -65,6 +74,7 @@ import sys
 from pathlib import Path
 
 import edge_tts
+import numpy as np
 
 ROOT = Path(__file__).resolve().parent
 SERIES = ROOT / "series_voice.json"
@@ -72,6 +82,9 @@ ASSETS = ROOT / "assets"
 LEAD, TAIL = 0.3, 0.5   # 片头留白、片尾余量（秒），和旧版一样
 ACTION = "动作"
 MAX_CPS = 5.0           # 只在导入不了 story.py 时用，和 story.py 的 MAX_RATE 一样
+TAIL_KEEP = 0.15        # 有声部分结束后再留多久才算这一句结束（秒）
+SILENCE_DB = -50        # 一帧里最大的采样低于这个电平（dBFS，满量程 = 0）就算静音
+FRAME = 0.01            # 量有声部分时一帧多长（秒）
 MAX_VT_CHANGES = 3      # voice_text 最多改几个字（去掉标点以后逐字比）：只许换同音字，不许改写句子
 RATE_RE, PITCH_RE = re.compile(r"^[+-]\d+%$"), re.compile(r"^[+-]\d+Hz$")
 # 多音字表里常见的繁体写法 → 简体（够用就行，不是完整的繁简转换；不在表里的繁体字会打印一句说明）
@@ -341,6 +354,20 @@ def duration(path):
         die(f"ffprobe 量不出 {path} 的时长（返回码 {p.returncode}）：{p.stderr.strip()[:200]}")
 
 
+def voiced_end(path):
+    """这一句有声部分的结束时刻（秒，从句首算）：mp3 解成 16 kHz 单声道 PCM，每 FRAME 一帧，
+    最后一个「帧内最大采样 >= SILENCE_DB」的帧的结束。整段都是静音返回 0.0。"""
+    sr = 16000
+    p = subprocess.run(["ffmpeg", "-v", "error", "-i", str(path), "-f", "s16le", "-ac", "1", "-ar", str(sr), "-"], capture_output=True)
+    if p.returncode != 0:
+        die(f"ffmpeg 解不开 {path}（返回码 {p.returncode}）：{p.stderr.decode('utf-8', 'replace').strip()[:200]}")
+    x = np.abs(np.frombuffer(p.stdout, dtype=np.int16).astype(np.int32))
+    fr = int(sr * FRAME)
+    x = np.pad(x, (0, -len(x) % fr)).reshape(-1, fr).max(axis=1)
+    loud = np.nonzero(x >= 32768 * 10 ** (SILENCE_DB / 20))[0]
+    return float((loud[-1] + 1) * FRAME) if len(loud) else 0.0
+
+
 def cache_key(text, voice, rate, pitch):
     return hashlib.sha1("\n".join([text, voice, rate, pitch]).encode("utf-8")).hexdigest()[:16]
 
@@ -424,7 +451,7 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     cache = out / "cache"
     cache.mkdir(exist_ok=True)
-    t, timeline, kept, count = LEAD, [], set(), {"合成": 0, "缓存": 0, "系列录音": 0}
+    t, timeline, kept, count, trimmed = LEAD, [], set(), {"合成": 0, "缓存": 0, "系列录音": 0}, 0.0
     for i, (s0, s1, who, text, visual) in enumerate(lines):
         row = {"i": i, "t0": None, "t1": None, "who": who, "text": text, "visual": visual, "audio": None, "script_t0": s0}
         if who == ACTION or not text:
@@ -446,7 +473,10 @@ def main():
                 shutil.copyfile(cf, f)
             count[src] += 1
             kept.add(f.name)
-            d = duration(f)
+            raw, end = duration(f), voiced_end(f)
+            d = min(raw, end + TAIL_KEEP) if end > 0 else raw   # 有声部分的结束 + 一个小尾巴；读不到声音就不裁
+            trimmed += raw - d
+            row.update({"dur_raw": round(raw, 3), "voiced_end": round(end, 2), "trim": round(raw - d, 2)})
             row["audio"] = f.name
             row["tts"] = {"voice": voice, "rate": rate, "pitch": pitch, "text": spoken, "key": key, "from": src}
             if spoken != text:
@@ -467,7 +497,7 @@ def main():
         print(f"{x['t0']:6.2f}–{x['t1']:6.2f}  {x['who']:<4} {tag:<4} {x['text'][:30]}" + (f"  ⇒ 配音用「{x['voice_text'][:30]}」" if "voice_text" in x else ""))
     for w in warnings["too_fast"]:
         print("语速报警：" + w)
-    print(f"全片 {t + TAIL:.1f} 秒（剧本估算 {lines[-1][1]:.1f} 秒）")
+    print(f"全片 {t + TAIL:.1f} 秒（剧本估算 {lines[-1][1]:.1f} 秒；每句结尾的静音只留 {TAIL_KEEP:g} 秒，共裁掉 {trimmed:.1f} 秒）")
     print(f"合成 {count['合成']} 句，缓存命中 {count['缓存']} 句，系列录音 {count['系列录音']} 句；"
           f"语速报警 {len(warnings['too_fast'])} 处，多音字提示 {len(hints)} 处，同声音警告 {len(warnings['same_voice'])} 处，"
           f"仪式句近似写法警告 {len(warnings['ceremony_near'])} 处")

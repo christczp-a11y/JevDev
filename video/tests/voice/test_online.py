@@ -44,11 +44,16 @@ class Online(unittest.TestCase):
             if o["who"] == "小伙":
                 continue
             compared += 1
-            # timeline 的 t0、t1 各自四舍五入到 0.01，t1−t0 可能差 0.01；mp3 时长直接量，几乎一样
-            self.assertLessEqual(abs((o["t1"] - o["t0"]) - (n["t1"] - n["t0"])), 0.01 + 1e-9, o["i"])
+            # 旧 timeline 的 t1−t0 就是整段 mp3 的时长（当时不裁静音）；新 timeline 的 t1−t0 已经裁掉了句尾静音，整段时长记在 dur_raw。
+            # t0、t1 各自四舍五入到 0.01，所以差 0.01 以内算一样；mp3 时长直接量，几乎一样
             if o["audio"]:
+                self.assertLessEqual(abs((o["t1"] - o["t0"]) - n["dur_raw"]), 0.01 + 1e-9, o["i"])
                 self.assertLessEqual(abs(dur(OLD / o["audio"]) - dur(d / "out" / n["audio"])), 0.001, o["i"])
+                self.assertLessEqual(abs(n["dur_raw"] - n["trim"] - (n["t1"] - n["t0"])), 0.011, o["i"])
+            else:
+                self.assertLessEqual(abs((o["t1"] - o["t0"]) - (n["t1"] - n["t0"])), 0.01 + 1e-9, o["i"])   # 动作行的时长不变
         self.assertEqual(compared, 37)
+        self.assertLess(timeline(d / "out")["duration"], json.loads((OLD / "timeline.json").read_text(encoding="utf-8"))["duration"] - 10)   # 裁掉静音以后全片明显变短
         self.assertEqual(new[0]["series_audio"], "audio/ceremony_kaokaoni.mp3")   # 第 0 句「考考你！」用系列录音
 
     def test_real_synthesis_receives_the_voice_text(self):
