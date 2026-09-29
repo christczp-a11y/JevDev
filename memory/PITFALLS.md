@@ -170,3 +170,4 @@
 11. **source_check 的小补强**（S2、S16）：`--check-links` 遇到维基百科消歧义页（`{{disambig}}`）报错；删 (Y)、去〔〕只对鉴N 做；引文含校勘改字时输出里加备注；汉字范围补扩展 G/H 区。
 12. **registry_check 补查隐式用到的素材**（T19）：道具类型、事件 → 实际画出的图（`pole` 画 `props/log.png`，`block` 顺带画 `props/scroll.png`，`birds` 载入 `props/paper_bird.png`）；顺着场景的 `set` 读布景 JSON，查 `dir` 不许指向试做集布景；场景在子目录、认不出集名又没写 `--ep` 时报错，不许静默跳过。第 3 步开工前做。
 13. ✅ **剧本结构检查进 git**（09-29 做完：`video/script_check.py`）（S17、S18、S20、P10）：把第 2 步的 `check_local.py` 做成 `video/script_check.py`：大问题念完 ≤ 7 秒（真实时间线）；视角人物在每一关都出现；每关恰好一次「考你」；「看答案！」后 1–2 句念出答案关键词；笑点间隔 ≤ 25 秒；单句 > 8 秒警告；画面备注里「（X 版：…）」残留报错。
+14. **storyboard_jev 看不到特效里的画**（09-29 tj01 第一场 s12）：画面主体只从人物、布景、道具里找，想象泡泡（`bubble`）里的画算不上主体，这种镜头只能 `jev_allow: ["subject"]` 放行。要改成把 `bubble` 的 `img` 当成主体候选。
