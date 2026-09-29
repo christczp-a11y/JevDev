@@ -19,7 +19,7 @@
   "audio/voices/旁白@带着期待有点郑重像在揭晓.wav": "979714a468e48c12b261d538af1de3e6414311c91fe16a3e88fc1964f714c1d4",
   "audio/ceremony_xieshu_de_ren_lai_le.mp3": "b8137896ae7b8df5a450b555a9928f740611f60262b4b579a52339332d6fffc0",
   "audio/voices/司马光.wav": "7ac6f15aabf4ee8c56601db6b278d40d385739b0bd59a9ca90edc6a191530b8e",
-  "audio/ceremony_kaokaoni.mp3": "e6cfcebfcd6dc23de95499d121d21309646e361aabe194cf9dec4c616c9c3ef7"
+  "audio/ceremony_kaokaoni.mp3": "936ba78c51d7605ca1315e30a67c53438b92c5d2fa1524619ef505240ca7ce05"
  },
  "ceremony": [
   {
@@ -27,7 +27,8 @@
    "text": "考考你！",
    "file": "audio/ceremony_kaokaoni.mp3",
    "tone": "语气亲切、慈祥，带着笑意",
-   "ref_sha256": "7ac6f15aabf4ee8c56601db6b278d40d385739b0bd59a9ca90edc6a191530b8e"
+   "ref_sha256": "7ac6f15aabf4ee8c56601db6b278d40d385739b0bd59a9ca90edc6a191530b8e",
+   "note": "09-29 Chris 从 3 条里选了 A：默认声音、克隆种子 20260997，基频中位 105 Hz、最高 175 Hz。不要 --make-ceremony --force 重录（默认种子念出来尾音冲到 266 Hz，太年轻，PITFALLS A7）"
   },
   {
    "who": "旁白",

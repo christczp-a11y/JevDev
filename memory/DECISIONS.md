@@ -297,3 +297,4 @@ Chris 看 3D 整集：信用值跑到屏幕中间、有些人物跑出画面。
 - 前两版：第 1 版阴沉（约 84 Hz），第 2 版像年轻女声（约 212 Hz）（PITFALLS A7）。
 - 「考考你！」用光爷爷的默认声音录（约 134 Hz，尾音上扬）；试过「得意地卖关子」的语气变体，只有 88 Hz，不用。
 - Qwen 配音整套换进仓库：`video/voice.py`（克隆参考音 + 每个（角色，语气）一段语气变体参考音）、`video/tts/qwen_worker.py`、`video/series_voice.json`、`video/assets/audio/voices/`、测试 `video/tests/voice/`（离线全过，GPU 测试全过）、装机检查全过。
+- 补（09-29）：Chris 说重录的「考考你」又太年轻（尾音 266 Hz）。重录 14 条，Chris 选 A：默认声音、种子 20260997，105 / 175 Hz。仪式录音以后不要 `--make-ceremony --force`。
