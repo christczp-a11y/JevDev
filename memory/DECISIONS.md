@@ -298,3 +298,10 @@ Chris 看 3D 整集：信用值跑到屏幕中间、有些人物跑出画面。
 - 「考考你！」用光爷爷的默认声音录（约 134 Hz，尾音上扬）；试过「得意地卖关子」的语气变体，只有 88 Hz，不用。
 - Qwen 配音整套换进仓库：`video/voice.py`（克隆参考音 + 每个（角色，语气）一段语气变体参考音）、`video/tts/qwen_worker.py`、`video/series_voice.json`、`video/assets/audio/voices/`、测试 `video/tests/voice/`（离线全过，GPU 测试全过）、装机检查全过。
 - 补（09-29）：Chris 说重录的「考考你」又太年轻（尾音 266 Hz）。重录 14 条，Chris 选 A：默认声音、种子 20260997，105 / 175 Hz。仪式录音以后不要 `--make-ceremony --force`。
+
+## 2026-09-29 tj01 正式开工的顺序（Chris 定）
+- 顺序：A 合成器 → B 特效包 + C 检查工具（两个 builder 同时做）→ 台词改写（现代白话、≤ 15 字、对话为主、每句写 tone；古今对照、「考你」题、金句由 Jev 挑）→ Qwen 重新配音 → 复核素材 → D 第一场（约 30 秒）第 4–7 步。
+- **第一集重新设第一场样片关口**：Chris 通过了第一场再做整集（覆盖 PITFALLS P14「一次做完整集」）。
+- 施工阶段只发 Chris 两样：特效样片合集、第一场样片，都带声音。
+- 素材：动态漫画能用的旧素材照用；用不了的在 REGISTRY 标「停用」；新图一律 Codex gpt-6.1-sol high，画坏了直接重画，不送审。
+- 主会话调整（小事自己定）：Jev 挑选工具 `video/jev_pick.py` 和 script_check 的两项新警告从 C 里提前做，和 A 同时跑，好让台词改写不用等 A。
