@@ -1,0 +1,82 @@
+{
+ "episode": "feature_case",
+ "no": 9,
+ "title": ["特性覆盖用例，", "每种运动都过一遍？"],
+ "voice": "video/motion/tests/proto17/voice",
+ "note": "阶段 A 测试用：把出场、小动作、镜头运动、调色、转场、贴纸都用一遍，只查能渲出来、可复现、不报错，不是好看的样片。",
+ "speakers": {"智伯": "智家", "段规": "韩家"},
+ "shots": [
+  {
+   "id": "f1", "from": {"line": 0, "dt": -0.3},
+   "bg": [
+    {"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 1080},
+    {"img": "sets/jin_land/ridge_far.png", "depth": 0.15, "pos": [0, 430], "w": 1080},
+    {"img": "sets/jin_land/ground.png", "depth": 0.9, "pos": [540, 1330], "anchor": [0.5, 0], "w": 1200, "repeat": "x"}
+   ],
+   "actors": [
+    {"id": "sgm", "who": "司马光", "img": "chars/sgm_finger.png", "pos": [300, 1585], "h": 520, "enter": "slide_left",
+     "acts": [{"at": {"line": 0, "dt": 0.6}, "do": "nod"}, {"at": {"line": 0, "dt": 1.0}, "do": "shake"}]}
+   ],
+   "camera": [{"move": "whip", "dir": "left", "mode": "in"}, {"move": "push", "amount": 0.04}],
+   "fx": [{"type": "sticker", "text": "咚", "pos": [800, 700], "at": {"line": 0, "dt": 0.5}, "size": 200, "rot": 10, "dur": 0.8}],
+   "grade": "normal"
+  },
+  {
+   "id": "f2", "from": {"line": 1}, "transition": "dissolve",
+   "bg": [
+    {"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 1080},
+    {"img": "sets/jin_land/ridge_mid.png", "depth": 0.3, "pos": [0, 740], "w": 1080},
+    {"img": "sets/jin_land/water.png", "depth": 1.0, "pos": [540, 1350], "anchor": [0.5, 0], "w": 1300, "repeat": "x", "sway": {"x": 20, "y": 6, "period": 3.0}}
+   ],
+   "actors": [
+    {"id": "zb", "who": "智伯", "img": "chars/zb_point.png", "pos": [300, 1545], "h": 380, "enter": "drop",
+     "acts": [{"at": {"line": 1, "word": "给"}, "swap": "chars/zb_cheer.png"}, {"at": {"line": 1, "word": "不给"}, "do": "wobble"}]},
+    {"id": "dg", "who": "段规", "img": "chars/dg_kneel.png", "flip": true, "pos": [800, 1550], "h": 360, "enter": "flip"}
+   ],
+   "camera": [{"move": "pan", "dx": -100}],
+   "fx": [{"type": "sticker", "text": "啪", "pos": [700, 800], "at": {"line": 1, "word": "给"}, "size": 180, "depth": 0}],
+   "grade": "memory"
+  },
+  {
+   "id": "f3", "from": {"line": 3}, "transition": {"type": "dissolve", "dur": 0.3},
+   "bg": [
+    {"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 1080, "blur": 3},
+    {"img": "sets/jin_land/ridge_near.png", "depth": 0.45, "pos": [0, 830], "w": 1080}
+   ],
+   "actors": [
+    {"id": "hkz", "who": "韩康子", "img": "chars/hkz_low.png", "flip": true, "pos": [700, 1540], "h": 360, "enter": "slide_right",
+     "acts": [{"at": {"line": 3, "dt": 1.0}, "do": "jump"}, {"at": {"line": 3, "dt": 1.6}, "do": "exit", "dir": "right"}]},
+    {"id": "zxz", "img": "chars/zxz_stand.png", "pos": [300, 1545], "h": 380, "enter": {"type": "pop", "at": {"line": 3, "dt": 0.2}}}
+   ],
+   "camera": [{"move": "punch", "at": {"line": 3}, "amount": 0.12}, {"move": "shake", "at": {"line": 3}, "dur": 0.35, "amp": 14}, {"move": "push", "amount": 0.05}],
+   "grade": "tense"
+  },
+  {
+   "id": "f4", "from": {"line": 4},
+   "bg": [
+    {"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 1080},
+    {"img": "sets/jin_land/ridge_far.png", "depth": 0.15, "pos": [0, 430], "w": 1080}
+   ],
+   "actors": [
+    {"id": "zb", "who": "旁白", "img": "chars/zb_hi_laugh.png", "pos": [540, 1560], "h": 1000, "enter": {"type": "fade", "dur": 0.4}}
+   ],
+   "camera": [{"move": "whip", "dir": "right", "mode": "in", "at": {"dt": 0.0}}, {"move": "pull", "amount": 0.06}],
+   "grade": "gold"
+  },
+  {
+   "id": "f5", "from": {"line": 5}, "transition": "dissolve",
+   "bg": [
+    {"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 1080},
+    {"img": "sets/jin_land/ridge_mid.png", "depth": 0.3, "pos": [0, 740], "w": 1080,
+     "anim": [{"at": {"dt": 0.5}, "dur": 1.5, "dpos": [-60, 40], "alpha": 0.6, "ease": "smooth"}]}
+   ],
+   "actors": [
+    {"id": "dg", "who": "段规", "img": "chars/dg_hi_tight.png", "flip": true, "pos": [560, 1560], "h": 980,
+     "anim": [{"at": {"dt": 1.0}, "dur": 0.6, "rot": 3, "ease": "back"}]}
+   ],
+   "camera": [{"move": "move", "dx": 60, "dy": -40, "at": {"dt": 0.5}, "dur": 3.0}],
+   "fx": [{"type": "sticker", "text": "！", "pos": [850, 560], "at": {"line": 5, "word": "段规"}, "size": 240, "sfx": null}],
+   "grade": "cool"
+  }
+ ]
+}

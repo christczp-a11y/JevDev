@@ -1,0 +1,1419 @@
+{
+ "episode": "proto17",
+ "no": 1,
+ "title": [
+  "最强的智伯，",
+  "为什么输了？"
+ ],
+ "voice": "video/motion/tests/proto17/voice",
+ "note": "09-29 的 17 秒小样（video/motion/_prototype_mc.py）用分镜表重做：阶段 A 验收 3。界面卡片、倒计时圈是本目录 make_assets.py 和 fx/ring.py 生成的测试件。",
+ "shots": [
+  {
+   "id": "1-1",
+   "from": {
+    "line": 0,
+    "dt": -0.3
+   },
+   "size": "wide",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.75,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1200
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.75,
+     "pos": [
+      540,
+      1340
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 900
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1200
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1480
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "sway": {
+      "x": 28,
+      "y": 8,
+      "period": 3.7
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 0,
+        "dt": -0.1
+       },
+       "dur": 1.6,
+       "pos": [
+        540,
+        1230
+       ],
+       "ease": "smooth"
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.05,
+     "pos": [
+      630,
+      1540
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "sway": {
+      "x": 28,
+      "y": 8,
+      "period": 3.7,
+      "phase": 1.3
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 0,
+        "dt": -0.1
+       },
+       "dur": 1.6,
+       "pos": [
+        630,
+        1290
+       ],
+       "ease": "smooth"
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1481.2
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1200
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      235,
+      1585
+     ],
+     "h": 520,
+     "depth": 1.15,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "dt": 0.1
+      },
+      "dur": 0.45
+     },
+     "acts": [
+      {
+       "at": {
+        "line": 1,
+        "word": "给"
+       },
+       "swap": "chars/sgm_thumb.png"
+      }
+     ]
+    }
+   ],
+   "fg": [
+    {
+     "img": "gen/cards/page.png",
+     "depth": 1.15,
+     "pos": [
+      540,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1320
+    },
+    {
+     "img": "gen/cards/ask.png",
+     "depth": 0,
+     "pos": [
+      540,
+      410
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 1,
+       "dt": -0.05
+      },
+      "dur": 0.35
+     }
+    },
+    {
+     "img": "props/map_silk.png",
+     "depth": 0,
+     "pos": [
+      1500,
+      690
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 540,
+     "anim": [
+      {
+       "at": {
+        "line": 1
+       },
+       "dur": 0.5,
+       "pos": [
+        760,
+        690
+       ],
+       "ease": "smooth"
+      }
+     ]
+    },
+    {
+     "img": "gen/cards/btn_give.png",
+     "depth": 0,
+     "pos": [
+      620,
+      980
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 1,
+       "dt": 0.3
+      },
+      "dur": 0.35
+     }
+    },
+    {
+     "img": "gen/cards/btn_no.png",
+     "depth": 0,
+     "pos": [
+      890,
+      980
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 1,
+       "dt": 0.45
+      },
+      "dur": 0.35
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.07
+    },
+    {
+     "move": "pan",
+     "dy": -40
+    }
+   ],
+   "fx": [
+    {
+     "type": "ring",
+     "pos": [
+      760,
+      1130
+     ],
+     "at": {
+      "line": 2
+     },
+     "dur": 1.0
+    }
+   ],
+   "sfx": [
+    {
+     "name": "whoosh",
+     "at": {
+      "line": 1,
+      "dt": -0.05
+     }
+    },
+    {
+     "name": "whoosh",
+     "at": {
+      "line": 1,
+      "dt": 0.3
+     }
+    },
+    {
+     "name": "tick",
+     "at": {
+      "line": 2
+     }
+    },
+    {
+     "name": "tick",
+     "at": {
+      "line": 2,
+      "dt": 0.5
+     }
+    },
+    {
+     "name": "tick",
+     "at": {
+      "line": 2,
+      "dt": 1.0
+     }
+    }
+   ],
+   "grade": "normal",
+   "transition": "cut"
+  },
+  {
+   "id": "1-2",
+   "from": {
+    "line": 3
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.75,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1200
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.75,
+     "pos": [
+      540,
+      1340
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 900
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1200
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1230
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "sway": {
+      "x": 28,
+      "y": 8,
+      "period": 3.7
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 3,
+        "dt": 0.07
+       },
+       "dur": 1.8,
+       "pos": [
+        540,
+        1410
+       ],
+       "ease": "smooth"
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.05,
+     "pos": [
+      630,
+      1290
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "sway": {
+      "x": 28,
+      "y": 8,
+      "period": 3.7,
+      "phase": 1.3
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 3,
+        "dt": 0.07
+       },
+       "dur": 1.8,
+       "pos": [
+        630,
+        1470
+       ],
+       "ease": "smooth"
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1481.2
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1200
+    }
+   ],
+   "fg": [
+    {
+     "img": "gen/cards/page.png",
+     "depth": 1.15,
+     "pos": [
+      540,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1320
+    }
+   ],
+   "camera": [
+    {
+     "move": "frame",
+     "zoom": 1.32,
+     "dy": 150
+    },
+    {
+     "move": "push",
+     "amount": 0.038
+    },
+    {
+     "move": "punch",
+     "at": {
+      "line": 3
+     },
+     "amount": 0.08
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "text": "？",
+     "pos": [
+      830,
+      700
+     ],
+     "at": {
+      "line": 3,
+      "dt": 0.3
+     },
+     "size": 260,
+     "rot": -8,
+     "depth": 0
+    }
+   ],
+   "sfx": [
+    {
+     "name": "whoosh",
+     "at": {
+      "line": 3
+     }
+    }
+   ],
+   "grade": "normal",
+   "transition": "cut"
+  },
+  {
+   "id": "1-3",
+   "from": {
+    "line": 4,
+    "dt": -0.18
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 3
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      420
+     ],
+     "w": 1080,
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      720
+     ],
+     "w": 1080,
+     "blur": 7
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      820
+     ],
+     "w": 1080,
+     "blur": 9
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1120.0
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1271.2
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1422.4
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1573.6
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1724.8
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1876.0
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      2027.2
+     ],
+     "w": 1200,
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      560,
+      1560
+     ],
+     "h": 1000
+    }
+   ],
+   "fg": [
+    {
+     "img": "gen/cards/badge1.png",
+     "depth": 0,
+     "pos": [
+      150,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "scale": 0.95,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 4,
+       "dt": 0.47
+      },
+      "dur": 0.3
+     }
+    },
+    {
+     "img": "gen/cards/badge2.png",
+     "depth": 0,
+     "pos": [
+      330,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "scale": 0.95,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 4,
+       "dt": 0.92
+      },
+      "dur": 0.3
+     }
+    },
+    {
+     "img": "gen/cards/badge3.png",
+     "depth": 0,
+     "pos": [
+      540,
+      440
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "scale": 0.95,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 4,
+       "dt": 1.37
+      },
+      "dur": 0.3
+     }
+    },
+    {
+     "img": "gen/cards/badge4.png",
+     "depth": 0,
+     "pos": [
+      750,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "scale": 0.95,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 4,
+       "dt": 1.82
+      },
+      "dur": 0.3
+     }
+    },
+    {
+     "img": "gen/cards/badge5.png",
+     "depth": 0,
+     "pos": [
+      930,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "scale": 0.95,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 4,
+       "dt": 2.27
+      },
+      "dur": 0.3
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.06
+    }
+   ],
+   "sfx": [
+    {
+     "name": "ding1",
+     "at": {
+      "line": 4,
+      "dt": 0.47
+     }
+    },
+    {
+     "name": "ding2",
+     "at": {
+      "line": 4,
+      "dt": 0.92
+     }
+    },
+    {
+     "name": "ding3",
+     "at": {
+      "line": 4,
+      "dt": 1.37
+     }
+    },
+    {
+     "name": "ding4",
+     "at": {
+      "line": 4,
+      "dt": 1.82
+     }
+    },
+    {
+     "name": "ding5",
+     "at": {
+      "line": 4,
+      "dt": 2.27
+     }
+    }
+   ],
+   "grade": "normal",
+   "transition": "cut"
+  },
+  {
+   "id": "1-4",
+   "from": {
+    "line": 5,
+    "dt": -0.3
+   },
+   "size": "wide",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      420
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      720
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      820
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.7,
+     "pos": [
+      540,
+      1350
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 980
+    },
+    {
+     "img": "props/flag_zhi.png",
+     "depth": 0.75,
+     "pos": [
+      170,
+      1360
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 520
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1320
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1200
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1471.2
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1200
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_point.png",
+     "pos": [
+      300,
+      1545
+     ],
+     "h": 380
+    },
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_low.png",
+     "flip": true,
+     "pos": [
+      700,
+      1540
+     ],
+     "h": 360
+    },
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_kneel.png",
+     "flip": true,
+     "pos": [
+      900,
+      1550
+     ],
+     "h": 360
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/table.png",
+     "depth": 1.15,
+     "pos": [
+      250,
+      1640
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 330
+    },
+    {
+     "img": "sets/lantai/cup.png",
+     "depth": 1.15,
+     "pos": [
+      200,
+      1575
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 120
+    },
+    {
+     "img": "gen/cards/page.png",
+     "depth": 1.2,
+     "pos": [
+      540,
+      1665
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1320
+    },
+    {
+     "img": "gen/cards/level1.png",
+     "depth": 0,
+     "pos": [
+      540,
+      -60
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "anim": [
+      {
+       "at": {
+        "line": 5,
+        "dt": -0.2
+       },
+       "dur": 0.45,
+       "pos": [
+        540,
+        440
+       ],
+       "ease": "back"
+      }
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.06
+    },
+    {
+     "move": "pan",
+     "dx": -20,
+     "dy": 40
+    }
+   ],
+   "sfx": [
+    {
+     "name": "whoosh",
+     "at": {
+      "line": 5,
+      "dt": -0.2
+     }
+    }
+   ],
+   "grade": "normal",
+   "transition": "cut"
+  },
+  {
+   "id": "1-5",
+   "from": {
+    "line": 5,
+    "word": "羞辱",
+    "dt": -0.28
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 3
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      420
+     ],
+     "w": 1080,
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      720
+     ],
+     "w": 1080,
+     "blur": 7
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      820
+     ],
+     "w": 1080,
+     "blur": 9
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1120.0
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1271.2
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1422.4
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1573.6
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1724.8
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1876.0
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      2027.2
+     ],
+     "w": 1200,
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      520,
+      1560
+     ],
+     "h": 1000,
+     "acts": [
+      {
+       "at": {
+        "line": 5,
+        "word": "羞辱",
+        "dt": -0.2
+       },
+       "do": "bounce",
+       "amp": 10
+      },
+      {
+       "at": {
+        "line": 5,
+        "word": "羞辱",
+        "dt": 0.15
+       },
+       "do": "bounce",
+       "amp": 10
+      },
+      {
+       "at": {
+        "line": 5,
+        "word": "羞辱",
+        "dt": 0.5
+       },
+       "do": "bounce",
+       "amp": 10
+      },
+      {
+       "at": {
+        "line": 5,
+        "word": "羞辱",
+        "dt": 0.85
+       },
+       "do": "bounce",
+       "amp": 10
+      }
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "frame",
+     "zoom": 1.1,
+     "dy": -60
+    },
+    {
+     "move": "push",
+     "amount": 0.0545
+    }
+   ],
+   "grade": "warm",
+   "transition": "cut"
+  },
+  {
+   "id": "1-6",
+   "from": {
+    "line": 5,
+    "word": "段规",
+    "dt": -0.35
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 3
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      420
+     ],
+     "w": 1080,
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      720
+     ],
+     "w": 1080,
+     "blur": 7
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      820
+     ],
+     "w": 1080,
+     "blur": 9
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1120.0
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1271.2
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1422.4
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1573.6
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1724.8
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      1876.0
+     ],
+     "w": 1200,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.5,
+     "pos": [
+      -60,
+      2027.2
+     ],
+     "w": 1200,
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_hi_tight.png",
+     "flip": true,
+     "pos": [
+      560,
+      1560
+     ],
+     "h": 980
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.05
+    }
+   ],
+   "grade": "cool",
+   "transition": "cut"
+  }
+ ]
+}

@@ -10,6 +10,9 @@ for d in video/tests/*/; do
   bash "$d/run_all.sh"; rc=$?
   [ $rc = 0 ] && echo ">>>> $n：通过" || { echo ">>>> $n：不通过（退出码 $rc）"; fail=1; }
 done
+echo "================ motion（动态漫画合成器，video/motion/tests/）"
+bash video/motion/tests/run_all.sh; rc=$?
+[ $rc = 0 ] && echo ">>>> motion：通过" || { echo ">>>> motion：不通过（退出码 $rc）"; fail=1; }
 echo
 [ $fail = 0 ] && echo "video/tests 全部通过" || echo "video/tests 有不通过的"
 exit $fail
