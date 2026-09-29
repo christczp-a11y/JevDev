@@ -1,72 +1,26 @@
-"""第 1 集第 2 版（N6「你搬不搬」，按 docs/短视频留存-调研与ep01重构建议.md 方案 A 重写）：冷开场奇观 + 观众下注 + 4 次选择/预测。
+"""试做集（徙木立信）第 2 版（N6「你搬不搬」，按 docs/短视频留存-调研与ep01重构建议.md 方案 A 重写）：冷开场奇观 + 观众下注 + 4 次选择/预测。
 第 1 版（N5，video/build_ep01.py）保留不动，输出在 video/out/ep01/。
+
+这个脚本只剩试做集自己的东西：每场的 shotN() 和小伙的纸偶动作；时间线、混音、拼接、渲染都在通用模板 video/episode_build.py，
+每集的常量（片头角标、出处行、说话人显示名、分场行号、人物比例、目录）在配置 video/episodes/ep01v2.py（工作流第 0 步第 7 项）。
 
 先跑配音：NARRATOR_RATE=+6% python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice 2=1.0 9=1.2 13=8.6 22=1.2 29=3.3
 再跑本脚本：python video/build_ep01_v2.py [--only 场号,...] [--no-render]
-  --no-render 只写出每场的剧本（video/scenes/ep01/*.json），不渲染；--only 2,3 只渲染这几场（其余沿用已渲染的片段）
+  --no-render 只写出每场的剧本（video/scenes/ep01v2/*.json），不渲染；--only 2,3 只渲染这几场（其余沿用已渲染的片段）
+  另外可以用 --voice / --scenes-out / --out 临时换目录（回归对比用），--check-config 只检查配置。
 
 每场戏是一个独立剧本（自己的时间从 0 开始），场与场之间整条画面像纸片一样翻过去。
 小伙用纸偶关节动画（和测试片段同一套动作，整体平移到这一集的时间）；其他角色是 Codex 画的整身姿势图，
 靠弹出、换姿势时的挤压回弹、说话时的起伏、摇头点头来表演。
 """
-import argparse
-import json
-import subprocess
 import sys
-import wave
 from pathlib import Path
 
-import numpy as np
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import episode_build as eb  # noqa: E402
+from episode_build import actor, choice, sprite  # noqa: E402
 
-ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT))
-VOICE = ROOT / "out/ep01v2_voice"
-OUT = ROOT / "out/ep01v2"
-SCENES = ROOT / "scenes/ep01v2"
-BGM = Path.home() / "MoneyPrinterTurbo/resource/songs/output009.mp3"   # MPT 自带曲库（来源不明，仅内部预览，发布前必须换）
-TITLE = {"kicker": "资治通鉴 · 卷二",   # 不是第 1 集：系列按《资治通鉴》顺序，第 1 集是三家分晋（Chris 2026-09-28）
-          "lines": ["一根木头，怎么让", "秦国人开始[[相信]]？"]}
-FOOTER = "徙木立信 · 出自《资治通鉴》卷二"
-LABEL = {"农夫": "爹"}   # 字幕上显示的说话人
-
-TL = json.loads((VOICE / "timeline.json").read_text(encoding="utf-8"))
-L = TL["lines"]
-T0 = lambda i: L[i]["t0"]
-T1 = lambda i: L[i]["t1"]
-mid = lambda i, j: round((T1(i) + T0(j)) / 2, 2)
-# 场次边界：冷开场 + 第 1 关（集市） | 第 2 关（太子） | 第 3 关（十年） | 司马光 | 回到现代 | 下集预告
-B = [0, mid(18, 19), mid(26, 27), mid(31, 32), mid(33, 34), mid(36, 37), TL["duration"]]
-
-
-def at(i, word):
-    """第 i 句台词里说到 word 的大致时刻（按字数比例估算）。"""
-    text = L[i]["text"]
-    return round(T0(i) + text.index(word) / len(text) * (T1(i) - T0(i)), 2)
-
-
-def actor(x, pose, show, flip=1, px=0.42, speaker=None, native=1, phase=0.0, **kw):
-    a = {"keys": [[0, x, "", flip]], "poses": [[0, pose]], "show": show, "px": px, "native": native, "phase": phase}
-    if speaker:
-        a["speaker"] = speaker
-    a.update(kw)
-    return a
-
-
-def sprite(img, x, y, h, show, **kw):
-    return {"type": "sprite", "img": img, "x": x, "y": y, "h": h, "show": show, **kw}
-
-
-def subs(k):
-    s0, s1 = B[k], B[k + 1]
-    return [[round(x["t0"] - s0, 2), round(x["t1"] - s0, 2), LABEL.get(x["who"], x["who"]), x["text"]]
-            for x in L if x["audio"] and s0 <= x["t0"] < s1]
-
-
-def base(k, set_name, camera, hud, actors, props=(), events=()):
-    d = round(B[k + 1] - B[k], 2)
-    return {"about": f"第 1 集 · 第 {k + 1} 场", "duration": d, "title": TITLE, "footer": FOOTER, "set": set_name,
-            "flip": [k > 0, k < len(B) - 2], "camera": camera, "hud": hud, "actors": actors,
-            "props": list(props), "events": list(events), "subtitles": subs(k)}
+CFG = eb.load_config("ep01v2")
 
 
 def youth(off):
@@ -81,15 +35,8 @@ def youth(off):
                         [sh(17.25), sh(60), "hold"]]}   # 金子一直捧在怀里，直到这场戏结束
 
 
-def choice(t0, options, reveal=None, pick=None, t1=None, label="考你！", after="看答案！"):
-    """四次提问用同一个仪式（儿童动画调研规则 2）：同一句「考你！」、同一种按钮、同一组提示音；揭晓后只说「看答案！」，不说谁错。"""
-    ev = {"type": "choice", "t0": t0, "options": options, "reveal": reveal, "pick": pick, "label": label, "after": after}
-    if t1 is not None:
-        ev["t1"] = t1
-    return ev
-
-
-def shot1():   # 冷开场 + 第 1 关：南门立木
+def shot1(ep):   # 冷开场 + 第 1 关：南门立木
+    B, T0, T1, at, base = ep.tools()
     S = B[0]
     r = lambda g: round(g - S, 2)
     end = round(B[1] - S, 2)
@@ -148,7 +95,8 @@ def shot1():   # 冷开场 + 第 1 关：南门立木
                  {"type": "stamp", "t": r(T0(18)) + 1.0, "x": 540, "y": 200, "text": "过关！"}])
 
 
-def shot2():   # 第 2 关：太子犯法
+def shot2(ep):   # 第 2 关：太子犯法
+    B, T0, T1, at, base = ep.tools()
     S = B[1]
     r = lambda g: round(g - S, 2)
     end = round(B[2] - S, 2)
@@ -173,7 +121,8 @@ def shot2():   # 第 2 关：太子犯法
                  {"type": "banner", "t": r(T0(26)) + 1.2, "d": r(T1(26)) - r(T0(26)) - 0.6, "text": "说到做到，别人才会信！", "color": "#3a2f2a"}])
 
 
-def shot3():   # 第 3 关：十年
+def shot3(ep):   # 第 3 关：十年
+    B, T0, T1, at, base = ep.tools()
     S = B[2]
     r = lambda g: round(g - S, 2)
     end = round(B[3] - S, 2)
@@ -190,7 +139,8 @@ def shot3():   # 第 3 关：十年
                  {"type": "confetti", "t": r(T0(31)) + 0.3, "d": 3.0, "n": 70}])
 
 
-def shot4():   # 讲解人司马光结尾点题（Chris 2026-09-28：司马光是频道主角和头像，每个故事结束出来点题）
+def shot4(ep):   # 讲解人司马光结尾点题（Chris 2026-09-28：司马光是频道主角和头像，每个故事结束出来点题）
+    B, T0, T1, at, base = ep.tools()
     S = B[3]
     r = lambda g: round(g - S, 2)
     end = round(B[4] - S, 2)
@@ -209,7 +159,8 @@ def shot4():   # 讲解人司马光结尾点题（Chris 2026-09-28：司马光�
                  {"type": "shake", "t": wake + 0.05, "amp": 7}])
 
 
-def shot5():   # 回到现代：你说的每句话，都是一根木头
+def shot5(ep):   # 回到现代：你说的每句话，都是一根木头
+    B, T0, T1, at, base = ep.tools()
     S = B[4]
     r = lambda g: round(g - S, 2)
     end = round(B[5] - S, 2)
@@ -222,7 +173,8 @@ def shot5():   # 回到现代：你说的每句话，都是一根木头
                 [sprite("school_desk", 545, 506, 175, [0.1, 99])])
 
 
-def shot6():   # 下集预告：按《资治通鉴》顺序，下一个故事是齐魏比宝（卷二·周显王十四年）
+def shot6(ep):   # 下集预告：按《资治通鉴》顺序，下一个故事是齐魏比宝（卷二·周显王十四年）
+    B, T0, T1, at, base = ep.tools()
     S = B[5]
     r = lambda g: round(g - S, 2)
     end = round(B[6] - S, 2)
@@ -235,126 +187,5 @@ def shot6():   # 下集预告：按《资治通鉴》顺序，下一个故事是
 SHOTS = [shot1, shot2, shot3, shot4, shot5, shot6]
 
 
-PX = {"d2_teen": 0.40, "d2_": 0.28, "dad2_": 0.356, "sy2_": 0.40, "sgm_": 0.62}
-
-
-def restyle(scene):
-    """新角色（v2 设计）的素材比例和旧素材不同：按姿势图的名字统一设 px。"""
-    for a in scene["actors"].values():
-        poses = [n for _, n in a.get("poses", [])]
-        for pre, px in PX.items():
-            if poses and all(n.startswith(pre) for n in poses):
-                a["px"] = px
-                break
-    return scene
-
-
-def fix_fly(scene):
-    """乌鸦从右上方飞进来（from 是相对落点的位移）。"""
-    for p in scene["props"]:
-        if p.get("type") == "sprite" and p.get("enter") == "fly" and not p.get("from"):
-            p["from"] = [420, -260]
-        p.pop("from_", None)
-    return scene
-
-
-def render_shot(path, out_mp4):
-    import render
-    from playwright.sync_api import sync_playwright
-    scene = render.load_scene(path)
-    with sync_playwright() as p:
-        browser, page = render.open_page(p, scene)
-        ff = subprocess.Popen([render.FFMPEG, "-loglevel", "error", "-y", "-f", "image2pipe", "-framerate", str(render.FPS), "-vcodec", "mjpeg",
-                               "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", "-preset", "medium", str(out_mp4)],
-                              stdin=subprocess.PIPE)
-        n = int(round(scene["duration"] * render.FPS))
-        for i in range(n):
-            ff.stdin.write(render.grab(page, i / render.FPS))
-        ff.stdin.close()
-        ff.wait()
-        steps = page.evaluate("() => footsteps()")
-        browser.close()
-    return n, steps
-
-
-def decode(path, sr):
-    raw = subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(path), "-ac", "1", "-ar", str(sr), "-f", "s16le", "-"], capture_output=True).stdout
-    return np.frombuffer(raw, np.int16).astype(np.float64) / 32768
-
-
-def mix(frames_per_shot, steps_per_shot, out_wav):
-    import audio
-    sr = audio.SR
-    total = sum(frames_per_shot) / 30
-    n = int(sr * total)
-    voice = np.zeros(n)
-    for x in L:
-        if x["audio"]:
-            clip = decode(VOICE / x["audio"], sr)
-            i = int(x["t0"] * sr)
-            voice[i:i + len(clip)] += clip[: n - i]
-    # 背景音乐：有人说话时压低（0.15 秒渐变），开头淡入、结尾淡出
-    bgm = decode(BGM, sr) if BGM.exists() else np.zeros(n)
-    bgm = np.tile(bgm, int(np.ceil(n / max(len(bgm), 1))))[:n]
-    env = np.full(n, 0.20)
-    for x in L:
-        if x["audio"]:
-            env[int(x["t0"] * sr): int(x["t1"] * sr)] = 0.07
-    k = int(0.15 * sr)
-    env = np.convolve(env, np.ones(k) / k, mode="same")
-    env[: sr] *= np.linspace(0, 1, sr)
-    env[-2 * sr:] *= np.linspace(1, 0, 2 * sr)
-    sfx = np.zeros(n)
-    start = 0
-    for s, (frames, steps) in enumerate(zip(frames_per_shot, steps_per_shot)):
-        scene = json.loads((SCENES / f"shot{s + 1}.json").read_text(encoding="utf-8"))
-        scene["_steps"] = steps
-        m = int(sr * frames / 30)
-        part = audio.sfx(scene, m)
-        i = int(start / 30 * sr)
-        sfx[i:i + m] += part[: n - i]
-        start += frames
-    out = voice * 1.0 + bgm * env + sfx * 0.45
-    out = out / max(1e-6, np.abs(out).max()) * 0.92
-    with wave.open(str(out_wav), "wb") as w:
-        w.setnchannels(1)
-        w.setsampwidth(2)
-        w.setframerate(sr)
-        w.writeframes((out * 32767).astype(np.int16).tobytes())
-
-
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--only")
-    ap.add_argument("--no-render", action="store_true")
-    args = ap.parse_args()
-    SCENES.mkdir(parents=True, exist_ok=True)
-    OUT.mkdir(parents=True, exist_ok=True)
-    for k, fn in enumerate(SHOTS, 1):
-        (SCENES / f"shot{k}.json").write_text(json.dumps(restyle(fix_fly(fn())), ensure_ascii=False, indent=1), encoding="utf-8")
-    print("场次边界：", [round(b, 2) for b in B])
-    if args.no_render:
-        return
-    only = {int(x) for x in args.only.split(",")} if args.only else set(range(1, len(SHOTS) + 1))
-    meta_path = OUT / "meta.json"
-    meta = json.loads(meta_path.read_text(encoding="utf-8")) if meta_path.exists() else {}
-    for k in range(1, len(SHOTS) + 1):
-        if k in only or str(k) not in meta:
-            print(f"渲染第 {k} 场…", flush=True)
-            frames, steps = render_shot(SCENES / f"shot{k}.json", OUT / f"shot{k}.mp4")
-            meta[str(k)] = {"frames": frames, "steps": steps}
-            meta_path.write_text(json.dumps(meta), encoding="utf-8")
-    frames = [meta[str(k)]["frames"] for k in range(1, len(SHOTS) + 1)]
-    steps = [meta[str(k)]["steps"] for k in range(1, len(SHOTS) + 1)]
-    (OUT / "list.txt").write_text("".join(f"file 'shot{k}.mp4'\n" for k in range(1, len(SHOTS) + 1)), encoding="utf-8")
-    subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(OUT / "list.txt"), "-c", "copy",
-                    str(OUT / "silent.mp4")], check=True)
-    mix(frames, steps, OUT / "mix.wav")
-    final = OUT / "ep01_full.mp4"
-    subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", str(OUT / "silent.mp4"), "-i", str(OUT / "mix.wav"), "-c:v", "copy",
-                    "-c:a", "aac", "-b:a", "192k", "-shortest", str(final)], check=True)
-    print(final)
-
-
 if __name__ == "__main__":
-    main()
+    eb.main(CFG, SHOTS)

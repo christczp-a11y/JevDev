@@ -1,0 +1,42 @@
+{
+ "about": "registry_check 测试样例：只用系列素材，native 和朝向都对：应该通过",
+ "set": "test_set",
+ "actors": {
+  "sgm": {
+   "poses": [
+    [
+     0,
+     "sgm_book"
+    ],
+    [
+     1,
+     "sgm_finger"
+    ],
+    [
+     2,
+     "sgm_wake"
+    ],
+    [
+     3,
+     "sgm_thumb"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [
+  {
+   "type": "sprite",
+   "img": "sgm_pillow"
+  }
+ ],
+ "events": []
+}

@@ -14,11 +14,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+from playwright.sync_api import Error as PlaywrightError
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")   # 缺布景等中文报错走 stderr，不设 PYTHONIOENCODING 也能正常显示
 FFMPEG = str(next((Path.home() / "AppData/Local/Microsoft/WinGet/Packages").glob("Gyan.FFmpeg*/ffmpeg-*/bin/ffmpeg.exe"), None)
              or shutil.which("ffmpeg") or "ffmpeg")   # 本地 Windows（WinGet 装的）/ 云端 Linux（apt install ffmpeg）
 CHROMIUM = "/opt/pw-browsers/chromium" if Path("/opt/pw-browsers/chromium").exists() else None   # 云端预装的 Chromium（Playwright 下载被网络策略拦截）；本地为 None，用 Playwright 自带的
@@ -28,10 +30,30 @@ FPS = 30
 PROPS = ["block", "log", "coin", "scroll", "board"]
 
 
+def set_missing_message(scene_path, scene, name):
+    have = "、".join(sorted(p.stem for p in (ROOT / "sets").glob("*.json"))) or "（一份都没有）"
+    return (f"错误：场景 {scene_path}（{scene.get('about', '没写 about')}）要用 2D 布景「{name}」，但找不到 video/sets/{name}.json。\n"
+            f"  每个新地点都要有一份 2D 布景（工作流第 0 步第 9a 项）：far、mid、stage、fore 四层。补法：\n"
+            f"  1. 第 3 步 Codex 画的分层图放到 video/assets/sets/{name}/；\n"
+            f"  2. 照 video/sets/README.md 拼成 video/sets/{name}.json；\n"
+            f"  3. 跑 python video/set_check.py {name} 检查（层和引用的图都齐了才算过）。\n"
+            f"  现有的布景：{have}。不会悄悄换成别的布景。")
+
+
 def load_scene(path):
-    """读剧本，并把它引用的场景（video/sets/<名字>.json）合进来。"""
+    """读剧本，并把它引用的场景（video/sets/<名字>.json）合进来。
+    找不到布景就用中文报清楚：哪个场景、要哪个布景、该放在哪（SystemExit：不打 traceback，退出码 1），不会悄悄用别的布景。"""
     scene = json.loads(Path(path).read_text(encoding="utf-8"))
-    scene["set"] = json.loads((ROOT / "sets" / f"{scene['set']}.json").read_text(encoding="utf-8"))
+    name = scene.get("set")
+    if not isinstance(name, str) or not name:
+        sys.exit(f"错误：场景 {path} 里没有写 set（布景名，对应 video/sets/<名字>.json）。")
+    set_path = ROOT / "sets" / f"{name}.json"
+    if not set_path.exists():
+        sys.exit(set_missing_message(path, scene, name))
+    try:
+        scene["set"] = json.loads(set_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        sys.exit(f"错误：布景 {set_path} 不是合法的 JSON：第 {e.lineno} 行第 {e.colno} 列，{e.msg}。改好以后跑 python video/set_check.py {name}。")
     for a in scene["actors"].values():   # 纸偶角色：每个视角一套部件和关节（video/assets/rig/<文件夹>/rig.json）
         rigs = a.get("rigs") or ({"side": a["rig"]} if a.get("rig") else None)
         if rigs:
@@ -61,15 +83,40 @@ def assets_for(scene):
     names = {s["far"]["img"]} | ({ground["img"]} if ground else set()) | {it[0] for k in ("hills", "mid", "stage", "fore", "frame") for it in s.get(k, {}).get("items", []) + s.get(k, {}).get("behind", [])}
     if s["mid"].get("wallStrip"):
         names.add(s["mid"]["wallStrip"]["img"])
+    lost = sorted(n for n in names if not (ROOT / "assets" / s["dir"] / f"{n}.png").exists())
+    if lost:
+        sys.exit(f"错误：2D 布景（video/assets/{s['dir']}/）缺这些图：{'、'.join(n + '.png' for n in lost)}。"
+                 f"补上，或者改布景 JSON 里的引用；改完跑 python video/set_check.py 检查。")
     files.update({n: ROOT / "assets" / s["dir"] / f"{n}.png" for n in names})
     return {n: "data:image/png;base64," + base64.b64encode(p.read_bytes()).decode() for n, p in files.items()}
 
 
-def open_page(p, scene):
+def font_failure(err):
+    """Playwright 报的错里带「字体没加载成功」（engine.html / stage.html 的 checkFonts 抛的）时，返回那句中文；不是字体问题返回 None。"""
+    msg = str(err)
+    i = msg.find("字体没加载成功")
+    return msg[i:].splitlines()[0] if i >= 0 else None
+
+
+def open_page(p, scene, hide_nametags=False):
+    """打开 2D 引擎页并初始化。字体没加载成功（检查在 engine.html 的 checkFonts）就打印原因、退出码 2（不是「查到问题」的 1），不往下渲。
+    初始化完先空渲一帧（t=0）再交给调用方（第一帧前的预热，和 3D 一致）。
+    hide_nametags：2D 质检截图（logic_qa、puppet_qa、selfcheck）用，藏起人名牌，别让它进观察员的图和改前改后对比。"""
     browser = p.chromium.launch(executable_path=CHROMIUM)
     page = browser.new_page(viewport={"width": 1080, "height": 1920})
     page.goto((ROOT / "engine.html").as_uri(), wait_until="networkidle")
-    page.evaluate("([s, a]) => init(s, a)", [scene, assets_for(scene)])
+    try:
+        page.evaluate("([s, a]) => init(s, a)", [scene, assets_for(scene)])
+    except PlaywrightError as e:
+        browser.close()
+        why = font_failure(e)
+        if why:
+            print(f"错误：{why}", file=sys.stderr)
+            sys.exit(2)
+        raise
+    if hide_nametags:
+        page.evaluate("() => { window.hideNametags = true; }")
+    page.evaluate("() => { renderFrame(0); }")
     return browser, page
 
 

@@ -7,6 +7,7 @@
 Jev 可用时，再跑 video/logic_qa.py。
 
 用法：python video/selfcheck.py <剧本.json> [--base 提交，默认 HEAD]
+说明：拿第 0 步第 19 项（字体本地化）之前的提交当 --base 时，文字区域（卷号、标签、字幕）都会被标成变化——改前是备用字体，改后是 ZCOOL KuaiLe / Noto Sans SC，这是字体修好的正常结果，不是新问题。
 输出：video/out/selfcheck_<剧本名>/sheet_XX.png（检查图）和 summary.json
 """
 import argparse
@@ -35,7 +36,14 @@ def dump(root, scene_rel, times, out):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
-        browser, page = render.open_page(p, scene)
+        # 人名牌不进对比图。改前（--base 的老提交）的 render.open_page 没有 hide_nametags 参数，老版本也没有人名牌：只有支持这个参数时才传，
+        # 不支持就直接设 window.hideNametags（老的 engine.html 里没人读它，无害）
+        import inspect
+        if "hide_nametags" in inspect.signature(render.open_page).parameters:
+            browser, page = render.open_page(p, scene, hide_nametags=True)
+        else:
+            browser, page = render.open_page(p, scene)
+            page.evaluate("() => { window.hideNametags = true; }")
         for hide in (False, True):
             page.evaluate(f"window.hideActors = {'true' if hide else 'false'}")
             for t in times:

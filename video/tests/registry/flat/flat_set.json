@@ -1,0 +1,25 @@
+{
+ "about": "registry_check 测试样例：不在 scenes/<集>/ 下：不写 --ep 就提示没查 T19；写 --ep tj95 就报错",
+ "set": "qin_gate",
+ "actors": {
+  "sgm": {
+   "poses": [
+    [
+     0,
+     "sgm_book"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

@@ -1,11 +1,13 @@
 """3D 立体书舞台：整集渲染（第 1 集试做「徙木立信」，剧本沿用 video/scenes/ep01v2/shot*.json 和整集配音）。
 
 用法（仓库根目录）：
-  python video/stage3d/build_stage3d.py qa [场号...]        # 穿帮质检：每个故事镜头抽 3 帧，把书外面涂成品红，拍到品红就报错
+  python video/stage3d/build_stage3d.py qa [场号...]        # 先查缺字（video/glyph_check.py），再穿帮质检：每个故事镜头抽 3 帧，把书外面涂成品红，拍到品红就报错
   python video/stage3d/build_stage3d.py frame [场号...]     # 入画质检：说话的人、镜头对准的人在不在画面里；前景人物有没有被切一半
   python video/stage3d/build_stage3d.py stills 场号 秒...    # 截几张静帧看（video/out/stage3d/ep01/still_场号_秒.jpg）
   python video/stage3d/build_stage3d.py render [并行数]      # 渲染整集：切成 20 秒的段，默认 4 段并行（可断点续渲），再拼接、配上整集声音
 输出：video/out/stage3d/ep01/ep01_3d.mp4
+退出码：0 没问题；1 质检查出了问题（qa、frame）；2 崩溃或环境有问题（字体没加载成功、页面初始化失败、脚本报错），不是质检结果。
+环境变量 STAGE3D_SCENES / STAGE3D_OUT：临时换场景 JSON 目录、输出目录（video/tests/ 下的测试用）。
 
 镜头规则（docs/research/纸艺作品-运镜场景叙事.md、docs/画面改版-纸片马里奥风格-给云端.md）：
 - 每一页先用书桌机位交代（desk），再切电影镜头：贴地仰拍（low）、斜上方高机位（high）、反应特写（close）、跟拍（follow）、推近（push）；
@@ -15,21 +17,27 @@
 import functools
 import http.server
 import json
+import os
 import subprocess
 import sys
 import threading
 import time
+import traceback
 from concurrent.futures import ProcessPoolExecutor
 from io import BytesIO
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "video"))
+import glyph_check  # noqa: E402
 import render  # noqa: E402
+from playwright.sync_api import Error as PlaywrightError  # noqa: E402
 
-SCENES = ROOT / "video/scenes/ep01v2"
+# 环境变量 STAGE3D_SCENES / STAGE3D_OUT 可以临时换场景 JSON 目录和输出目录（测试用：video/tests/ 下的脚本；环境变量会传给并行渲染的子进程，命令行参数不会）
+SCENES = Path(os.environ["STAGE3D_SCENES"]) if os.environ.get("STAGE3D_SCENES") else ROOT / "video/scenes/ep01v2"
 AUDIO = ROOT / "video/out/ep01v2/ep01_full.mp4"
-OUT = ROOT / "video/out/stage3d/ep01"
+OUT = Path(os.environ["STAGE3D_OUT"]) if os.environ.get("STAGE3D_OUT") else ROOT / "video/out/stage3d/ep01"
+TAG_MIN_SECS = 1.5    # 人名牌实际画出来至少这么久，不到就报错（T24）
 FPS = 30
 W, H = 1080, 1920
 
@@ -110,18 +118,34 @@ def serve():
     return srv
 
 
-def open_stage(p, k, srv):
+def open_stage(p, k, srv, tries=3):
+    """打开第 k 场的 3D 舞台页并初始化。
+    字体没加载成功（stage.html / engine.html 的 checkFonts 抛的）：打印原因，退出码 2，不往下渲；
+    初始化偶发失败（reviewer 遇到过 `Page.evaluate: Event`）：换一个新浏览器重试，最多 tries 次，还不行就把错误抛出去（main 会按崩溃退出码 2）。
+    初始化完先空渲一帧（t=0）再交给调用方：第一帧之前的预热。"""
     scene = render.load_scene(SCENES / f"shot{k}.json")
     cfg = SHOTS[k]
-    browser = p.chromium.launch(executable_path=render.CHROMIUM, args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"])
-    page = browser.new_page(viewport={"width": W, "height": H})
-    page.on("pageerror", lambda e: print(f"[shot{k} pageerror]", e, flush=True))
-    page.goto(f"http://127.0.0.1:{srv.server_address[1]}/video/stage3d/stage.html?w={W}&h={H}")
-    page.wait_for_function("window.ready === true && document.getElementById('engine').contentWindow.init !== undefined")
     flip = scene.get("flip", [True, True])
-    page.evaluate("([s, a, o]) => window.stageInit(s, a, o)",
-                  [scene, render.assets_for(scene), {"set": cfg["set"], "x0": cfg["x0"], "z": cfg["z"], "shots": cfg["cams"], "flip": [True, True] if flip else flip}])
-    return browser, page, scene
+    args = [scene, render.assets_for(scene), {"set": cfg["set"], "x0": cfg["x0"], "z": cfg["z"], "shots": cfg["cams"], "flip": [True, True] if flip else flip}]
+    for attempt in range(1, tries + 1):
+        browser = p.chromium.launch(executable_path=render.CHROMIUM, args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"])
+        try:
+            page = browser.new_page(viewport={"width": W, "height": H})
+            page.on("pageerror", lambda e: print(f"[shot{k} pageerror]", e, flush=True))
+            page.goto(f"http://127.0.0.1:{srv.server_address[1]}/video/stage3d/stage.html?w={W}&h={H}")
+            page.wait_for_function("window.ready === true && document.getElementById('engine').contentWindow.init !== undefined")
+            page.evaluate("([s, a, o]) => window.stageInit(s, a, o)", args)
+            page.evaluate("window.renderFrame(0)")
+            return browser, page, scene
+        except PlaywrightError as e:
+            browser.close()
+            why = render.font_failure(e)
+            if why:
+                print(f"错误：{why}", file=sys.stderr)
+                sys.exit(2)
+            print(f"[第 {k} 场] 舞台初始化失败（第 {attempt}/{tries} 次）：{str(e).splitlines()[0][:200]}", flush=True)
+            if attempt == tries:
+                raise
 
 
 SEG = 20.0   # 每段最多 20 秒成片：长场次切成几段并行渲染（原来按场次分，最长的第 1 场拖了整集一半时间）
@@ -197,11 +221,24 @@ def qa(shots):
     return bad
 
 
+def tag_errors(k, page):
+    """人名牌：实际画出来的时间够不够、摆不摆得开（没配名单的场是空列表）。返回和 frame_qa 的 errs 同样格式的元组。"""
+    errs = [(k, float(st["t0"] if st["ts"] is None else st["ts"]), float(st["t1"] if st["te"] is None else st["te"]),
+             f"人名牌只画出 {st['secs']:.1f} 秒，要 ≥ {TAG_MIN_SECS} 秒（从这个人第一次入画、脚在安全区里算起 2 秒）", f"「{st['name']}」", None)
+            for st in page.evaluate("window.nametagStats()") if st["secs"] < TAG_MIN_SECS]
+    names = {st["id"]: st["name"] for st in page.evaluate("window.nametagStats()")}
+    errs += [(k, float(c["t0"]), float(c["t1"]), "人名牌摆不开，互相重叠（安全区里放不下：改镜头，或者让这几个人错开出场）", "、".join(f"「{names[i]}」" for i in c["ids"]), None)
+             for c in page.evaluate("window.nametagClashes()")]
+    return errs
+
+
 def frame_qa(shots, step=0.5):
     """入画质检（Chris 2026-09-29：有些人物跑出画面了）：每 0.5 秒查一次
     1. 正在说话的人，必须至少 75% 在画面里，而且不能被前面的东西挡住 30% 以上；
     2. 特写、跟拍、推近镜头对准的人，必须至少 85% 在画面里；
-    3. 其他人：占画面高度 25% 以上（在前景、很显眼）却只有 20%–70% 在画面里 = 被画框切了一半，也算错。
+    3. 其他人：占画面高度 25% 以上（在前景、很显眼）却只有 20%–70% 在画面里 = 被画框切了一半，也算错；
+    4. 人名牌（场景 JSON 里有 nametags 的场）：每张牌实际画出来的时间要 ≥ TAG_MIN_SECS（1.5 秒）。牌子从这个人第一次入画（脚在安全区里）开始计 2 秒，
+       没入画、入画太晚、中途退场都会不够；stage.html 的 nametagStats() 给出每张牌的窗口和实际画了多少帧（T24）。
     同一个问题连续出现只报一次（报第一次出现的时刻和持续多久）。"""
     from playwright.sync_api import sync_playwright
     srv = serve()
@@ -239,10 +276,11 @@ def frame_qa(shots, step=0.5):
                         errs.append((k, t0, t1, *key))
                 t = round(t + step, 2)
             errs += [(k, v[0], v[1], *key) for key, v in open_.items()]
+            errs += tag_errors(k, page)
             browser.close()
     srv.shutdown()
-    for k, t0, t1, kind, who, cam in sorted(errs):
-        print(f"  第 {k} 场 {t0:.1f}–{t1:.1f}s [{kind}] {who}（{cam} 镜头）")
+    for k, t0, t1, kind, who, cam in sorted(errs, key=lambda e: e[:5]):
+        print(f"  第 {k} 场 {t0:.1f}–{t1:.1f}s [{kind}] {who}" + (f"（{cam} 镜头）" if cam else ""))
     print("入画质检：" + ("没有问题" if not errs else f"{len(errs)} 处"))
     return errs
 
@@ -260,16 +298,27 @@ def stills(k, ts):
     srv.shutdown()
 
 
-def main():
+def glyph_gate(shots):
+    """渲染前先查每场要上画面的字有没有缺在字体子集外面（video/glyph_check.py）：缺字就报出来、退出码 1，不往下渲。"""
+    issues = glyph_check.check_files([SCENES / f"shot{k}.json" for k in shots])
+    if issues:
+        glyph_check.print_report(issues)
+        sys.exit(1)
+
+
+def _main():
     cmd, rest = sys.argv[1], sys.argv[2:]
     OUT.mkdir(parents=True, exist_ok=True)
     if cmd == "qa":
-        sys.exit(1 if qa([int(x) for x in rest] or list(SHOTS)) else 0)
+        shots = [int(x) for x in rest] or list(SHOTS)
+        glyph_gate(shots)   # 缺字也算 qa 不过（退出码 1），先查它：快
+        sys.exit(1 if qa(shots) else 0)
     if cmd == "frame":
         sys.exit(1 if frame_qa([int(x) for x in rest] or list(SHOTS)) else 0)
     if cmd == "stills":
         stills(int(rest[0]), [float(x) for x in rest[1:]])
         return
+    glyph_gate(list(SHOTS))   # 渲染前先查缺字
     jobs = segments()
     t0 = time.time()
     with ProcessPoolExecutor(max_workers=int(rest[0]) if rest else 4) as ex:   # 4 核：4 段并行
@@ -280,6 +329,18 @@ def main():
     subprocess.run([render.FFMPEG, "-y", "-loglevel", "error", "-i", str(OUT / "silent.mp4"), "-i", str(AUDIO), "-map", "0:v", "-map", "1:a",
                     "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", str(OUT / "ep01_3d.mp4")], check=True)
     print(f"整集 → {OUT / 'ep01_3d.mp4'}（总共 {time.time() - t0:.0f} 秒）")
+
+
+def main():
+    """退出码：0 = 没问题；1 = 质检查出了问题（qa、frame 的结果）；2 = 崩溃或环境有问题（字体没加载成功、页面初始化失败、脚本报错），不是质检结果，要先修好再重跑。"""
+    try:
+        _main()
+    except SystemExit:
+        raise
+    except Exception:   # noqa: BLE001 —— 崩溃不能和「查到问题」的退出码 1 混在一起
+        traceback.print_exc()
+        print("build_stage3d.py 崩溃了（不是质检查出的问题）：退出码 2", file=sys.stderr)
+        sys.exit(2)
 
 
 if __name__ == "__main__":

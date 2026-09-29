@@ -1,0 +1,25 @@
+{
+ "about": "registry_check 测试样例：试做集里 auntie_hands native 写 1（T13）：仍然报错",
+ "set": "qin_gate",
+ "actors": {
+  "auntie": {
+   "poses": [
+    [
+     0,
+     "auntie_hands"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

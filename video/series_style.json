@@ -1,0 +1,10 @@
+{
+ "about": "系列级的样式表（工作流第七节：每集必须一样的东西只写在公共代码和这样的系列表里，不许进每集的配置）。houses = 家名 → 人名牌和纸景旗子的家族颜色（color，#rrggbb）和旗的纹样（flag，几何纹样加一个家名，不仿现代国旗）。第一集第 3 步定色和定纹样，定了记进 DECISIONS，全系列沿用；现在都是占位（null）：人名牌用默认墨色。每集配置里的 NAMETAGS 只写 name 和 house，house 必须是这里的键（家名不在表里就报错）。",
+ "houses": {
+  "智家": {"color": null, "flag": null},
+  "赵家": {"color": null, "flag": null},
+  "韩家": {"color": null, "flag": null},
+  "魏家": {"color": null, "flag": null},
+  "周王室": {"color": null, "flag": null}
+ }
+}

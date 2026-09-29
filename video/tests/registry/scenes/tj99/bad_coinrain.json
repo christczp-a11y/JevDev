@@ -1,0 +1,32 @@
+{
+ "about": "registry_check 测试样例：coinRain 事件",
+ "set": "test_set",
+ "actors": {
+  "sgm": {
+   "poses": [
+    [
+     0,
+     "sgm_book"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": [
+  {
+   "type": "coinRain",
+   "t": 3,
+   "x": 500,
+   "n": 10
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "about": "registry_check 测试样例：desk_wait 原图朝左，native 写 1（同时是试做集素材）",
+ "set": "test_set",
+ "actors": {
+  "desk": {
+   "poses": [
+    [
+     0,
+     "desk_wait"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

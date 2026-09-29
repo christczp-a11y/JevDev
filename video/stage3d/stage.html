@@ -7,7 +7,7 @@
      场景：书桌上一本打开的立体书；书页上立着纸片（城墙、城门、树……）和有体积的卡纸模型；远景是一圈弯曲的背景纸（任何机位都拍不到边）。
      镜头（docs/research/纸艺作品-运镜场景叙事.md）：每一页先用书桌机位交代，再切电影镜头；讲知识点时镜头稳住；结尾拉远回到书桌。
      由 video/stage3d/build_stage3d.py 逐帧调用 renderFrame(t) 截图。 -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;700;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../vendor/fonts/fonts.css">   <!-- 字体在仓库里（工作流第 0 步第 19 项），不再连 Google Fonts -->
 <style>
 html, body { margin: 0; background: #000; overflow: hidden; }
 #gl, #ui { position: absolute; left: 0; top: 0; }
@@ -93,7 +93,12 @@ for (const s of [-1, 1]) {
 const loader = new THREE.TextureLoader();
 const pops = [];                          // 翻页时弹起 / 折倒的东西：{obj, t0, kind: 'hinge' | 'group'}
 const stage = new THREE.Group(); scene.add(stage);   // 这一页上的所有东西
-async function loadTex(url) { const t = await loader.loadAsync(url); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; }
+async function loadTex(url) {   // 读不到图时抛出来的错要带图的路径（以前只有 `Page.evaluate: Event`，看不出是哪一张）
+  let t;
+  try { t = await loader.loadAsync(url); }
+  catch (e) { throw new Error(`贴图加载失败：${url}（${e && e.message || e && e.type || e}）`); }
+  t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
+}
 function flatMesh(tex, w, h, crop = 1) {
   const geo = new THREE.PlaneGeometry(w, h); geo.translate(0, h / 2, 0);
   if (crop < 1) { const uv = geo.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setX(i, uv.getX(i) * crop); }
@@ -224,7 +229,8 @@ window.stageInit = async (sceneData, assets, opts) => {
   });
   overlayC = document.createElement('canvas'); overlayC.width = 1080; overlayC.height = 608;
   hudC = document.createElement('canvas'); hudC.width = 1080; hudC.height = 100;
-  await document.fonts.load('700 58px "Noto Sans SC"'); await document.fonts.load('40px "ZCOOL KuaiLe"');
+  await ENG.checkFonts(document, sceneData);   // 界面层（卷号、说话人、字幕、人名牌）画在这个页面里：带上要画的所有字加载，再验证真的生效；没生效就抛错
+  if (SC.nametags) tagWindows();   // 人名牌窗口在这里一次算好（要扫镜头和角色位置），不留到画面渲染的中途
   return true;
 };
 window.qaLeak = on => {   // 质检：书外面的东西和房间背景涂成品红
@@ -298,19 +304,124 @@ CAMS.fit = (u, p, sh, t) => {
 };
 window.camFor = t => { const sh = SHOTS.find(s => t >= s[0] && t < s[1]) || SHOTS[SHOTS.length - 1]; return sh; };
 
+// 人名牌（工作流第 0 步第 9 项）：人物第一次出场时，名字和家名一起出现约 2 秒。SC.nametags = [{id, name, house, color, t0, t1, hold}]
+// （分场脚本模板按每集配置的 NAMETAGS 和系列的家族颜色表 video/series_style.json 写进场景 JSON；没有这一项的集什么都不画，画面和没有这个功能时完全一样）。
+// 时间（T24）：从这个人第一次入画的时刻开始计 hold 秒，不是从他出场的时刻——镜头没拍到他的那段时间牌子不会白白过期。
+//   入画 = 脚底落在人物安全区里，而且牌子放得下：左右各留 7%、脚底 y 在 SAFE.top 和 NAME_FOOT_MAX 之间（再往下牌子放不进安全区，会压在人物身上，
+//   特写里就是这样；等到景别合适再出）。窗口 [ts, te] 是 t 的纯函数（第一次用到时按 0.1 秒一步扫出来），所以分段并行渲染每一段算出来一样。
+//   nametagStats() 把每张牌的窗口和实际画了多少帧暴露出来，build_stage3d.py frame 查：画出来不到 1.5 秒报错。
+// 版面（工作流第七节，T23）：牌子贴在人物脚下，指针尖在本人脚底，跟着脚底在屏幕上的位置走；两张牌撞在一起只挪牌子（engine.html 的 placeNametags），
+//   挪完夹回安全区：左右各留 7%、上沿不压计分牌（SAFE.top + 20）、下沿不压字幕（NAME_BOTTOM = 1400；字幕多到四行，说话人标签顶得更高，下沿跟着上移）。
+// 画在 2D 特效层（选择题、横幅）之下。样式跟说话人标签一致：ZCOOL KuaiLe、圆角胶囊、白字；底色是家族颜色（没定时用墨色）。
+const NAME_H = 62, NAME_GAP = 26, NAME_BOTTOM = 1400, NAME_FOOT_MAX = NAME_BOTTOM - NAME_H - NAME_GAP;
+const scanCam = new THREE.PerspectiveCamera(40, W / H, 0.1, 300);
+let TAGW = null, TAG_LAST = []; const TAG_DRAWN = {};
+function camPose(t) { const sh = window.camFor(t); return CAMS[sh[2]]((t - sh[0]) / (sh[1] - sh[0]), sh[3] || {}, sh, t); }   // renderFrame 也用它
+function footAt(id, t) {   // t 时刻这个人的脚底在竖屏（1080×1920）上的位置；这一刻没出场返回 null。不画图（只有特写、跟拍、推近的机位要画一次目标角色），所以扫得动
+  const a = actors[id]; if (!a) return null;
+  const x = ENG.actorWorldX(id, t); if (x == null) return null;
+  a.x = x;
+  const p = window.camFor(t)[3] || {};   // 特写、跟拍、推近的机位按 actors[p.id] 的 x、h 算，要更新成 t 时刻的（renderFrame 每帧都是这样做的）
+  if (p.id && actors[p.id]) { const r = ENG.renderSolo(p.id, t, actors[p.id].canvas, SS); if (r) { actors[p.id].x = r.x; if (r.top != null) actors[p.id].h = (500 - r.top) * S; } }
+  const c = camPose(t), shake = ENG.camShake(t) * S * 0.6;
+  scanCam.position.copy(c.pos).add(V3(shake, 0, 0)); scanCam.lookAt(c.look.clone().add(V3(shake, 0, 0)));
+  scanCam.fov = c.fov || 40; scanCam.updateProjectionMatrix(); scanCam.updateMatrixWorld();
+  const v = V3((x - X0) * S, GY, a.z).project(scanCam);
+  return { fx: (v.x + 1) / 2 * 1080, fy: (1 - v.y) / 2 * 1920, front: v.z < 1 };
+}
+// 入画：脚在安全区里，而且牌子放得下——左右各留 7% 再多 45 像素（指针尖要落在牌子平直的那一段），y 在 SAFE.top 和 NAME_FOOT_MAX 之间
+const footInView = f => f && f.front && f.fx >= 1080 * SAFE.side + 45 && f.fx <= 1080 * (1 - SAFE.side) - 45 && f.fy >= SAFE.top && f.fy <= NAME_FOOT_MAX;
+function tagWindows() {
+  if (TAGW) return TAGW;
+  const STEP = 0.1, r2 = x => Math.round(x * 100) / 100;
+  return TAGW = (SC.nametags || []).map(tg => {
+    const hold = tg.hold ?? 2; let ts = null;
+    for (let t = tg.t0; t <= tg.t1 + 1e-9; t += STEP) if (footInView(footAt(tg.id, t))) { ts = r2(t); break; }
+    if (ts == null) return { tg, ts: null, te: null, secs: 0 };
+    const te = r2(Math.min(ts + hold, tg.t1)); let n = 0;
+    for (let t = ts; t < te - 1e-9; t += STEP) if (footInView(footAt(tg.id, t))) n++;   // 窗口里镜头切走、脚出了安全区的那几帧不画，不算画出来的时间
+    return { tg, ts, te, secs: r2(n * STEP) };
+  });
+}
+window.nametagFoot = footAt;   // 测试用：t 时刻某个角色的脚底在竖屏上的位置 {fx, fy, front}，没出场是 null
+window.nametagPlacements = () => TAG_LAST;   // 最近一帧（带界面层的）每张牌摆在哪：{id, name, footX, footY（本人脚底）, tipX, tipY（指针尖）, cx, top, w, h, clash, bottom（这一帧牌子下沿的上限）}。质检和测试用
+window.nametagStats = () => tagWindows().map(w => ({ id: w.tg.id, name: w.tg.name, t0: w.tg.t0, t1: w.tg.t1, ts: w.ts, te: w.te, secs: w.secs, drawn: (TAG_DRAWN[w.tg.id] || new Set()).size }));
+function tagBottom(t) {   // 这一刻牌子下沿的上限：默认 NAME_BOTTOM；字幕多到四行以上，说话人标签顶得更高，牌子下沿跟着上移（标签上沿再留 8 像素）
+  const sub = SUBS.find(s => t >= s[0] && t <= s[1]);
+  return sub ? Math.min(NAME_BOTTOM, subLayout(sub[3]).y0 - (sub[2] ? 50 : 0) - 8) : NAME_BOTTOM;
+}
+function layoutTags(t) {   // t 时刻要画的牌子和它们摆在哪。只用 footAt（不依赖画没画过这一帧），所以 nametagClashes 可以按 0.1 秒扫
+  const items = [], live = [], bottom = tagBottom(t);
+  U.save(); U.font = '44px "ZCOOL KuaiLe"';
+  for (const w of tagWindows()) {
+    const tg = w.tg;
+    if (w.ts == null || t < w.ts || t > w.te) continue;
+    const f = footAt(tg.id, t);
+    if (!footInView(f)) continue;   // 这一刻脚不在安全区里（镜头切到特写、摇走了）：这几帧不画，免得牌子钉在画面边上、压在人物身上
+    const label = tg.house ? `${tg.name} · ${tg.house}` : tg.name;
+    items.push({ ax: f.fx, top0: f.fy + NAME_GAP, w: U.measureText(label).width + 56, h: NAME_H });
+    live.push({ tg, w, label, fx: f.fx, fy: f.fy });
+  }
+  U.restore();
+  return { items, live, bottom, put: ENG.placeNametags(items, { xmin: 1080 * SAFE.side, xmax: 1080 * (1 - SAFE.side), tmin: SAFE.top + 20, tmax: bottom }) };
+}
+window.nametagClashes = () => {   // 所有牌子的窗口里，牌子摆不开（互相重叠）的时段：[{t0, t1, ids}]，按 0.1 秒扫。frame 质检报出来
+  const r2 = x => Math.round(x * 100) / 100, times = new Set();
+  for (const w of tagWindows()) if (w.ts != null) for (let t = w.ts; t <= w.te + 1e-9; t += 0.1) times.add(r2(t));
+  const out = [];
+  for (const t of [...times].sort((a, b) => a - b)) {
+    const { live, put } = layoutTags(t), ids = live.filter((_, i) => put[i].clash).map(l => l.tg.id).sort();
+    if (!ids.length) continue;
+    const last = out[out.length - 1];
+    if (last && last.ids.join() === ids.join() && t - last.t1 < 0.15) last.t1 = t; else out.push({ t0: t, t1: t, ids });
+  }
+  return out;
+};
+function edgeAlpha(id, t) {   // 脚快要离开（或刚回到）安全区时，牌子淡出（淡入），不直接消失：往后看 0.25 秒、往前看 0.2 秒（每 0.05 秒查一次）
+  let out = 1, back = 1;
+  for (let d = 0.05; d <= 0.25 + 1e-9; d += 0.05) if (!footInView(footAt(id, t + d))) { out = Math.min(1, d / 0.25); break; }
+  for (let d = 0.05; d <= 0.2 + 1e-9; d += 0.05) if (!footInView(footAt(id, t - d))) { back = Math.min(1, d / 0.2); break; }
+  return Math.min(out, back);
+}
+function drawNametags(t) {
+  if (!SC.nametags) return;
+  const { items, live, put, bottom } = layoutTags(t), fr = Math.round(t * 30);
+  const edge = live.map(l => edgeAlpha(l.tg.id, t));   // footAt 会改各角色的 x、h：放在 layoutTags 之后算，下一帧 renderFrame 会重新设
+  TAG_LAST = live.map(({ tg, label, fx, fy, w }, i) => ({ id: tg.id, name: tg.name, label, footX: fx, footY: fy, tipX: items[i].ax, tipY: put[i].top - 16, cx: put[i].cx, top: put[i].top,
+    w: items[i].w, h: items[i].h, clash: put[i].clash, bottom, alpha: Math.min(1, (t - w.ts) / 0.2, (w.te - t) / 0.25, edge[i]) }));
+  live.forEach(({ tg, w, label }, i) => {
+    const it = items[i], { cx, top } = put[i], h = it.h, tw = it.w;
+    (TAG_DRAWN[tg.id] = TAG_DRAWN[tg.id] || new Set()).add(fr);
+    U.save(); U.font = '44px "ZCOOL KuaiLe"';
+    U.globalAlpha = Math.min(1, (t - w.ts) / 0.2, (w.te - t) / 0.25, edge[i]);
+    const s = 0.8 + 0.2 * easeOutBack(clamp((t - w.ts) / 0.3));
+    U.translate(it.ax, top - 16); U.scale(s, s);   // 以指针尖为原点缩放：弹出的时候指针尖一直在脚下
+    roundRect(U, cx - it.ax - tw / 2, 16, tw, h, h / 2); U.moveTo(-14, 18); U.lineTo(0, 0); U.lineTo(14, 18); U.closePath();   // 胶囊 + 朝上的小指针（尖在原点）
+    U.lineJoin = 'round'; U.lineWidth = 8; U.strokeStyle = '#fffaf0'; U.shadowColor = 'rgba(60,40,20,0.35)'; U.shadowBlur = 8; U.shadowOffsetY = 3; U.stroke();   // 白纸边（先描边再填色，指针底边不留线）
+    U.fillStyle = tg.color || '#2a2320'; U.fill(); U.shadowColor = 'transparent';
+    U.fillStyle = '#fffaf0'; U.textAlign = 'center'; U.textBaseline = 'middle'; U.fillText(label, cx - it.ax, 16 + h / 2 + 2);
+    U.restore();
+  });
+}
+function subLayout(text) {   // 字幕框的排版：几行、框多高、框上沿 y（说话人标签再往上 50）
+  U.font = '700 58px "Noto Sans SC"';
+  const lines = wrap(U, text, 880), bh = 40 + lines.length * 76;
+  return { lines, bh, y0: 1600 - bh / 2 };
+}
 function drawUI(t) {
   U.clearRect(0, 0, W, H);
   U.save(); U.scale(K, K);
+  const sub = SUBS.find(s => t >= s[0] && t <= s[1]);
+  drawNametags(t);   // 人名牌：在 2D 特效层（选择题、横幅）之下；字幕的说话人标签顶得再高，牌子下沿跟着上移（tagBottom）
   ENG.renderOverlay(t, overlayC); U.drawImage(overlayC, 0, BAND_Y);   // 2D 特效层（选择题、横幅、徽章……）
   ENG.renderHudLayer(t, hudC); U.drawImage(hudC, 0, HUD_Y);          // 计分牌：顶部，系列标签下面
   U.font = '40px "ZCOOL KuaiLe"'; const kw = U.measureText(SC.title.kicker).width + 60;
   U.fillStyle = 'rgba(42,35,32,0.88)'; roundRect(U, (1080 - kw) / 2, 90, kw, 66, 33); U.fill();
   U.fillStyle = '#f4e8d0'; U.textAlign = 'center'; U.textBaseline = 'middle'; U.fillText(SC.title.kicker, 540, 124);
-  const sub = SUBS.find(s => t >= s[0] && t <= s[1]);
   if (sub) {
     const [t0, t1, who, text] = sub, a = Math.min(1, (t - t0) / 0.15, (t1 - t) / 0.15);
-    U.globalAlpha = a; U.font = '700 58px "Noto Sans SC"';
-    const lines = wrap(U, text, 880), bh = 40 + lines.length * 76, y0 = 1600 - bh / 2;
+    U.globalAlpha = a;
+    const { lines, bh, y0 } = subLayout(text);
     U.fillStyle = 'rgba(251,243,226,0.95)'; roundRect(U, 70, y0, 940, bh, 22); U.fill();
     U.strokeStyle = '#fffaf0'; U.lineWidth = 5; U.stroke();
     U.fillStyle = '#2a2320'; lines.forEach((ln, i) => U.fillText(ln, 540, y0 + 20 + 76 * (i + 0.5)));
@@ -391,7 +502,7 @@ window.renderFrame = (t, opts = {}) => {
   hemi.intensity = 1.35 * dim; sun.intensity = 2.6 * dim;
   // 镜头
   for (const m of window.__aprons || aprons) m.visible = !['desk', 'pullback'].includes(window.camFor(t)[2]);
-  const sh = window.camFor(t), c = CAMS[sh[2]]((t - sh[0]) / (sh[1] - sh[0]), sh[3] || {}, sh, t);
+  const c = camPose(t);
   const shake = ENG.camShake(t) * S * 0.6;
   cam.position.copy(c.pos).add(V3(shake, 0, 0)); cam.lookAt(c.look.clone().add(V3(shake, 0, 0)));
   cam.fov = c.fov || 40; cam.updateProjectionMatrix();

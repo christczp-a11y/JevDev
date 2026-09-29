@@ -1,0 +1,22 @@
+{
+ "about": "registry_check 测试样例：新集用了试做集的小伙纸偶",
+ "set": "test_set",
+ "actors": {
+  "youth": {
+   "rigs": {
+    "side": "youth",
+    "q": "youth_q"
+   },
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

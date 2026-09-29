@@ -1,0 +1,47 @@
+{
+ "about": "registry_check 测试样例：试做集目录：用试做集素材和布景都可以，应该通过",
+ "set": "qin_gate",
+ "actors": {
+  "kid": {
+   "poses": [
+    [
+     0,
+     "d2_run"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  },
+  "sy": {
+   "poses": [
+    [
+     0,
+     "sy2_point"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [
+  {
+   "type": "sprite",
+   "img": "crow"
+  }
+ ],
+ "events": []
+}

@@ -1,0 +1,25 @@
+{
+ "about": "registry_check 测试样例：用了停用的旧版爹",
+ "set": "test_set",
+ "actors": {
+  "dad": {
+   "poses": [
+    [
+     0,
+     "dad_grab"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

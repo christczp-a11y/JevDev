@@ -13,9 +13,13 @@ Chris 2026-09-28：旗杆悬空、回头时发带跑到脸前面、城墙把城�
   3. Jev 按六道闸门判断：姿势说不通 / 该接触的没接触 / 场景没接上 / 不合理的穿插 / 配饰朝向不对 / 背景不合常理
      两个观察员都判「是」= 确定有问题；只有一个判「是」= 可能有问题，人来看
 
-用法：python video/logic_qa.py <剧本.json>
+用法：python video/logic_qa.py [--ep 集名] <剧本.json>
+按集配置（第 0 步第 8 项）：动作说明里跟具体道具有关的（木杆、金块这类）和提示词里的画面形式（「横版动画」「3D 立体书动画」）
+写在这一集的配置 video/episodes/<集>.py 的 CFG["QA"]（action_text、format，写法见 video/episode_config.py；format 是提示词里「这是一部……里的一刻」那句的中间部分）；
+集名取场景 JSON 所在目录名（video/scenes/<集>/shotN.json），不在这种目录里就用 --ep 指定。
 一开头就检查环境变量 TYPESAFE_API_KEY，没有就非 0 退出（P8）：不等渲染、观察员跑完才报。
 """
+import argparse
 import json
 import os
 import subprocess
@@ -34,15 +38,17 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")   # 不设 PYTHONIOENCODING 时，中文报错也能正常显示，不变成 \u 转义（E5、E7）
 
 import render  # noqa: E402
+from episode_config import episode_of_scene, qa_config  # noqa: E402
 from jevdev import jev  # noqa: E402
 from jevdev.writer import CLAUDE_EXE  # noqa: E402
 
 OBSERVER = "claude-opus-5-5"
-ACTION_TEXT = {   # 动作名 → 这一刻人物在做的事（给观察员和 Jev 看）
-    "talk": "站着说话，边说边比划", "fist": "握拳给自己打气", "reach": "伸手去够面前那根竖着的高木杆，但伸到一半停住犹豫（手还没碰到木杆是剧情设计）",
-    "look": "回头张望", "crouch": "蹲下", "lift": "握住那根三丈长（约 7 米）、很重的竖着的木杆靠下的地方，让杆顶往前方倒下放平，再把它抱到腰前",
-    "carry": "双臂从下面兜住那根三丈长、很重的木杆，抱在腰前，迈着沉重的步子往前走", "drop": "把抱在腰前的长木杆放下：弯腰先压前端着地，再放后端",
-    "lookup": "抬头看天上", "catch": "伸手准备接住飞来的金块（金块还在空中飞过来，这时手里还没有东西是正常的）", "hug": "双手捧着接到的一小堆金块，开心地笑",
+ACTION_TEXT = {   # 动作名 → 这一刻人物在做的事（给观察员和 Jev 看）。这里只放和具体道具无关的通用动作；
+    # reach、lift、carry、drop、catch、hug 这类要说出手里是什么的，写在每集的配置里（video/episodes/<集>.py 的 CFG["QA"]["action_text"]），
+    # 没写的动作，beat_of 直接用动作名当说明
+    "talk": "站着说话，边说边比划", "fist": "握拳给自己打气",
+    "look": "回头张望", "crouch": "蹲下",
+    "lookup": "抬头看天上",
     "cheer": "欢呼",
 }
 KEY_MOMENTS = {   # 动作名 → 除了中点以外还要抽的时刻（离动作开始的秒数）：姿势最极端、最容易露馅的瞬间
@@ -59,7 +65,7 @@ OBS_SCHEMA = {"type": "object", "properties": {
     "attach": {"type": "string", "description": "人物身上的配饰（发带、头巾、帽子、辫子、腰带）：先写脸朝左还是朝右，再写配饰在头的哪一侧、朝哪边飘；有没有跑到脸前面，或者和头、身体的朝向对不上"},
     "world": {"type": "string", "description": "背景里的东西合不合常理：旗杆、树、房子、摊位的底部有没有落在地面或墙上（有没有悬空）；城门、门洞、窗户、通道里看到的是门外的景色，还是被后面的墙或别的东西堵住了；有没有不该出现的重复或断掉的东西。有纯背景图时以纯背景图为准"},
 }, "required": ["pose", "contact", "effort", "scene", "clip", "attach", "world"]}
-OBS_PROMPT = """这是一部纸艺风格横版动画里的一刻（第 {t:.1f} 秒）。
+OBS_PROMPT = """这是一部{fmt}里的一刻（第 {t:.1f} 秒）。
 此刻剧情：{beat}
 图用 Read 打开：整个画面 {band}；主角放大 {zoom}{bg}
 画风说明：人物是 Q 版纸片人，手脚是一块块纸片用关节连起来的，肩膀、手肘、膝盖处有圆头和白色纸边，这是设计，不算问题。
@@ -112,10 +118,14 @@ def moments(scene):
     return [m[:3] for m in sorted(both, key=lambda m: m[0])]
 
 
-def beat_of(scene, t, id_, name):
+def beat_of(scene, t, id_, name, action_text=None):
+    """action_text：这一集的动作说明（配置 QA.action_text），和通用的 ACTION_TEXT 合在一起用；不传就只用通用的。"""
+    texts = {**ACTION_TEXT, **(action_text or {})}
+    if not scene["actors"]:   # 没有角色的场次（下集预告这类）：只有镜头平移时查背景
+        return "镜头平移中（主要检查背景有没有接缝）；这一场没有角色"
     a = scene["actors"][id_ or next(iter(scene["actors"]))]
     acts = [n for t0, t1, n, *_ in a.get("actions", []) if t0 <= t <= t1] or ([name] if name else [])
-    parts = [ACTION_TEXT.get(n, n) for n in acts]
+    parts = [texts.get(n, n) for n in acts]
     for t0, t1, n, *pp in a.get("actions", []):   # 动作里的「蹦」：开心地蹦起来时脚离地是正常的
         for h0, k in (pp[0].get("hops", []) if pp else []):
             if t0 + h0 - 0.05 <= t <= t0 + h0 + k * 0.42 + 0.05:
@@ -132,12 +142,17 @@ def beat_of(scene, t, id_, name):
     return "主角：" + text
 
 
-def observe(band, zoom, t, beat, bg=None):
+def obs_prompt(band, zoom, t, beat, bg=None, fmt="纸艺风格动画"):
+    """观察员的提示词（单独拿出来，好在不跑观察员的情况下比对）。fmt：这一集的画面形式（配置 QA.format）。"""
     bg_line = f"；纯背景（把人物藏起来了，专门查背景）{bg}" if bg else ""
+    return OBS_PROMPT.format(t=t, beat=beat, band=band, zoom=zoom, bg=bg_line, fmt=fmt)
+
+
+def observe(band, zoom, t, beat, bg=None, fmt="纸艺风格动画"):
     proc = subprocess.run(
         [str(CLAUDE_EXE), "-p", "--model", OBSERVER, "--output-format", "json", "--tools", "Read", "--allowedTools", "Read",
          "--add-dir", str(Path(band).parent), "--json-schema", json.dumps(OBS_SCHEMA, ensure_ascii=False)],
-        input=OBS_PROMPT.format(t=t, beat=beat, band=band, zoom=zoom, bg=bg_line), capture_output=True, text=True, encoding="utf-8", timeout=900)
+        input=obs_prompt(band, zoom, t, beat, bg, fmt), capture_output=True, text=True, encoding="utf-8", timeout=900)
     return json.loads(proc.stdout)["structured_output"]
 
 
@@ -151,19 +166,26 @@ def require_key():
 
 def main():
     require_key()
-    scene_path = Path(sys.argv[1])
+    ap = argparse.ArgumentParser()
+    ap.add_argument("scene", help="场景 JSON")
+    ap.add_argument("--ep", help="集名（video/episodes/<集>.py）；不写就取场景 JSON 所在目录名")
+    args = ap.parse_args()
+    scene_path = Path(args.scene)
+    qa, why = qa_config(args.ep or episode_of_scene(scene_path))
+    if why:   # 读不到集配置就不查：动作说明缺了、提示词里的画面形式也不对，查出来的结论不可信（以前只警告）
+        sys.exit(f"错误：没有读到这一集的配置，logic_qa 没有跑：{why}\n场景 JSON 不在 video/scenes/<集>/ 下时，用 --ep <集名> 指定（配置在 video/episodes/<集>.py）")
     scene = render.load_scene(scene_path)
     out = ROOT / "out" / f"logic_{scene_path.stem}"
     out.mkdir(parents=True, exist_ok=True)
     ms = moments(scene)
     shots = []
-    main_actor = next(iter(scene["actors"]))
+    main_actor = next(iter(scene["actors"]), None)   # 没有角色的场次是 None：只查背景
     with sync_playwright() as p:
-        browser, page = render.open_page(p, scene)
+        browser, page = render.open_page(p, scene, hide_nametags=True)   # 人名牌不进观察员的图
         for t, id_, name in ms:
             im = Image.open(BytesIO(render.grab(page, t, "image/png"))).convert("RGB")
             band = im.crop((0, 560, 1080, 1168))
-            cx = page.evaluate("([id, t]) => actorScreenX(id, t)", [id_ or main_actor, t])
+            cx = page.evaluate("([id, t]) => actorScreenX(id, t)", [id_ or main_actor, t]) if (id_ or main_actor) else 540
             cx = max(200, min(880, cx))
             zoom = band.crop((int(cx - 190), 140, int(cx + 190), 608)).resize((570, 702), Image.LANCZOS)
             bp, zp = out / f"t{t:05.2f}_band.png", out / f"t{t:05.2f}_zoom.png"
@@ -175,11 +197,11 @@ def main():
                 gp = out / f"t{t:05.2f}_bg.png"
                 Image.open(BytesIO(render.grab(page, t, "image/png"))).convert("RGB").crop((0, 560, 1080, 1168)).save(gp)
                 page.evaluate("window.hideActors = false")
-            shots.append((t, beat_of(scene, t, id_, name), str(bp), str(zp), str(gp) if gp else None))
+            shots.append((t, beat_of(scene, t, id_, name, qa["action_text"]), str(bp), str(zp), str(gp) if gp else None))
         browser.close()
     jobs = [s for s in shots for _ in range(2)]
     with ThreadPoolExecutor(6) as ex:
-        obs = list(ex.map(lambda s: observe(s[2], s[3], s[0], s[1], s[4]), jobs))
+        obs = list(ex.map(lambda s: observe(s[2], s[3], s[0], s[1], s[4], qa["format"]), jobs))
     report, bad = [], 0
     for i, (t, beat, bp, zp, gp) in enumerate(shots):
         pair = obs[2 * i: 2 * i + 2]

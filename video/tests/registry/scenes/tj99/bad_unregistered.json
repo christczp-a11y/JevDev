@@ -1,0 +1,29 @@
+{
+ "about": "registry_check 测试样例：姿势图没登记",
+ "set": "test_set",
+ "actors": {
+  "sgm": {
+   "poses": [
+    [
+     0,
+     "sgm_book"
+    ],
+    [
+     1,
+     "nobody_stand"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

@@ -1,0 +1,25 @@
+{
+ "about": "registry_check 测试样例：新集用了 classroom 布景",
+ "set": "classroom",
+ "actors": {
+  "sgm": {
+   "poses": [
+    [
+     0,
+     "sgm_book"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

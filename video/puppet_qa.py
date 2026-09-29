@@ -80,7 +80,7 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     summary = {}
     with sync_playwright() as p:
-        browser, page = render.open_page(p, scene)
+        browser, page = render.open_page(p, scene, hide_nametags=True)   # 人名牌不进检查图
         page.evaluate(f"window.qaEyesClosed = {EYES}")
         for aid in ids:
             page.evaluate(f"window.soloActor = {json.dumps(aid)}")

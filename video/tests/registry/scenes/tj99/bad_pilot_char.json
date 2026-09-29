@@ -1,0 +1,25 @@
+{
+ "about": "registry_check 测试样例：新集用了试做集的小豆子",
+ "set": "test_set",
+ "actors": {
+  "kid": {
+   "poses": [
+    [
+     0,
+     "d2_run"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

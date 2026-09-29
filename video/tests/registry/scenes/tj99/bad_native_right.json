@@ -1,0 +1,25 @@
+{
+ "about": "registry_check 测试样例：sgm_finger 原图朝右，native 写 -1",
+ "set": "test_set",
+ "actors": {
+  "sgm": {
+   "poses": [
+    [
+     0,
+     "sgm_finger"
+    ]
+   ],
+   "native": -1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

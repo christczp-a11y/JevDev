@@ -1,0 +1,25 @@
+{
+ "about": "registry_check 测试样例：试做集目录也不许用停用素材",
+ "set": "qin_gate",
+ "actors": {
+  "dad": {
+   "poses": [
+    [
+     0,
+     "dad_grab"
+    ]
+   ],
+   "native": 1,
+   "keys": [
+    [
+     0,
+     500,
+     "",
+     1
+    ]
+   ]
+  }
+ },
+ "props": [],
+ "events": []
+}

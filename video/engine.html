@@ -6,7 +6,7 @@
      美术全部来自素材图（Codex 按参考画风生成）；代码只负责摆放、分层视差、景深和动作。
      背景各层在 init 时先模糊、缓存成离屏画布，每帧只做平移，所以渲染快。
      导出时由 video/render.py 逐帧调用 renderFrame(t) 截图，不是录屏，成片一定流畅。 -->
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500;700;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/fonts/fonts.css">   <!-- 字体在仓库里（工作流第 0 步第 19 项），不再连 Google Fonts：中文字形按分片首次用到才下载，第一次画字是备用字体（E1） -->
 <style>html, body { margin: 0; background: #000; } canvas { display: block; }</style>
 </head>
 <body>
@@ -643,6 +643,7 @@ function drawBand(t) {
   for (const ev of scene.events) if (ev.type === 'confetti') drawConfetti(ev, t);
   for (const ev of scene.events) if (ev.type === 'stamp') drawStamp(ev, t);  // 印章固定在画面中央，不跟镜头走
   if (scene.hud) drawHud(t);
+  drawNametags(t, pos, camX);   // 人名牌（没有 scene.nametags 的集什么都不画）
   for (const ev of scene.events) if (ev.type === 'boss') drawBoss(ev, t);
   for (const ev of scene.events) if (ev.type === 'banner') drawBanner(ev, t);
   for (const ev of scene.events) if (ev.type === 'choice') drawChoice(ev, t);   // 选择题在最上层（盖住 HUD 以外的一切）
@@ -707,6 +708,93 @@ function drawHud(t) {
     ctx.fillStyle = INK; ctx.font = `900 ${34 + pop * 12}px "Noto Sans SC"`; ctx.fillText(`赏金 ${coins}`, BAND.w - 206, 51);
   }
   ctx.restore();
+}
+
+// ---------- 人名牌（工作流第 0 步第 9 项）：人物第一次出场时，名字和家名一起出现约 2 秒 ----------
+// scene.nametags = [{id, name, house, color, t0, t1, hold}]（分场脚本模板按每集配置的 NAMETAGS 和系列的家族颜色表写进去；时间是这一场自己的时间）：
+//   t0 = 最早可以出现的时刻，t1 = 最晚必须结束的时刻，hold = 停留秒数。没有 scene.nametags 的集（试做集）什么都不画。
+// 2D 成片的人名牌贴在闯关画面里、人物脚下，样式跟 2D 的说话人标签一致；3D 成片的在 video/stage3d/stage.html 的 drawUI 里画（跟 3D 的说话人标签一致），
+// 两边共用 placeNametags 摆位置、用同样的「从第一次入画开始计 2 秒」规则。
+// 时间规则：从这个人第一次入画（脚在安全区里）的时刻开始计 hold 秒，不是从他出场的时刻开始（T24：镜头没拍到他的那段时间牌子会白白过期）。
+// 摆放规则：只挪牌子，指针留在本人脚下（T23）。
+function placeNametags(items, b) {
+  // items = [{ax（指针尖的横坐标 = 本人脚下）, top0（想放的牌子上沿）, w, h}]，b = {xmin, xmax, tmin, tmax}。返回 [{cx, top, clash}]。
+  // 只挪牌子，指针不动（指针尖横坐标永远是 ax）：牌子中心和 ax 的偏差不超过 w/2 - 45（指针要落在胶囊平直的那一段），挪完都夹在 b 里（安全区）。
+  // 第一步横着来：按脚下位置从左到右排好，把挨着的牌子往两边推开（两张各让一半，让不动的那张多让）；
+  // 第二步推不开的（安全区、偏差范围都到头了）竖着叠：贴着已经摆好的牌子，放到它下面（放不下再放到上面）；都放不下才重叠（clash: true），
+  // 重叠的帧由 build_stage3d.py frame 报出来（摆不开就要改镜头或者让两个人错开出场）。
+  const cx = items.map(it => {
+    const dev = it.w / 2 - 45, lo = Math.max(b.xmin + it.w / 2, it.ax - dev), hi = Math.min(b.xmax - it.w / 2, it.ax + dev);
+    it.lo = lo <= hi ? lo : Math.max(b.xmin + it.w / 2, Math.min(b.xmax - it.w / 2, it.ax)); it.hi = lo <= hi ? hi : it.lo;
+    return Math.max(it.lo, Math.min(it.hi, it.ax));
+  });
+  const order = items.map((_, i) => i).sort((p, q) => items[p].ax - items[q].ax);
+  for (let iter = 0; iter < 50; iter++) {
+    let moved = false;
+    for (let k = 0; k + 1 < order.length; k++) {
+      const p = order[k], q = order[k + 1], need = (items[p].w + items[q].w) / 2 + 12, d = need - (cx[q] - cx[p]);
+      if (d <= 0.5) continue;
+      const canP = cx[p] - items[p].lo, canQ = items[q].hi - cx[q];   // 各自还能让多远
+      let mp = Math.min(canP, d / 2); const mq = Math.min(canQ, d - mp);   // p 先让一半，q 让剩下的
+      mp = Math.min(canP, d - mq);                                          // q 让不够，p 再多让
+      cx[p] -= mp; cx[q] += mq; moved = true;
+    }
+    if (!moved) break;
+  }
+  const placed = [], out = [];
+  items.forEach((it, i) => {
+    const yfit = y => Math.max(b.tmin, Math.min(b.tmax - it.h, y));
+    const hit = top => placed.some(p => cx[i] - it.w / 2 < p.x1 + 6 && cx[i] + it.w / 2 > p.x0 - 6 && top < p.top + p.h && top + it.h > p.top);
+    const tops = [it.top0, ...placed.flatMap(p => [p.top + p.h + 10, p.top - it.h - 10])].filter(y => y >= b.tmin && y + it.h <= b.tmax || y === it.top0).map(y => y === it.top0 ? yfit(y) : y);
+    tops.sort((u, v) => Math.abs(u - it.top0) - Math.abs(v - it.top0));
+    const top = tops.find(y => !hit(y));
+    const pick = top != null ? { cx: cx[i], top, clash: false } : { cx: cx[i], top: yfit(it.top0), clash: true };
+    placed.push({ x0: pick.cx - it.w / 2, x1: pick.cx + it.w / 2, top: pick.top, h: it.h });
+    out.push(pick);
+  });
+  return out;
+}
+window.placeNametags = placeNametags;
+window.actorWorldX = (id, t) => {   // 3D 舞台的人名牌窗口用：这个角色在 t 时刻的世界横坐标，这一刻没出场返回 null（和 renderSolo 的 x 一样，但不画图，所以可以按 0.1 秒一步扫）
+  const a = scene.actors[id], [s0, s1] = a.show || [-1e9, 1e9]; if (t < s0 || t > s1) return null;
+  return a.rigData ? a.xAt(t) : actorState(a, t).x;
+};
+function tagFoot(a, t) {   // 2D：这个人的脚在闯关画面里的横坐标（世界坐标 - 镜头）；这一刻没出场返回 null。不用画图，所以可以按帧扫
+  const [s0, s1] = a.show || [-1e9, 1e9]; if (t < s0 || t > s1) return null;
+  return (a.rigData ? a.xAt(t) : actorState(a, t).x) - interp(scene.camera, t);
+}
+function nametagWindows() {   // 每张牌的 [ts, te]：ts = 第一次脚落在画面安全区里的时刻（从 t0 起每 1/30 秒查一次），te = min(ts + hold, t1)；一直没入画 ts = null
+  if (cache.tagw) return cache.tagw;
+  return cache.tagw = (scene.nametags || []).map(tg => {
+    const a = scene.actors[tg.id]; let ts = null;
+    if (a) for (let t = tg.t0; t <= tg.t1; t += 1 / 30) { const x = tagFoot(a, t); if (x != null && x >= 95 && x <= BAND.w - 95) { ts = Math.round(t * 100) / 100; break; } }   // 脚在画面里，离边至少 50 + 45（指针尖要落在牌子平直的那一段）
+    return { tg, ts, te: ts == null ? null : Math.min(ts + (tg.hold ?? 2), tg.t1) };
+  });
+}
+function drawNametags(t, pos, camX) {
+  if (!scene.nametags || window.hideNametags) return;   // hideNametags：2D 质检截图（logic_qa、puppet_qa、selfcheck）时藏起人名牌，别让它进观察员的图
+  const items = [], live = [];
+  ctx.save(); ctx.font = '44px "ZCOOL KuaiLe"';
+  for (const w of nametagWindows()) {
+    const tg = w.tg, p = pos[tg.id];
+    if (w.ts == null || t < w.ts || t > w.te || !p || p.x - camX < 95 || p.x - camX > BAND.w - 95) continue;   // 这一刻脚不在画面的安全范围里（镜头摇走了）就不画
+    const label = tg.house ? `${tg.name} · ${tg.house}` : tg.name, tw = ctx.measureText(label).width + 56;
+    items.push({ ax: clamp(p.x - camX, 50, BAND.w - 50), top0: GROUND + (scene.actors[tg.id].y || 0) + 26, w: tw, h: 62 });
+    live.push({ tg, w, label });
+  }
+  ctx.restore();
+  const put = placeNametags(items, { xmin: 50, xmax: BAND.w - 50, tmin: 60, tmax: BAND.h - 22 });
+  live.forEach(({ tg, w, label }, i) => {
+    const it = items[i], { cx, top } = put[i], h = it.h, tw = it.w;
+    ctx.save(); ctx.font = '44px "ZCOOL KuaiLe"';
+    ctx.globalAlpha = Math.min(1, (t - w.ts) / 0.2, (w.te - t) / 0.25);
+    const s = 0.8 + 0.2 * easeOutBack(clamp((t - w.ts) / 0.3, 0, 1));
+    ctx.translate(it.ax, top - 16); ctx.scale(s, s);   // 以指针尖为原点缩放：弹出的时候指针尖一直在脚下
+    const x0 = cx - it.ax - tw / 2;
+    card(() => { deckle(ctx, x0, 16, tw, h, 31, 3); ctx.moveTo(-14, 18); ctx.lineTo(0, 0); ctx.lineTo(14, 18); }, tg.color || INK, { outline: 4, shadow: 6 });
+    ctx.fillStyle = '#fffaf0'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, cx - it.ax, 16 + h / 2 + 2);
+    ctx.restore();
+  });
 }
 
 // ---------- 整个竖屏：标题 / 闯关画面 / 字幕 ----------
@@ -783,14 +871,42 @@ function wrap(text, maxW) {
   if (cur) out.push(cur); return out;
 }
 
+// ---------- 字体（工作流第 0 步第 19 项）----------
+// 字体是本地的（vendor/fonts/fonts.css）。加载时要带上这一场要画的所有字：document.fonts.load(字体, 字)。
+// 只看返回的列表不是空的拦不住「切片只加载了空格」（E1 再犯），所以加载完再用 measureText 对着备用字体验证：
+// 一串拉丁字母数字（不含空格）的宽度、一串汉字的墨迹范围（宽度、上下沿、左右沿）都和 sans-serif 不一样，才算这个字体真的生效
+// （只有空格或只有一部分字形加载成功的字体，两项里总有一项和备用字体一样）；FontFace 的状态也要是 loaded。有问题就抛错。
+// doc：要检查哪个文档的字体（3D 舞台的界面层画在舞台页自己的文档里，字体表和 iframe 里的 engine 是各自一份，两边都要查）。
+const FONT_SPECS = [['400', 'ZCOOL KuaiLe'], ['500', 'Noto Sans SC'], ['700', 'Noto Sans SC'], ['900', 'Noto Sans SC']];
+function sceneChars(o, acc = new Set()) {
+  if (typeof o === 'string') for (const ch of o) acc.add(ch); else if (o && typeof o === 'object') for (const v of Object.values(o)) sceneChars(v, acc);
+  return acc;
+}
+async function checkFonts(doc, sceneData) {
+  const LATIN = 'HamburgefonstivQWXYZ0123456789', CJK = '资治通鉴考你搬秦国', text = [...sceneChars(sceneData)].join('') + LATIN + CJK, bad = [];
+  const g = doc.createElement('canvas').getContext('2d');
+  const ink = (f, s) => { g.font = f; const m = g.measureText(s); return [m.width, m.actualBoundingBoxAscent, m.actualBoundingBoxDescent, m.actualBoundingBoxLeft + m.actualBoundingBoxRight]; };
+  const differs = (a, b) => a.some((v, i) => Math.abs(v - b[i]) > 0.5);
+  for (const [w, fam] of FONT_SPECS) {
+    const spec = `${w} 100px "${fam}"`;
+    try { if (!(await doc.fonts.load(spec, text)).length) { bad.push(`${spec}：load 返回空列表`); continue; } }
+    catch (e) { bad.push(`${spec}：加载报错 ${e && e.message || e}`); continue; }
+    const faces = [...doc.fonts].filter(f => f.family.replace(/"/g, '') === fam && f.status !== 'unloaded');
+    for (const f of faces) if (f.status !== 'loaded') bad.push(`${spec}：字体文件状态是 ${f.status}`);
+    for (const [what, s] of [['拉丁字母数字', LATIN], ['汉字', CJK]])
+      if (!differs(ink(`${w} 100px "${fam}", sans-serif`, s), ink(`${w} 100px sans-serif`, s))) bad.push(`${spec}：${what}画出来和备用字体一样，字体没生效`);
+  }
+  if (bad.length) throw new Error('字体没加载成功：' + bad.join('；') + '（字体文件在 video/vendor/fonts/，见那里的 README.md）');
+}
+window.checkFonts = checkFonts;
+
 // ---------- 初始化：render.py 传入剧本（含场景）和素材（data URI，避免本地文件把画布「污染」导不出帧） ----------
 async function init(sceneData, assets) {
   scene = sceneData; noise = makeNoise(); fiber = makeFiber();
   if (scene.qaOutline) window.QA_OUTLINE = scene.qaOutline;   // 纸偶质检（video/puppet_qa.py）：描边换成青色
   await Promise.all(Object.entries(assets).map(([n, uri]) => new Promise((ok, bad) => {
-    const i = new Image(); i.onload = () => { img[n] = i; ok(); }; i.onerror = bad; i.src = uri; })));
-  for (const f of ['40px "ZCOOL KuaiLe"', '700 58px "Noto Sans SC"', '32px "Noto Sans SC"', '900 100px "Noto Sans SC"']) await document.fonts.load(f);
-  await document.fonts.ready;
+    const i = new Image(); i.onload = () => { img[n] = i; ok(); }; i.onerror = () => bad(new Error('素材图加载失败：' + n)); i.src = uri; })));
+  await checkFonts(document, scene);   // 字体没生效就抛错，render.py 收到就退出
   const done = new Set();
   const pz = (n, o) => { if (img[n] && !done.has(n)) { img[n] = paperize(img[n], o); done.add(n); } };
   for (const a of Object.values(scene.actors)) for (const n of Object.values(a.sprites || {})) pz(n, { edge: 7, sat: 0.85 });
