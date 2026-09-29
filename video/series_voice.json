@@ -1,0 +1,22 @@
+{
+  "_说明": "系列人声的公共配置（工作流第七节「人声」一行）。这里的值是系列的脸：改动要先问 Chris，再记进 DECISIONS，改完还要重录 ceremony 里的仪式录音。files 是系列固定音频（相对 video/assets/）的 sha256，voice.py 和 audio.py 读的时候都会核对，文件被改过就报错；重录后把新的 sha256 写进来。用法和字段说明见 video/voice.py 顶部。",
+  "gap": 0.3,
+  "characters": {
+    "旁白": {"voice": "zh-CN-XiaoxiaoNeural", "rate": "+6%", "pitch": "+0Hz"},
+    "司马光": {"voice": "zh-CN-YunxiNeural", "rate": "-10%", "pitch": "-12Hz"}
+  },
+  "cast_forbidden_voices": {
+    "zh-CN-YunxiNeural": "YunxiNeural 只给司马光用（工作流第 2 步 cast 规则、第 0 步第 5 项）"
+  },
+  "files": {
+    "audio/ceremony_kaokaoni.mp3": "f589fad61b2c39065534401b01d1393937d238e760e5d2bfa1e4158a104a7c7c",
+    "audio/ceremony_xieshu_de_ren_lai_le.mp3": "e7249fb4fa1088c56855ab5af8aa48a36e06cbd436a1482aa0ea213b483d9c0c",
+    "audio/sgm_pop.wav": "a9e7640b9c9cd3c47cdacce19d4c314b786e2bfafd660be3498aaed1a4217180"
+  },
+  "ceremony": [
+    {"who": "司马光", "text": "考考你！", "file": "audio/ceremony_kaokaoni.mp3",
+     "voice": "zh-CN-YunxiNeural", "rate": "-10%", "pitch": "-12Hz"},
+    {"who": "旁白", "text": "写书的人，来了——", "file": "audio/ceremony_xieshu_de_ren_lai_le.mp3",
+     "voice": "zh-CN-XiaoxiaoNeural", "rate": "+6%", "pitch": "+0Hz"}
+  ]
+}

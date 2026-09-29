@@ -131,17 +131,22 @@ def read_banned(folder, ep):
     return banned
 
 
+def _core(s):
+    """去掉标点和空白再比禁用词：用标点把词拆开（「豫、让」）也算命中。"""
+    return re.sub(r"[^\w]", "", str(s))
+
+
 def check_banned(path, text, tr, banned):
     """台词（要上字幕、要配音的文字）和标题里的禁用词，一处一条返回（文件、句序、文件行号、说话人、命中的词和原因）。"""
     nums, errs = line_numbers(text), []
     title = tr.get("title") or []
     for t in ([title] if isinstance(title, str) else title):
-        errs += [f"{path}：标题「{t}」里有禁用词「{w}」：{why or '（没写原因）'}" for w, why in banned.items() if w in t]
+        errs += [f"{path}：标题「{t}」里有禁用词「{w}」：{why or '（没写原因）'}" for w, why in banned.items() if _core(w) in _core(t)]
     for i, (_, _, who, line, _) in enumerate(tr["lines"]):
         errs += [f"{where_line(path, nums, i, who)}：台词里有禁用词「{w}」：{why or '（没写原因）'}\n      台词：{line}"
-                 for w, why in banned.items() if w in line]
+                 for w, why in banned.items() if _core(w) in _core(line)]
         errs += [f"{where_line(path, nums, i, who)}：说话人（字幕上方显示的名字）里有禁用词「{w}」：{why or '（没写原因）'}"
-                 for w, why in banned.items() if w in str(who)]
+                 for w, why in banned.items() if _core(w) in _core(who)]
     return errs
 
 
