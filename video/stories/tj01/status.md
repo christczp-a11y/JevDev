@@ -10,7 +10,7 @@
 |---|---|---|---|---|---|
 | 自检 | 运行环境 | 通过 | — | — | 09-29 主会话：7 项里 1–6 全过（edge-tts 当场装上）；第 7 项显卡渲染等第 14 项 |
 | 0-1、0-2 | 剧本评分 v2、Jev key 检查、定基线 | 通过（小补丁做中） | 1/3 | `video/story.py`、`rubrics/story_v2.json`、`logic_qa.py` / `motion_qa.py` 开头、N6 结尾三句秒数 | 09-29 第 1 轮通过，6 条全过。另有小问题不挡过关：report.json 不记标准（E9）、timeline 全长（E10）、禁用词硬拦截（待补 7）→ 派了小补丁 |
-| 0-3、0-4 | 素材登记表、系列参考帧（+ 改代码前的 ep01v2 基线） | 做中（先做第 4 项和基线） | 1/3 | `video/assets/ref/series/`、`video/stories/tj01/step0_baseline.md` | |
+| 0-3、0-4 | 素材登记表、系列参考帧（+ 改代码前的 ep01v2 基线） | 第 4 项和基线做完（待查），第 3 项做中 | 1/3 | `video/assets/ref/series/`（8 张，含主会话补的两张横幅帧）、`video/stories/tj01/step0_baseline.md`（layout_qa 0 处、qa 0 处、frame 1 处：第 1 场 42.9 秒商鞅被挡，试做集原有，可复现） | |
 | 0-5、0-6 | 配音分层、仪式声音 | 没开始 | 0/3 | | |
 | 0-7、0-8、0-9、0-9a | 分场模板、质检参数化、人名牌、2D 布景 | 没开始 | 0/3 | | |
 | 1 | 史料简报 `source.md` | 待查（第 2 版已存档，等 source_check.py） | 2/3 | `video/stories/tj01/source.md`；补检查 `video/source_check.py`（builder 做中） | 第 1 轮不通过（09-29）：53 处引文全部逐字找到；没过的是 1 条超 20 字、没有注音、马镫年份、「晋静公」、校勘说明、出处没逐条标、#9–#12 年代没标、缺地图方位。PITFALLS S2 再犯、S14 新坑 |
@@ -28,6 +28,9 @@
 - 基线估算：`.venv/Scripts/python video/story.py video/stories/ep01 --only N6 --out video/out/story_test/report_N6_v2_estimate_0929.json`
 - 基线真实时间线：先配音 `NARRATOR_RATE=+6% .venv/Scripts/python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice_0929 2=1.0 9=1.2 13=8.6 22=1.2 29=3.3`，再 `.venv/Scripts/python video/story.py video/stories/ep01 --only N6 --timeline video/out/ep01v2_voice_0929/timeline.json --out video/out/story_test/report_N6_v2_timeline_0929.json`
 - 环境（Git Bash）：`export PYTHONIOENCODING=utf-8; export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`，Python 用 `.venv/Scripts/python`
+
+## 已知缺口
+- 试做集 2D 成片 `video/out/ep01v2/ep01_full.mp4` 本地没有：影响第 0 步第 15 项（独立混音）的回归对比，到那一项再处理（要先在本地渲一遍 2D）
 
 ## Chris 跳过的项
 （第 0 步的项目 Chris 明确同意先跳过的，写在这里）
