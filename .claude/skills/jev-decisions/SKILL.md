@@ -29,6 +29,6 @@ TypeSafe 的官方用法和 API 细节看插件 skill `typesafe:typesafe-ai`（`
 | 2 剧本 | 从候选里挑古今对照、「考你」题、金句 | `video/jev_pick.py`（施工 C 做） |
 | 4 分镜表 | 逐镜检查：画面主体是不是台词说到的人；孩子看不看得懂；有没有吓人的东西；梗是不是孩子的梗 | `video/motion/storyboard_jev.py`（施工 C 做） |
 | 9 发布 | 标题和封面文字：孩子更想点、家长更想转，两两比较挑出第一 | `video/jev_pick.py` |
-| 9 复盘 | 评论分类：看懂了、没看懂、想看下一集、有意见 | `video/jev_pick.py --classify` |
+| 9 复盘 | 评论分类：看懂了、没看懂、想看下一集、有意见 | `video/jev_pick.py classify` |
 
 没有 key，或者连不上 api.typesafe.ai，脚本要立刻报错退出，不许静默跳过（PITFALLS P8）。

@@ -29,9 +29,10 @@ story.py 的 --lint 只查秒数和禁用词，Jev 只打分；这里查「剧�
      点题（notes.dian_key 那一句，默认「德者，才之帅也」）之后 1–2 句里要出现金句（文言点题后要有白话翻译）
   6  视角人物（notes.pov）在每一关的时间段里，台词或画面至少出现一次（S17）
   7  笑点：画面里标了「笑点」的句子，前后间隔（包括开头到第一个、最后一个到结尾）≤ 25 秒
-  8  单句 > 8 秒：警告
+  8  单句 > 8 秒：警告；单句 > 15 字（去掉标点算）：警告（孩子跟不上，拆成短句）；旁白句数占全部台词的比例 > 50%：警告（这个系列以对话为主，
+     能让人物自己说的改成对话）。「台词」不含动作行；「旁白」只算说话人写「旁白」的句子，司马光和其他角色算对话
   9  画面备注残留：出现「（某某版：…）」直接报错（S11）；道具第一次出现就已经「接住、握着、拿着、举着」也报错（前面没交代）
-  10 金句恰好 3 次；男声连着说不超过两句；说话人都有声音，同一版里没有两个角色同声音；旁白 / 司马光以外的说话人要在 cast 里；
+  10 金句恰好 3 次；男声连着说不超过两句（只认 cast 里有 voice 的 edge-tts 男声，Qwen 的 cast 没有 voice，只有司马光算男声）；说话人都有声音，同一版里没有两个角色同声音（按 voice 比，没有 voice 就按 desc 比）；旁白 / 司马光以外的说话人要在 cast 里；
      台词里没有「然后」；每句语速 ≤ 每秒 5 字；赌注在 20 秒前念完；结尾顺序；大问题先关一半的位置
 """
 import argparse
@@ -56,6 +57,8 @@ STAKE_BY = 20.0                       # 赌注要在第几秒前念完（工作�
 DIAN_DEFAULT = "德者，才之帅也"          # 点题句的默认关键词（第一集的臣光曰②）
 MAX_GAG_GAP = 25.0                    # 两个笑点之间最长多少秒
 LONG_LINE = 8.0
+LONG_CHARS = 15                       # 单句最多几个字（去掉标点）：钩子和吸引力第三点五节的台词风格
+MAX_NARR_SHARE = 0.5                  # 旁白句数占全部台词的比例上限：以对话为主
 MALE_VOICES = {"zh-CN-YunjianNeural", "zh-CN-YunxiNeural", "zh-CN-YunxiaNeural", "zh-CN-YunyangNeural",
                "zh-TW-YunJheNeural", "zh-HK-WanLungNeural"}
 PROPS = ("毛笔", "警枕", "手巾", "地图", "竹简", "帽子")          # 道具第一次出现不能已经拿在手里
@@ -237,6 +240,15 @@ def run(path, timeline=None):
         if spoken(r) and r[1] - r[0] > LONG_LINE:
             W(f"{at(i)} 单句 {r[1] - r[0]:.1f}s，超过 {LONG_LINE:g} 秒，考虑拆开：{r[3][:24]}")
 
+    # 8b 单句超过 15 字、旁白占比过半（警告）
+    for i, r in enumerate(rows):
+        if spoken(r) and len(core(r[3])) > LONG_CHARS:
+            W(f"{at(i)} 单句 {len(core(r[3]))} 字，超过 {LONG_CHARS} 字，孩子跟不上，考虑拆成短句：{r[3][:24]}")
+    said = [r for r in rows if spoken(r)]
+    narr = sum(r[2] == "旁白" for r in said)
+    if said and narr / len(said) > MAX_NARR_SHARE:
+        W(f"旁白 {narr} 句 / 共 {len(said)} 句台词 = {narr / len(said):.0%}，超过一半：这个系列以对话为主，能让人物自己说的改成对话")
+
     # 9 画面备注残留、道具前面没交代
     for i, r in enumerate(rows):
         m = VER_RE.search(r[4])
@@ -279,7 +291,7 @@ def run(path, timeline=None):
     by = {}
     for s in speakers:
         if s in cast and isinstance(cast[s], dict):
-            by.setdefault(cast[s].get("voice"), []).append(s)
+            by.setdefault(cast[s].get("voice") or cast[s].get("desc"), []).append(s)   # Qwen 的 cast 没有 voice，按声音描述 desc 比
     for v, ws in by.items():
         if len(ws) > 1:
             E(f"同一个声音 {v} 给了 {sorted(ws)}（同一版里有两个角色同声音）")

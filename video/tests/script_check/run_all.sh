@@ -1,7 +1,7 @@
 #!/bin/bash
 # 一键重跑 video/script_check.py 的测试（工作流第 2 步；PITFALLS P10、S11、S17、S18、S20）。
 # 用法（仓库根目录）：bash video/tests/script_check/run_all.sh
-# ok*.json 应该退出 0；bad_*.json 应该退出 1 并报出对应原因（个别会连带别的错，这里只认它该报的那一条）；warn_*.json 退出 0、有警告。
+# ok*.json 应该退出 0（没有警告）；bad_*.json 应该退出 1 并报出对应原因（个别会连带别的错，这里只认它该报的那一条）；warn_*.json 退出 0、恰好一条警告（单句 > 8 秒、单句 > 15 字、旁白占比 > 一半，各一份）。
 # 样例由 gen_samples.py 生成（改了要重新生成）。不要网络、不要 Jev key。
 cd "$(dirname "$0")/../../.." || exit 2
 export PYTHONIOENCODING=utf-8
@@ -60,9 +60,17 @@ t bad_levelstarts_shifted.json 1 "视角人物「段规」在第 1 关（lines[7
 t bad_no_pov_note.json     1 "notes.pov（视角人物）没写"
 
 echo "---- 笑点间隔、单句太长 ----"
-t bad_gag_gap.json         1 "笑点间隔 103.6s"
+t bad_gag_gap.json         1 "笑点间隔 99.7s"
 t warn_long_line.json      0 "⚠ lines[4]（旁白） 单句 9.0s，超过 8 秒"
 t warn_long_line.json      0 "script_check：通过，1 条警告"
+
+echo "---- 单句 > 15 字、旁白占比 > 一半（只是警告，退出码 0）----"
+t ok.json                  0 "script_check：通过，0 条警告"                 # 旁白 15 句 / 31 句 = 48%，没有超过 15 字的句子
+t warn_long_chars.json     0 "⚠ lines[5]（旁白） 单句 16 字，超过 15 字，孩子跟不上，考虑拆成短句"
+t warn_long_chars.json     0 "script_check：通过，1 条警告"
+t ok_edge_15chars.json     0 "script_check：通过，0 条警告"                 # 正好 15 字（去掉标点）不警告
+t warn_narration_heavy.json 0 "⚠ 旁白 18 句 / 共 31 句台词 = 58%，超过一半"
+t warn_narration_heavy.json 0 "script_check：通过，1 条警告"
 
 echo "---- 画面备注残留（S11）----"
 t bad_version_residual.json 1 "这种某个版本的残留"
@@ -85,8 +93,12 @@ t bad_stake_late.json      1 "赌注（「智家会没」）要在第 20 秒前�
 t bad_stake_end_late.json  1 "赌注（「智家会没」）要在第 20 秒前念完，现在 "
 t bad_no_stake_note.json   1 "notes.stake_line（赌注那句里的关键词）没写"
 t bad_ending_order.json    1 "结尾顺序不对"
-t bad_half_close_pos.json  1 "大问题先关一半在 90% 处，要在 40%–60%"
+t bad_half_close_pos.json  1 "大问题先关一半在 89% 处，要在 40%–60%"
 t bad_banned.json          1 "台词里有禁用词「知伯」"
+
+echo "---- Qwen 的 cast（没有 voice，只有 desc）：同一个声音按 desc 比 ----"
+t qwen/ok_qwen.json        0 "script_check：通过，0 条警告"
+t qwen/bad_same_desc/bad_same_desc.json 1 "同一个声音 四十多岁的男性贵族，嗓音洪亮，自信傲慢 给了 ['智伯', '赵襄子']"
 
 after=$(inputs_sum)
 [ "$before" = "$after" ] || { echo "FAIL  测试改动了样例文件"; fail=1; }
