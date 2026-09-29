@@ -97,7 +97,7 @@ FX_KINDS = [
     ("stat", ("stat", "attr", "属性")),
     ("map", ("map", "地图")),
     ("gauge", ("gauge", "progress", "进度")),
-    ("ambient", ("sparkle", "confetti", "dust", "rain", "rays", "glow", "fire", "flame", "splash", "particle", "lines_", "speed", "focus", "radial", "氛围", "光芒", "速度线", "集中线")),
+    ("ambient", ("sparkle", "confetti", "dust", "rain", "rays", "glow", "fire", "flame", "splash", "particle", "lines_", "speed", "focus", "radial", "tone", "氛围", "光芒", "速度线", "集中线")),
     ("sticker", ("sticker", "贴纸")),
     ("ritual", ("kaoni", "card", "考你", "人物卡")),
 ]

@@ -54,7 +54,7 @@ class TestBadStoryboards(unittest.TestCase):
         self.expect(lambda sb: sb["shots"][1]["actors"][0]["acts"][0].update(swap="chars/none.png"), "找不到素材")
 
     def test_unknown_fx_type(self):
-        self.expect(lambda sb: sb["shots"][0]["fx"][0].update(type="sparkle"), "没有叫 'sparkle' 的特效")
+        self.expect(lambda sb: sb["shots"][0]["fx"][0].update(type="no_such_fx_zz"), "没有叫 'no_such_fx_zz' 的特效")
 
     def test_unknown_transition(self):
         self.expect(lambda sb: sb["shots"][1].update(transition="page_flip"), "没有叫 'page_flip' 的转场")
@@ -104,7 +104,7 @@ class TestBadStoryboards(unittest.TestCase):
         def three(sb):
             sb["shots"][0]["bg"][0]["img"] = "sets/nope/a.png"
             sb["shots"][1]["actors"][0]["img"] = "chars/none.png"
-            sb["shots"][3]["fx"] = [{"type": "sparkle"}]
+            sb["shots"][3]["fx"] = [{"type": "no_such_fx_zz"}]
         errs = mutate(three)
         self.assertGreaterEqual(len(errs), 3, errs)
 

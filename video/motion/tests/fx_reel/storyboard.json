@@ -1,0 +1,4823 @@
+{
+ "episode": "fx_reel",
+ "no": 0,
+ "title": [
+  "特效样片合集，",
+  "每个特效 2–3 秒"
+ ],
+ "voice": "video/motion/tests/fx_reel/voice",
+ "note": "阶段 B 交付：特效包的全部特效和转场各演一遍。build_reel.py 生成本文件，别手改。",
+ "shots": [
+  {
+   "id": "R01",
+   "from": {
+    "line": 0
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "lines_focus",
+     "at": {
+      "dt": 0.25
+     },
+     "pos": [
+      540,
+      900
+     ],
+     "dur": 1.6
+    },
+    {
+     "type": "label",
+     "text": "1 / 43  漫画线：集中线 lines_focus",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R02",
+   "from": {
+    "line": 1
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "lines_radial",
+     "at": {
+      "dt": 0.25
+     },
+     "pos": [
+      540,
+      900
+     ],
+     "dur": 1.6
+    },
+    {
+     "type": "label",
+     "text": "2 / 43  漫画线：放射速度线 lines_radial",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R03",
+   "from": {
+    "line": 2
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      540,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "lines_speed",
+     "at": {
+      "dt": 0.2
+     },
+     "dir": "left",
+     "dur": 1.7
+    },
+    {
+     "type": "label",
+     "text": "3 / 43  漫画线：横向速度线 lines_speed",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R04",
+   "from": {
+    "line": 3
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.25
+     },
+     "name": "question",
+     "pos": [
+      560,
+      700
+     ],
+     "size": 300
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.8
+     },
+     "name": "sweat",
+     "pos": [
+      400,
+      1050
+     ],
+     "size": 230
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 1.3
+     },
+     "name": "anger",
+     "pos": [
+      780,
+      1000
+     ],
+     "size": 240,
+     "rot": 8
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 1.8
+     },
+     "name": "exclaim",
+     "pos": [
+      300,
+      700
+     ],
+     "size": 280,
+     "rot": -8
+    },
+    {
+     "type": "label",
+     "text": "4 / 43  贴纸：问号 汗滴 怒气 感叹号 sticker",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R05",
+   "from": {
+    "line": 4
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.25
+     },
+     "name": "bulb",
+     "pos": [
+      440,
+      640
+     ],
+     "size": 320
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.8
+     },
+     "name": "star_eyes",
+     "pos": [
+      760,
+      880
+     ],
+     "size": 190
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 1.3
+     },
+     "name": "heart",
+     "pos": [
+      300,
+      1000
+     ],
+     "size": 210,
+     "rot": -10
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 1.8
+     },
+     "name": "star",
+     "pos": [
+      790,
+      560
+     ],
+     "size": 250
+    },
+    {
+     "type": "label",
+     "text": "5 / 43  贴纸：灯泡 星星眼 小心心 星星 sticker",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R06",
+   "from": {
+    "line": 5
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.25
+     },
+     "name": "dong",
+     "pos": [
+      520,
+      640
+     ],
+     "size": 330
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.85
+     },
+     "name": "pa",
+     "pos": [
+      760,
+      1000
+     ],
+     "size": 300,
+     "rot": 8
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 1.45
+     },
+     "name": "sou",
+     "pos": [
+      380,
+      950
+     ],
+     "size": 250,
+     "rot": -6
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 2.0
+     },
+     "name": "question3",
+     "pos": [
+      800,
+      640
+     ],
+     "size": 210
+    },
+    {
+     "type": "label",
+     "text": "6 / 43  贴纸：咚 啪 嗖（拟声字） sticker",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R07",
+   "from": {
+    "line": 6
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "smash",
+     "at": {
+      "dt": 0.05
+     },
+     "text": "本事",
+     "pos": [
+      540,
+      780
+     ],
+     "dur": 2.1
+    },
+    {
+     "type": "label",
+     "text": "7 / 43  砸字：本事（带震屏） smash",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R08",
+   "from": {
+    "line": 7
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "smash",
+     "at": {
+      "dt": 0.05
+     },
+     "text": "五样本事",
+     "pos": [
+      540,
+      760
+     ],
+     "color": "gold",
+     "dur": 2.4
+    },
+    {
+     "type": "label",
+     "text": "8 / 43  砸字：五样本事（四个字） smash",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R09",
+   "from": {
+    "line": 8
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "checklist",
+     "at": {
+      "dt": 0.25
+     },
+     "items": [
+      "会打仗",
+      "会写文章",
+      "个子高",
+      "口才好"
+     ],
+     "pos": [
+      540,
+      580
+     ]
+    },
+    {
+     "type": "label",
+     "text": "9 / 43  清单：一条条弹出 checklist",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "note": "知识"
+  },
+  {
+   "id": "R10",
+   "from": {
+    "line": 11
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      170,
+      1700
+     ],
+     "h": 340
+    }
+   ],
+   "fx": [
+    {
+     "type": "stat_card",
+     "at": {
+      "dt": 0.2
+     },
+     "name": "智伯",
+     "pos": [
+      560,
+      860
+     ],
+     "w": 820,
+     "rows": [
+      {
+       "label": "本事",
+       "stars": 5,
+       "icon": "props/icon_bow.png"
+      },
+      {
+       "label": "口才",
+       "stars": 4,
+       "icon": "props/icon_speech.png"
+      },
+      {
+       "label": "好心",
+       "stars": 1,
+       "icon": "props/icon_heart.png"
+      }
+     ]
+    },
+    {
+     "type": "label",
+     "text": "10 / 43  属性卡：本事 ★★★★★ / 好心 ★ stat_card",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "note": "知识"
+  },
+  {
+   "id": "R11",
+   "from": {
+    "line": 12
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [],
+   "fx": [
+    {
+     "type": "map",
+     "at": {
+      "dt": 0.1
+     },
+     "pos": [
+      540,
+      900
+     ],
+     "w": 960
+    },
+    {
+     "type": "map_city",
+     "at": {
+      "dt": 0.9
+     },
+     "pos": [
+      350,
+      640
+     ],
+     "name": "晋阳",
+     "house": "赵家"
+    },
+    {
+     "type": "map_city",
+     "at": {
+      "dt": 1.4
+     },
+     "pos": [
+      760,
+      1180
+     ],
+     "name": "智家",
+     "house": "智家"
+    },
+    {
+     "type": "map_arrow",
+     "at": {
+      "dt": 1.9
+     },
+     "pts": [
+      [
+       720,
+       1120
+      ],
+      [
+       640,
+       930
+      ],
+      [
+       500,
+       780
+      ],
+      [
+       390,
+       690
+      ]
+     ],
+     "house": "智家"
+    },
+    {
+     "type": "label",
+     "text": "11 / 43  地图：纸地图 城标 虚线箭头 map",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "note": "知识"
+  },
+  {
+   "id": "R12",
+   "from": {
+    "line": 13
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980,
+     "enter": "pop"
+    }
+   ],
+   "fx": [
+    {
+     "type": "rays",
+     "at": {
+      "dt": 0.1
+     },
+     "pos": [
+      600,
+      1000
+     ],
+     "dur": 2.2
+    },
+    {
+     "type": "label",
+     "text": "12 / 43  氛围：光芒 rays",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R13",
+   "from": {
+    "line": 14
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "sparkle",
+     "at": {
+      "dt": 0.1
+     },
+     "area": [
+      100,
+      400,
+      980,
+      1400
+     ],
+     "dur": 2.2
+    },
+    {
+     "type": "label",
+     "text": "13 / 43  氛围：闪粉 sparkle",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R14",
+   "from": {
+    "line": 15
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "confetti",
+     "at": {
+      "dt": 0.15
+     },
+     "mode": "burst"
+    },
+    {
+     "type": "label",
+     "text": "14 / 43  氛围：纸屑彩带（喷起）confetti",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R15",
+   "from": {
+    "line": 16
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "confetti",
+     "at": {
+      "dt": 0.1
+     },
+     "mode": "fall",
+     "dur": 2.4,
+     "count": 90
+    },
+    {
+     "type": "label",
+     "text": "15 / 43  氛围：纸屑彩带（飘落）confetti",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R16",
+   "from": {
+    "line": 17
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "dust",
+     "at": {
+      "dt": 0.0
+     },
+     "mode": "float",
+     "dur": 2.5
+    },
+    {
+     "type": "dust",
+     "at": {
+      "dt": 0.7
+     },
+     "mode": "puff",
+     "pos": [
+      260,
+      1600
+     ],
+     "size": 170
+    },
+    {
+     "type": "label",
+     "text": "16 / 43  氛围：灰尘（float 飘 / puff 扬起） dust",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R17",
+   "from": {
+    "line": 18
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "rain",
+     "at": {
+      "dt": 0.1
+     },
+     "dur": 2.4
+    },
+    {
+     "type": "label",
+     "text": "17 / 43  氛围：雨 rain",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R18",
+   "from": {
+    "line": 19
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "sway": {
+      "x": 16,
+      "y": 5,
+      "period": 3.2
+     }
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    }
+   ],
+   "actors": [],
+   "fx": [
+    {
+     "type": "splash",
+     "at": {
+      "dt": 0.3
+     },
+     "pos": [
+      540,
+      1480
+     ]
+    },
+    {
+     "type": "splash",
+     "at": {
+      "dt": 1.3
+     },
+     "pos": [
+      300,
+      1520
+     ],
+     "size": 0.7
+    },
+    {
+     "type": "label",
+     "text": "18 / 43  氛围：水花 splash",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R19",
+   "from": {
+    "line": 20
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zxz",
+     "who": "赵襄子",
+     "img": "chars/zxz_stand.png",
+     "pos": [
+      330,
+      1610
+     ],
+     "h": 560
+    }
+   ],
+   "fx": [
+    {
+     "type": "flame",
+     "at": {
+      "dt": 0.15
+     },
+     "pos": [
+      600,
+      1620
+     ],
+     "w": 760,
+     "height": 380,
+     "dur": 2.4
+    },
+    {
+     "type": "label",
+     "text": "19 / 43  氛围：纸剪火焰 flame",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R20",
+   "from": {
+    "line": 21
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "20 / 43  调色：回忆 grade: memory（旧纸黄 + 颗粒 + 暗角）",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "grade": "memory"
+  },
+  {
+   "id": "R21",
+   "from": {
+    "line": 22
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "21 / 43  调色：紧张 grade: tense（稍暗 + 暗角）",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "grade": "tense"
+  },
+  {
+   "id": "R22",
+   "from": {
+    "line": 23
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "tone",
+     "at": {
+      "dt": 1.0
+     },
+     "tone": "night",
+     "ramp": 0.9
+    },
+    {
+     "type": "label",
+     "text": "22 / 43  颜色分段：金色（得意）→ 蓝色夜晚（密谋） grade / tone",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "grade": "gold"
+  },
+  {
+   "id": "R23",
+   "from": {
+    "line": 24
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980,
+     "enter": "pop"
+    }
+   ],
+   "fx": [
+    {
+     "type": "flash",
+     "at": {
+      "dt": 0.7
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.7
+     },
+     "name": "exclaim",
+     "pos": [
+      820,
+      620
+     ],
+     "size": 290
+    },
+    {
+     "type": "label",
+     "text": "23 / 43  柔和闪白（≤60%，3 帧） flash",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R24",
+   "from": {
+    "line": 25
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "kaoni",
+     "at": {
+      "dt": 0.05
+     },
+     "options": [
+      "给",
+      "不给"
+     ],
+     "answer": 1
+    },
+    {
+     "type": "label",
+     "text": "24 / 43  考你：「考你！」按钮 + 倒计时圈 + 「看答案！」 kaoni",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R25",
+   "from": {
+    "line": 28
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "progress",
+     "at": {
+      "dt": 0.1
+     },
+     "pos": [
+      720,
+      980
+     ],
+     "title": "水位",
+     "labels": [
+      "",
+      "一版",
+      "二版",
+      "三版"
+     ],
+     "from": 0.2,
+     "to": 0.7,
+     "size": 1.25
+    },
+    {
+     "type": "label",
+     "text": "25 / 43  进度物：水位刻度（变化时弹一下） progress",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R26",
+   "from": {
+    "line": 29
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "actors": [],
+   "fx": [
+    {
+     "type": "person_card",
+     "at": {
+      "dt": 0.1
+     },
+     "img": "chars/sgm_hi_remote.png",
+     "name": "司马光",
+     "line": "光爷爷讲通鉴，每集一张卡",
+     "no": 1,
+     "pos": [
+      540,
+      900
+     ],
+     "w": 700
+    },
+    {
+     "type": "label",
+     "text": "26 / 43  人物卡（片尾收藏卡） person_card",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R27",
+   "from": {
+    "line": 30
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      700,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "name_plate",
+     "at": {
+      "dt": 0.3
+     },
+     "name": "智伯",
+     "role": "智家老大",
+     "house": "智家",
+     "pos": [
+      150,
+      380
+     ]
+    },
+    {
+     "type": "label",
+     "text": "27 / 43  人名牌：竖排大字 + 身份，家族颜色 name_plate",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R28",
+   "from": {
+    "line": 33
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [],
+   "fx": [
+    {
+     "type": "card_quest",
+     "at": {
+      "dt": 0.1
+     },
+     "text": "守住晋阳",
+     "pos": [
+      540,
+      820
+     ]
+    },
+    {
+     "type": "label",
+     "text": "28 / 43  游戏卡片：任务 card_quest",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R29",
+   "from": {
+    "line": 34
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [],
+   "fx": [
+    {
+     "type": "card_fail",
+     "at": {
+      "dt": 0.1
+     },
+     "text": "守不住了",
+     "pos": [
+      540,
+      820
+     ]
+    },
+    {
+     "type": "label",
+     "text": "29 / 43  游戏卡片：任务失败 card_fail",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R30",
+   "from": {
+    "line": 35
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [],
+   "fx": [
+    {
+     "type": "card_title",
+     "at": {
+      "dt": 0.1
+     },
+     "text": "最会忍的人",
+     "pos": [
+      540,
+      820
+     ]
+    },
+    {
+     "type": "label",
+     "text": "30 / 43  游戏卡片：获得称号 card_title",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R31",
+   "from": {
+    "line": 36
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [],
+   "fx": [
+    {
+     "type": "card_mvp",
+     "at": {
+      "dt": 0.1
+     },
+     "text": "赵襄子",
+     "pos": [
+      540,
+      800
+     ]
+    },
+    {
+     "type": "label",
+     "text": "31 / 43  游戏卡片：本集 MVP card_mvp",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R32",
+   "from": {
+    "line": 37
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [],
+   "fx": [
+    {
+     "type": "big_title",
+     "at": {
+      "dt": 0.1
+     },
+     "text": "第 1 关：忍",
+     "pos": [
+      540,
+      820
+     ],
+     "deco": "rays"
+    },
+    {
+     "type": "label",
+     "text": "32 / 43  大字标题：第 1 关：忍（光芒） big_title",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R33",
+   "from": {
+    "line": 38
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [],
+   "fx": [
+    {
+     "type": "big_title",
+     "at": {
+      "dt": 0.1
+     },
+     "text": "水，倒过来了！",
+     "pos": [
+      540,
+      780
+     ],
+     "deco": "flame"
+    },
+    {
+     "type": "label",
+     "text": "33 / 43  大字标题：水，倒过来了！（纸剪火焰） big_title",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R34",
+   "from": {
+    "line": 39
+   },
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.1,
+     "pos": [
+      -100,
+      0
+     ],
+     "w": 1280
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgmhi",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      270,
+      1500
+     ],
+     "h": 780,
+     "enter": "pop"
+    }
+   ],
+   "fx": [
+    {
+     "type": "screen",
+     "at": {
+      "dt": 0.4
+     },
+     "img": "props/map_silk.png",
+     "pos": [
+      800,
+      700
+     ],
+     "w": 540
+    },
+    {
+     "type": "remote_click",
+     "at": {
+      "dt": 1.6
+     },
+     "pos": [
+      520,
+      1150
+     ]
+    },
+    {
+     "type": "screen",
+     "at": {
+      "dt": 1.75
+     },
+     "img": "props/cup_plain_spill.png",
+     "pos": [
+      800,
+      700
+     ],
+     "w": 540
+    },
+    {
+     "type": "label",
+     "text": "34 / 43  解说台：书房 + 纸屏幕 + 按遥控器 screen / remote_click",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      1.0
+     ],
+     "w": 1160
+    }
+   ]
+  },
+  {
+   "id": "R35",
+   "from": {
+    "line": 40
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      270,
+      1600
+     ],
+     "h": 540
+    }
+   ],
+   "fx": [
+    {
+     "type": "bubble",
+     "at": {
+      "dt": 0.3
+     },
+     "img": "props/cup_plain_spill.png",
+     "pos": [
+      360,
+      660
+     ],
+     "w": 820
+    },
+    {
+     "type": "label",
+     "text": "35 / 43  想象泡泡 bubble",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R36",
+   "from": {
+    "line": 41
+   },
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.1,
+     "pos": [
+      -100,
+      0
+     ],
+     "w": 1280
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgmhi",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      540,
+      1600
+     ],
+     "h": 860,
+     "enter": "slide_left"
+    }
+   ],
+   "fx": [
+    {
+     "type": "page_edge",
+     "at": {
+      "dt": 0.3
+     },
+     "y": 1200,
+     "dur": 2.2
+    },
+    {
+     "type": "label",
+     "text": "36 / 43  书页边（考你时司马光从书页后探出来） page_edge",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R37",
+   "from": {
+    "line": 42
+   },
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.1,
+     "pos": [
+      -100,
+      0
+     ],
+     "w": 1280
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgmhi",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      270,
+      1500
+     ],
+     "h": 780
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "37 / 43  转场：翻书页 page_turn",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      1.0
+     ],
+     "w": 1160
+    }
+   ],
+   "transition": {
+    "type": "page_turn"
+   }
+  },
+  {
+   "id": "R38",
+   "from": {
+    "line": 43
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "38 / 43  转场：纸片擦过 paper_wipe",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "transition": {
+    "type": "paper_wipe"
+   }
+  },
+  {
+   "id": "R39",
+   "from": {
+    "line": 44
+   },
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.1,
+     "pos": [
+      -100,
+      0
+     ],
+     "w": 1280
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgmhi",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      270,
+      1500
+     ],
+     "h": 780
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "39 / 43  转场：墨笔刷 ink_wipe",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      1.0
+     ],
+     "w": 1160
+    }
+   ],
+   "transition": {
+    "type": "ink_wipe"
+   }
+  },
+  {
+   "id": "R40",
+   "from": {
+    "line": 45
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zxz",
+     "who": "赵襄子",
+     "img": "chars/zxz_stand.png",
+     "pos": [
+      540,
+      1610
+     ],
+     "h": 560
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "40 / 43  转场：圆圈收拢 iris",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "transition": {
+    "type": "iris",
+    "pos": [
+     540,
+     1150
+    ]
+   }
+  },
+  {
+   "id": "R41",
+   "from": {
+    "line": 46
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "41 / 43  转场：淡到纸色 fade_paper",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "transition": {
+    "type": "fade_paper"
+   }
+  },
+  {
+   "id": "R42",
+   "from": {
+    "line": 47
+   },
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.1,
+     "pos": [
+      -100,
+      0
+     ],
+     "w": 1280
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgmhi",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      270,
+      1500
+     ],
+     "h": 780
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "42 / 43  转场：甩镜 whip",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      1.0
+     ],
+     "w": 1160
+    }
+   ],
+   "transition": {
+    "type": "whip",
+    "dir": "left"
+   }
+  },
+  {
+   "id": "R43",
+   "from": {
+    "line": 48
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1525
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1400,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      1660
+     ],
+     "h": 980
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "43 / 43  转场：解说台切进故事 tv_switch",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "transition": {
+    "type": "tv_switch",
+    "pos": [
+     800,
+     700
+    ],
+    "w": 540
+   }
+  }
+ ]
+}
