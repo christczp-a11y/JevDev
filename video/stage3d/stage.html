@@ -23,6 +23,7 @@ const q = new URLSearchParams(location.search), W = +q.get('w') || 1080, H = +q.
 const S = 1 / 100;                        // 2D 世界坐标（像素）→ 3D 单位
 const SS = 2;                             // 角色 / 道具贴图放大倍数（特写不糊）
 const OW = 1000 * SS, OH = 760 * SS, FOOT = 60 * SS;   // 贴图尺寸（和 engine.html 的 renderSolo 一致）
+const HUD_Y = 170;                        // 计分牌（信用值、赏金）在竖屏上的位置：顶部标签下面
 const BAND_Y = 470;                       // 2D 特效层（原来的闯关画面大小 1080×608）叠在竖屏上的位置
 const GY = 0.35;                          // 书页上站立面的高度
 
@@ -192,7 +193,7 @@ function makePole(p, z) {
   poleLie = mk(); poleLie.rotation.z = Math.PI / 2; poleLie.visible = false; stage.add(poleLie);
 }
 
-let ENG, SC, X0 = 1100, SHOTS = [], SUBS = [], DUR = 0, FLIP = [true, true], overlayC;
+let ENG, SC, X0 = 1100, SHOTS = [], SUBS = [], DUR = 0, FLIP = [true, true], overlayC, hudC;
 window.stageInit = async (sceneData, assets, opts) => {
   // 2D 里「从画面下沿冒出来」的围观群众（enter: 'rise' + y 下沉），在 3D 里改成直接站在地上，不然会半截埋进土里
   for (const a of Object.values(sceneData.actors)) if (a.enter === 'rise') { a.enter = 'pop'; a.y = 0; }
@@ -210,6 +211,7 @@ window.stageInit = async (sceneData, assets, opts) => {
     props.push({ i, ...texPlane(z) });
   });
   overlayC = document.createElement('canvas'); overlayC.width = 1080; overlayC.height = 608;
+  hudC = document.createElement('canvas'); hudC.width = 1080; hudC.height = 100;
   await document.fonts.load('700 58px "Noto Sans SC"'); await document.fonts.load('40px "ZCOOL KuaiLe"');
   return true;
 };
@@ -245,7 +247,8 @@ window.camFor = t => { const sh = SHOTS.find(s => t >= s[0] && t < s[1]) || SHOT
 function drawUI(t) {
   U.clearRect(0, 0, W, H);
   U.save(); U.scale(K, K);
-  ENG.renderOverlay(t, overlayC); U.drawImage(overlayC, 0, BAND_Y);   // 2D 特效层
+  ENG.renderOverlay(t, overlayC); U.drawImage(overlayC, 0, BAND_Y);   // 2D 特效层（选择题、横幅、徽章……）
+  ENG.renderHudLayer(t, hudC); U.drawImage(hudC, 0, HUD_Y);          // 计分牌：顶部，系列标签下面
   U.font = '40px "ZCOOL KuaiLe"'; const kw = U.measureText(SC.title.kicker).width + 60;
   U.fillStyle = 'rgba(42,35,32,0.88)'; roundRect(U, (1080 - kw) / 2, 90, kw, 66, 33); U.fill();
   U.fillStyle = '#f4e8d0'; U.textAlign = 'center'; U.textBaseline = 'middle'; U.fillText(SC.title.kicker, 540, 124);
@@ -274,6 +277,21 @@ function wrap(g, text, maxW) {   // 两行时在标点后面断
   const out = []; let cur = ''; for (const c of ch) { if (g.measureText(cur + c).width > maxW && cur && !P.includes(c)) { out.push(cur); cur = c; } else cur += c; } if (cur) out.push(cur); return out;
 }
 
+window.frameBoxes = () => {   // 入画质检：每个看得见的角色，不透明部分投到屏幕上的框（像素，竖屏 1080×1920 坐标）
+  const out = [];
+  for (const [id, a] of Object.entries(actors)) {
+    if (!a.mesh.visible) continue;
+    const d = a.canvas.getContext('2d').getImageData(0, 0, OW, OH).data; let x0 = OW, x1 = -1, y0 = OH, y1 = -1;
+    for (let y = 0; y < OH; y += 4) for (let x = 0; x < OW; x += 4) if (d[(y * OW + x) * 4 + 3] > 128) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0) continue;
+    const pts = [[x0, y0], [x1, y0], [x0, y1], [x1, y1]].map(([px, py]) => {
+      const v = new THREE.Vector3((px - OW / 2) * S / SS, (OH - FOOT - py) * S / SS * a.mesh.scale.y, 0).add(a.mesh.position).project(cam);
+      return [(v.x + 1) / 2 * 1080, (1 - v.y) / 2 * 1920, v.z]; });
+    const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    out.push({ id, x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys), behind: pts.some(p => p[2] > 1) });
+  }
+  return out;
+};
 window.renderFrame = (t, opts = {}) => {
   // 翻页：开头书页上的纸片依次弹起，结尾最后 0.45 秒折倒
   const fold = FLIP[1] ? smooth((t - (DUR - 0.45)) / 0.45) : 0;

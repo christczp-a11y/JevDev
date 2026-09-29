@@ -904,13 +904,20 @@ function renderOverlay(t, out) {
   for (const ev of scene.events) if (ev.type === 'nope') drawNope(ev, t);
   for (const ev of scene.events) if (ev.type === 'confetti') drawConfetti(ev, t);
   for (const ev of scene.events) if (ev.type === 'stamp') drawStamp(ev, t);
-  if (scene.hud) drawHud(t);
   for (const ev of scene.events) if (ev.type === 'boss') drawBoss(ev, t);
   for (const ev of scene.events) if (ev.type === 'banner') drawBanner(ev, t);
   for (const ev of scene.events) if (ev.type === 'choice') drawChoice(ev, t);
   ctx.restore();
   o.drawImage(C, 0, 0, BAND.w, BAND.h, 0, 0, out.width, out.height);
 }
+// 3D 舞台：计分牌（信用值、赏金）单独一层，放在竖屏顶部（Chris 2026-09-29：叠在特效层里跑到了屏幕中间）
+function renderHudLayer(t, out) {
+  const o = out.getContext('2d'); o.clearRect(0, 0, out.width, out.height);
+  if (!scene.hud) return;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, BAND.w, 100); drawHud(t); ctx.restore();
+  o.drawImage(C, 0, 0, BAND.w, 100, 0, 0, out.width, out.height);
+}
+window.renderHudLayer = renderHudLayer;
 window.renderSoloProp = renderSoloProp; window.renderOverlay = renderOverlay; window.camShake = camShake;
 window.underTint = t => { let a = 0; for (const ev of scene.events) if (ev.type === 'tint' && ev.under && t >= ev.t0 && t <= ev.t1) a = Math.max(a, ev.a); return a; };
 // 质检截图用：某个角色在 t 时刻位于闯关画面里的横坐标

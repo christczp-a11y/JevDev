@@ -2,6 +2,7 @@
 
 用法（仓库根目录）：
   python video/stage3d/build_stage3d.py qa [场号...]        # 穿帮质检：每个故事镜头抽 3 帧，把书外面涂成品红，拍到品红就报错
+  python video/stage3d/build_stage3d.py frame [场号...]     # 入画质检：说话的人、镜头对准的人在不在画面里；前景人物有没有被切一半
   python video/stage3d/build_stage3d.py stills 场号 秒...    # 截几张静帧看（video/out/stage3d/ep01/still_场号_秒.jpg）
   python video/stage3d/build_stage3d.py render [场号...]     # 渲染（默认全部 6 场，2 场并行），再拼接、配上整集声音
 输出：video/out/stage3d/ep01/ep01_3d.mp4
@@ -181,6 +182,52 @@ def qa(shots):
     return bad
 
 
+def frame_qa(shots, step=0.5):
+    """入画质检（Chris 2026-09-29：有些人物跑出画面了）：每 0.5 秒查一次
+    1. 正在说话的人，必须至少 75% 在画面里；
+    2. 特写、跟拍、推近镜头对准的人，必须至少 85% 在画面里；
+    3. 其他人：占画面高度 25% 以上（在前景、很显眼）却只有 20%–70% 在画面里 = 被画框切了一半，也算错。
+    同一个问题连续出现只报一次（报第一次出现的时刻和持续多久）。"""
+    from playwright.sync_api import sync_playwright
+    srv = serve()
+    errs = []
+    with sync_playwright() as p:
+        for k in shots:
+            browser, page, scene = open_stage(p, k, srv)
+            speakers = {a.get("speaker"): id_ for id_, a in scene["actors"].items() if a.get("speaker")}
+            open_ = {}
+            t = 0.9
+            while t < scene["duration"] - 0.5:
+                page.evaluate(f"window.renderFrame({t}, {{noUI: true}})")
+                boxes = {b["id"]: b for b in page.evaluate("window.frameBoxes()")}
+                sh = next((c for c in SHOTS[k]["cams"] if c[0] <= t < c[1]), SHOTS[k]["cams"][-1])
+                sub = next((x for x in scene["subtitles"] if x[0] <= t <= x[1]), None)
+                found = set()
+                for id_, b in boxes.items():
+                    w, h = max(1, b["x1"] - b["x0"]), max(1, b["y1"] - b["y0"])
+                    vis = max(0, min(b["x1"], 1080) - max(b["x0"], 0)) / w * max(0, min(b["y1"], 1920) - max(b["y0"], 0)) / h
+                    if sub and speakers.get(sub[2]) == id_ and vis < 0.75:
+                        found.add(("说话的人出画", id_, sh[2]))
+                    elif sh[3].get("id") == id_ and vis < 0.85:
+                        found.add(("镜头对准的人出画", id_, sh[2]))
+                    elif h > 0.25 * 1920 and 0.2 < vis < 0.7:
+                        found.add(("前景人物被切一半", id_, sh[2]))
+                for key in found:
+                    open_.setdefault(key, [t, t])[1] = t
+                for key in list(open_):
+                    if key not in found:
+                        t0, t1 = open_.pop(key)
+                        errs.append((k, t0, t1, *key))
+                t = round(t + step, 2)
+            errs += [(k, v[0], v[1], *key) for key, v in open_.items()]
+            browser.close()
+    srv.shutdown()
+    for k, t0, t1, kind, who, cam in sorted(errs):
+        print(f"  第 {k} 场 {t0:.1f}–{t1:.1f}s [{kind}] {who}（{cam} 镜头）")
+    print("入画质检：" + ("没有问题" if not errs else f"{len(errs)} 处"))
+    return errs
+
+
 def stills(k, ts):
     from playwright.sync_api import sync_playwright
     srv = serve()
@@ -199,6 +246,8 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     if cmd == "qa":
         sys.exit(1 if qa([int(x) for x in rest] or list(SHOTS)) else 0)
+    if cmd == "frame":
+        sys.exit(1 if frame_qa([int(x) for x in rest] or list(SHOTS)) else 0)
     if cmd == "stills":
         stills(int(rest[0]), [float(x) for x in rest[1:]])
         return
