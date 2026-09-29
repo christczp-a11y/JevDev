@@ -113,7 +113,7 @@
 ## E 环境和工具（不影响画面，但会卡住流程）
 | # | 现象 | 规则 / 修法 | 来源 |
 |---|---|---|---|
-| E1 | 云端下载 Chromium 被拦截；Google 字体加载失败，数字变成衬线体 | 用预装的 `/opt/pw-browsers/chromium`；导入代理 CA（`scripts/cloud_setup.sh`） | 09-28 云端 |
+| E1 | 云端下载 Chromium 被拦截；Google 字体加载失败，数字变成衬线体。再犯 09-29（本地：系列参考帧 `video/assets/ref/series/` 是 ZCOOL KuaiLe 没加载成功时截的，标签成了备用无衬线字体，B1 自检说字体没问题是看错了；字体在线分片加载，同一份代码截几次结果都不一样，C2 做回归时发现） | 用预装的 `/opt/pw-browsers/chromium`；导入代理 CA（`scripts/cloud_setup.sh`）；字体放进仓库、本地加载，加载失败就报错（第 0 步第 19 项，09-29 提前做），然后重截参考帧 | 09-28 云端 |
 | E2 | 云端 Python 3.11 装不了 numpy 2.5 | 用 uv 建 3.12 的 `.venv` | 09-28 云端 |
 | E3 | 云端 Edge TTS 配音连不上 | 需要设 `WSS_PROXY` | 09-28 云端 |
 | E4 | 本地 Codex 画图报「could not save」 | 到 `~/.codex/generated_images/<id>/` 里把图拷出来 | 09-28 本地 |
