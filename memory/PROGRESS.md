@@ -1,27 +1,10 @@
 # PROGRESS — 当前进度
 
-> 最后更新：2026-09-28（已在云端会话；装机用 `bash scripts/cloud_setup.sh`，渲染已跑通；Jev 还不能用：key 和网络要开新会话才生效）
+> 最后更新：2026-09-29（本地会话：主会话 Opus 5.5 Extra 只指导，重活交给 ep-builder / ep-reviewer / ep-researcher）
 
-## 当前阶段：儿童历史动画「资治通鉴」第 1 集（徙木立信）
-- 剧本定稿 N5：`video/stories/ep01/N5_最终.json`（讨论和决策见 `docs/讲故事-方法与决策.md`）
-- 画风：纸艺立体书 + 横版闯关 + Q 版（Chris 认可）；资源集中在人物动作上
-- 人物：纸偶关节动画 `video/puppet.js`。小伙已完成侧面（`video/assets/rig/youth`）+ 45° 半正面（`youth_q`）两套、五种手形；前臂和手合成一张（改了原图要重跑 `video/merge_limbs.py`）
-- 测试片段：`video/scenes/test_puppet_youth.json`（19 秒）。最后一轮合理性复查 13/17 通过，剩下 4 处都在「抱木杆」这一段
-- 每集必做：`video/logic_qa.py` 合理性复查（Chris 的要求）；动作改动用 `video/motion_qa.py` 做改前 vs 改后
-
-### 下一步（按顺序）
--1. **【Chris 定，最优先】画面改版**：不再用 2D 横版卷轴，改成「3D 立体书舞台 + 电影分镜 + 纸片物理」，参考《纸片马力欧：折纸国王》。任务书是 `docs/画面改版-纸片马里奥风格-给云端.md`，**先做第 0 步：查清纸片马力欧的角色和场景到底是平面纸片还是 3D 建模**，再试做「搬木头」这一场
-0. ✅ Chris 认可第四轮测试片段（旗杆、手腕、脚踝、捧金子的双臂）。Jev 质检还没跑（云端 key 未生效）：新会话里补跑 `video/motion_qa.py`（改前 vs 改后）和 `video/logic_qa.py`
-0.5 ✅ Chris 确认标题「一根木头 / 怎么让秦国人开始相信？」和开场「同学之间的约定」
-0.6 ✅ Codex 云端已登录（设备码），第 1 集素材已画好（video/assets/codex_ep01、chars、props、sets/classroom）
-0.8 【进行中】第 1 集完整版：`python video/voice.py video/stories/ep01/N5_最终.json video/out/ep01_voice 14=2.0 15=6.5` → `python video/build_ep01.py` → video/out/ep01/ep01_full.mp4（背景音乐只用于内部预览，发布前必须换）
-0.65 ✅ MoneyPrinterTurbo 对比实验（按 Chris 原意重做）：用我们生成的 15 张图片素材 → `experiments/mpt/output/mpt_images_2026-09-28.mp4`（`bash experiments/mpt/run_images.sh`），结论见 `experiments/mpt/README.md`。第一次把渲染好的动画喂给它是理解错了，已标注作废
-0.7 【等 Chris】配乐方案（见 log 2026-09-28）：推荐 ElevenLabs（音乐和 9 种中文配音可以用同一家，需要付费和 API key）+ Claude 按剧本写每段的配乐说明 + Jev 从几个候选里挑；不花钱的备选是本地开源模型 ACE-Step（要看本地有没有 NVIDIA 显卡）
-1. 【等 Chris】看 `test_puppet_youth.mp4`：接不接受「抱在腰前」代替「扛在肩上」（Q 版扛肩一定横过下巴）；45° 视角和手部动作方向对不对
-2. 收尾抱杆段（复查剩下的 4 处）：远侧前臂和手画到木杆前面（上臂仍在身体后面）；木杆带一点下垂弧度；抱着时后仰更明显；放杆时杆头要真正着地
-3. 其余角色做纸偶（侧面 + 45° 各一张 Codex 部件图，astra low）：商鞅、小豆子、爹、大婶、现代小孩、同桌、司马光、两位老师 ——**Codex 只能在本地跑**，云端先做别的
-4. 按 N5 搭完整第 1 集：新场景（现代教室）、三关信用值 HUD、解锁徽章、商鞅抛金、群众反应、下集预告；跑合理性复查
-5. 第 4 轮：声音（9 种配音 + 音乐，找可商用的开源中文语音合成）；第 5 轮：运营
+## 当前阶段：tj01 三家分晋：第 0 步，详见 `video/stories/tj01/status.md`
+- 流程照 `docs/自动化工作流-每集生成.md`；质检以 `memory/PITFALLS.md` 为准；Chris 09-29 的决定见 DECISIONS 最后几条
+- 09-29 开工自检全过（edge-tts 当场装上）；显卡渲染 `--gpu` 还没接（第 0 步第 14 项，第 7 步之前做）
 
 ## 美食赛道（2026-09-27 暂停：图片版权）
 暂停时的状态：
@@ -69,6 +52,10 @@
 - （Pexels 图库和写实 AI 图都被 Chris 否决：不是这家店的实物）
 
 ## 儿童历史动画（已完成）
+### 试做集（徙木立信，`ep01` / `ep01v2`）：停做（Chris 09-29：不修，不做对比试验和 Blender 版）
+- 剧本 N5 `video/stories/ep01/N5_最终.json`，之后改到 N6；纸偶 `video/puppet.js`（小伙侧面 `rig/youth` + 45° `youth_q`）；每集必做 `logic_qa.py`，动作改动跑 `motion_qa.py`
+- 3D 修正版（161 秒）被 Chris 否（T11–T18），诊断见 `docs/画面诊断与技术栈评估.md`；教训都进了 PITFALLS
+- 停下时没做完的：抱杆段 4 处复查、其余角色的纸偶、MPT 对比实验已做完（`experiments/mpt/README.md`）；配乐 Chris 已定曲库音乐可以发布
 - [x] 第 3 版画面（Chris：好）；讲故事（Chris：差）→ 剧本讨论两轮，定稿 N5；Chris 已定：约 2 分钟、加下集预告；标题和开场待确认，系列格式调试后再定
 - [x] 纸偶关节动画（小伙）：Jev「改前 vs 改后」扛木杆段全面胜出
 - [x] Chris 第二轮反馈（直手扛杆、城墙接缝、只有侧面、手不够细）→ 合理性复查工具、五种手形、45° 视角、无缝城墙、抱在腰前；复查从 9/17 有问题降到 4/17
