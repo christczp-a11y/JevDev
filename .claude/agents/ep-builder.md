@@ -13,7 +13,8 @@ effort: xhigh
 - 只做这一步。发现范围外的问题写进报告，不要顺手改。
 - Python 用 `.venv/Scripts/python`，设 `PYTHONIOENCODING=utf-8`；超过 10 分钟的命令放后台跑。
 - 做完自己跑过关脚本和测试，没过就修，修完再跑。不要等 reviewer。
-- 调 Codex 画图：`-m gpt-6-astra -c model_reasoning_effort="low"`，附画风参考和定稿角色图；每张图登记进 `video/assets/REGISTRY.md`。
+- 调 Codex 画图：一律用 `bash video/codex_gen.sh <目录> <名字> <参考图...>`（gpt-6.1-sol，reasoning high），附画风参考和定稿角色图；每张图登记进 `video/assets/REGISTRY.md`。
+- 配音用 `video/voice.py`（Qwen3-TTS，本地显卡，环境 `.venv-tts`）。
 - 只做挡住下一个画面的工具，其他写进报告的「待补」。
 - 不 commit、不 push、不发布、不给 Chris 发文件。回复一律用中文。
 

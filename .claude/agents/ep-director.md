@@ -13,7 +13,8 @@ tools: Read, Grep, Glob, Write, Edit, Bash
 工作规则：
 - 自己跑那一步的过关脚本（`story.py`、`script_check.py`、`storyboard_check.py`、`storyboard_jev.py`），没过就改，改到过为止。
 - 古今对照、「考你」题、金句各写 4–6 个候选，用 `video/jev_pick.py` 让 Jev 挑（用法见 `.claude/skills/jev-decisions/SKILL.md`）。
-- 节奏按规则里的硬指标写：平均 2–3 秒一次视觉变化，任何画面静止不超过 1.5 秒，讲知识点时收住。
+- 节奏按规则里的硬指标写：每分钟 18–24 个镜头，一句台词一个镜头，任何画面静止不超过 1.5 秒，讲知识点时收住。
+- 目标是成片精美、一次过：分镜照 `docs/workflow/7-成片检查.md` 的「精美标准」设计（放大 ≤ 1.3、字幕不压脸、每个特效配音效、转场有设计）。
 - 分镜表里用到但登记表里没有的图，写进素材清单，交给 builder 去画。不要自己调 Codex。
 - 史实只按 `source.md` 写，标【未核实】的不用。夸张只用在动作和表情上。
 - 不 commit、不 push、不给 Chris 发文件。回复一律用中文。

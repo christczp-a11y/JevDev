@@ -286,3 +286,8 @@ Chris 看 3D 整集：信用值跑到屏幕中间、有些人物跑出画面。
 - 每个角色用文字描述设计一个声音，存成参考音，全系列复用；每句台词可以写语气。
 - 儿童节目的声音一律温暖、明亮、带笑（PITFALLS A4：第一版司马光太阴沉）。
 - 不再用 Edge TTS，也不再比较 Azure、MiniMax 等其他方案。配音只在本地跑（云端没有显卡）。
+
+## 2026-09-29 Codex 素材引擎换成 gpt-6.1-sol，reasoning high（Chris 定）
+- 对比测试（同一个提示词画 9 个贴纸）：比 gpt-6-astra 更干净，白纸边均匀，字更清楚，手机上一眼能看清；Chris 说这个模型的可用额度大。
+- 一律用系列统一脚本 `video/codex_gen.sh`（Codex CLI 要 0.159.0 或更新，才认得这个模型）。系列贴纸第一版就是它画的：`video/assets/codex_series/stickers_v1.png`。
+- 以前「Codex 一律用 astra low」的规定作废。
