@@ -3,6 +3,7 @@
 > 用途：① 出片前逐条对照；② 每个坑都要变成自动检查，全自动出片时不再犯。
 > 来源：Chris 在本地会话里的原话、`memory/log/`、`memory/DECISIONS.md`、git 提交记录、`docs/画面改版-纸片马里奥风格-给云端.md`。云端对话本地看不到，只能从云端写进仓库的记录里整理；云端如有漏记，补在对应分类下。
 > 建立：2026-09-29（本地）。
+> **2026-09-29 换成动态漫画**（three.js 和 2D 纸偶引擎已删）：R（纸偶）、B（2D 站位）、T（3D 舞台）是旧技术栈的坑，**只留作教训**。其中朝向、「旁白说到谁拍谁」、镜头长度、闪烁、穿模、放大倍数这几条，已经写进新的分镜表检查和成片检查（`docs/workflow/4-分镜表.md`、`7-成片检查.md`）。新的坑记在 M（动态漫画）和 H（发布后数据）两类。
 
 ## 更新规则（云端和本地都要遵守）
 1. **Chris 每次要求修改，先记再改**：在对应分类末尾加一行。「现象」尽量用 Chris 的原话，写上日期，标明是云端还是本地。
@@ -139,31 +140,20 @@
 
 ---
 
-## 交付前检查清单（按顺序跑，全部通过才交付）
-**每次都跑**
-0. `bash video/tests/run_all.sh`：质检脚本自己的回归测试（P10）
+## M 动态漫画
+| # | 现象 | 根因 | 规则 / 修法 | 自动检查 | 来源 |
+|---|---|---|---|---|---|
 
-**剧本**（第 2 步起）
-1. `python video/story.py video/stories/<集> --lint --only <版本>`：秒数、禁用词（S2、S13）
-2. `python video/script_check.py video/stories/<集>/<版本>.json [--timeline <timeline.json>]`：结构（S17、S18、S20）
-3. `python video/source_check.py video/stories/<集>/source.md`：史料简报的引文（S2、S14）
+## H 发布后数据（流失最陡的点）
+| # | 集 | 秒数 | 现象 | 下一集怎么避开 | 来源 |
+|---|---|---|---|---|---|
 
-**素材和场景**（第 3、5 步起）
-4. `python video/registry_check.py [video/scenes/<集>]`：登记、朝向对账、停用素材、T19
-5. `python video/layout_qa.py video/scenes/<集>/shot*.json`：重叠、重影（B6、B7、R11；3D 集里被挡、出画以 frame 为准）
-6. `python video/puppet_qa.py <场景 JSON>`，全闭和 `--eyes=0.4` 各一次：白缝、漏眼白（R8、R9）
-7. `python video/logic_qa.py video/scenes/<集>/shotN.json`（要 Jev key）：动作常理（R2、R5、R7、R10）
-8. `python video/glyph_check.py`：画面上的字都在字体子集里（E1）
-9. `python video/selfcheck.py <场景 JSON> --base <上次交付的提交>`：看画面上哪里变了（P4、B5）
-
-**3D**（第 6 步起；按集写法等第 0 步第 10 项）
-10. `python video/stage3d/build_stage3d.py qa`：拍到书外面（T2、T4、T5）；退出码 0 / 1 / 2
-11. `python video/stage3d/build_stage3d.py frame`：入画、被切、被挡、人名牌画出时长（T7、T8、T9、T24）
-12. ❌ 闪烁检测（T3，待补 1）；❌ 2.5D 画面检查（第 0 步第 22 项）
-
-**给 Chris 之前**
-- 给 Chris 的一律是**每秒 30 帧、带声音的视频**，不给截图（P2、P3）
-- 在 `memory/log/` 里写一句结论：跑了哪几项、有几处变化、有没有新问题
+## 交付前检查清单（2026-09-29 起按动态漫画流程）
+- 剧本：`story.py --lint`、`script_check.py`（第 2、3 步）；史料：`source_check.py`（第 1 步）；
+- 素材：`registry_check.py`（第 5 步）；分镜表：`motion/storyboard_check.py`（第 4 步，施工阶段做）；
+- 成片：合成器的自动检查，包括闪烁、静止、安全区、响度（第 6 步），加上 `ep-reviewer` 一轮成片检查（第 7 步）；
+- 给 Chris 的一律是**每秒 30 帧、带声音的视频**（P2、P3）；在 `memory/log/` 写一句结论。
+- 旧的 layout_qa、puppet_qa、logic_qa、selfcheck、build_stage3d 已删除。
 
 ## 待补的自动检查（做完一项就把上面的 ❌ 改成 ✅）
 1. **闪烁检测**（T3、P2）：逐帧比较前后帧。某块区域在第 i 帧突然变了、第 i+1 帧又变回去，就报出秒数和位置。可以直接读预览视频来查，不用另外再渲染。

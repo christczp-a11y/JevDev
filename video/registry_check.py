@@ -86,6 +86,8 @@ def load_baked():
     """各集配置（video/episodes/<集>.py 的 QA.baked，layout_qa 用同一份）里「姿势图自带别的角色」的并集。
     返回（{姿势图名前缀: ...}，问题列表）。"""
     sys.path.insert(0, str(HERE))
+    if not (HERE / "episode_config.py").exists():   # 2026-09-29 换成动态漫画，旧的 2D 分场配置已删：不再对账
+        return None, []
     try:
         import episode_config
     except Exception as ex:   # noqa: BLE001

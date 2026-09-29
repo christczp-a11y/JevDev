@@ -1,6 +1,6 @@
 #!/bin/bash
 # 跑 video/tests/ 下所有的 run_all.sh，最后汇总。用法：bash video/tests/run_all.sh    退出码 0 = 全过。
-# 每个目录的输出在 video/out/tests/<目录名>/。全部约 15–20 分钟（3D 页面多，CPU 渲染）；不带 Jev、不花钱。
+# 每个目录的输出在 video/out/tests/<目录名>/。不带 Jev、不花钱。
 cd "$(dirname "$0")/../.." || exit 2
 fail=0
 for d in video/tests/*/; do

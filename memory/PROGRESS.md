@@ -1,74 +1,19 @@
 # PROGRESS — 当前进度
 
-> 最后更新：2026-09-29（本地会话：主会话 Opus 5.5 Extra 只指导，重活交给 ep-builder / ep-reviewer / ep-researcher）
+> 最后更新：2026-09-29（本地）
 
-## 当前阶段：tj01 暂停（Chris 09-29：换技术栈，three.js 不用了）。只等 Codex 补画素材；详见 `video/stories/tj01/status.md` 和 DECISIONS 最后一条
-- 流程照 `docs/自动化工作流-每集生成.md`；质检以 `memory/PITFALLS.md` 为准；Chris 09-29 的决定见 DECISIONS 最后几条
-- 09-29 开工自检全过（edge-tts 当场装上）；显卡渲染 `--gpu` 还没接（第 0 步第 14 项，第 7 步之前做）
-
-## 美食赛道（2026-09-27 暂停：图片版权）
-暂停时的状态：
-工作流 v2 完成：「10 个 Skill」的规则已用 Jev 在赛道数据上检验，验证过的写进了写作规则和选稿复合分（总结见 `docs/小红书爆款工作流.md`）。
-**等 Chris 同意后用「仅自己可见」试发第一篇**，新草稿包是 `data/posts/20260927-0239_HK-BBQ-Master-Richmond-BC`。发之前请 Chris 看一下正文里「只收现金」这句。
-赛道：温哥华美食推荐。账号：rednote 海外新号「小红薯6AB9FF32」（0 笔记）。
-长期目标：Claude + Jev 的自媒体爆文辅助网页工具（小红书 → IG / TikTok）。
-
-## 怎么跑（新会话先看这里）
-1. 启动小红书 MCP：`C:\Users\Chris\xhs\bin\start-mcp-rednote.cmd`（端口 18060；这是改装版，支持 rednote）
-2. 生成一篇（约 4–7 分钟）：
-   `.venv/Scripts/python scripts/make_post.py --query "<英文店名 城市>" --name "<写进笔记的店名>" --xhs-keyword "<中文店名>" [--my-notes "..."] [--photos <实拍文件夹>] [--no-reddit]`
-   （没给 --photos 就用 Codex 画插画当封面主图；已有草稿包补图或换图：`scripts/add_image.py <草稿包> [--photos 文件夹]`）
-   → 草稿包在 `data/posts/<时间>_<店>/`（package.json + card_*.png）
-3. 预览 / 发布：`.venv/Scripts/python scripts/publish.py <草稿包> [--yes] [--public]`（默认仅自己可见；不加 --yes 只预览）
-4. 数据：`scripts/collect_xhs.py`（采集赛道笔记）、`scripts/track.py`（第 1/3/7 天追踪）
-5. 自我优化（每 1–2 周）：`scripts/covers.py --download --describe`（封面转文字）→ `scripts/autoresearch.py --rounds 2`（Claude 提题、Jev 作答、交叉验证去留）→ `scripts/composite.py --build --eval`（重建选稿复合分）；`scripts/rule_catalog.py` 输出所有题的逐条检验总账。留出测试集只在最后看一次（`autoresearch.py --final`）
-- 需要：环境变量 `TYPESAFE_API_KEY`（Jev）；`claude` CLI 已登录（写稿，Opus 5.5）；Codex CLI 已登录（Reddit）；Google 专用 Chrome 配置已登录小号（`scripts/open_google_profile.cmd`）
-- Git Bash 里 export key（PEXELS_API_KEY 同理）：`export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`
-
-## 已完成
-- [x] 记忆系统、产品方向、执行计划；切换到本地会话
-- [x] 决策：赛道、发布闸门、MCP 自动发布（Chris 接受风险）、互动由 Chris 手动完成、Google 抓取、Reddit 走 Codex（见 DECISIONS）
-- [x] 小红书 MCP 改装支持 rednote（v2.5.5 + PR #798，本地编译）；Codex CLI、claude CLI（2.1.283）已登录
-- [x] 外部调研 `docs/research/爆文逻辑-外部资料.md`；养号流程 `docs/新号养号流程.md`
-- [x] 阶段 1 初步结果 `docs/research/阶段1-初步结果.md`：「最新」子集 Jev 标题 Spearman ≈ +0.28（n=75，不足以下结论）
-- [x] 数据：179 篇赛道笔记（60 篇有详情和发布时间），SQLite `data/jevdev.db`
-- [x] 流水线 `scripts/make_post.py`：Google（50 条）+ 小红书（笔记 + 评论）+ Reddit（Codex）→ Jev 逐条判断 → 画像（`jevdev/restaurant.py`）→ Claude 写 4 篇（`prompts/xhs_writer.md`）→ 逐句核查（`rubrics/claim_check_v1.json`）+ 禁用词 → Claude 只改问题句 → Jev 闸门和质量（`rubrics/draft_v1.json`）+ 标题预测 → 80/20 选稿 → 渲染卡片（自动适配）
-- [x] 第一篇：明家烧腊《明家烧腊4.3分，名气和味道对得上吗》→ `data/posts/20260927-0028_HK-BBQ-Master-Richmond-BC`（4/4 过审）
-- [x] 「10 个 Skill」调研：66 条候选规则（`docs/research/10个skill-提取.md`）
-- [x] 自动研究（照 TypeSafe 的 autoresearch cookbook）：398 篇笔记和封面，3 轮；大回归在测试集上过拟合 → 改用复合分（21 条规则，测试集 +0.29 [0.10, 0.46]）
-- [x] 写作规则 v2（标题要有好奇缺口、不能写成名词堆砌；正文 350–700 字；标题承诺要兑现）+ 选稿改用复合分（`jevdev/engagement.py`）
-- [x] 明家烧腊按 v2 重跑：《列治文这家烧腊店，你可能排错了队🤔》→ `data/posts/20260927-0239_HK-BBQ-Master-Richmond-BC`（4/4 过审，复合分平均 −0.04 → +0.43）
-
-## 下一步
-- [ ] 【等 Chris】仅自己可见试发 → 检查图片、话题、AI 标注（MCP 可能勾不了「AI 生成」声明，靠正文末行标注）
-- [ ] 发布后拿到自己笔记的 note_id，写入 notes（is_ours=1），接上 track.py
-- [ ] 选店候选池（每天 1–2 家；来源：赛道笔记里出现的店 + Chris 推荐）
-- [ ] 定时任务（Windows 任务计划程序）：MCP 常驻 + 每日 make_post / track / collect（改系统配置前先问 Chris）
-- [ ] 阶段 1 扩样本：同龄追踪积累「第 7 天互动」→ 用新数据做一次干净的复合分检验（测试集已经看过两次）
-- [ ] 【等 Chris 决定】要不要用 MCP 查作者粉丝数（284 个作者主页），控制大号效应
-- [ ] 【等 Chris】亲自去吃，用 --my-notes 写入体验（数据显示「真人亲历感」和互动正相关，我们不能冒充）；封面实拍图 vs 文字卡做 A/B
-- [x] 配图：封面优先级 = 实拍（--photos）→ 图库实物抠图（Jev 选图，亮黄底爆款模板）→ Codex 插画 → 纯文字；`scripts/add_image.py` 可以给已有草稿包补图或换图；断行和页脚孤字已修
-- [ ] 【等 Chris】真实店铺照片：自己去拍，或在 Tourism Richmond Media Hub（CrowdRiff）申请授权图（申请文案见 2026-09-27 的会话）；拿到后运行 `scripts/add_image.py <草稿包> --photos <文件夹> [--photo-credit 出处]`
-- （Pexels 图库和写实 AI 图都被 Chris 否决：不是这家店的实物）
-
-## 儿童历史动画（已完成）
-### 试做集（徙木立信，`ep01` / `ep01v2`）：停做（Chris 09-29：不修，不做对比试验和 Blender 版）
-- 剧本 N5 `video/stories/ep01/N5_最终.json`，之后改到 N6；纸偶 `video/puppet.js`（小伙侧面 `rig/youth` + 45° `youth_q`）；每集必做 `logic_qa.py`，动作改动跑 `motion_qa.py`
-- 3D 修正版（161 秒）被 Chris 否（T11–T18），诊断见 `docs/画面诊断与技术栈评估.md`；教训都进了 PITFALLS
-- 停下时没做完的：抱杆段 4 处复查、其余角色的纸偶、MPT 对比实验已做完（`experiments/mpt/README.md`）；配乐 Chris 已定曲库音乐可以发布
-- [x] 第 3 版画面（Chris：好）；讲故事（Chris：差）→ 剧本讨论两轮，定稿 N5；Chris 已定：约 2 分钟、加下集预告；标题和开场待确认，系列格式调试后再定
-- [x] 纸偶关节动画（小伙）：Jev「改前 vs 改后」扛木杆段全面胜出
-- [x] Chris 第二轮反馈（直手扛杆、城墙接缝、只有侧面、手不够细）→ 合理性复查工具、五种手形、45° 视角、无缝城墙、抱在腰前；复查从 9/17 有问题降到 4/17
-- [x] 已经在画面里的史实修正：7 米木杆、金块代替方孔钱
+## 当前阶段：施工「动态漫画引擎」，然后做 tj01（三家分晋）
+- 方向：少儿版「古人云」动态漫画（DECISIONS 09-29 最后一条）。three.js 已停用、已删除。
+- **下一步**：按 `docs/施工计划-动态漫画引擎.md`：
+  1. A 合成器核心（`ep-builder`）；
+  2. B 特效包 + C 检查工具（两个 `ep-builder`，同时做）；B 的特效样片合集发给 Chris 看；
+  3. D：tj01 第一场。`ep-director` 写分镜表，走第 4–7 步，出第一场样片给 Chris。
+- tj01 已有、继续有效：史料 `source.md`、定稿剧本 `B_段规.json`、配音 `video/out/tj01_voice/`、人物和场景素材。见 `video/stories/tj01/status.md`。
+- 参考：17 秒动态漫画小样的原型 `video/motion/_prototype_mc.py`。
 
 ## 阻塞 / 待 Chris 处理
-- [ ] 云端 Jev 还不能用：当前容器没有 `TYPESAFE_API_KEY`，api.typesafe.ai 也被拦 → 确认环境设置已保存，然后开一个新会话（设置只对新容器生效）
-- [ ] 同意试发（仅自己可见）
-- [ ] 改掉已出现在聊天里的凭据：TypeSafe key（控制台作废重建）、Google 小号密码
-- [ ] 可选：在手机上手动互动，每天在 `data/养号日志.csv` 记一行
+- 配音授权（Edge TTS 能不能商用）还没确认，第一集公开前要定。
+- 改掉已经出现在聊天里的凭据：TypeSafe key、Google 小号密码。
 
-## 已知问题
-- MCP 的 search_feeds 偶尔超时（context deadline exceeded）→ make_post 会重试一次，再失败就改用缓存
-- 小红书采集的「最新」排序偶尔超时；collect_xhs 失败的组合下次自动补
-- 51 篇笔记的详情页打不开（「无法获取初始状态数据」），可能是 xsec_token 过期了；有正文的样本只有 136 篇
-- 自动研究的 39 题回归只用来发现规则，不用来选稿（它在测试集上过拟合）
+## 怎么跑（Git Bash）
+`export PYTHONIOENCODING=utf-8; export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`；Python 用 `.venv/Scripts/python`。

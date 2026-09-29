@@ -1,8 +1,0 @@
-{
- "about": "场景：现代小学教室（第 1 集开头和结尾）。背景是 Codex 画的一整张教室（assets/sets/classroom/far.png），镜头不动；下方三分之一是木地板，人物站在 GROUND=500 上",
- "dir": "sets/classroom",
- "far": {"img": "far", "parallax": 0, "y": 0, "height": 608, "filter": "saturate(0.85)"},
- "mid": {"parallax": 0, "width": 1080, "items": []},
- "stage": {"offset": 0, "width": 1080, "items": []},
- "fore": {"parallax": 1, "width": 1080, "items": []}
-}

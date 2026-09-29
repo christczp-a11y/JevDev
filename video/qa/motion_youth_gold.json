@@ -1,3 +1,0 @@
-{"beat": "小伙把木头放下，拿到了赏金，开心极了",
- "before": {"scene": "video/scenes/ep01_ximulixin_demo.json", "t0": 13.2, "t1": 15.6, "actor": "youth", "who": "拿到赏金的小伙（灰头带、土黄短褂）"},
- "after": {"scene": "video/scenes/test_puppet_youth.json", "t0": 12.7, "t1": 15.3, "actor": "youth", "who": "拿到赏金的小伙（灰头带、土黄短褂）"}}

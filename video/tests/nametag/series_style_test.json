@@ -1,8 +1,0 @@
-{
- "about": "人名牌测试用的系列表（不是真的家族色）：家名 → 颜色。真的表是 video/series_style.json。",
- "houses": {
-  "书房": {"color": "#7a4fa3", "flag": null},
-  "秦国": {"color": "#2f6d9a", "flag": null},
-  "秦国乙": {"color": null, "flag": null}
- }
-}
