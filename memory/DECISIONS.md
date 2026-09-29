@@ -240,3 +240,8 @@ Chris 看 3D 整集：信用值跑到屏幕中间、有些人物跑出画面。
 **怎么防**：出片前两道质检都要过：
 - `build_stage3d.py qa`：拍到书外面（品红）；
 - `build_stage3d.py frame`：说话的人、镜头对准的人必须在画面里（75% / 85%），前景大人物不能被切一半。
+
+## 2026-09-29 每集按自动化工作流生成；模型分工（Chris 定）
+- 流程：`docs/自动化工作流-每集生成.md`（第 0–10 步，4 个 Chris 检查点：复述剧本、新角色造型、预览视频、公开前确认）。质检以 `memory/PITFALLS.md` 为准。正式各集目录用 `tj<集号>`，第一集三家分晋 = `tj01`；试做集保留 `ep01`。
+- 模型分工：**指导 = Opus 5.5 xhigh（主会话）；重活（写代码、渲染等）= Sonnet 5.5 xhigh（subagent `ep-builder`）；检查 = Opus 5.5 xhigh（`ep-reviewer`）；查资料 = Sonnet 5.5 medium（`ep-researcher`）**。定义在 `.claude/agents/`，新会话才加载。
+- 每一步：builder 做 → reviewer 查 → 不过就先记 PITFALLS 再修；同一步 3 轮不过就问 Chris。
