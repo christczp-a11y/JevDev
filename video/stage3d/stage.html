@@ -242,6 +242,48 @@ const CAMS = {
   // 结尾拉远：从近处拉到书桌，原来这是桌上摊开的一本书
   pullback: (u, p) => { const v = smooth(u); return { pos: V3(lerp(p.x ?? 0, 0, v), lerp(2.6, 17, v), lerp(9, 24, v)), look: V3(lerp(p.x ?? 0, 0, v), lerp(1.8, 0.2, v), lerp(0.5, -1, v)), fov: 40 }; },
 };
+// ---- 自动构图（Chris 2026-09-29：人物跑出画面）：镜头要拍到谁，就按这些人（道具）实际不透明部分的大小算距离，
+// 保证他们整个人落在「顶部计分牌以下、字幕以上」的安全区里。手写坐标的镜头换了角色、改了站位就会拍歪，这个不会。
+const SAFE = { top: 270, bottom: 1440, side: 0.07 };   // 安全区（竖屏像素）；左右各留 7%
+const scratch = document.createElement('canvas'); scratch.width = OW; scratch.height = OH;
+function worldBox(id, t) {   // 某个角色 / 道具在 t 时刻不透明部分的世界坐标框
+  const isProp = id.startsWith('prop:'), P = isProp ? props.find(p => SC.props[p.i].img === id.slice(5)) : actors[id];
+  if (!P) return null;
+  const r = isProp ? ENG.renderSoloProp(P.i, t, scratch, SS) : ENG.renderSolo(id, t, scratch, SS);
+  if (!r) return null;
+  const d = scratch.getContext('2d').getImageData(0, 0, OW, OH).data; let x0 = OW, x1 = -1, y0 = OH, y1 = -1;
+  for (let y = 0; y < OH; y += 6) for (let x = 0; x < OW; x += 6) if (d[(y * OW + x) * 4 + 3] > 128) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  if (x1 < 0) return null;
+  const cx = (r.x - X0) * S;
+  return { x0: cx + (x0 - OW / 2) * S / SS, x1: cx + (x1 - OW / 2) * S / SS, y0: GY + (OH - FOOT - y1) * S / SS, y1: GY + (OH - FOOT - y0) * S / SS, z: P.z };
+}
+const fitCache = {};
+function fitBox(sh, t, p) {   // 这一镜要拍到的所有东西合起来的框；不跟拍的镜头用开头、中间、结尾三个时刻取并集（镜头不抖）
+  const key = sh[0] + ':' + (p.follow ? t.toFixed(3) : ''); if (fitCache[key]) return fitCache[key];
+  const ts = p.follow ? [t] : [sh[0] + 0.05, (sh[0] + sh[1]) / 2, sh[1] - 0.05];
+  let ids = p.ids || []; const bs = [];
+  for (const tt of ts) for (const id of ids) { const b = worldBox(id, tt); if (b) bs.push(b); }
+  if (!bs.length) for (const tt of ts) for (const id of Object.keys(actors)) { const b = worldBox(id, tt); if (b) bs.push(b); }   // 要拍的人还没出场：拍全部在场的人
+  if (p.pole && POLE && pole) { const x = pole.userData.x, H = POLE.height * S; bs.push({ x0: x - 0.2, x1: x + 0.2, y0: GY, y1: GY + H, z: pole.userData.z }); }
+  if (!bs.length) bs.push({ x0: -2, x1: 2, y0: GY, y1: GY + 2.5, z: 1 });
+  const B = { x0: Math.min(...bs.map(b => b.x0)), x1: Math.max(...bs.map(b => b.x1)), y0: Math.min(...bs.map(b => b.y0)), y1: Math.max(...bs.map(b => b.y1)),
+              z: bs.reduce((a, b) => a + b.z, 0) / bs.length, zmax: Math.max(...bs.map(b => b.z)) };
+  if (!p.follow) fitCache[key] = B;
+  return B;
+}
+CAMS.fit = (u, p, sh, t) => {
+  const B = fitBox(sh, t, p), fov = p.fov ?? 38, tv = Math.tan(fov * Math.PI / 360), th = tv * 1080 / 1920;
+  const elev = { low: -0.18, eye: 0.12, high: 0.62 }[p.elev || 'eye'], az = (p.az ?? 0) * Math.PI / 180;
+  const w = B.x1 - B.x0, h = B.y1 - B.y0, cx = (B.x0 + B.x1) / 2, cy = (B.y0 + B.y1) / 2;
+  const fracH = (SAFE.bottom - SAFE.top) / 1920, fracW = 1 - 2 * SAFE.side;
+  let d = Math.max((w / 2) / (th * fracW), (h / 2) / (tv * fracH)) * (p.pad ?? (p.elev === 'low' ? 1.2 : 1.08)) + (B.zmax - B.z);   // 仰拍时脚离镜头更近、透视更大，多留一点
+  if (p.zoom) d *= lerp(p.zoom[0], p.zoom[1], smooth(u));
+  const dir = V3(Math.sin(az) * Math.cos(elev), Math.sin(elev), Math.cos(az) * Math.cos(elev));
+  // 让框的中心落在安全区中心（安全区比画面中心偏上）：看向点往下挪
+  const shift = ((SAFE.top + SAFE.bottom) / 2 - 960) / 960 * tv * d;
+  const look = V3(cx, cy - shift, B.z);
+  return { pos: look.clone().add(dir.multiplyScalar(d)), look, fov };
+};
 window.camFor = t => { const sh = SHOTS.find(s => t >= s[0] && t < s[1]) || SHOTS[SHOTS.length - 1]; return sh; };
 
 function drawUI(t) {
@@ -323,7 +365,7 @@ window.renderFrame = (t, opts = {}) => {
   const dim = 1 - 0.75 * ENG.underTint(t);
   hemi.intensity = 1.35 * dim; sun.intensity = 2.6 * dim;
   // 镜头
-  const sh = window.camFor(t), c = CAMS[sh[2]]((t - sh[0]) / (sh[1] - sh[0]), sh[3] || {});
+  const sh = window.camFor(t), c = CAMS[sh[2]]((t - sh[0]) / (sh[1] - sh[0]), sh[3] || {}, sh, t);
   const shake = ENG.camShake(t) * S * 0.6;
   cam.position.copy(c.pos).add(V3(shake, 0, 0)); cam.lookAt(c.look.clone().add(V3(shake, 0, 0)));
   cam.fov = c.fov || 40; cam.updateProjectionMatrix();
