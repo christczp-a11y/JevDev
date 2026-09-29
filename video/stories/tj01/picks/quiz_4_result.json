@@ -1,0 +1,177 @@
+{
+ "category": "quiz",
+ "rubric": "pick_v1",
+ "model": "jev-1.13.0",
+ "context": "给 6–12 岁孩子看的历史动画「三家分晋」，大问题是「最强的智伯，为什么输了？」。这道题在第 3 关「反」：智伯带着韩、魏，用大水围住赵的晋阳城，城墙只剩三版（三块夹板那么高）露在水上。智伯去看水势，站在战车上大笑：「哈哈！原来水能灭掉一个国家！」魏桓子在中间驾车，韩康子站在右边。两人一听，偷偷碰手肘、踩脚背（原文：桓子肘康子，康子履桓子之跗），智伯一回头，两人马上站得笔直看天。他们碰来碰去，是因为想到自己的城边也有水，也能被这样淹。司马光出这道题，停 1.8 秒，「看答案！」之后是两人的心里话，画成想象泡泡：魏桓子「我的城边，也有水……」、韩康子「咱们的城，也能这样淹！」。后面张孟谈偷偷来说「嘴唇没了，牙齿就冷」，韩、魏就和赵约好，一起反过来对付智伯。按钮上的字要在答案那一句里念出来。",
+ "control_last": true,
+ "ranking": [
+  {
+   "rank": 1,
+   "id": "q4a",
+   "text": "考你：他俩在偷偷想什么？｜快把赵淹了｜咱们的城也能这样淹｜咱们的城也能这样淹：两家的城边也有水，智伯今天能淹赵，明天就能淹他们",
+   "flags": [],
+   "scores": {
+    "q_both": 0.67,
+    "q_guess": 3.06,
+    "q_reveal": 3.77
+   },
+   "score": 0.625,
+   "winrate": 0.82,
+   "winrate_by_q": {
+    "p_guess": 0.721,
+    "p_reveal": 0.919
+   },
+   "combined": 0.722
+  },
+  {
+   "rank": 2,
+   "id": "q4b",
+   "text": "考你：他俩为什么碰手肘、踩脚背？｜站累了，脚麻了｜怕自己的城也遭殃｜怕自己的城也遭殃：两家的城边也有水，智伯能淹赵，也能淹他们",
+   "flags": [],
+   "scores": {
+    "q_both": 0.09,
+    "q_guess": 3.05,
+    "q_reveal": 3.71
+   },
+   "score": 0.571,
+   "winrate": 0.769,
+   "winrate_by_q": {
+    "p_guess": 0.734,
+    "p_reveal": 0.804
+   },
+   "combined": 0.67
+  },
+  {
+   "rank": 3,
+   "id": "q4c",
+   "text": "考你：智伯这句话，谁听了最害怕？｜赵襄子｜韩、魏两个人｜韩、魏两个人：他们的城边也有水，一下子想到自己就是下一个",
+   "flags": [],
+   "scores": {
+    "q_both": 1.45,
+    "q_guess": 3.01,
+    "q_reveal": 3.71
+   },
+   "score": 0.681,
+   "winrate": 0.571,
+   "winrate_by_q": {
+    "p_guess": 0.606,
+    "p_reveal": 0.536
+   },
+   "combined": 0.626
+  },
+  {
+   "rank": 4,
+   "id": "q4d",
+   "text": "考你：韩、魏还会一直帮智伯吗？｜会｜不会了｜不会了：智伯一句「水能灭掉一个国家」，让他们想到自己的城也能被这样淹",
+   "flags": [],
+   "scores": {
+    "q_both": 1.68,
+    "q_guess": 3.02,
+    "q_reveal": 3.79
+   },
+   "score": 0.708,
+   "winrate": 0.418,
+   "winrate_by_q": {
+    "p_guess": 0.449,
+    "p_reveal": 0.387
+   },
+   "combined": 0.563
+  },
+  {
+   "rank": 5,
+   "id": "q4e",
+   "text": "考你：智伯这句话，说得好不好？｜好，很威风｜不好，吓到了韩、魏｜不好，吓到了韩、魏：他们的城边也有水，智伯能淹赵，也能淹他们",
+   "flags": [],
+   "scores": {
+    "q_both": 1.36,
+    "q_guess": 2.85,
+    "q_reveal": 3.84
+   },
+   "score": 0.671,
+   "winrate": 0.422,
+   "winrate_by_q": {
+    "p_guess": 0.49,
+    "p_reveal": 0.354
+   },
+   "combined": 0.546
+  }
+ ],
+ "control": {
+  "id": "_ctrl",
+  "text": "请问下列哪一项更符合史学界的通行结论，并说明理由，字数不少于 300 字？｜第一种说法｜第二种说法｜第一种说法，参见相关论文。",
+  "rank_in_pool": 6,
+  "pool_size": 6,
+  "score": 0.13,
+  "winrate": 0.0,
+  "combined": 0.065,
+  "last": true
+ },
+ "pairs": {
+  "q4a|q4b": {
+   "p_guess": 0.485,
+   "p_reveal": 0.765
+  },
+  "q4a|q4c": {
+   "p_guess": 0.61,
+   "p_reveal": 0.935
+  },
+  "q4a|q4d": {
+   "p_guess": 0.795,
+   "p_reveal": 0.935
+  },
+  "q4a|q4e": {
+   "p_guess": 0.715,
+   "p_reveal": 0.96
+  },
+  "q4a|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q4b|q4c": {
+   "p_guess": 0.65,
+   "p_reveal": 0.91
+  },
+  "q4b|q4d": {
+   "p_guess": 0.785,
+   "p_reveal": 0.935
+  },
+  "q4b|q4e": {
+   "p_guess": 0.72,
+   "p_reveal": 0.94
+  },
+  "q4b|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q4c|q4d": {
+   "p_guess": 0.685,
+   "p_reveal": 0.72
+  },
+  "q4c|q4e": {
+   "p_guess": 0.605,
+   "p_reveal": 0.805
+  },
+  "q4c|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q4d|q4e": {
+   "p_guess": 0.51,
+   "p_reveal": 0.525
+  },
+  "q4d|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q4e|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  }
+ },
+ "calls": {
+  "requests": 36,
+  "cached": 0,
+  "input_tokens": 47228,
+  "output_tokens": 2184
+ }
+}

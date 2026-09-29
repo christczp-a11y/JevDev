@@ -1,0 +1,139 @@
+{
+ "category": "quiz",
+ "rubric": "pick_v1",
+ "model": "jev-1.13.0",
+ "context": "给 6–12 岁孩子看的历史动画「三家分晋」，大问题是「最强的智伯，为什么输了？」。这道题在第 2 关「给」：智伯向韩康子、魏桓子要地，两家都给了。韩康子的谋士段规事先说过：智伯拿惯了，就会去要别人的地；别人不给，他就去打别人；咱们正好躲开，等事情有变。智伯又向赵襄子要地，赵襄子只说了两个字：「不给。」司马光出这道题，停 1.2 秒，「看答案！」之后智伯气得鬓发竖起来：「不给？那我就带兵打他！」旁白：「智伯拉着韩、魏，冲向赵襄子！和段规说的，一模一样！」（原文：智伯怒，帅韩、魏之甲以攻赵氏）。按钮上的字要在答案那一句里念出来。",
+ "control_last": true,
+ "ranking": [
+  {
+   "rank": 1,
+   "id": "q3a",
+   "text": "考你：赵襄子不给，智伯会怎么办？｜算了｜带兵打他｜带兵打他：智伯一生气，拉上韩、魏的兵去打赵，和段规猜的一模一样",
+   "flags": [],
+   "scores": {
+    "q_both": 0.71,
+    "q_guess": 3.1,
+    "q_reveal": 3.55
+   },
+   "score": 0.613,
+   "winrate": 0.823,
+   "winrate_by_q": {
+    "p_guess": 0.75,
+    "p_reveal": 0.896
+   },
+   "combined": 0.718
+  },
+  {
+   "rank": 2,
+   "id": "q3c",
+   "text": "考你：智伯去打赵，会叫上谁？｜自己去｜拉上韩、魏｜拉上韩、魏：刚给了他地的两家，也只好跟着他去打赵",
+   "flags": [],
+   "scores": {
+    "q_both": 1.46,
+    "q_guess": 2.96,
+    "q_reveal": 3.35
+   },
+   "score": 0.647,
+   "winrate": 0.621,
+   "winrate_by_q": {
+    "p_guess": 0.715,
+    "p_reveal": 0.526
+   },
+   "combined": 0.634
+  },
+  {
+   "rank": 3,
+   "id": "q3d",
+   "text": "考你：被拒绝的智伯，会怎么样？｜笑笑就算了｜气得带兵来｜气得带兵来：智伯从来没被人拒绝过，拉上韩、魏就去打赵",
+   "flags": [],
+   "scores": {
+    "q_both": 0.41,
+    "q_guess": 3.11,
+    "q_reveal": 3.43
+   },
+   "score": 0.579,
+   "winrate": 0.603,
+   "winrate_by_q": {
+    "p_guess": 0.647,
+    "p_reveal": 0.559
+   },
+   "combined": 0.591
+  },
+  {
+   "rank": 4,
+   "id": "q3b",
+   "text": "考你：段规猜智伯会去打人，猜对了吗？｜猜错了｜猜对了｜猜对了：赵襄子不给地，智伯马上带着韩、魏的兵去打他",
+   "flags": [],
+   "scores": {
+    "q_both": 1.23,
+    "q_guess": 2.93,
+    "q_reveal": 3.31
+   },
+   "score": 0.623,
+   "winrate": 0.453,
+   "winrate_by_q": {
+    "p_guess": 0.386,
+    "p_reveal": 0.519
+   },
+   "combined": 0.538
+  }
+ ],
+ "control": {
+  "id": "_ctrl",
+  "text": "请问下列哪一项更符合史学界的通行结论，并说明理由，字数不少于 300 字？｜第一种说法｜第二种说法｜第一种说法，参见相关论文。",
+  "rank_in_pool": 5,
+  "pool_size": 5,
+  "score": 0.133,
+  "winrate": 0.001,
+  "combined": 0.067,
+  "last": true
+ },
+ "pairs": {
+  "q3a|q3b": {
+   "p_guess": 0.875,
+   "p_reveal": 0.85
+  },
+  "q3a|q3c": {
+   "p_guess": 0.515,
+   "p_reveal": 0.84
+  },
+  "q3a|q3d": {
+   "p_guess": 0.61,
+   "p_reveal": 0.895
+  },
+  "q3a|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q3b|q3c": {
+   "p_guess": 0.22,
+   "p_reveal": 0.535
+  },
+  "q3b|q3d": {
+   "p_guess": 0.205,
+   "p_reveal": 0.39
+  },
+  "q3b|_ctrl": {
+   "p_guess": 0.995,
+   "p_reveal": 1.0
+  },
+  "q3c|q3d": {
+   "p_guess": 0.595,
+   "p_reveal": 0.48
+  },
+  "q3c|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q3d|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  }
+ },
+ "calls": {
+  "requests": 25,
+  "cached": 0,
+  "input_tokens": 30408,
+  "output_tokens": 1505
+ }
+}

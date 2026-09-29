@@ -1,0 +1,177 @@
+{
+ "category": "quiz",
+ "rubric": "pick_v1",
+ "model": "jev-1.13.0",
+ "context": "给 6–12 岁孩子看的历史动画「三家分晋」，大问题是「最强的智伯，为什么输了？」。这道题是开头 0–5 秒的二选一（系列固定开场：司马光「考考你！」之后弹出两个按钮，停 1 秒）。这一集里，智伯无缘无故到处要地：韩康子、魏桓子都给了，是计策：给他地，他就越来越骄傲、越不防备，两家再联手对付他（原文：将欲取之，必姑与之）；赵襄子不给，因为他有晋阳，管晋阳的尹铎对百姓宽，晋阳的百姓跟他一条心。答案在第 2 关赵襄子说「不给」之后揭晓：给、不给都对，各有各的道理。题目要在 1.5 秒内念完（7 个字以内），因为 7 秒内还要念出大问题；题目里一定要听得到「要地」或「要城」（不识字的孩子只听声音）。按钮上的字要在揭晓那一句里念出来。",
+ "control_last": true,
+ "ranking": [
+  {
+   "rank": 1,
+   "id": "q1c",
+   "text": "要你的城，给不给？｜给｜不给｜两个都对！韩、魏先给，是计策：智伯拿得越多越骄傲、越不防备；赵襄子不给，因为晋阳的百姓跟他一条心",
+   "flags": [],
+   "scores": {
+    "q_both": 3.55,
+    "q_guess": 3.11,
+    "q_reveal": 3.65
+   },
+   "score": 0.859,
+   "winrate": 0.734,
+   "winrate_by_q": {
+    "p_guess": 0.751,
+    "p_reveal": 0.717
+   },
+   "combined": 0.797
+  },
+  {
+   "rank": 2,
+   "id": "q1d",
+   "text": "要地！你会怎么办？｜先给他｜不给他｜两个都对！韩、魏先给他，是计策：智伯拿得越多越骄傲、越不防备；赵襄子不给他，因为晋阳的百姓跟他一条心",
+   "flags": [],
+   "scores": {
+    "q_both": 3.6,
+    "q_guess": 3.05,
+    "q_reveal": 3.62
+   },
+   "score": 0.856,
+   "winrate": 0.633,
+   "winrate_by_q": {
+    "p_guess": 0.671,
+    "p_reveal": 0.596
+   },
+   "combined": 0.745
+  },
+  {
+   "rank": 3,
+   "id": "q1a",
+   "text": "要地，给不给？｜给｜不给｜两个都对！韩、魏先给，是计策：智伯拿得越多越骄傲、越不防备；赵襄子不给，因为晋阳的百姓跟他一条心",
+   "flags": [],
+   "scores": {
+    "q_both": 3.61,
+    "q_guess": 3.03,
+    "q_reveal": 3.61
+   },
+   "score": 0.854,
+   "winrate": 0.617,
+   "winrate_by_q": {
+    "p_guess": 0.531,
+    "p_reveal": 0.702
+   },
+   "combined": 0.735
+  },
+  {
+   "rank": 4,
+   "id": "q1e",
+   "text": "要地，给不给？｜乖乖给｜坚决不给｜两个都对！韩、魏乖乖给，其实是计策：智伯拿得越多越骄傲、越不防备；赵襄子坚决不给，因为晋阳的百姓跟他一条心",
+   "flags": [],
+   "scores": {
+    "q_both": 3.35,
+    "q_guess": 3.01,
+    "q_reveal": 3.7
+   },
+   "score": 0.838,
+   "winrate": 0.564,
+   "winrate_by_q": {
+    "p_guess": 0.592,
+    "p_reveal": 0.536
+   },
+   "combined": 0.701
+  },
+  {
+   "rank": 5,
+   "id": "q1b",
+   "text": "有人要地，给不给？｜给｜不给｜两个都对！韩、魏先给，是计策：智伯拿得越多越骄傲、越不防备；赵襄子不给，因为晋阳的百姓跟他一条心",
+   "flags": [],
+   "scores": {
+    "q_both": 3.64,
+    "q_guess": 2.98,
+    "q_reveal": 3.67
+   },
+   "score": 0.857,
+   "winrate": 0.452,
+   "winrate_by_q": {
+    "p_guess": 0.455,
+    "p_reveal": 0.449
+   },
+   "combined": 0.655
+  }
+ ],
+ "control": {
+  "id": "_ctrl",
+  "text": "请问下列哪一项更符合史学界的通行结论，并说明理由，字数不少于 300 字？｜第一种说法｜第二种说法｜第一种说法，参见相关论文。",
+  "rank_in_pool": 6,
+  "pool_size": 6,
+  "score": 0.128,
+  "winrate": 0.0,
+  "combined": 0.064,
+  "last": true
+ },
+ "pairs": {
+  "q1a|q1b": {
+   "p_guess": 0.59,
+   "p_reveal": 0.805
+  },
+  "q1a|q1c": {
+   "p_guess": 0.31,
+   "p_reveal": 0.485
+  },
+  "q1a|q1d": {
+   "p_guess": 0.33,
+   "p_reveal": 0.595
+  },
+  "q1a|q1e": {
+   "p_guess": 0.425,
+   "p_reveal": 0.625
+  },
+  "q1a|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q1b|q1c": {
+   "p_guess": 0.185,
+   "p_reveal": 0.265
+  },
+  "q1b|q1d": {
+   "p_guess": 0.275,
+   "p_reveal": 0.325
+  },
+  "q1b|q1e": {
+   "p_guess": 0.405,
+   "p_reveal": 0.46
+  },
+  "q1b|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q1c|q1d": {
+   "p_guess": 0.685,
+   "p_reveal": 0.735
+  },
+  "q1c|q1e": {
+   "p_guess": 0.565,
+   "p_reveal": 0.6
+  },
+  "q1c|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q1d|q1e": {
+   "p_guess": 0.645,
+   "p_reveal": 0.635
+  },
+  "q1d|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q1e|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  }
+ },
+ "calls": {
+  "requests": 36,
+  "cached": 0,
+  "input_tokens": 46185,
+  "output_tokens": 2184
+ }
+}

@@ -1,0 +1,213 @@
+{
+ "category": "catchphrase",
+ "rubric": "pick_v1",
+ "model": "jev-1.13.0",
+ "context": "给 6–12 岁孩子看的历史动画「三家分晋」。大问题：「最强的智伯，为什么输了？」答案：智伯本事样样比人强（个子高、射箭驾车有力气、才艺多、口才好、果断），就是对人不好：宴会上取笑人，到处要地，别人劝也不听，所以没有人真心跟他，最后韩、魏和赵联手，智家没了。结尾司马光念原文「才者，德之资也；德者，才之帅也」（才是德的本钱，德是才的指挥官），马上用金句的白话再说一遍。金句全片说 3 次：智果劝人不要选智伯接班之后、大问题「先揭一半」的时候、司马光点题之后。金句 ≤ 12 个字。",
+ "control_last": true,
+ "ranking": [
+  {
+   "rank": 1,
+   "id": "c1",
+   "text": "本事是本钱，好心是队长。",
+   "flags": [],
+   "scores": {
+    "c_memo": 3.32,
+    "c_topic": 2.99
+   },
+   "score": 0.789,
+   "winrate": 0.699,
+   "winrate_by_q": {
+    "p_memo": 0.68,
+    "p_topic": 0.718
+   },
+   "combined": 0.744
+  },
+  {
+   "rank": 2,
+   "id": "c4",
+   "text": "本事是船，好心是船长。",
+   "flags": [],
+   "scores": {
+    "c_memo": 3.63,
+    "c_topic": 2.87
+   },
+   "score": 0.812,
+   "winrate": 0.604,
+   "winrate_by_q": {
+    "p_memo": 0.596,
+    "p_topic": 0.612
+   },
+   "combined": 0.708
+  },
+  {
+   "rank": 3,
+   "id": "c3",
+   "text": "有本事，更要有好心。",
+   "flags": [],
+   "scores": {
+    "c_memo": 2.99,
+    "c_topic": 2.81
+   },
+   "score": 0.725,
+   "winrate": 0.614,
+   "winrate_by_q": {
+    "p_memo": 0.717,
+    "p_topic": 0.511
+   },
+   "combined": 0.67
+  },
+  {
+   "rank": 4,
+   "id": "c6",
+   "text": "本事要听好心的指挥。",
+   "flags": [],
+   "scores": {
+    "c_memo": 2.9,
+    "c_topic": 2.89
+   },
+   "score": 0.724,
+   "winrate": 0.542,
+   "winrate_by_q": {
+    "p_memo": 0.447,
+    "p_topic": 0.638
+   },
+   "combined": 0.633
+  },
+  {
+   "rank": 5,
+   "id": "c2",
+   "text": "本事再大，也要好心带路。",
+   "flags": [],
+   "scores": {
+    "c_memo": 3.09,
+    "c_topic": 2.62
+   },
+   "score": 0.714,
+   "winrate": 0.515,
+   "winrate_by_q": {
+    "p_memo": 0.566,
+    "p_topic": 0.465
+   },
+   "combined": 0.615
+  },
+  {
+   "rank": 6,
+   "id": "c5",
+   "text": "好心当队长，本事才管用。",
+   "flags": [],
+   "scores": {
+    "c_memo": 2.55,
+    "c_topic": 0.72
+   },
+   "score": 0.409,
+   "winrate": 0.437,
+   "winrate_by_q": {
+    "p_memo": 0.484,
+    "p_topic": 0.39
+   },
+   "combined": 0.423
+  }
+ ],
+ "control": {
+  "id": "_ctrl",
+  "text": "凡事须审慎权衡，德才兼备者方能立于不败之地，切勿忽视个人品行修养。",
+  "rank_in_pool": 7,
+  "pool_size": 7,
+  "score": 0.311,
+  "winrate": 0.088,
+  "combined": 0.2,
+  "last": true
+ },
+ "pairs": {
+  "c1|c2": {
+   "p_memo": 0.575,
+   "p_topic": 0.77
+  },
+  "c1|c3": {
+   "p_memo": 0.54,
+   "p_topic": 0.825
+  },
+  "c1|c4": {
+   "p_memo": 0.525,
+   "p_topic": 0.395
+  },
+  "c1|c5": {
+   "p_memo": 0.705,
+   "p_topic": 0.705
+  },
+  "c1|c6": {
+   "p_memo": 0.735,
+   "p_topic": 0.63
+  },
+  "c1|_ctrl": {
+   "p_memo": 1.0,
+   "p_topic": 0.985
+  },
+  "c2|c3": {
+   "p_memo": 0.295,
+   "p_topic": 0.44
+  },
+  "c2|c4": {
+   "p_memo": 0.495,
+   "p_topic": 0.385
+  },
+  "c2|c5": {
+   "p_memo": 0.585,
+   "p_topic": 0.535
+  },
+  "c2|c6": {
+   "p_memo": 0.595,
+   "p_topic": 0.325
+  },
+  "c2|_ctrl": {
+   "p_memo": 1.0,
+   "p_topic": 0.875
+  },
+  "c3|c4": {
+   "p_memo": 0.64,
+   "p_topic": 0.425
+  },
+  "c3|c5": {
+   "p_memo": 0.68,
+   "p_topic": 0.55
+  },
+  "c3|c6": {
+   "p_memo": 0.82,
+   "p_topic": 0.4
+  },
+  "c3|_ctrl": {
+   "p_memo": 1.0,
+   "p_topic": 0.955
+  },
+  "c4|c5": {
+   "p_memo": 0.58,
+   "p_topic": 0.575
+  },
+  "c4|c6": {
+   "p_memo": 0.655,
+   "p_topic": 0.34
+  },
+  "c4|_ctrl": {
+   "p_memo": 1.0,
+   "p_topic": 0.965
+  },
+  "c5|c6": {
+   "p_memo": 0.515,
+   "p_topic": 0.45
+  },
+  "c5|_ctrl": {
+   "p_memo": 0.94,
+   "p_topic": 0.255
+  },
+  "c6|_ctrl": {
+   "p_memo": 1.0,
+   "p_topic": 0.97
+  }
+ },
+ "calls": {
+  "requests": 49,
+  "cached": 0,
+  "input_tokens": 45470,
+  "output_tokens": 2835
+ }
+}

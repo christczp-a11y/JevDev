@@ -1,0 +1,177 @@
+{
+ "category": "quiz",
+ "rubric": "pick_v1",
+ "model": "jev-1.13.0",
+ "context": "给 6–12 岁孩子看的历史动画「三家分晋」，大问题是「最强的智伯，为什么输了？」。这道题在第 1 关「忍」（宴会）：智伯在宴会上当众取笑韩康子、羞辱韩康子的谋士段规，笑得太狠，把自己的杯子碰倒了。智国跑来拉住他的袖子劝：「主公！别小看人，蚂蚁也会咬人！」（原文：蜹、蚁、蜂、虿，皆能害人）。接着司马光出这道题，停 1.2 秒，「看答案！」之后智伯哈哈大笑：「不听！我不惹事，谁敢惹我？」（原文：我不为难，谁敢兴之；智伯弗听），一只蚂蚁正好爬上他的鞋。他觉得自己最强、大家都怕他，这正是他后来输掉的原因之一。按钮上的字要在答案那一句里念出来。",
+ "control_last": true,
+ "ranking": [
+  {
+   "rank": 1,
+   "id": "q2b",
+   "text": "考你：蚂蚁也会咬人，智伯信不信？｜信｜不信｜不信：他觉得自己最强，谁都不敢惹他——话音刚落，一只蚂蚁就爬上了他的鞋",
+   "flags": [],
+   "scores": {
+    "q_both": 1.37,
+    "q_guess": 3.06,
+    "q_reveal": 3.67
+   },
+   "score": 0.675,
+   "winrate": 0.737,
+   "winrate_by_q": {
+    "p_guess": 0.774,
+    "p_reveal": 0.7
+   },
+   "combined": 0.706
+  },
+  {
+   "rank": 2,
+   "id": "q2c",
+   "text": "考你：被人劝了，智伯会怎么做？｜赶紧改｜哈哈一笑不理｜哈哈一笑不理：他说「我不惹事，谁敢惹我？」根本不把别人放在眼里",
+   "flags": [],
+   "scores": {
+    "q_both": 0.89,
+    "q_guess": 3.03,
+    "q_reveal": 3.33
+   },
+   "score": 0.604,
+   "winrate": 0.702,
+   "winrate_by_q": {
+    "p_guess": 0.734,
+    "p_reveal": 0.67
+   },
+   "combined": 0.653
+  },
+  {
+   "rank": 3,
+   "id": "q2e",
+   "text": "考你：有人劝智伯别得罪人，他听不听？｜听｜不听｜不听：他觉得自己最强，「我不惹事，谁敢惹我？」",
+   "flags": [],
+   "scores": {
+    "q_both": 1.15,
+    "q_guess": 2.96,
+    "q_reveal": 3.29
+   },
+   "score": 0.617,
+   "winrate": 0.657,
+   "winrate_by_q": {
+    "p_guess": 0.591,
+    "p_reveal": 0.724
+   },
+   "combined": 0.637
+  },
+  {
+   "rank": 4,
+   "id": "q2a",
+   "text": "考你：智伯听不听劝？｜听｜不听｜不听：他觉得自己最强，「我不惹事，谁敢惹我？」以为大家都怕他",
+   "flags": [],
+   "scores": {
+    "q_both": 1.01,
+    "q_guess": 2.89,
+    "q_reveal": 3.26
+   },
+   "score": 0.597,
+   "winrate": 0.553,
+   "winrate_by_q": {
+    "p_guess": 0.48,
+    "p_reveal": 0.627
+   },
+   "combined": 0.575
+  },
+  {
+   "rank": 5,
+   "id": "q2d",
+   "text": "考你：智伯会不会小心一点？｜会｜不会｜不会：他说「我不惹事，谁敢惹我？」觉得没人敢找他麻烦",
+   "flags": [],
+   "scores": {
+    "q_both": 1.13,
+    "q_guess": 2.75,
+    "q_reveal": 3.3
+   },
+   "score": 0.598,
+   "winrate": 0.349,
+   "winrate_by_q": {
+    "p_guess": 0.419,
+    "p_reveal": 0.279
+   },
+   "combined": 0.474
+  }
+ ],
+ "control": {
+  "id": "_ctrl",
+  "text": "请问下列哪一项更符合史学界的通行结论，并说明理由，字数不少于 300 字？｜第一种说法｜第二种说法｜第一种说法，参见相关论文。",
+  "rank_in_pool": 6,
+  "pool_size": 6,
+  "score": 0.12,
+  "winrate": 0.001,
+  "combined": 0.06,
+  "last": true
+ },
+ "pairs": {
+  "q2a|q2b": {
+   "p_guess": 0.28,
+   "p_reveal": 0.46
+  },
+  "q2a|q2c": {
+   "p_guess": 0.22,
+   "p_reveal": 0.43
+  },
+  "q2a|q2d": {
+   "p_guess": 0.625,
+   "p_reveal": 0.9
+  },
+  "q2a|q2e": {
+   "p_guess": 0.28,
+   "p_reveal": 0.345
+  },
+  "q2a|_ctrl": {
+   "p_guess": 0.995,
+   "p_reveal": 1.0
+  },
+  "q2b|q2c": {
+   "p_guess": 0.6,
+   "p_reveal": 0.59
+  },
+  "q2b|q2d": {
+   "p_guess": 0.805,
+   "p_reveal": 0.855
+  },
+  "q2b|q2e": {
+   "p_guess": 0.745,
+   "p_reveal": 0.515
+  },
+  "q2b|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q2c|q2d": {
+   "p_guess": 0.84,
+   "p_reveal": 0.94
+  },
+  "q2c|q2e": {
+   "p_guess": 0.65,
+   "p_reveal": 0.43
+  },
+  "q2c|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q2d|q2e": {
+   "p_guess": 0.365,
+   "p_reveal": 0.09
+  },
+  "q2d|_ctrl": {
+   "p_guess": 1.0,
+   "p_reveal": 1.0
+  },
+  "q2e|_ctrl": {
+   "p_guess": 0.995,
+   "p_reveal": 1.0
+  }
+ },
+ "calls": {
+  "requests": 36,
+  "cached": 0,
+  "input_tokens": 43826,
+  "output_tokens": 2184
+ }
+}
