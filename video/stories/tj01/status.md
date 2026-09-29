@@ -22,7 +22,8 @@
 | 2 | 剧本 | **通过**（09-29 第 2 轮 + 最后小改，reviewer 签字） | 2/3 | 定稿 `video/stories/tj01/B_段规.json`；配音试跑 `video/out/tj01/step2/voice_B3/`；`video/script_check.py` | 闸门 0.27 / 0.09 / 0.04；flat 估算 8.6（基线 8.9）、真实 8.6（基线 9.0）；pair 0.67 / 0.74 / 0.71（平均 0.707，最后小改前那版）；全长 200.9 秒；大问题 7.18 秒念完（S20：7.0 + 0.3）。备选 D 的 pair 平均 0.577，不满足「平均最高」 |
 | 检查点 1 | 复述剧本 + 待定事项 | **通过**（09-29 Chris：「你自己决定吧」→ Claude 按推荐定，见 DECISIONS 最后一条） | — | | |
 | 3 | 角色、布景、道具 | 做中（阵容图、剪影、布景总览、司马光圆领） | 1/3 | | 阵容图发 Chris 看，不等回复，接着画姿势图 |
-| 4 | 配音和时间线 | **完成**（09-29；A4 已修） | 1/3 | `video/out/tj01_voice/timeline.json`（200.9 秒） | script_check 0 警告；最长平淡段 8.6 ≤ 9.0 |
+| 4 | 配音和时间线 | **作废**（旧 Edge 配音，09-29 起由下一行 Qwen3-TTS 整集重配取代） | 1/3 | `video/out/tj01_voice/timeline.json`（200.9 秒） | script_check 0 警告；最长平淡段 8.6 ≤ 9.0 |
+| 3（新流程） | 配音（Qwen3-TTS 整集重配） | **完成**（09-29） | 1/3 | `video/out/tj01_voice_qwen/timeline.json`（**232.2 秒**，90 句，67 句合成 + 2 句仪式录音） | script_check 退出码 0、0 警告；最长平淡段 6.2 秒（≤ 9.0）；大问题 4.69–7.16 秒念完（≤ 7.3）；新参考音 4 个角色 + 9 个语气变体，5 个重设计过（见下面「重跑用的命令」）；等 reviewer 听 |
 | 0-10/11/14/21 | 3D 按集、布景数据化、GPU、3D bug、背景音乐、系列格式 | 做中 | 1/3 | | |
 | 5–10 | | 没开始 | | | |
 
@@ -33,7 +34,10 @@
 
 ## 重跑用的命令
 （每步做完补上：带环境变量和参数的完整命令）
-- 第 4 步配音：`.venv/Scripts/python video/voice.py video/stories/tj01/B_段规.json video/out/tj01_voice 2=1.0 9=1.5 11=1.2 20=1.0 25=1.2 34=1.5 36=1.8 42=2.0 46=1.2 49=1.4 52=1.5`
+- 第 3 步配音（新流程，Qwen3-TTS，配音跑 `.venv-tts`，voice.py 自己调；一整集第一次约 20 分钟，之后走缓存约 1 分钟；旧的 `video/out/tj01_voice/` 是 Edge 的，作废）：
+  `.venv/Scripts/python video/voice.py video/stories/tj01/B_段规.json video/out/tj01_voice_qwen 2=1 7=0.8 13=1.5 16=1.2 19=0.8 22=0.6 27=0.6 32=1 43=1.2 58=1.5 60=1.8 68=1.2 72=2 79=1.2 82=1.4 86=1.5 87=1.5`
+  （动作行秒数 = 剧本估算秒数；「考你」停顿 2/16/43/60 行 = 1.0/1.2/1.2/1.8 秒。参考音已存在 `video/assets/audio/voices/`，重跑不会变。voice.py 的种子由（角色、描述、语气）算出来，同样的描述 `--redesign` 只会得到一模一样的声音；所以 智国、智果（cast 描述都加了「男声」，智果改「浑厚爽朗」）、智果@赌气干脆、魏桓子@小声紧张、智伯@生气不耐烦 是换种子各设计 6 个候选、按基频（再看说话人相似度、Whisper 转写）手挑的，json 的 pick 字段记着。剧本顶层 `voice_text` 有 2 条：「不信！我不惹事，谁敢惹我？」→ 只改标点为「！」（原句中间停 1.16 秒）、「就像排队打针，下一个就轮到你！」→ 加一个逗号（原句 5.04 字/秒超速），字幕仍是原文）
+  过关：`.venv/Scripts/python video/script_check.py video/stories/tj01/B_段规.json --timeline video/out/tj01_voice_qwen/timeline.json`；`.venv/Scripts/python video/story.py video/stories/tj01 --only B_段规 --timeline video/out/tj01_voice_qwen/timeline.json`
 - 基线估算：`.venv/Scripts/python video/story.py video/stories/ep01 --only N6 --out video/out/story_test/report_N6_v2_estimate_0929.json`
 - 基线真实时间线：先配音 `NARRATOR_RATE=+6% .venv/Scripts/python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice_0929 2=1.0 9=1.2 13=8.6 22=1.2 29=3.3`，再 `.venv/Scripts/python video/story.py video/stories/ep01 --only N6 --timeline video/out/ep01v2_voice_0929/timeline.json --out video/out/story_test/report_N6_v2_timeline_0929.json`
 - 环境（Git Bash）：`export PYTHONIOENCODING=utf-8; export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`，Python 用 `.venv/Scripts/python`
