@@ -12,23 +12,27 @@ story.py 的 --lint 只查秒数和禁用词，Jev 只打分；这里查「剧�
   big_question   大问题，字面和剧本里念出来的那一句完全一样
   level_starts   三关各自第一句的下标（从 0 数，和 voice.py 的行号一致），如 [8, 15, 34]；这三句的画面里要写「关」或「跟头」
   golden         金句（≤ 12 字，全集恰好说 3 次）
-  stake_line     （可选）赌注那句里的关键词，默认「智家会没」，要在 20 秒前出现
+  stake_line     赌注那句里的关键词（必填，没有默认值），这一句要在第 20 秒前**念完**
   half_close     （可选）大问题「先关一半」那句里的关键词，要在全片 40%–60% 处
   ending_order   （可选）结尾各句的关键词，按先后顺序，例如 ["封为诸侯", "写书的人，来了", "德者，才之帅也", "下集"]
+  level_end_key  （可选）第 3 关到哪一句为止（这一句之前算第 3 关），写这一句里的关键词，例如「五十年后」；
+                 不写，就算到系列固定句「写书的人，来了——」之前
+  dian_key       （可选）点题那一句里的关键词，默认「德者，才之帅也」（第一集的臣光曰②）；以后每集写自己的点题关键词
 
 查什么（✗ = 错误，退出码 1；⚠ = 警告，只提醒）
   1  秒数和禁用词（story.py 的 check_seconds、check_banned，和 --lint 一样）
   2  两句仪式句：第一句是司马光「考考你！」；旁白「写书的人，来了——」单独成句、只出现一次
-  3  大问题：恰好一句，**念完**（这一句的结束秒）≤ 7.0 秒（S20）
+  3  大问题：恰好一句，**念完**（这一句的结束秒）≤ 7.0 秒，容差 0.3 秒（S20）
   4  「考你」：一次「考你」 = 台词后面跟一行「停 X 秒」的动作行。共 4 次，停顿依次 1.0 / 1.2 / 1.2 / 1.8；
      第 1 次在第 1 关之前（开头的二选一）；三关每关恰好一次（F-1）；「看答案！」也是 4 次
-  5  揭晓要念出答案（S18）：每个「看答案！」的画面里写出亮起的按钮（【…】亮起），这些按钮的字要在后面 1–2 句念出来的话里出现（去掉标点比）
+  5  揭晓要念出答案（S18）：每个「看答案！」的画面里写出亮起的按钮（【…】亮起），这些按钮的字要在后面 1–2 句念出来的话里出现（去掉标点比）；
+     点题（notes.dian_key 那一句，默认「德者，才之帅也」）之后 1–2 句里要出现金句（文言点题后要有白话翻译）
   6  视角人物（notes.pov）在每一关的时间段里，台词或画面至少出现一次（S17）
   7  笑点：画面里标了「笑点」的句子，前后间隔（包括开头到第一个、最后一个到结尾）≤ 25 秒
   8  单句 > 8 秒：警告
   9  画面备注残留：出现「（某某版：…）」直接报错（S11）；道具第一次出现就已经「接住、握着、拿着、举着」也报错（前面没交代）
   10 金句恰好 3 次；男声连着说不超过两句；说话人都有声音，同一版里没有两个角色同声音；旁白 / 司马光以外的说话人要在 cast 里；
-     台词里没有「然后」；每句语速 ≤ 每秒 5 字；赌注在 20 秒前；结尾顺序；大问题先关一半的位置
+     台词里没有「然后」；每句语速 ≤ 每秒 5 字；赌注在 20 秒前念完；结尾顺序；大问题先关一半的位置
 """
 import argparse
 import json
@@ -45,7 +49,11 @@ import story  # noqa: E402  只 import 它的读取函数，不改它
 
 KAO, XIE = "考考你！", "写书的人，来了——"
 PAUSES = [1.0, 1.2, 1.2, 1.8]        # 四次「考你」的停顿（S10）
-MAX_BIGQ = 7.0                        # 大问题念完的最晚秒数（S20）
+BIGQ_LIMIT = 7.0                      # 大问题念完的最晚秒数（S20：按裁过静音的真实时间线，念完算，不是开口算）
+BIGQ_TOL = 0.3                        # 容差 0.3 秒（S20，09-29 主会话定）：不为了 0.2 秒把二选一砍成「给不给？」，不识字的孩子听不到「要地」，听懂比这 0.2 秒要紧
+MAX_BIGQ = BIGQ_LIMIT + BIGQ_TOL
+STAKE_BY = 20.0                       # 赌注要在第几秒前念完（工作流第 2 步：20 秒前讲清）
+DIAN_DEFAULT = "德者，才之帅也"          # 点题句的默认关键词（第一集的臣光曰②）
 MAX_GAG_GAP = 25.0                    # 两个笑点之间最长多少秒
 LONG_LINE = 8.0
 MALE_VOICES = {"zh-CN-YunjianNeural", "zh-CN-YunxiNeural", "zh-CN-YunxiaNeural", "zh-CN-YunyangNeural",
@@ -126,8 +134,8 @@ def run(path, timeline=None):
         else:
             r = rows[hit[0]]
             info.append(f"大问题「{bq}」{r[0]:.2f}–{r[1]:.2f}s")
-            if r[1] > MAX_BIGQ:
-                E(f"大问题在 {r[1]:.2f}s 才念完，超过 {MAX_BIGQ:g} 秒（S20：按真实时间线，念完算）")
+            if r[1] > MAX_BIGQ + 1e-9:
+                E(f"大问题在 {r[1]:.2f}s 才念完，超过 {BIGQ_LIMIT:g} 秒（容差 {BIGQ_TOL:g} 秒，S20：按真实时间线，念完算）")
 
     # 4 考你：停顿行 = 一次考你
     pause_idx = [i for i, r in enumerate(rows) if r[2] == "动作" and PAUSE_RE.match(r[4])]
@@ -177,12 +185,34 @@ def run(path, timeline=None):
             if core(lb) not in heard:
                 E(f"{at(i)} 揭晓后的 1–2 句里没有念出答案「{lb}」（S18：不识字的孩子只听得见声音）")
 
+    # 5b 点题之后要有白话翻译（S18）：点题句之后的 1–2 句里出现金句
+    dk = notes.get("dian_key", DIAN_DEFAULT)
+    g0 = notes.get("golden")
+    dx = [i for i, r in enumerate(rows) if spoken(r) and core(dk) in core(r[3])]
+    if not dx:
+        E(f"找不到点题那一句（关键词「{dk}」）；每集要用臣光曰点题，关键词写在 notes.dian_key")
+    elif g0:
+        nxt, j = [], dx[0] + 1
+        while j < len(rows) and len(nxt) < 2:
+            if spoken(rows[j]):
+                nxt.append(rows[j])
+            j += 1
+        if core(g0) not in "".join(core(r[3]) for r in nxt):
+            E(f"{at(dx[0])} 点题之后的 1–2 句里没有白话翻译（金句「{g0}」）（S18：文言点题后要紧跟一句口头翻译）")
+
     # 6 视角人物每关都在
     pov = notes.get("pov")
     if not pov:
         E("notes.pov（视角人物）没写")
     elif n_levels:
-        end = next((i for i, r in enumerate(rows) if "五十年后" in r[3]), len(rows))
+        lk = notes.get("level_end_key")
+        if lk:
+            end = next((i for i, r in enumerate(rows) if lk in r[3]), None)
+            if end is None:
+                E(f"notes.level_end_key「{lk}」在剧本台词里找不到")
+                end = len(rows)
+        else:
+            end = next((i for i, r in enumerate(rows) if r[3] == XIE), len(rows))   # 系列固定句之前算第 3 关
         bounds = starts + [end]
         for k in range(3):
             seg = rows[bounds[k]:bounds[k + 1]]
@@ -261,10 +291,13 @@ def run(path, timeline=None):
     fast = story.checks({"lines": rows})["too_fast"]
     for f in fast:
         E(f"语速超过每秒 {story.MAX_RATE:g} 字：{f}")
-    sk = notes.get("stake_line", "智家会没")
-    st = [r for r in rows if sk in r[3]]
-    if not st or st[0][0] >= 20:
-        E(f"赌注（「{sk}」）要在第 20 秒前讲清" + (f"，现在在 {st[0][0]:.1f}s" if st else "，剧本里没有"))
+    sk = notes.get("stake_line")
+    if not sk:
+        E("notes.stake_line（赌注那句里的关键词）没写")
+    else:
+        st = [r for r in rows if sk in r[3]]
+        if not st or st[0][1] > STAKE_BY:
+            E(f"赌注（「{sk}」）要在第 {STAKE_BY:g} 秒前念完" + (f"，现在 {st[0][0]:.1f}–{st[0][1]:.1f}s" if st else "，剧本里没有"))
     eo = notes.get("ending_order")
     if eo:
         pos = []

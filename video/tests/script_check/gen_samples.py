@@ -99,8 +99,9 @@ def main():
     (HERE / "episode.json").write_text(json.dumps(EP, ensure_ascii=False, indent=1), encoding="utf-8")
     ok = mk("ok.json")
     w("ok_timeline.json", timeline(ok))
-    # 剧本估算没问题，真实时间线里第 3 句（大问题）起后移，让它 7.3 秒才念完
-    w("bad_timeline_bigq_timeline.json", timeline(ok, 3, round(7.3 - ok["lines"][3][1], 2)))
+    # 剧本估算没问题；真实时间线里第 3 句（大问题）起后移：7.5 秒才念完 = 超过 7.0 + 容差 0.3；7.3 秒正好在容差边上，算过
+    w("bad_timeline_bigq_timeline.json", timeline(ok, 3, round(7.5 - ok["lines"][3][1], 2)))
+    w("ok_timeline_edge_timeline.json", timeline(ok, 3, round(7.3 - ok["lines"][3][1], 2)))
     # ---- 每份只坏一处
     mk("bad_bigq_late.json", {1: ("旁白", "有人跟你要地，你给不给，你再想想？", ROWS[1][2], 3.6)})
     mk("bad_pov_missing.json", {24: ("旁白", "第 3 关，最难：反！", "第 3 关；城头一片水", 0), 31: ("旁白", "说过：等着变。这个变，来了！", "两人点头（艺术化演绎）", 0)})
@@ -119,6 +120,18 @@ def main():
     mk("bad_golden_count.json", {23: ("旁白", "好心很重要。", "（金句 2/3）", 0)})
     mk("bad_ceremony_first.json", {0: ("旁白", "考考你！", ROWS[0][2], 1.2)})
     mk("bad_xie_embedded.json", {35: ("旁白", "这个故事，写在通鉴里。写书的人，来了——", ROWS[35][2], 0)})
+    # 赌注按「念完」算：开口 < 20 秒但念完 > 20 秒也不行
+    mk("bad_stake_end_late.json", {4: ("旁白", ROWS[4][1], ROWS[4][2], 16.0)})
+    mk("bad_no_stake_note.json", notes={"stake_line": ""})
+    # 点题（德者，才之帅也）之后 1–2 句里没有金句 = 没有白话翻译
+    mk("bad_dian_no_translation.json", {37: ("旁白", "他的意思很深。", ROWS[37][2], 0)})
+    mk("bad_no_dian_line.json", {36: ("司马光", "才者，德之资也。", ROWS[36][2], 0)})
+    mk("ok_dian_key_custom.json", {36: ("司马光", "君子挟才以为善。", ROWS[36][2], 0)}, notes={"dian_key": "挟才以为善", "ending_order": ["封为诸侯", "写书的人，来了", "挟才以为善", "下集"]})
+    # 第 3 关的终点：默认到「写书的人，来了——」之前；notes.level_end_key 可以指定别的句子（这里「五十年后」那一句）
+    late_pov = {24: ("旁白", ROWS[24][1], "第 3 关；城头一片水", 0), 31: ("旁白", "他说过：等着变。这个变，来了！", "两人点头（艺术化演绎）", 0)}
+    late_pov[34] = ("旁白", ROWS[34][1], "周王宫；三面旗子；段规在旁边看着", 0)
+    mk("ok_level_end_default.json", late_pov)
+    mk("bad_level_end_key.json", late_pov, notes={"level_end_key": "五十年后"})
     mk("bad_stake_late.json", {4: ("旁白", "智伯本事大，可对人不好，他很麻烦！", ROWS[4][2], 0), 12: ("旁白", "第 2 关：要地。智家会没！", ROWS[12][2], 0)},
        notes={"stake_line": "智家会没"})
     mk("bad_banned.json", {11: ("智伯", "不听！知伯不惹事！", ROWS[11][2], 0)})

@@ -36,8 +36,9 @@ t ok.json                  0 "script_check：通过" --timeline $T/ok_timeline.j
 t ok_prop_introduced.json  0 "script_check：通过"
 
 echo "---- 大问题念完 ≤ 7 秒（S20）----"
-t bad_bigq_late.json       1 "大问题在 9.00s 才念完，超过 7 秒"
-t ok.json                  1 "大问题在 7.30s 才念完，超过 7 秒" --timeline $T/bad_timeline_bigq_timeline.json
+t bad_bigq_late.json       1 "大问题在 9.00s 才念完，超过 7 秒（容差 0.3 秒"
+t ok.json                  1 "大问题在 7.50s 才念完，超过 7 秒（容差 0.3 秒" --timeline $T/bad_timeline_bigq_timeline.json
+t ok.json                  0 "–7.30s" --timeline $T/ok_timeline_edge_timeline.json   # 7.3 秒念完：在容差边上，算过
 
 echo "---- 结构：仪式句、考你、停顿、揭晓 ----"
 t bad_ceremony_first.json  1 "第一句不是 司马光「考考你！」"
@@ -67,13 +68,22 @@ echo "---- 画面备注残留（S11）----"
 t bad_version_residual.json 1 "这种某个版本的残留"
 t bad_prop_first.json      1 "道具「毛笔」第一次出现就已经拿在手里"
 
+echo "---- 点题要有白话翻译（S18）、第 3 关的终点 ----"
+t bad_dian_no_translation.json 1 "点题之后的 1–2 句里没有白话翻译（金句「好心是队长。」）"
+t bad_no_dian_line.json    1 "找不到点题那一句（关键词「德者，才之帅也」）"
+t ok_dian_key_custom.json  0 "script_check：通过"
+t ok_level_end_default.json 0 "script_check：通过"
+t bad_level_end_key.json   1 "视角人物「段规」在第 3 关（lines[24]"
+
 echo "---- 从 check_local 带过来的 ----"
 t bad_golden_count.json    1 "金句要恰好 3 次、≤ 12 字，现在 2 次"
 t bad_male_run.json        1 "男声连着说了 3 句"
 t bad_speaker_no_voice.json 1 "说话人 ['魏桓子'] 在 episode.json 的 cast 里没有声音"
 t bad_fast.json            1 "语速超过每秒 5 字"
 t bad_then.json            1 "台词里有「然后」"
-t bad_stake_late.json      1 "赌注（「智家会没」）要在第 20 秒前讲清，现在在 30.4s"
+t bad_stake_late.json      1 "赌注（「智家会没」）要在第 20 秒前念完，现在 30.4–"
+t bad_stake_end_late.json  1 "赌注（「智家会没」）要在第 20 秒前念完，现在 "
+t bad_no_stake_note.json   1 "notes.stake_line（赌注那句里的关键词）没写"
 t bad_ending_order.json    1 "结尾顺序不对"
 t bad_half_close_pos.json  1 "大问题先关一半在 90% 处，要在 40%–60%"
 t bad_banned.json          1 "台词里有禁用词「知伯」"
