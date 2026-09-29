@@ -127,10 +127,16 @@ def open_stage(p, k, srv):
 SEG = 20.0   # 每段最多 20 秒成片：长场次切成几段并行渲染（原来按场次分，最长的第 1 场拖了整集一半时间）
 
 
+REUSE = {1, 3, 4, 5, 6}   # 这几场沿用上一版整场渲好的文件（shotK_0.mp4 = 整场）；只改了哪场就只重渲哪场
+
+
 def segments():
     """整集切成段：[(场号, 段号, 开始帧, 结束帧), ...]"""
     out = []
     for k in SHOTS:
+        if k in REUSE and (OUT / f"shot{k}_0.done").exists():
+            out.append((k, 0, 0, 0))
+            continue
         n = int(round(json.loads((SCENES / f"shot{k}.json").read_text(encoding="utf-8"))["duration"] * FPS))
         step = int(SEG * FPS)
         for j, f0 in enumerate(range(0, n, step)):
