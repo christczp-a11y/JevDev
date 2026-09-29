@@ -11,6 +11,11 @@
 - tj01 已有、继续有效：史料 `source.md`、定稿剧本 `B_段规.json`、配音 `video/out/tj01_voice/`、人物和场景素材。见 `video/stories/tj01/status.md`。
 - 参考：17 秒动态漫画小样的原型 `video/motion/_prototype_mc.py`。
 
+## 装机（09-29 检查通过）
+- `bash scripts/cloud_setup.sh` 全部通过：Python 依赖（含 OpenCV 5.0）、ffmpeg、字体（`video/vendor/fonts/` 全量 Noto Sans SC Bold + ZCOOL KuaiLe）、背景音乐 `video/assets/audio/bgm_main.mp3`、Jev key 和连通（实测调用成功）、Codex 已登录。
+- Jev：插件 `typesafe@typesafe-ai` 在 `.claude/settings.json` 启用；仓库约定在 `.claude/skills/jev-decisions/SKILL.md`。
+- tj01 已有的 Codex 素材全部进了 git（09-29，266 个文件）。
+
 ## 阻塞 / 待 Chris 处理
 - 配音授权（Edge TTS 能不能商用）还没确认，第一集公开前要定。
 - 改掉已经出现在聊天里的凭据：TypeSafe key、Google 小号密码。

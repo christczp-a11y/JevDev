@@ -5,8 +5,9 @@
 ## 恢复流程（新会话 / clear / compact 之后）
 1. 读 `memory/PROGRESS.md` —— 当前在做什么、下一步是什么
 2. 做视频：先读 `docs/自动化工作流-每集生成.md`（索引，很短），到哪一步只读 `docs/workflow/` 里那一步的文件和它列出的 `docs/规则/`；引擎还没建好时读 `docs/施工计划-动态漫画引擎.md`
-3. 按需读 `memory/CONTEXT.md`（环境与约束）、`memory/DECISIONS.md`（已定决策，不要重新讨论）
-4. 需要细节时再检索：`grep -rn "关键词" memory/`
+3. 开工前跑一次装机检查 `bash scripts/cloud_setup.sh`（全部通过才开工）；用 Jev 之前读 `.claude/skills/jev-decisions/SKILL.md`
+4. 按需读 `memory/CONTEXT.md`（环境与约束）、`memory/DECISIONS.md`（已定决策，不要重新讨论）
+5. 需要细节时再检索：`grep -rn "关键词" memory/`
 
 ## 文件分工
 | 文件 | 内容 | 更新时机 |
