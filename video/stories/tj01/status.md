@@ -3,18 +3,18 @@
 > 主会话维护：reviewer 每次给出结论、每个检查点结束后更新，然后 commit + push。流程见 `docs/自动化工作流-每集生成.md`。
 > 最后更新：2026-09-29
 
-## 当前：第 0 步（卡住第 2–5 步的第 1–9a 项）+ 第 1 步（reviewer 核对引文）
+## 当前：第 2 步剧本（做中）；第 0 步第 3–9a 项在做 / 待查；第 1 步通过
 
 ## 每一步的状态
 | 步 | 内容 | 状态 | 轮次 | 产出 | reviewer 结论 |
 |---|---|---|---|---|---|
 | 自检 | 运行环境 | 通过 | — | — | 09-29 主会话：7 项里 1–6 全过（edge-tts 当场装上）；第 7 项显卡渲染等第 14 项 |
 | 0-1、0-2 | 剧本评分 v2、Jev key 检查、定基线 | 通过（小补丁也通过） | 1/3 | `video/story.py`、`rubrics/story_v2.json`、`logic_qa.py` / `motion_qa.py` 开头、N6 结尾三句秒数 | 09-29 第 1 轮通过，6 条全过。另有小问题不挡过关：report.json 不记标准（E9）、timeline 全长（E10）、禁用词硬拦截（待补 7）→ 小补丁 09-29 reviewer 通过（6 条全过）；主会话另补两行：说话人也查禁用词、词条前后带空格报错 |
-| 0-3、0-4 | 素材登记表、系列参考帧（+ 改代码前的 ep01v2 基线） | 第 4 项和基线做完（待查），第 3 项做中 | 1/3 | `video/assets/ref/series/`（8 张，含主会话补的两张横幅帧）、`video/stories/tj01/step0_baseline.md`（layout_qa 0 处、qa 0 处、frame 1 处：第 1 场 42.9 秒商鞅被挡，试做集原有，可复现） | |
-| 0-5、0-6 | 配音分层、仪式声音 | 没开始 | 0/3 | | |
-| 0-7、0-8、0-9、0-9a | 分场模板、质检参数化、人名牌、2D 布景 | 没开始 | 0/3 | | |
-| 1 | 史料简报 `source.md` | 待查（第 2 版已存档，等 source_check.py） | 2/3 | `video/stories/tj01/source.md`；补检查 `video/source_check.py`（builder 做中） | 第 1 轮不通过（09-29）：53 处引文全部逐字找到；没过的是 1 条超 20 字、没有注音、马镫年份、「晋静公」、校勘说明、出处没逐条标、#9–#12 年代没标、缺地图方位。PITFALLS S2 再犯、S14 新坑 |
-| 2 | 剧本 | 没开始 | 0/3 | | |
+| 0-3、0-4 | 素材登记表、系列参考帧（+ 改代码前的 ep01v2 基线） | 待查（`video/assets/REGISTRY.md` 165 张、`video/registry_check.py`；coinRain 不改引擎，靠 registry_check 拦；试做集布景不标停用） | 1/3 | `video/assets/ref/series/`（8 张，含主会话补的两张横幅帧）、`video/stories/tj01/step0_baseline.md`（layout_qa 0 处、qa 0 处、frame 1 处：第 1 场 42.9 秒商鞅被挡，试做集原有，可复现） | |
+| 0-5、0-6 | 配音分层、仪式声音 | 待查 | 1/3 | `video/voice.py`、`video/series_voice.json`、`video/assets/audio/`（两段仪式录音、`sgm_pop.wav`） | 等 Chris：司马光弹出音效要听；audio.py tone() 老 bug（A4）修不修 |
+| 0-7、0-8、0-9、0-9a | 分场模板、质检参数化、人名牌、2D 布景 | 做中 | 1/3 | | |
+| 1 | 史料简报 `source.md` | **通过**（09-29 第 2 轮；主会话按 reviewer 数据补改地图方位等，source_check 152 条 0 错） | 2/3 | `video/stories/tj01/source.md`；补检查 `video/source_check.py`（builder 做中） | 第 1 轮不通过（09-29）：53 处引文全部逐字找到；没过的是 1 条超 20 字、没有注音、马镫年份、「晋静公」、校勘说明、出处没逐条标、#9–#12 年代没标、缺地图方位。PITFALLS S2 再犯、S14 新坑 |
+| 2 | 剧本 | 做中（builder 写 episode.json + ≥ 6 版） | 1/3 | `video/stories/tj01/` | |
 | 检查点 1 | 复述剧本 | 没开始 | — | | |
 | 3–10 | | 没开始 | | | |
 
@@ -30,6 +30,8 @@
 - 环境（Git Bash）：`export PYTHONIOENCODING=utf-8; export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`，Python 用 `.venv/Scripts/python`
 
 ## 已知缺口
+- 试做集 `video/stories/ep01/episode.json` 没有 cast：新 voice.py 不能重配试做集；试做集停做，不补（回归只用 `video/out/ep01v2_voice_0929/`）
+- 普通话男声只有 4 个（Yunxi 留给司马光）：tj01 的 cast 在第 2 步想办法，检查点 1 和配音授权一起问 Chris
 - 试做集 2D 成片 `video/out/ep01v2/ep01_full.mp4` 本地没有：影响第 0 步第 15 项（独立混音）的回归对比，到那一项再处理（要先在本地渲一遍 2D）
 
 ## Chris 跳过的项
