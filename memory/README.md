@@ -4,7 +4,7 @@
 
 ## 恢复流程（新会话 / clear / compact 之后）
 1. 读 `memory/PROGRESS.md` —— 当前在做什么、下一步是什么
-2. 做视频之前必读 `memory/PITFALLS.md`（踩坑清单 + 交付前检查清单）和 `docs/自动化工作流-每集生成.md`（每集怎么生成、模型分工）
+2. 做视频：先读 `docs/自动化工作流-每集生成.md`（索引，很短），到哪一步只读 `docs/workflow/` 里那一步的文件；PITFALLS 只按那一步列出的编号查，不通读
 3. 按需读 `memory/CONTEXT.md`（环境与约束）、`memory/DECISIONS.md`（已定决策，不要重新讨论）
 4. 需要细节时再检索：`grep -rn "关键词" memory/`
 
