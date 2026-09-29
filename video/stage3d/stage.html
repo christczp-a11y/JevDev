@@ -176,6 +176,8 @@ const SETS = {
     const floor = cardBox(25.4, 0.12, 16, '#c9965e', 51); floor.position.set(0, 0.22, 0); stage.add(floor);
     apron('#c9965e');
     await flat(A + 'far.png', 0, -4.2, 9.5, 0.05, 0, {});   // 教室后墙（黑板、窗户）
+    const upper = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), new THREE.MeshStandardMaterial({ map: paperTex('#e8dcc4', 52), roughness: 1 }));
+    upper.position.set(0, GY + 9.3 + 15, -4.25); stage.add(upper);   // 后墙往上接一段（拉远时不会拍到墙顶外面）
     const side = await loadTex(A + 'far.png');
     for (const s of [-1, 1]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(9, 9.5), new THREE.MeshStandardMaterial({ color: 0xe8dcc4, roughness: 1 }));
       m.scale.x = 4; m.position.set(s * 8.4, GY + 4.75, 14); m.rotation.y = -s * Math.PI / 2; m.receiveShadow = true; stage.add(m); }
