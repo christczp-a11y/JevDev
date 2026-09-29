@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT.parent))
 sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")   # 不设 PYTHONIOENCODING 时，中文报错也能正常显示，不变成 \u 转义（E5、E7）
 
 import contact  # noqa: E402
 from jevdev import jev  # noqa: E402

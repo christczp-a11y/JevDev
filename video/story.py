@@ -8,17 +8,32 @@
 剧本格式（video/stories/<集>/<版本>.json）：
   {"id", "name", "framework", "title": [两行标题], "lines": [[开始秒, 结束秒, 谁, 台词, 画面], ...]}
 这一集要讲清的问题和史料放在同目录的 episode.json：{"core_question", "core_answer", "source", "trick", "pitfalls"}
-episode.json 里的 cast（谁用哪个声音）只给配音用，打分前会去掉，不发给 Jev。
+episode.json 里的 cast（谁用哪个声音）只给配音用，banned（本集禁用词）只给下面的检查用；打分前这两项都会去掉，不发给 Jev。
 
-读剧本时先查秒数，不满足就报出「文件、第几句（lines 下标，和 voice.py 的行号一致）、文件行号、秒数」，非 0 退出：
-  每句的开始秒 ≥ 上一句的开始秒；有台词的句子结束秒 > 开始秒；没有台词的句子结束秒 ≥ 开始秒。
-一开头就检查环境变量 TYPESAFE_API_KEY，没有就非 0 退出（P8）。
+banned 写成字典 {"词": "为什么禁"}（选字典不选列表：报错时要能带上原因）。异名、简体繁体各写一条，例：
+  "banned": {"知伯": "异名，通鉴写智伯", "汾水": "河名以简报为准", "豫让": "暴力情节，整段跳过（S13）"}
+  写成别的形式（列表、空词、原因不是字符串）会直接报错退出。没有 banned 字段就不查禁用词，运行时会打印一行说明「没查」。
+
+读剧本时先查两样，都过了才往下走；不满足就把每一处报出来（文件、第几句、文件行号、说话人、原因），非 0 退出：
+  1. 秒数：每句的开始秒 ≥ 上一句的开始秒；有台词的句子结束秒 > 开始秒；没有台词的句子结束秒 ≥ 开始秒。
+     第几句是 lines 下标，和 voice.py 的行号一致。
+  2. 禁用词（S2、S13）：每句的台词（要上字幕、要配音的文字）和标题里，出现 banned 里的任何一个词，就报出命中的词和原因。
+     「画面」那一栏是给画面用的说明，不上字幕、不配音，不查。
+一开头就检查环境变量 TYPESAFE_API_KEY，没有就非 0 退出（P8）；--lint 不调 Jev，不查 key。
 
 用法：python video/story.py video/stories/ep01 [--pairs] [--only A,B] [--timeline <voice.py 输出目录>/timeline.json] [--out 报告路径]
+      python video/story.py video/stories/tj01 --lint [--only A,B]
+  --lint 只做上面的两项检查（秒数、禁用词），不调 Jev、不要 key，退出码 0 = 通过、1 = 有问题。
+      第 2 步写剧本时，builder 每改一版先跑它；不能和 --pairs、--timeline、--out 一起用。
   --timeline 按真实配音时间线重算最长平淡段，并列出没有台词、超过 4 秒的动作段（第 4 步用）：
       必须和 --only 一起用、只选一版剧本，而且 timeline.json 要是用这一版剧本配出来的（句数和台词逐句对得上，否则报错退出）。
       不重新问 Jev：沿用估算秒数下 Jev 对每句「有没有新理由」的判断，只把时钟换成真实的，
       所以「估算」和「真实时间线」两个数的差别只来自时间，不夹着 Jev 的波动。结果写进 report.json 的 beats.timeline。
+      全长用 timeline.json 里的 duration（整片时长，含片尾余量），不用最后一句的结束秒（E10）；最长平淡段的终点也按全长算。
+
+report.json 的格式：{"rubric": "story_v2", "candidates": [{"id", "rubric", "name", "scores", "mean", "beats", "checks", ...}, ...]}
+  顶层和每版候选里都写着打分用的评分标准名，新旧标准的报告不会混着比（E9）。
+  没有这个字段的旧报告（顶层是裸列表）看不出用的哪个标准，不要拿来和新报告比。
 """
 import argparse
 import hashlib
@@ -37,8 +52,10 @@ sys.stderr.reconfigure(encoding="utf-8")
 
 from jevdev import jev  # noqa: E402
 
-RUBRIC = jev.load_rubric("story_v2")   # 新旧分数不混着比：v1 的分数不能和 v2 比
+RUBRIC_NAME = "story_v2"   # 新旧分数不混着比：v1 的分数不能和 v2 比；名字也写进 report.json（E9）
+RUBRIC = jev.load_rubric(RUBRIC_NAME)
 AUDIENCE = RUBRIC["audience"]
+NOT_FOR_JEV = ("cast", "banned")   # episode.json 里只给配音、给检查用的字段：打分前去掉，不发给 Jev
 CACHE = ROOT / "out" / "story_cache.json"
 MAX_RATE = 5.0   # 每秒最多几个字：配音读得完、孩子跟得上
 SILENT_LIMIT = 4.0   # 没有台词的动作段最长几秒（第 4 步的过关线，悬念除外）
@@ -98,11 +115,41 @@ def line_numbers(text):
     return []
 
 
+def where_line(path, nums, i, who):
+    """报错时指到具体哪一句：文件、lines 下标、第几句、文件行号、说话人。"""
+    return f"{path}：lines[{i}]（第 {i + 1} 句" + (f"，文件第 {nums[i]} 行起" if i < len(nums) else "") + f"，{who}）"
+
+
+def read_banned(folder, ep):
+    """episode.json 的 banned：{"词": "为什么禁"}。格式不对就退出（写成列表会丢掉原因，空词会命中每一句）。没有这个字段返回空表。"""
+    banned = ep.get("banned", {})
+    if not isinstance(banned, dict):
+        sys.exit(f"错误：{folder / 'episode.json'} 的 banned 要写成字典 {{\"词\": \"为什么禁\"}}，现在是 {type(banned).__name__}")
+    bad = [k for k, v in banned.items() if not (isinstance(k, str) and k.strip() and k == k.strip() and isinstance(v, str))]
+    if bad:
+        sys.exit(f"错误：{folder / 'episode.json'} 的 banned 里 {bad} 不合格：词要是非空字符串、前后不带空格，原因要是字符串（可以写空串）")
+    return banned
+
+
+def check_banned(path, text, tr, banned):
+    """台词（要上字幕、要配音的文字）和标题里的禁用词，一处一条返回（文件、句序、文件行号、说话人、命中的词和原因）。"""
+    nums, errs = line_numbers(text), []
+    title = tr.get("title") or []
+    for t in ([title] if isinstance(title, str) else title):
+        errs += [f"{path}：标题「{t}」里有禁用词「{w}」：{why or '（没写原因）'}" for w, why in banned.items() if w in t]
+    for i, (_, _, who, line, _) in enumerate(tr["lines"]):
+        errs += [f"{where_line(path, nums, i, who)}：台词里有禁用词「{w}」：{why or '（没写原因）'}\n      台词：{line}"
+                 for w, why in banned.items() if w in line]
+        errs += [f"{where_line(path, nums, i, who)}：说话人（字幕上方显示的名字）里有禁用词「{w}」：{why or '（没写原因）'}"
+                 for w, why in banned.items() if w in str(who)]
+    return errs
+
+
 def check_seconds(path, text, tr):
     """秒数查不过的地方，一条一条返回（文件、句序、文件行号、秒数）。N6 结尾回到教室的三句写成 0–0 就是这样漏过去的。"""
     nums, errs, prev = line_numbers(text), [], None
     for i, (t0, t1, who, line, _) in enumerate(tr["lines"]):
-        where = f"{path}：lines[{i}]（第 {i + 1} 句" + (f"，文件第 {nums[i]} 行起" if i < len(nums) else "") + f"，{who}）"
+        where = where_line(path, nums, i, who)
         if not all(isinstance(t, (int, float)) and not isinstance(t, bool) for t in (t0, t1)):
             errs.append(f"{where}：开始秒 {t0!r}、结束秒 {t1!r} 不是数字")
             continue
@@ -117,10 +164,14 @@ def check_seconds(path, text, tr):
 
 
 def load_folder(folder, only=None):
-    """读 episode.json（去掉 cast）和这个目录里的所有候选剧本；标题写成字符串的，当成一行的标题。
-    返回 (ep, [(路径, 剧本)])。秒数查不过就打印所有问题，非 0 退出。只查选中的版本：没选中的版本有问题不挡别的版本。"""
+    """读 episode.json（去掉 cast、banned）和这个目录里的所有候选剧本；标题写成字符串的，当成一行的标题。
+    返回 (ep, [(路径, 剧本)])。秒数或禁用词查不过就打印所有问题，非 0 退出；都过了打印一行结论。
+    只查选中的版本：没选中的版本有问题不挡别的版本。"""
+    if not (folder / "episode.json").exists():
+        sys.exit(f"错误：{folder / 'episode.json'} 不存在（大问题、史料和 banned 都写在这里）")
     ep = json.loads((folder / "episode.json").read_text(encoding="utf-8"))
-    ep = {k: v for k, v in ep.items() if k != "cast"}   # cast 只给 voice.py 用，不发给 Jev
+    banned = read_banned(folder, ep)
+    ep = {k: v for k, v in ep.items() if k not in NOT_FOR_JEV}   # cast 只给 voice.py 用、banned 只给检查用，不发给 Jev
     loaded = []
     for p in sorted(folder.glob("*.json")):
         if p.name == "episode.json":
@@ -133,9 +184,18 @@ def load_folder(folder, only=None):
         if missing:
             sys.exit(f"错误：--only 里的 {sorted(missing)} 在 {folder} 里找不到；现有的 id：{[tr['id'] for _, _, tr in loaded]}")
         loaded = [x for x in loaded if x[2]["id"] in keep]
-    errs = [e for p, text, tr in loaded for e in check_seconds(p, text, tr)]
-    if errs:
-        sys.exit("错误：剧本的秒数有问题，先改剧本（不然最长平淡段和语速都会算错）：\n" + "\n".join("  " + e for e in errs))
+    sec_errs = [e for p, text, tr in loaded for e in check_seconds(p, text, tr)]
+    ban_errs = [e for p, text, tr in loaded for e in check_banned(p, text, tr, banned)]
+    msgs = []
+    if sec_errs:
+        msgs.append("错误：剧本的秒数有问题，先改剧本（不然最长平淡段和语速都会算错）：\n" + "\n".join("  " + e for e in sec_errs))
+    if ban_errs:
+        msgs.append(f"错误：剧本里有本集禁用词（episode.json 的 banned，共 {len(ban_errs)} 处），改掉再往下走（S2、S13）：\n"
+                    + "\n".join("  " + e for e in ban_errs))
+    if msgs:
+        sys.exit("\n".join(msgs))
+    print(f"剧本检查通过：{len(loaded)} 版（{', '.join(tr['id'] for _, _, tr in loaded)}），秒数正常；"
+          + (f"禁用词 {len(banned)} 个，台词和标题里都没有。" if banned else "episode.json 没有 banned 字段，禁用词没查。"))
     for _, _, tr in loaded:
         if isinstance(tr["title"], str):   # 字符串会被 ' / '.join 拆成单字
             tr["title"] = [tr["title"]]
@@ -143,20 +203,25 @@ def load_folder(folder, only=None):
 
 
 def load_timeline(path, script_path, tr):
-    """voice.py 输出的 timeline.json：句数、说话人、台词都要和剧本逐句对上，对不上就退出（配音是用另一版剧本配的）。"""
-    rows = json.loads(Path(path).read_text(encoding="utf-8"))["lines"]
+    """voice.py 输出的 timeline.json：句数、说话人、台词都要和剧本逐句对上，对不上就退出（配音是用另一版剧本配的）。
+    返回 (逐句的行, 整片时长)：整片时长是 timeline.json 顶层的 duration，比最后一句的结束秒多出片尾余量（E10）。"""
+    tl = json.loads(Path(path).read_text(encoding="utf-8"))
+    rows = tl["lines"]
+    if not isinstance(tl.get("duration"), (int, float)):
+        sys.exit(f"错误：{path} 顶层没有数字的 duration（整片时长）；用 voice.py 重新配音生成")
     if len(rows) != len(tr["lines"]):
         sys.exit(f"错误：{path} 有 {len(rows)} 句，{script_path} 有 {len(tr['lines'])} 句，不是同一版剧本配的音")
     bad = [f"lines[{i}]：剧本「{ln[2]}：{ln[3][:12]}」，timeline「{r['who']}：{r['text'][:12]}」"
            for i, (r, ln) in enumerate(zip(rows, tr["lines"])) if (r["who"], r["text"]) != (ln[2], ln[3])]
     if bad:
         sys.exit(f"错误：{path} 和 {script_path} 的台词对不上（配完音后剧本改过？重新配音）：\n" + "\n".join("  " + b for b in bad[:10]))
-    return rows
+    return rows, tl["duration"]
 
 
-def longest_flat(ps, spans):
-    """有新理由的句子（概率 ≥ 0.5）的开始时刻，两两之间最长隔了多久。spans 是每句的（开始, 结束）。"""
-    hits = [0.0] + [t0 for (t0, _), p in zip(spans, ps) if p >= 0.5] + [spans[-1][1]]
+def longest_flat(ps, spans, end=None):
+    """有新理由的句子（概率 ≥ 0.5）的开始时刻，两两之间最长隔了多久。spans 是每句的（开始, 结束）。
+    最后一段算到 end（整片时长）；不给就算到最后一句的结束秒。"""
+    hits = [0.0] + [t0 for (t0, _), p in zip(spans, ps) if p >= 0.5] + [spans[-1][1] if end is None else end]
     gaps = [(b - a, a) for a, b in zip(hits, hits[1:])]
     worst = max(gaps)
     return round(worst[0], 1), worst[1]
@@ -206,22 +271,28 @@ def pair(cache, ep, a, b):
 
 
 def main():
-    require_key()
     ap = argparse.ArgumentParser()
     ap.add_argument("folder")
     ap.add_argument("--pairs", action="store_true")
     ap.add_argument("--only")
     ap.add_argument("--timeline", help="voice.py 输出的 timeline.json：按真实配音时间重算最长平淡段（要配 --only，只选一版）")
     ap.add_argument("--out", help="报告写到这个文件（默认 video/out/story_<目录名>/report.json，每次运行都会覆盖它；要留住的结果用 --out 另存）")
+    ap.add_argument("--lint", action="store_true", help="只查秒数和禁用词：不调 Jev、不要 key，退出码 0 通过 / 1 有问题")
     args = ap.parse_args()
+    if args.lint and (args.pairs or args.timeline or args.out):
+        sys.exit("错误：--lint 只查秒数和禁用词，不能和 --pairs、--timeline、--out 一起用")
+    if not args.lint:
+        require_key()
     folder = Path(args.folder)
     ep, loaded = load_folder(folder, args.only)
+    if args.lint:
+        return
     trs = [tr for _, tr in loaded]
     rows = None
     if args.timeline:
         if len(trs) != 1:
             sys.exit(f"错误：--timeline 只能对应一版剧本，请加 --only <剧本 id>（现在选中了 {len(trs)} 版）")
-        rows = load_timeline(args.timeline, loaded[0][0], trs[0])
+        rows, total = load_timeline(args.timeline, loaded[0][0], trs[0])
     cache = Cache()
     with ThreadPoolExecutor(8) as ex:
         scores = list(ex.map(lambda t: score_script(cache, ep, t), trs))
@@ -233,12 +304,13 @@ def main():
                 pairs[(i, j)] = r
     cache.save()
     if rows:
-        flat, flat_from = longest_flat(beats[0]["b_new"], [(r["t0"], r["t1"]) for r in rows])
+        flat, flat_from = longest_flat(beats[0]["b_new"], [(r["t0"], r["t1"]) for r in rows], end=total)
         beats[0]["timeline"] = {"file": str(args.timeline), "longest_flat": flat, "flat_from": flat_from,
-                                "silent_over_4s": long_silent(rows), "duration": rows[-1]["t1"]}
+                                "silent_over_4s": long_silent(rows), "duration": total}
 
     dims = [k for k in RUBRIC["script"] if not k.startswith("g_")]
     report = []
+    print(f"评分标准：{RUBRIC_NAME}")
     print("版本".ljust(14) + " ".join(d[:6].rjust(6) for d in dims) + "   均分  平淡段  史实?  不宜?  对立?  时长")
     for tr, s, b in zip(trs, scores, beats):
         c = checks(tr)
@@ -246,10 +318,10 @@ def main():
         print(tr["id"].ljust(14) + " ".join(f"{s[d]:6.2f}" for d in dims)
               + f"  {mean:5.2f}  {b['longest_flat']:5.1f}s  {s['g_accuracy']:.2f}   {s['g_kid_unsafe']:.2f}   {s['g_generation']:.2f}  {c['duration']:g}s"
               + (f"  语速过快：{c['too_fast']}" if c["too_fast"] else ""))
-        report.append({"id": tr["id"], "name": tr["name"], "scores": s, "mean": round(mean, 2), "beats": b, "checks": c})
+        report.append({"id": tr["id"], "rubric": RUBRIC_NAME, "name": tr["name"], "scores": s, "mean": round(mean, 2), "beats": b, "checks": c})
     if rows:
         tl = beats[0]["timeline"]
-        print(f"\n按真实时间线（{tl['file']}）：最长平淡段 {tl['longest_flat']}s（从 {tl['flat_from']:g}s 起）；估算秒数下是 {beats[0]['longest_flat']}s（从 {beats[0]['flat_from']:g}s 起）")
+        print(f"\n按真实时间线（{tl['file']}，全长 {tl['duration']:g}s）：最长平淡段 {tl['longest_flat']}s（从 {tl['flat_from']:g}s 起）；估算秒数下是 {beats[0]['longest_flat']}s（从 {beats[0]['flat_from']:g}s 起）")
         print(f"没有台词、超过 {SILENT_LIMIT:g} 秒的段（{len(tl['silent_over_4s'])} 个）：" + ("无" if not tl["silent_over_4s"] else ""))
         for x in tl["silent_over_4s"]:
             print(f"  lines[{x['i']}] {x['t0']:g}–{x['t1']:g}s（{x['seconds']}s）{x['visual'][:40]}")
@@ -266,7 +338,7 @@ def main():
             print(f"{tr['id'].ljust(14)} 看完 {w['p_finish']:.2f}  讲懂 {w['p_understand']:.2f}  转发 {w['p_share']:.2f}")
     dest = Path(args.out) if args.out else ROOT / "out" / f"story_{folder.name}" / "report.json"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
+    dest.write_text(json.dumps({"rubric": RUBRIC_NAME, "candidates": report}, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"\n报告：{dest}")
 
 

@@ -10,8 +10,10 @@
 抽哪些帧：每句字幕的中点、每个事件发生后 0.4 秒（这些是观众最可能停下来看的时刻）。
 
 用法：python video/qa.py video/scenes/ep01_ximulixin_demo.json
+一开头就检查环境变量 TYPESAFE_API_KEY，没有就非 0 退出（P8）：不等截帧、观察员跑完才报。
 """
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -20,6 +22,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT.parent))
 sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")   # 不设 PYTHONIOENCODING 时，key 缺失的中文提示也能正常显示（E5、E7）
 
 import render  # noqa: E402
 from jevdev import jev  # noqa: E402
@@ -120,7 +123,16 @@ def verdict(s, bar):
     return fails
 
 
+def require_key():
+    """没有 Jev 的 key 就立刻退出：截帧和观察员要跑很久，不许白跑之后才报（P8）。"""
+    if not os.environ.get("TYPESAFE_API_KEY"):
+        sys.exit("错误：环境变量 TYPESAFE_API_KEY 没有值，Jev 质检跑不了。质检不许跳过（P8）。\n"
+                 "Git Bash 里这样设：export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "
+                 "\"[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')\" | tr -d '\\r')")
+
+
 def main():
+    require_key()
     scene_path = Path(sys.argv[1])
     scene = render.load_scene(scene_path)
     qa_dir = ROOT / "out" / f"qa_{scene_path.stem}"
