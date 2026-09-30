@@ -22,6 +22,7 @@
   zb_expr_a         -> chars/zb_hi_greedy.png、zb_hi_shock.png
   zb_expr_b         -> chars/zb_hi_proud.png、zb_hi_side.png
   zxz_expr_a        -> chars/zxz_hi_no.png、zxz_hi_smile.png
+  zxz_no_l / hkz_stand_l / zb_cheer_l / wgh_reins_l -> chars/ 同名（整集分镜表要朝左的交领人物，重画的，不是镜像：PITFALLS M1）
   zxz_expr_d        -> chars/zxz_hi_order.png（b 的衣服偏蓝、c 的下边被画布切掉，重画成 d）
 """
 import sys
@@ -120,7 +121,8 @@ def opaque(src, dst):
 def main():
     todo = sys.argv[1:] or ["stove_flooded", "zb_shadow_young", "icons_new", "bubble_nickname2", "banquet_row", "shadow_screen", "zgo_shadow_l", "dg_kneel_l",
                          "bubble_checkers", "bubble_shot", "screen_cups", "inset_yinduo2", "chariot_full", "hands_douli",
-                         "city_icons2", "book_page_hi", "sky_night", "zb_expr_a", "zb_expr_b", "zxz_expr_a", "zxz_expr_d"]
+                         "city_icons2", "book_page_hi", "sky_night", "zb_expr_a", "zb_expr_b", "zxz_expr_a", "zxz_expr_d",
+                         "zxz_no_l", "hkz_stand_l", "zb_cheer_l", "wgh_reins_l"]
     for n in todo:
         src = HERE / f"{n}.png"
         if not src.exists():
@@ -135,7 +137,7 @@ def main():
             assert len(ps) == 3, f"icons_new 切出 {len(ps)} 件"
             for (y, x, c), nm in zip(ps, ["icon_look", "icon_speech", "icon_resolve"]):
                 save(f"props/{nm}.png", c)
-        elif n in ("zgo_shadow_l", "dg_kneel_l"):
+        elif n in ("zgo_shadow_l", "dg_kneel_l", "zxz_no_l", "hkz_stand_l", "zb_cheer_l", "wgh_reins_l"):
             save(f"chars/{n}.png", union_crop(src))
         elif n in ("bubble_checkers", "bubble_shot"):
             save(f"props/{n}.png", union_crop(src))
