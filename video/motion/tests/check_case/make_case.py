@@ -31,10 +31,17 @@ IMGS = {
     "chars/zxz_kneel": (389, 428, "右", "定稿", "tj01"), "chars/zxz_no": (387, 431, "右", "定稿", "tj01"),
     "chars/sgm_finger": (426, 474, "右", "定稿", "系列"), "chars/sgm_thumb": (443, 484, "正面", "定稿", "系列"),
     "chars/sy2_stand": (235, 467, "右", "定稿", "试做集"),
+    # 画在右边、脸朝左的人用原图朝左的图（交领人物不许 flip，PITFALLS M1）：和朝右的那张同尺寸
+    "chars/zb_point_l": (464, 409, "左", "定稿", "tj01"), "chars/zb_angry_l": (387, 470, "左", "定稿", "tj01"),
+    "chars/dg_kneel_l": (352, 443, "左", "定稿", "tj01"), "chars/hkz_low_l": (376, 427, "左", "定稿", "tj01"),
+    "chars/zxz_kneel_l": (389, 428, "左", "定稿", "tj01"), "chars/zxz_no_l": (387, 431, "左", "定稿", "tj01"),
     "sets/jin_land/sky": (1024, 1536, "正面", "定稿", "tj01"), "sets/jin_land/ridge_far": (1016, 462, "正面", "定稿", "tj01"),
     "sets/jin_land/ground": (1528, 218, "正面", "定稿", "tj01"),
     "props/cup_lacquer": (513, 257, "正面", "定稿", "tj01"), "props/map_silk": (1132, 806, "正面", "定稿", "tj01"),
 }
+
+
+NOTES = {"chars/zb_stand": "测试图（侧面立像，可翻转）"}          # 登记表备注写了「可翻转」的图可以 flip
 
 
 def owner_of(path):
@@ -52,7 +59,7 @@ def make_assets(out):
         f = out / "assets" / f"{path}.png"
         f.parent.mkdir(parents=True, exist_ok=True)
         Image.new("RGBA", (w, h), (200, 180, 160, 255)).save(f)
-        rows.append(f"| `{path}.png` | {owner_of(path)} | {facing} | {w}×{h} | 无 | {status} | 测试图 | {scope} |")
+        rows.append(f"| `{path}.png` | {owner_of(path)} | {facing} | {w}×{h} | 无 | {status} | {NOTES.get(path, '测试图')} | {scope} |")
     (out / "REGISTRY.md").write_text("\n".join(rows) + "\n", encoding="utf-8")
     print(f"{len(IMGS)} 张测试图 + 登记表写到 {out}")
 
@@ -60,7 +67,7 @@ def make_assets(out):
 # ------------------------------------------------------------------ 配音时间线
 LINES = [   # (说话人, 台词, 有声时长)
     ("旁白", "要地，给不给？", 2.6), ("智伯", "韩康子，给我一座城！", 3.0), ("韩康子", "给……给你吧。", 2.6), ("段规", "给了他，他更骄傲。", 3.0),
-    ("旁白", "智伯有五样本事，样样比别人强！", 3.4), ("旁白", "只缺一样：好心。", 2.6), ("司马光", "考考你，赵襄子给不给？", 3.0), ("赵襄子", "不给。", 1.6),
+    ("旁白", "智伯有五样本事，样样比别人强！", 3.4), ("旁白", "只缺一样：好心。", 2.6), ("司马光", "考考你，赵襄子给不给？", 3.0), ("赵襄子", "不给。", 2.4),
     ("智伯", "什么？你不给？", 2.6), ("旁白", "智伯很生气！", 2.2), ("段规", "变，就要来了。", 2.6), ("韩康子", "我们再看看。", 2.4),
     ("旁白", "智伯去看水势，得意大笑。", 3.4), ("智伯", "水，也能灭国！", 2.6), ("韩康子", "他，他说什么？", 2.6), ("旁白", "韩康子的心里，都发凉。", 3.6),
     ("司马光", "记住这句话。", 2.4), ("旁白", "本事是本钱，好心是队长。", 3.6), ("赵襄子", "晋阳，我们守得住！", 3.2), ("段规", "夜里，挖开堤。", 2.6),
@@ -86,11 +93,11 @@ PEOPLE = {"zb": "智伯", "dg": "段规", "hkz": "韩康子", "zxz": "赵襄子"
 LEFT_X, RIGHT_X, ALONE_X, FEET = 330, 760, 540, 1560
 
 
-def actor(pid, pose, x, flip=False, y=FEET, **extra):
-    w, h, *_ = IMGS[f"chars/{pid}_{pose}"]
-    a = {"id": pid, "who": PEOPLE[pid], "img": f"chars/{pid}_{pose}.png", "pos": [x, y], "h": round(h * 0.95)}
-    if flip:
-        a["flip"] = True
+def actor(pid, pose, x, left=False, y=FEET, **extra):
+    """left=True：脸朝左的人（画在右边）：用原图朝左的图（`_l`），不 flip。"""
+    key = f"chars/{pid}_{pose}" + ("_l" if left else "")
+    w, h, *_ = IMGS[key]
+    a = {"id": pid, "who": PEOPLE[pid], "img": key + ".png", "pos": [x, y], "h": round(h * 0.95)}
     a.update(extra)
     return a
 
@@ -123,7 +130,7 @@ def namecard(line, name, x, dt=0.2):
 
 CAMERAS = [None, [{"move": "pull", "amount": 0.05}], [{"move": "pan", "dx": -50}], None, [{"move": "push", "amount": 0.06}]]
 
-# 每句一镜：(左边的人, 右边的人, 只有一个人时的姿势)。左边的人原图朝右不翻，右边的人 flip，互相面对面
+# 每句一镜：(左边的人, 右边的人, 只有一个人时的姿势)。左边的人用朝右的图，右边的人用朝左的图（`_l`），互相面对面
 SCENES = {
     1: (("zb", "grab"), ("dg", "kneel")), 2: (("hkz", "low"), ("zb", "point")), 3: (("dg", "kneel"), ("hkz", "low")),
     7: (("zxz", "no"), ("zb", "angry")), 8: (("zxz", "kneel"), ("zb", "angry")), 10: (("dg", "kneel"), ("hkz", "low")),
@@ -144,7 +151,7 @@ def base_shot(i):
         s["camera"] = cam
     if i in SCENES:
         (lp, lpose), (rp, rpose) = SCENES[i]
-        s["actors"] = [actor(lp, lpose, LEFT_X), actor(rp, rpose, RIGHT_X, flip=True)]
+        s["actors"] = [actor(lp, lpose, LEFT_X), actor(rp, rpose, RIGHT_X, left=True)]
         s["size"] = "medium"
     elif i in ALONE:
         s["actors"] = [actor(*ALONE[i], ALONE_X)]
@@ -172,6 +179,14 @@ def make_good():
     shots[8]["camera"] = [{"move": "punch", "at": {"line": 8, "word": "不给"}, "amount": 0.1}, {"move": "push", "amount": 0.05}]
     shots[13]["fx"].append({"type": "flash", "at": {"line": 13, "word": "灭国"}, "alpha": 0.5, "dur": 0.1})
     shots[20]["fx"].append(sticker(20, "呼", dt=0.5))
+    # 交领人物不许 flip（M1），例外：司马光（圆领）、登记表备注写了「可翻转」的图
+    shots[16]["actors"][0].update(pos=[780, FEET], flip=True)                     # 司马光翻身
+    shots[20]["actors"][0]["flip"] = True                                          # zb_stand：备注「可翻转」
+    # 贴纸挂在人物身上（follow）压脸不算；闪粉没写 avoid = 特效包自动避开脸
+    shots[11]["fx"].append({"type": "sticker", "text": "汗", "follow": "hkz", "attach": "head", "at": L(11, 0.6), "size": 180})
+    shots[19]["fx"].append({"type": "sparkle", "at": L(19, 0.3)})
+    # 集中线：写 clear，圈盖住主体（智伯）的脸
+    shots[20]["fx"].append({"type": "lines_focus", "pos": [540, 1200], "clear": 320, "at": L(20, 0.4)})
     sb = {"episode": "tj01", "no": 1, "title": ["最强的智伯，", "为什么输了？"], "voice": "video/motion/tests/check_case/voice",
           "note": "storyboard_check 的测试数据：正确的分镜表（0 错误 0 警告）。用 make_case.py 生成，别手改。",
           "speakers": {"智伯": "智家", "段规": "韩家", "韩康子": "韩家", "赵襄子": "赵家"},
@@ -430,12 +445,58 @@ def _(sb):
 # ---- 朝向、人名牌
 @case("bad_facing", "要面向说话的人")
 def _(sb):
-    sh(sb, "s09")["actors"][0]["flip"] = True        # 第 8 句智伯（右边）说话，赵襄子（左边）却翻了身：脸朝左，背对智伯
+    sh(sb, "s09")["actors"][0]["img"] = "chars/zxz_kneel_l.png"      # 第 8 句智伯（右边）说话，赵襄子（左边）用了朝左的图：脸朝左，背对智伯
 
 
 @case("bad_namecard", "第一次出场")
 def _(sb):
     sh(sb, "s02")["fx"] = [f for f in sh(sb, "s02")["fx"] if f.get("name") != "智伯"]
+
+
+# ---- 翻转、压脸、集中线、人名牌停留（PITFALLS M1、M2、M4 那一轮补的）
+@case("bad_flip_cross_collar", "左衽")
+def _(sb):
+    sh(sb, "s13")["actors"][0]["flip"] = True
+
+
+@case("bad_sticker_on_face", "贴纸「！」")
+def _(sb):
+    sh(sb, "s10")["fx"].append({"type": "sticker", "text": "！", "pos": [540, 1200], "at": L(9, 0.5), "size": 180})
+
+
+@case("bad_smash_on_face", "砸字「不给」")
+def _(sb):
+    sh(sb, "s10")["fx"].append({"type": "smash", "text": "不给", "size": 200, "pos": [540, 1200], "at": L(9, 0.5)})
+
+
+@case("bad_splash_on_face", "水花")
+def _(sb):
+    sh(sb, "s10")["fx"].append({"type": "splash", "pos": [540, 1300], "at": L(9, 0.5)})
+
+
+@case("bad_particles_no_avoid", "别写 avoid: []")
+def _(sb):
+    sh(sb, "s20")["fx"][0]["avoid"] = []
+
+
+@case("bad_focus_no_clear", "没写 clear")
+def _(sb):
+    sh(sb, "s21")["fx"][-1].pop("clear")
+
+
+@case("bad_focus_clear_short", "没盖住主体")
+def _(sb):
+    sh(sb, "s21")["fx"][-1]["clear"] = 60
+
+
+@case("bad_focus_off_center", "没盖住主体")
+def _(sb):
+    sh(sb, "s21")["fx"][-1].update(pos=[540, 300], clear=200)
+
+
+@case("bad_plate_too_short", "只看得清")
+def _(sb):
+    next(f for f in sh(sb, "s02")["fx"] if f["type"] == "name_plate")["dur"] = 1.2
 
 
 # ---- 格式

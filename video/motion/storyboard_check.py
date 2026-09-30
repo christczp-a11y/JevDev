@@ -25,7 +25,12 @@
   [素材]   图片（背景 / 人物 / 换表情 / 前景 / 特效自带的）和音效在不在；登记表里：没登记 = 错，「停用」= 错，「试做集」范围用在新集 = 错，「宣传图」范围 = 错，「未定稿」= 警告
   [放大]   屏幕显示 ÷ 原图 ≤ 1.3，含镜头放大（远景层按视差系数折算；blur 的背景不查）
   [朝向]   按登记表的原图朝向（左 / 右 / 正面）算，flip 反过来：不是正面的人物要面向说话的人（有人在这一镜说话）；旁白的镜头面向同镜头里的别人；一个人站着背对全场警告
-  [人名牌] 每个人物（不含司马光；按 who，没写按 id）第一次出场的那个镜头里，要有一个人名牌特效（name_plate；参数里带人名就按人名对，没带就按数量对）
+  [人名牌] 每个人物（不含司马光；按 who，没写按 id）第一次出场的那个镜头里，要有一个人名牌特效（name_plate；参数里带人名就按人名对，没带就按数量对）；
+           人名牌看得清的时间 < 1.5 秒报错（按分镜表的时间算：落下的 0.42 秒不算，写了 dur 的话 dur 以后的淡出也不算）
+  [翻转]   交领人物不许翻转（PITFALLS M1，翻过来衣襟就成了左衽）：chars/ 下的图 flip: true 报错；例外：司马光（sgm_，圆领）、皮影（文件名含 shadow）、登记表备注里写了「可翻转」的图、道具 / 物件
+  [压脸]   贴纸 / 砸字 / 水花 / 闪粉 / 纸屑的框和任何人物的脸框重叠（脸框面积的 5% 以上）报错（M4）；写了 follow 的贴纸（挂在人物身上）不算；
+           闪粉 / 纸屑没写 avoid = 特效包自动避开脸，不查；写了 avoid: [] 关掉、或者写的框没盖住脸，而粒子的范围（闪粉 area，纸屑整个画面）碰到脸就报错
+  [集中线] lines_focus 必须写 clear（不画线的留白圈：[x, y, r]，或者一个半径数、圆心取 center / pos / [540, 900]），而且这个圈要盖住这一镜主体（面积最大的人物）的脸框（M2）
 
 特效名字怎么分类：storyboard_check.py 里的 FX_KINDS（按名字里的子串；特效包 fx/ 里的 name_plate = 人名牌、smash = 砸字、big_title / card_* = 大字标题和游戏卡片、
 checklist / stat_card / map* / progress = 讲知识点的、flash = 闪白、lines_* / sparkle / rain 等 = 氛围）；特效包加了新名字，不对的话改这张表（一处）。
@@ -97,14 +102,24 @@ FX_KINDS = [
     ("stat", ("stat", "attr", "属性")),
     ("map", ("map", "地图")),
     ("gauge", ("gauge", "progress", "进度")),
-    ("ambient", ("sparkle", "confetti", "dust", "rain", "rays", "glow", "fire", "flame", "splash", "particle", "lines_", "speed", "focus", "radial", "tone", "氛围", "光芒", "速度线", "集中线")),
+    ("focus", ("lines_focus", "focus_lines", "集中线")),
+    ("splash", ("splash", "水花")),
+    ("sparkle", ("sparkle", "闪粉")),
+    ("confetti", ("confetti", "纸屑")),
+    ("ambient", ("dust", "rain", "rays", "glow", "fire", "flame", "particle", "lines_", "speed", "radial", "tone", "氛围", "光芒", "速度线")),
     ("sticker", ("sticker", "贴纸")),
     ("ritual", ("kaoni", "card", "考你", "人物卡")),
 ]
 KNOWLEDGE_KINDS = {"list", "stat", "map", "gauge"}
 TEXT_KINDS = {"slam", "title", "namecard", "gamecard", "list", "stat"}     # 重要的字 / 卡片：中心点要在安全区里
+AMBIENT_KINDS = {"ambient", "focus", "sparkle", "confetti"}                # 一直在画面上流动、不算「一样东西」、算画面在动的特效
+OVERLAY_KINDS = {"sticker", "slam", "splash", "sparkle", "confetti"}       # 不许压脸的
+OVERLAP_MIN = 0.05                                                         # 和脸框重叠超过脸框面积的这么多就算压脸
+PLATE_FALL, PLATE_MIN_CLEAR = 0.42, 1.5                                    # name_plate 落下来要 0.42 秒；看得清的时间至少 1.5 秒
+SPARKLE_AREA = (80.0, 360.0, 1000.0, 1400.0)
+SUBJECT_LATER_WINS = 0.85                                                  # 主体：面积最大的人物；后画的（在上面的）面积 ≥ 最大的 85% 时取它
 STUB_FX = ("sticker", "flash", "name_plate", "smash", "big_title", "checklist", "stat_card", "map", "progress", "kaoni", "person_card",
-           "card_quest", "card_fail", "card_title", "card_mvp")           # --no-plugins 时认得的名字（和特效包 fx/ 里登记的一致）；有插件时以插件为准
+           "card_quest", "card_fail", "card_title", "card_mvp", "splash", "sparkle", "confetti", "lines_focus", "lines_radial", "lines_speed", "dust", "rays")           # --no-plugins 时认得的名字（和特效包 fx/ 里登记的一致）；有插件时以插件为准
 STUB_TRANSITIONS = ("dissolve", "flash")
 NAME_HINT_SKIP = {"type", "sfx", "at", "note", "dur", "layer"}
 
@@ -424,6 +439,176 @@ def screen_xf(cam, t, t_abs, x, y, depth):
     return CX + Z * (x - CX) - depth * px, CY + Z * (y - CY) - depth * py, Z
 
 
+def actor_frame(a, cam, t, t0):
+    """人物在镜头内 t 秒时：(脸框, 整个人面积)（屏幕坐标，含镜头运动和补间）；这时人物不在画面里（出场以前 / 走出去以后）或者图找不到 = None。"""
+    if a.get("window") and not (a["window"][0] - 1e-6 <= t <= a["window"][1] + 1e-6):
+        return None
+    r, h = a["ref"], float(a["spec"]["h"])
+    for at, r2, h2 in a["swaps"]:
+        if t >= at and r2.file:
+            r, h = r2, h2
+    if not r.file:
+        return None
+    v = a["tracks"].value(t)
+    sw, shh = r.size
+    wd = sw * h / shh * v["scale"] * v["sx"]
+    hd = h * v["scale"] * v["sy"]
+    X, Y, Z = screen_xf(cam, t, t0 + t, v["x"], v["y"], float(a["spec"].get("depth", 1.0)))
+    w, hh = wd * Z, hd * Z
+    left, top = X - 0.5 * w, Y - hh
+    return (left + FACE[0] * w, top + FACE[2] * hh, left + FACE[1] * w, top + FACE[3] * hh), w * hh
+
+
+def pick_subject(frames):
+    """frames = [(人物, 脸框, 面积)] → 这一镜的主体：面积最大的；后画的（在上面的）面积 ≥ 最大的 85% 时取它。"""
+    if not frames:
+        return None
+    best = max(range(len(frames)), key=lambda k: frames[k][2])
+    for k in range(len(frames) - 1, best, -1):
+        if frames[k][2] >= SUBJECT_LATER_WINS * frames[best][2]:
+            return frames[k]
+    return frames[best]
+
+
+def overlap_frac(a, b):
+    """a、b 两个框 (l, t, r, b)：相交面积 ÷ b 的面积。"""
+    w = min(a[2], b[2]) - max(a[0], b[0])
+    h = min(a[3], b[3]) - max(a[1], b[1])
+    area = (b[2] - b[0]) * (b[3] - b[1])
+    return w * h / area if w > 0 and h > 0 and area > 0 else 0.0
+
+
+def overlay_box(kind, e, X, Y):
+    """贴纸 / 砸字 / 水花在屏幕上大致占的方框，估不出来 = None。X, Y 是 pos 变换到屏幕上的位置。"""
+    if kind == "sticker":
+        size = float(e.get("size", 200))
+        if e.get("name"):
+            f = C.MOTION / "stickers" / f"{e['name']}.png"
+            aspect = img_size(f)[0] / img_size(f)[1] if f.exists() else 1.0
+            w, h = size * aspect, size
+        else:
+            w, h = size * len(str(e.get("text", ""))) * 0.95 + size * 0.15, size * 1.15
+        return X - w / 2, Y - h / 2, X + w / 2, Y + h / 2
+    if kind == "slam":
+        return fx_box("slam", e, X, Y)
+    if kind == "splash":                               # 水冠往上蹿、水滴往两边溅：按特效包的速度估的范围
+        k = float(e.get("size", 1.0))
+        return X - 300 * k, Y - 380 * k, X + 300 * k, Y + 40
+    return None
+
+
+def check_overlays(sh, out, cam, rep):
+    """M4：贴纸 / 砸字 / 水花 / 闪粉 / 纸屑不许压脸。"""
+    t0, dur = sh.t0, sh.dur
+    for kind, at, e in out["fx"]:
+        if kind not in OVERLAY_KINDS or (kind == "sticker" and "follow" in e):
+            continue
+        typ = e.get("type")
+        rel_at = max(at - t0, 0.0)
+        end = min(dur, rel_at + float(e["dur"])) if isinstance(e.get("dur"), (int, float)) else dur
+        if kind == "splash":
+            end = min(end, rel_at + 1.9)
+        if end < rel_at:
+            continue
+        region, avoid = None, None
+        if kind in ("sparkle", "confetti"):
+            avoid = e.get("avoid")
+            if avoid is None:
+                continue                               # 没写 avoid = 特效包自动避开脸
+            if not (isinstance(avoid, list) and all(isinstance(b, (list, tuple)) and len(b) == 4 for b in avoid)):
+                continue
+            region = tuple(e.get("area", SPARKLE_AREA)) if kind == "sparkle" else (0.0, 0.0, float(C.W), float(C.H))
+        pos = e.get("pos")
+        for t in samples(min(rel_at + 0.35, end), end):
+            if region is None:
+                if not (isinstance(pos, list) and len(pos) == 2):
+                    break
+                X, Y, _ = screen_xf(cam, t, t0 + t, float(pos[0]), float(pos[1]), float(e.get("depth", 1.0 if kind == "sticker" else 0.0)))
+                box = overlay_box(kind, e, X, Y)
+                if box is None:
+                    break
+            else:
+                box = region
+            hit = None
+            for a in out["actors"]:
+                fr = actor_frame(a, cam, t, t0)
+                if fr is None:
+                    continue
+                if avoid and any(b[0] <= fr[0][0] and b[1] <= fr[0][1] and b[2] >= fr[0][2] and b[3] >= fr[0][3] for b in avoid):
+                    continue                            # 写的 avoid 框把脸整个盖住了
+                f = overlap_frac(box, fr[0])
+                if f > OVERLAP_MIN and (hit is None or f > hit[1]):
+                    hit = (a, f)
+            if hit:
+                a, f = hit
+                what = {"sticker": f"贴纸「{e.get('name') or e.get('text')}」", "slam": f"砸字「{e.get('text')}」", "splash": "水花"}.get(kind, f"{typ}（{kind}）的范围")
+                fix = "写 follow 挂在人物身上、或挪到主体旁边（右上方）" if kind == "sticker" else ("挪开" if region is None else "别写 avoid: []（让特效包自动避开脸），或者 avoid 的框把脸盖住")
+                rep.err("压脸", f"{what}（{t:.1f} 秒时）盖住了 {a['who']} 的脸，重叠脸框的 {f:.0%}（M4）：{fix}", sh.id)
+                break
+
+
+def check_focus_lines(sh, out, cam, rep):
+    """M2：lines_focus 要写 clear，clear 圈要盖住这一镜主体的脸框。"""
+    t0, dur = sh.t0, sh.dur
+    for kind, at, e in out["fx"]:
+        if kind != "focus" or "focus" not in str(e.get("type")):
+            continue
+        clear = e.get("clear")
+        if clear is None:
+            rep.err("集中线", f"{e.get('type')} 没写 clear（不画线的留白圈）：集中线压在脸上像画面被划花（M2）；写 clear，圈要盖住主体的脸", sh.id)
+            continue
+        try:
+            if isinstance(clear, (list, tuple)):                       # [x, y, r]：留白圈自己的圆心和半径
+                cx, cy, kr = (float(v) for v in clear)
+            else:                                                       # 一个数：以 center（没写 = pos，再没写 = [540, 900]）为圆心的半径
+                c = e.get("center", e.get("pos", [C.W / 2, 900]))
+                cx, cy, kr = float(c[0]), float(c[1]), float(clear)
+        except (TypeError, ValueError, IndexError):
+            continue                                                    # 写坏了：特效自己的 check 去报
+        if kr <= 0:
+            rep.err("集中线", f"{e.get('type')} 的 clear 半径是 {kr:g}：留白圈没有大小，等于没留（M2）", sh.id)
+            continue
+        rel_at = max(at - t0, 0.0)
+        end = min(dur, rel_at + float(e["dur"])) if isinstance(e.get("dur"), (int, float)) else dur
+        for t in samples(min(rel_at + 0.25, end), end):
+            frames = [(a, fr[0], fr[1]) for a in out["actors"] for fr in [actor_frame(a, cam, t, t0)] if fr]
+            subj = pick_subject(frames)
+            if not subj:
+                continue
+            a, face, _ = subj
+            far = max(math.hypot(x - cx, y - cy) for x in (face[0], face[2]) for y in (face[1], face[3]))
+            if far > kr:
+                rep.err("集中线", f"{e.get('type')} 的 clear 圈（圆心 ({cx:.0f}, {cy:.0f})，半径 {kr:.0f}）没盖住主体 {a['who']} 的脸框"
+                                  f"（{t:.1f} 秒时脸框最远的角离圆心 {far:.0f}）：圆心对准脸，clear 至少 {far:.0f}（M2）", sh.id)
+                break
+
+
+def check_plate_time(sh, out, rep):
+    """人名牌看得清的时间（不算落下的 0.42 秒；写了 dur 的话，dur 以后的淡出也不算）≥ 1.5 秒。"""
+    for kind, at, e in out["fx"]:
+        if kind != "namecard":
+            continue
+        span = sh.t1 - at
+        if isinstance(e.get("dur"), (int, float)) and not isinstance(e.get("dur"), bool):
+            span = min(span, float(e["dur"]))
+        clear = span - PLATE_FALL
+        if clear < PLATE_MIN_CLEAR - 1e-6:
+            rep.err("人名牌", f"{e.get('type')}「{e.get('name')}」从 {at - sh.t0:.1f} 秒起在这个镜头里只看得清 {max(clear, 0):.1f} 秒（不算落下的 {PLATE_FALL} 秒"
+                              f"{'、dur 以后的淡出' if 'dur' in e else ''}），要至少 {PLATE_MIN_CLEAR:g} 秒：at 往前挪、去掉 dur，或者把镜头留长一点", sh.id)
+
+
+def check_flip(rep, sid, where, ref, who):
+    """M1：交领人物不许翻转。"""
+    if not ref or not ref.rel or not ref.rel.startswith("chars/") or not ref.file:
+        return
+    name = Path(ref.rel).name
+    row = ref.row or {}
+    if name.startswith("sgm_") or "shadow" in Path(ref.rel).stem or "可翻转" in row.get("note", "") or re.search(r"道具|物件|课桌", row.get("owner", "")):
+        return
+    rep.err("翻转", f"{where} {who or ''} 的 {ref.rel} 用了 flip: true：穿交领的古人翻过来衣襟就成了左衽（M1）。要朝另一边就换一张原图朝那边的图（没有就让 Codex 画）；"
+                    "只有司马光（sgm_，圆领）、皮影、登记表备注写了「可翻转」的图可以翻", sid)
+
+
 def fx_box(kind, e, X, Y):
     """特效在屏幕上大致占的方框 (l, t, r, b)，按特效包的约定估（见文件头）；估不出来就 None（只查中心点）。"""
     if kind == "namecard":
@@ -631,8 +816,15 @@ def analyse_shot(sh, ctx, rep, spec, out):
             except (KeyError, TypeError, ValueError, AnchorError) as ex:
                 rep.err("格式", f"{where}：{type(ex).__name__} {ex}", sid)
                 continue
+            if e.get("flip"):
+                for r in [ref] + [x[1] for x in swaps]:
+                    check_flip(rep, sid, where, r, e.get("who", e.get("id")))
             if kind == "actor" and ref.file:
-                actors.append(dict(spec=e, ref=ref, swaps=swaps, tracks=tracks, who=e.get("who", e.get("id")), id=e.get("id"), where=where))
+                try:
+                    window = presence_window(e, rel, dur)
+                except (KeyError, TypeError, ValueError, AnchorError):
+                    window = None
+                actors.append(dict(spec=e, ref=ref, swaps=swaps, tracks=tracks, who=e.get("who", e.get("id")), id=e.get("id"), where=where, window=window))
             elif kind != "actor" and ref.rel and ref.rel.startswith("props/") and ref.file:
                 props.append(dict(spec=e, ref=ref, tracks=tracks, where=where))
     out["new_things"] = new_things
@@ -658,10 +850,10 @@ def analyse_shot(sh, ctx, rep, spec, out):
             continue
         fxs.append((kind, at, e))
         dur_fx = e.get("dur")
-        if kind == "ambient":
+        if kind in AMBIENT_KINDS:
             cover.append((at, sh.t1))
         events.append((at, at + (float(dur_fx) if isinstance(dur_fx, (int, float)) else DEFAULT_FX_LEN), f"fx {typ}"))
-        if kind != "ambient":
+        if kind not in AMBIENT_KINDS:
             new_things += 1                                   # 氛围（光芒、闪粉……）不算「一样东西」
     out["new_things"] = new_things
     out["fx"] = fxs
@@ -731,6 +923,10 @@ def analyse_shot(sh, ctx, rep, spec, out):
                 if kind == "slam" and box and (box[0] < SAFE[0] or box[2] > OCC_X):
                     rep.warn("安全区", f"{e['type']} 砸字「{e.get('text')}」按字号估计宽 {box[2] - box[0]:.0f}，x 会到 {box[0]:.0f}–{box[2]:.0f}，超出 {SAFE[0]:.0f}–{OCC_X:.0f}", sid)
     out["actors"] = actors
+    if cam is not None:
+        check_overlays(sh, out, cam, rep)
+        check_focus_lines(sh, out, cam, rep)
+    check_plate_time(sh, out, rep)
     out["events"] = events
     out["cover"] = cover
     out["moving"] = moving
@@ -752,7 +948,7 @@ def check_static(sh, out, rep):
 
 def check_effects(sh, out, rep):
     spec = sh.spec
-    fxs = [f for f in out["fx"] if f[0] != "ambient"]
+    fxs = [f for f in out["fx"] if f[0] not in AMBIENT_KINDS]
     note = json.dumps(spec.get("note", ""), ensure_ascii=False) + json.dumps(spec.get("notes", ""), ensure_ascii=False)
     know = "知识" in note or any(k in KNOWLEDGE_KINDS for k, _, _ in out["fx"])
     out["knowledge"] = know

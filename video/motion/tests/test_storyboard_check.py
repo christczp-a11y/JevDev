@@ -16,7 +16,7 @@ OUT = common.OUT / "check_case"
 GOOD = TESTS / "good_storyboard.json"
 EXPECT = json.loads((TESTS / "check_expect.json").read_text(encoding="utf-8"))
 BAD = sorted(TESTS.glob("bad_*.json"))
-TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌"]
+TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌", "翻转", "压脸", "集中线"]
 
 _spec = importlib.util.spec_from_file_location("make_case", CASE / "make_case.py")
 make_case = importlib.util.module_from_spec(_spec)
@@ -103,6 +103,78 @@ class TestBad(unittest.TestCase):
         rep, _ = check(p)
         self.assertGreaterEqual(len(rep.errors), 4, text(rep))
         self.assertEqual({"锚点", "静止", "素材", "特效"} - {e["tag"] for e in rep.errors}, set())
+
+
+class TestNewRules(unittest.TestCase):
+    """PITFALLS M1、M2、M4 那一轮补的检查里，坏样例测不到的例外和边界。"""
+
+    def test_flip_exemptions(self):
+        from types import SimpleNamespace as NS
+
+        class Rep:
+            errors = []
+
+            def err(self, *a):
+                self.errors.append(a)
+        ok = [NS(rel="chars/sgm_hi_point.png", file=True, row={"note": "", "owner": "司马光 `sgm_`"}),          # 司马光（圆领）
+              NS(rel="chars/zxu_shadow.png", file=True, row={"note": "", "owner": "智宣子 `zxu_`"}),          # 皮影
+              NS(rel="chars/zb_stand.png", file=True, row={"note": "侧面立像，可翻转", "owner": "智伯 `zb_`"}),  # 备注写了可翻转
+              NS(rel="chars/school_desk.png", file=True, row={"note": "课桌", "owner": "现代课桌（道具）"}),   # 物件
+              NS(rel="props/flag_zhi.png", file=True, row={"note": "", "owner": "道具"}),                    # 不在 chars/
+              NS(rel="chars/zb_x.png", file=False, row={})]                                                  # 图找不到：素材那一项去报
+        for r in ok:
+            rp = Rep()
+            SC.check_flip(rp, "s1", "actors[0]", r, "谁")
+            self.assertEqual(rp.errors, [], r.rel)
+        rp = Rep()
+        SC.check_flip(rp, "s1", "actors[0]", NS(rel="chars/zb_stand_hi.png", file=True, row={"note": "高清半身", "owner": "智伯 `zb_`"}), "智伯")
+        self.assertEqual(len(rp.errors), 1)
+
+    def test_sticker_that_follows_a_person_may_cover_the_face(self):
+        rep, _ = check(GOOD)
+        self.assertEqual([e for e in rep.errors if e["tag"] == "压脸"], [])       # s12 的 follow 贴纸就在韩康子脸上
+
+    def test_focus_circle_must_cover_the_subject_not_just_any_face(self):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s09 = next(s for s in sb["shots"] if s["id"] == "s09")                    # 赵襄子（左）+ 智伯（右，比较大）：主体是智伯
+        s09["fx"] = [{"type": "lines_focus", "pos": [330, 1180], "clear": 250, "at": {"line": 8, "dt": 0.3}}]      # 圈在赵襄子脸上，没盖住智伯
+        p = OUT / "focus_subject.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertTrue(any(e["tag"] == "集中线" and "智伯" in e["msg"] for e in rep.errors), text(rep))
+        s09["fx"][0]["pos"] = [760, 1180]
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertEqual([e for e in rep.errors if e["tag"] == "集中线"], [], text(rep))
+
+    def test_focus_clear_can_be_a_circle_with_its_own_centre(self):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s21 = next(s for s in sb["shots"] if s["id"] == "s21")
+        focus = s21["fx"][-1]
+        focus.pop("pos")
+        focus["clear"] = [540, 1200, 320]                                           # [x, y, r]
+        p = OUT / "focus_circle.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertEqual([e for e in rep.errors if e["tag"] == "集中线"], [], text(rep))
+        focus["clear"] = [540, 300, 320]
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertTrue(any(e["tag"] == "集中线" for e in rep.errors), text(rep))
+
+    def test_plate_time_boundary(self):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s02 = next(s for s in sb["shots"] if s["id"] == "s02")
+        plate = next(f for f in s02["fx"] if f["type"] == "name_plate")
+        plate["dur"] = 1.92 + 0.0                                                   # 1.92 - 0.42 = 1.5 秒：刚好够
+        p = OUT / "plate_edge.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertEqual([e for e in rep.errors if "只看得清" in e["msg"]], [], text(rep))
+        plate["dur"] = 1.8
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertTrue(any("只看得清" in e["msg"] for e in rep.errors), text(rep))
 
 
 class TestWarnings(unittest.TestCase):
