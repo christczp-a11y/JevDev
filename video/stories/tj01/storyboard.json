@@ -16,7 +16,7 @@
   "赵襄子": "赵家",
   "张孟谈": "赵家"
  },
- "note": "tj01 第 4 步分镜表：只含第一场（第 0–13 句，配音后 0–33.4 秒，到第 14 句智国开口之前）。素材见 video/stories/tj01/素材清单.md",
+ "note": "tj01 第 4 步分镜表（整集）：第一场 s01–s13（Chris 已通过）＋ s14 起到片尾。素材见 video/stories/tj01/素材清单.md",
  "shots": [
   {
    "id": "s01",
@@ -2045,8 +2045,7 @@
      "enter": {
       "type": "pop",
       "at": {
-       "line": 9,
-       "word": "本事"
+       "dt": 0.0
       },
       "sfx": "pop"
      }
@@ -2991,6 +2990,11262 @@
     }
    ],
    "note": "笑点（出糗的是智伯）：智伯笑得前仰后合，胳膊一甩，手里的杯子翻了，酒「哗」地洒了他自己一身，站起来低头看着湿衣服愣住；段规在旁边低着头一声不吭"
+  },
+  {
+   "id": "s14",
+   "from": {
+    "line": 14
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850
+    },
+    {
+     "img": "props/ant.png",
+     "depth": 1.0,
+     "pos": [
+      760,
+      1320
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 120,
+     "anim": [
+      {
+       "at": {
+        "line": 14,
+        "word": "蚂蚁"
+       },
+       "dur": 1.2,
+       "ease": "smooth",
+       "dpos": [
+        -90,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "zgu",
+     "who": "智国",
+     "img": "chars/zgu_stand.png",
+     "pos": [
+      400,
+      1560
+     ],
+     "h": 640,
+     "enter": {
+      "type": "slide_left",
+      "dur": 0.4
+     },
+     "acts": [
+      {
+       "at": {
+        "line": 14,
+        "word": "主公"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 14,
+        "word": "小看"
+       },
+       "do": "shake",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 14,
+        "word": "咬人"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "智国急急忙忙跑进来，一手伸出去像要拉智伯的袖子、一手捂胸口，着急地劝"
+    }
+   ],
+   "fx": [
+    {
+     "type": "name_plate",
+     "name": "智国",
+     "role": "智家的人",
+     "house": "智家",
+     "pos": [
+      820,
+      420
+     ],
+     "size": 0.9,
+     "at": {
+      "line": 14,
+      "dt": 0.1
+     },
+     "dur": 2.4
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 14,
+      "word": "咬人"
+     },
+     "size": 110,
+     "name": "exclaim",
+     "pos": [
+      860,
+      1150
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "智国跑进来劝智伯：「别小看人，蚂蚁也会咬人！」桌角一只小蚂蚁爬过，冲镜头挥挥触角"
+  },
+  {
+   "id": "s15",
+   "from": {
+    "line": 15
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 6
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850,
+     "blur": 6
+    },
+    {
+     "img": "props/ant.png",
+     "depth": 1.0,
+     "pos": [
+      800,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 110,
+     "anim": [
+      {
+       "at": {
+        "line": 16
+       },
+       "dur": 1.1,
+       "ease": "smooth",
+       "dpos": [
+        -120,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_cup.png",
+     "pos": [
+      230,
+      1470
+     ],
+     "h": 420,
+     "acts": [
+      {
+       "at": {
+        "line": 15,
+        "word": "智伯"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 16
+       },
+       "do": "wobble",
+       "dur": 0.5
+      },
+      {
+       "at": {
+        "line": 16,
+        "dt": 0.7
+       },
+       "do": "shake",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 17
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "智伯在宴席后面举着杯子，歪头掏耳朵，满不在乎"
+    }
+   ],
+   "fx": [
+    {
+     "type": "page_edge",
+     "at": {
+      "line": 15
+     },
+     "dur": 0.6,
+     "peek": "chars/sgm_hi_point.png",
+     "peek_h": 760,
+     "peek_x": 540
+    },
+    {
+     "type": "kaoni",
+     "options": [
+      "信",
+      "不信"
+     ],
+     "answer": 1,
+     "at": {
+      "line": 17,
+      "dt": -4.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "考你 2/4：司马光从书页边探出来一下；「考你！」按钮、【信】【不信】、倒计时 3-2-1，「看答案！」时【不信】打勾；智伯歪头掏耳朵，蚂蚁在桌上爬过去"
+  },
+  {
+   "id": "s16",
+   "from": {
+    "line": 18
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_glance.png",
+     "pos": [
+      540,
+      1620
+     ],
+     "h": 600,
+     "acts": [
+      {
+       "at": {
+        "line": 18,
+        "word": "不信"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 18,
+        "word": "惹我",
+        "dt": 0.3
+       },
+       "swap": "chars/zb_shake.png"
+      },
+      {
+       "at": {
+        "line": 18,
+        "word": "惹我",
+        "dt": 0.6
+       },
+       "do": "jump"
+      },
+      {
+       "at": {
+        "line": 18,
+        "word": "惹我",
+        "dt": 1.1
+       },
+       "do": "jump"
+      }
+     ],
+     "note": "智伯叉着腰斜眼：「谁敢惹我？」话音刚落，那只蚂蚁爬上他的鞋，他抬脚甩鞋，单腿跳了两下"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 18,
+      "word": "惹我",
+      "dt": 0.35
+     },
+     "size": 110,
+     "name": "exclaim",
+     "follow": "zb",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "笑点（出糗的是智伯）：智伯叉腰：「不信！我不惹事，谁敢惹我？」——蚂蚁爬上他的鞋，他甩着脚单腿跳"
+  },
+  {
+   "id": "s17",
+   "from": {
+    "line": 19
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850
+    },
+    {
+     "img": "props/map_silk.png",
+     "depth": 1.0,
+     "pos": [
+      760,
+      1320
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 420,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 20,
+       "word": "韩康子"
+      },
+      "sfx": "paper_unfold"
+     }
+    },
+    {
+     "img": "props/hand_grab.png",
+     "depth": 1.0,
+     "pos": [
+      620,
+      1200
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 400,
+     "enter": {
+      "type": "slide_left",
+      "at": {
+       "line": 20,
+       "word": "给我"
+      },
+      "dur": 0.35,
+      "sfx": "whoosh"
+     }
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_grab.png",
+     "pos": [
+      300,
+      1470
+     ],
+     "h": 500,
+     "acts": [
+      {
+       "at": {
+        "line": 20,
+        "word": "给我"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 20,
+        "word": "城"
+       },
+       "do": "wobble",
+       "dur": 0.4
+      }
+     ],
+     "note": "智伯跪坐着，一手摊开要东西、一手叉腰，下巴抬得高高的"
+    }
+   ],
+   "fx": [
+    {
+     "type": "big_title",
+     "text": "第 2 关：给",
+     "pos": [
+      540,
+      470
+     ],
+     "size": 150,
+     "at": {
+      "line": 19,
+      "dt": 0.05
+     },
+     "dur": 1.3
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 20,
+      "word": "给我",
+      "dt": 0.1
+     },
+     "size": 120,
+     "name": "sou",
+     "pos": [
+      560,
+      1010
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "第 2 关：给（大字）。智伯的胳膊「嗖」地伸得老长，大手越过桌子去抓韩康子的地图：「韩康子，给我一座城！」（笑点）"
+  },
+  {
+   "id": "s18",
+   "from": {
+    "line": 21
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 5
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 5
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100,
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850,
+     "blur": 5
+    }
+   ],
+   "actors": [
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_hug.png",
+     "pos": [
+      540,
+      1560
+     ],
+     "h": 520,
+     "acts": [
+      {
+       "at": {
+        "line": 21,
+        "word": "不想给"
+       },
+       "do": "shake",
+       "dur": 0.5
+      },
+      {
+       "at": {
+        "line": 21,
+        "dt": 1.2
+       },
+       "do": "wobble",
+       "dur": 0.4
+      }
+     ],
+     "note": "韩康子把地图卷紧紧抱在怀里不撒手，警惕地看着前面"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 21,
+      "dt": 0.3
+     },
+     "size": 110,
+     "name": "sweat",
+     "follow": "hkz",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.05
+    }
+   ],
+   "note": "群像接龙第 1 位：韩康子抱着地图不撒手：「啊？我……不想给……」头上冒汗"
+  },
+  {
+   "id": "s19",
+   "from": {
+    "line": 22
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850
+    }
+   ],
+   "actors": [
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_hug.png",
+     "pos": [
+      320,
+      1470
+     ],
+     "h": 480,
+     "acts": [
+      {
+       "at": {
+        "line": 22,
+        "dt": 0.2
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "韩康子抱着地图，扭头看段规"
+    },
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_whisper.png",
+     "pos": [
+      760,
+      1470
+     ],
+     "h": 470,
+     "enter": {
+      "type": "slide_right",
+      "dur": 0.35
+     },
+     "acts": [
+      {
+       "at": {
+        "line": 23
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "段规从右边一下凑过来，挡着嘴小声说：「给他！」"
+    }
+   ],
+   "sfx": [
+    {
+     "name": "whoosh",
+     "at": {
+      "line": 22
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "段规一把把韩康子拽到一边，凑到他耳边：「给他！」"
+  },
+  {
+   "id": "s20",
+   "from": {
+    "line": 23,
+    "word": "拿惯"
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_whisper.png",
+     "pos": [
+      840,
+      1600
+     ],
+     "h": 420,
+     "acts": [
+      {
+       "at": {
+        "line": 23,
+        "word": "别人"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "段规在角落里小声讲，手指在空中画圈"
+    }
+   ],
+   "fx": [
+    {
+     "type": "map",
+     "pos": [
+      500,
+      820
+     ],
+     "w": 760,
+     "at": {
+      "dt": 0.0
+     }
+    },
+    {
+     "type": "map_city",
+     "pos": [
+      330,
+      960
+     ],
+     "name": "韩家",
+     "house": "韩家",
+     "at": {
+      "line": 23,
+      "word": "拿惯",
+      "dt": 0.2
+     }
+    },
+    {
+     "type": "map_arrow",
+     "pts": [
+      [
+       330,
+       960
+      ],
+      [
+       520,
+       760
+      ],
+      [
+       700,
+       620
+      ]
+     ],
+     "house": "智家",
+     "at": {
+      "line": 23,
+      "word": "别人"
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "知识：段规的计策（第 1 步）。纸地图展开：韩家的城弹出来；一道智家颜色的虚线箭头从韩家的城伸向另一家的城——「他拿惯了，就会去要别人的」"
+  },
+  {
+   "id": "s21",
+   "from": {
+    "line": 24
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 8
+    },
+    {
+     "img": "props/map_paper.png",
+     "depth": 1.0,
+     "pos": [
+      500,
+      820
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 760
+    }
+   ],
+   "actors": [
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_whisper.png",
+     "pos": [
+      840,
+      1600
+     ],
+     "h": 420,
+     "acts": [
+      {
+       "at": {
+        "line": 24,
+        "word": "打"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "段规小声接着说"
+    }
+   ],
+   "fx": [
+    {
+     "type": "map_city",
+     "pos": [
+      700,
+      620
+     ],
+     "name": "别家",
+     "house": "赵家",
+     "at": {
+      "line": 24,
+      "dt": 0.1
+     }
+    },
+    {
+     "type": "map_arrow",
+     "pts": [
+      [
+       330,
+       960
+      ],
+      [
+       700,
+       620
+      ]
+     ],
+     "house": "智家",
+     "at": {
+      "line": 24,
+      "word": "不给"
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 24,
+      "word": "打"
+     },
+     "size": 130,
+     "name": "pa",
+     "pos": [
+      800,
+      520
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "知识：段规的计策（第 2 步）。地图上另一家的城弹出来，智家的箭头冲过去，「砰」地冒出一个「啪」字——「别人不给，他就去打别人」（不画兵器）"
+  },
+  {
+   "id": "s22",
+   "from": {
+    "line": 25
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 6
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850,
+     "blur": 6
+    }
+   ],
+   "actors": [
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_wink.png",
+     "pos": [
+      520,
+      1620
+     ],
+     "h": 580,
+     "acts": [
+      {
+       "at": {
+        "line": 25,
+        "word": "躲开"
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 25,
+        "word": "有变"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "段规眨一只眼、竖着食指，胸有成竹"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 25,
+      "word": "有变"
+     },
+     "size": 110,
+     "name": "star",
+     "follow": "dg",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.05
+    },
+    {
+     "move": "punch",
+     "at": {
+      "line": 25,
+      "word": "有变"
+     },
+     "amount": 0.08
+    }
+   ],
+   "note": "段规冲韩康子眨眨眼：「咱们躲开，等事情有变！」眼角闪出一颗小星星（笑点）"
+  },
+  {
+   "id": "s23",
+   "from": {
+    "line": 26
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850
+    },
+    {
+     "img": "props/city_han.png",
+     "depth": 1.0,
+     "pos": [
+      640,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 200,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 26,
+       "word": "给你"
+      },
+      "sfx": "city_pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 27
+       },
+       "dur": 0.45,
+       "ease": "in",
+       "dpos": [
+        260,
+        -200
+       ]
+      },
+      {
+       "at": {
+        "line": 27,
+        "dt": 0.35
+       },
+       "dur": 0.15,
+       "alpha": 0.0
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_give.png",
+     "pos": [
+      340,
+      1470
+     ],
+     "h": 520,
+     "acts": [
+      {
+       "at": {
+        "line": 26
+       },
+       "do": "shake",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 26,
+        "word": "给你"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "韩康子闭着眼、咬着牙，手发抖地把地图递出去"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 27
+     },
+     "size": 110,
+     "name": "sou",
+     "pos": [
+      860,
+      900
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "韩康子咬着牙：「给……给你！」一座城的图标「咻」地飞出画面，飞向智伯"
+  },
+  {
+   "id": "s24",
+   "from": {
+    "line": 28
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 6
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/city_han.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1250
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 220,
+     "enter": {
+      "type": "drop",
+      "at": {
+       "dt": 0.05
+      },
+      "dur": 0.4,
+      "sfx": "city_pop"
+     }
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_greedy.png",
+     "pos": [
+      540,
+      1620
+     ],
+     "h": 880,
+     "acts": [
+      {
+       "at": {
+        "line": 28,
+        "word": "哈哈"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 28,
+        "word": "魏桓子"
+       },
+       "do": "wobble",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 28,
+        "word": "你的"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "智伯笑得眼睛眯成一条缝，两手搂着刚到手的城，又扭头朝魏桓子要"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 28,
+      "word": "你的"
+     },
+     "size": 100,
+     "name": "heart",
+     "follow": "zb",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "城图标掉进智伯怀里，他眯着眼贪心地笑：「哈哈！魏桓子，你的呢？」（笑点，出糗的是智伯）"
+  },
+  {
+   "id": "s25",
+   "from": {
+    "line": 29
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850
+    }
+   ],
+   "actors": [
+    {
+     "id": "wgh",
+     "who": "魏桓子",
+     "img": "chars/wgh_give.png",
+     "pos": [
+      420,
+      1470
+     ],
+     "h": 520,
+     "acts": [
+      {
+       "at": {
+        "line": 29,
+        "word": "平白"
+       },
+       "do": "shake",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 29,
+        "word": "给吧"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "魏桓子皱着眉、笑得有点心疼，把地图卷递出去"
+    }
+   ],
+   "fx": [
+    {
+     "type": "name_plate",
+     "name": "魏桓子",
+     "role": "魏家主人",
+     "house": "魏家",
+     "pos": [
+      840,
+      420
+     ],
+     "size": 0.8,
+     "at": {
+      "line": 29,
+      "dt": 0.1
+     },
+     "dur": 2.1
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 29,
+      "word": "平白",
+      "dt": 0.3
+     },
+     "size": 100,
+     "name": "question",
+     "follow": "wgh",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "群像接龙第 2 位：魏桓子：「平白无故要地？……给吧。」"
+  },
+  {
+   "id": "s26",
+   "from": {
+    "line": 30
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850
+    },
+    {
+     "img": "props/city_han.png",
+     "depth": 1.0,
+     "pos": [
+      640,
+      1210
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 190
+    },
+    {
+     "img": "props/city_wei.png",
+     "depth": 1.0,
+     "pos": [
+      760,
+      1230
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 190
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_slap.png",
+     "pos": [
+      360,
+      1470
+     ],
+     "h": 500,
+     "acts": [
+      {
+       "at": {
+        "line": 30,
+        "word": "赵襄子"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 30,
+        "word": "给我"
+       },
+       "do": "wobble",
+       "dur": 0.4
+      }
+     ],
+     "note": "智伯从一堆城图标后面探出头，拍着大腿转过去朝赵襄子要"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "群像接龙第 3 位：智伯面前堆着两座城，拍着大腿：「赵襄子，你的地也给我！」"
+  },
+  {
+   "id": "s27",
+   "from": {
+    "line": 31
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850
+    },
+    {
+     "img": "props/city_han.png",
+     "depth": 1.0,
+     "pos": [
+      330,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 170,
+     "anim": [
+      {
+       "at": {
+        "line": 32,
+        "dt": 0.2
+       },
+       "dur": 0.35,
+       "ease": "in",
+       "dpos": [
+        0,
+        190
+       ],
+       "rot": 25
+      }
+     ]
+    },
+    {
+     "img": "props/frog_croak.png",
+     "depth": 1.0,
+     "pos": [
+      560,
+      1260
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 240,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 32
+      },
+      "sfx": "frog_croak"
+     }
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_slap.png",
+     "pos": [
+      260,
+      1470
+     ],
+     "h": 460,
+     "acts": [
+      {
+       "at": {
+        "line": 32,
+        "dt": 0.2
+       },
+       "do": "jump"
+      }
+     ],
+     "note": "智伯一愣，怀里的城图标哗啦掉下去砸到自己的脚"
+    },
+    {
+     "id": "zxz",
+     "who": "赵襄子",
+     "img": "chars/zxz_no.png",
+     "pos": [
+      790,
+      1470
+     ],
+     "h": 500,
+     "acts": [
+      {
+       "at": {
+        "line": 31
+       },
+       "do": "shake",
+       "dur": 0.4
+      }
+     ],
+     "note": "赵襄子端坐不动，一手轻轻一摆：「不给。」"
+    }
+   ],
+   "fx": [
+    {
+     "type": "name_plate",
+     "name": "赵襄子",
+     "role": "赵家主人",
+     "house": "赵家",
+     "pos": [
+      850,
+      420
+     ],
+     "size": 0.8,
+     "at": {
+      "line": 31,
+      "dt": 0.05
+     },
+     "dur": 2.0
+    },
+    {
+     "type": "smash",
+     "text": "不给",
+     "pos": [
+      480,
+      640
+     ],
+     "size": 240,
+     "at": {
+      "line": 31,
+      "dt": -0.14
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 32,
+      "dt": 0.25
+     },
+     "size": 110,
+     "name": "dong",
+     "pos": [
+      330,
+      1330
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "群像接龙第 3 位：赵襄子端坐不动：「不给。」大字「不给」砸下来；全场一静，只有青蛙「呱」；智伯一愣，城图标掉下来砸到自己的脚（笑点，出糗的是智伯）"
+  },
+  {
+   "id": "s28",
+   "from": {
+    "line": 33
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1150
+    }
+   ],
+   "transition": {
+    "type": "page_turn",
+    "dur": 0.6
+   },
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      290,
+      1760
+     ],
+     "h": 860,
+     "acts": [
+      {
+       "at": {
+        "line": 33
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 34,
+        "word": "也对"
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 34,
+        "word": "也对",
+        "nth": 2
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "司马光在书房的解说台后面，举着遥控器按了一下，笑呵呵"
+    }
+   ],
+   "fx": [
+    {
+     "type": "remote_click",
+     "pos": [
+      420,
+      1280
+     ],
+     "at": {
+      "line": 33
+     }
+    },
+    {
+     "type": "checklist",
+     "items": [
+      "给：也对！",
+      "不给：也对！"
+     ],
+     "pos": [
+      700,
+      640
+     ],
+     "w": 460,
+     "mark": "check",
+     "at": {
+      "line": 34,
+      "dt": -0.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "知识：开头那道「给不给」揭晓（考你 1/4）。司马光在解说台上按遥控器，清单一条条弹出来打勾：「给：也对！」「不给：也对！」"
+  },
+  {
+   "id": "s29",
+   "from": {
+    "line": 35
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    }
+   ],
+   "transition": {
+    "type": "tv_switch",
+    "pos": [
+     640,
+     640
+    ],
+    "w": 600
+   },
+   "actors": [
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_wink.png",
+     "pos": [
+      300,
+      1620
+     ],
+     "h": 600,
+     "acts": [
+      {
+       "at": {
+        "line": 35,
+        "word": "计策"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "段规站在韩康子身后，偷偷竖起食指：妙计"
+    },
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_stand.png",
+     "pos": [
+      700,
+      1620
+     ],
+     "h": 600,
+     "acts": [
+      {
+       "at": {
+        "line": 35,
+        "dt": 0.3
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "韩康子抱着地图卷，心里有了底"
+    }
+   ],
+   "fx": [
+    {
+     "type": "smash",
+     "text": "计策",
+     "pos": [
+      540,
+      620
+     ],
+     "size": 230,
+     "at": {
+      "line": 35,
+      "word": "计策",
+      "dt": -0.14
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 35,
+      "word": "计策",
+      "dt": 0.4
+     },
+     "size": 100,
+     "name": "bulb",
+     "follow": "dg",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "知识：「韩、魏先给，是一招计策！」大字「计策」砸下来；段规站在韩康子身后，头顶亮起小灯泡"
+  },
+  {
+   "id": "s30",
+   "from": {
+    "line": 36
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "props/hand_open.png",
+     "depth": 1.0,
+     "pos": [
+      700,
+      980
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 480,
+     "anim": [
+      {
+       "at": {
+        "line": 36,
+        "word": "先给"
+       },
+       "dur": 0.3,
+       "ease": "back",
+       "dpos": [
+        0,
+        -20
+       ]
+      }
+     ]
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/city_han.png",
+     "depth": 1.0,
+     "pos": [
+      330,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 190,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 36,
+       "dt": 0.1
+      },
+      "sfx": "city_pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 36,
+        "word": "先给"
+       },
+       "dur": 0.5,
+       "ease": "out",
+       "pos": [
+        640,
+        900
+       ]
+      }
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "知识：比喻画面：一座城图标轻轻放进智伯摊开的大手里——「想拿走他的，先给他！」（原文：将欲取之，必姑与之）"
+  },
+  {
+   "id": "s31",
+   "from": {
+    "line": 37
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_nod.png",
+     "pos": [
+      220,
+      1620
+     ],
+     "h": 560,
+     "acts": [
+      {
+       "at": {
+        "line": 37,
+        "word": "游戏"
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 37,
+        "word": "赢"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "段规微微点头，心里想着一个办法"
+    }
+   ],
+   "fx": [
+    {
+     "type": "bubble",
+     "img": "props/bubble_checkers.png",
+     "pos": [
+      300,
+      1030
+     ],
+     "w": 820,
+     "inner_sway": 1.2,
+     "at": {
+      "line": 37,
+      "dt": 0.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "notes": {
+    "jev_allow": [
+     "subject"
+    ],
+    "why": "主体是想象泡泡（bubble 特效）里的画 props/bubble_checkers.png：两个小朋友下跳棋，一个故意让另一个赢；泡泡从段规头边鼓出来；storyboard_jev 只从人物 / 布景 / 道具里找主体，看不到特效里的画"
+   },
+   "note": "古今对照 2（想象泡泡）：泡泡从段规头边鼓出来，里面两个小朋友下跳棋，一个故意让另一个连赢两局，赢的那个得意得跷起了脚（现代东西只在泡泡里）"
+  },
+  {
+   "id": "s32",
+   "from": {
+    "line": 38
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_proud.png",
+     "pos": [
+      540,
+      1640
+     ],
+     "h": 880,
+     "acts": [
+      {
+       "at": {
+        "line": 38,
+        "word": "骄傲"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 38,
+        "word": "防备"
+       },
+       "do": "wobble",
+       "dur": 0.4
+      }
+     ],
+     "anim": [
+      {
+       "at": {
+        "line": 38,
+        "word": "骄傲"
+       },
+       "dur": 1.0,
+       "ease": "smooth",
+       "rot": -4
+      }
+     ],
+     "note": "智伯叉腰仰头、鼻孔朝天，越来越得意"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 38,
+      "word": "防备"
+     },
+     "size": 100,
+     "name": "star",
+     "follow": "zb",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "知识：「他越骄傲，就越不防备。」智伯的头越仰越高，鼻孔朝天（笑点，出糗的是智伯）"
+  },
+  {
+   "id": "s33",
+   "from": {
+    "line": 39
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "zxz",
+     "who": "赵襄子",
+     "img": "chars/zxz_calm.png",
+     "pos": [
+      220,
+      1620
+     ],
+     "h": 580,
+     "acts": [
+      {
+       "at": {
+        "line": 39,
+        "word": "晋阳"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "赵襄子拢着袖子，镇定地望着远处"
+    }
+   ],
+   "fx": [
+    {
+     "type": "map",
+     "pos": [
+      620,
+      780
+     ],
+     "w": 700,
+     "at": {
+      "dt": 0.0
+     }
+    },
+    {
+     "type": "map_city",
+     "pos": [
+      660,
+      640
+     ],
+     "name": "晋阳",
+     "house": "赵家",
+     "icon": "props/city_jinyang.png",
+     "size": 170,
+     "at": {
+      "line": 39,
+      "word": "晋阳"
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "知识：「赵襄子不给，靠的是晋阳。」纸地图上，晋阳城的图标一下亮起来"
+  },
+  {
+   "id": "s34",
+   "from": {
+    "line": 40
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 7
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 7
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 7
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 7
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 7
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 7
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 7
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/inset_yinduo.png",
+     "depth": 1.0,
+     "pos": [
+      760,
+      720
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 440,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 40,
+       "word": "尹铎"
+      },
+      "sfx": "pop"
+     }
+    }
+   ],
+   "actors": [
+    {
+     "id": "zxz",
+     "who": "赵襄子",
+     "img": "chars/zxz_hi_smile.png",
+     "pos": [
+      360,
+      1640
+     ],
+     "h": 860,
+     "acts": [
+      {
+       "at": {
+        "line": 40,
+        "word": "尹铎"
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 40,
+        "word": "宽厚"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "赵襄子拢着袖子，胸有成竹地微笑"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "知识：赵襄子：「尹铎管晋阳，对百姓宽厚。」画面一角浮出小画框：文官尹铎把一袋粮食递还给晋阳的百姓（尹铎损其户数的意思）"
+  },
+  {
+   "id": "s35",
+   "from": {
+    "line": 41
+   },
+   "size": "wide",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    },
+    {
+     "img": "chars/folk_man_wave.png",
+     "depth": 0.6,
+     "pos": [
+      330,
+      1010
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 230,
+     "anim": [
+      {
+       "at": {
+        "line": 41,
+        "word": "百姓"
+       },
+       "dur": 0.4,
+       "ease": "back",
+       "dpos": [
+        0,
+        -30
+       ]
+      }
+     ]
+    },
+    {
+     "img": "chars/folk_woman_wave.png",
+     "depth": 0.6,
+     "pos": [
+      760,
+      1010
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 230,
+     "anim": [
+      {
+       "at": {
+        "line": 41,
+        "word": "百姓",
+        "dt": 0.2
+       },
+       "dur": 0.4,
+       "ease": "back",
+       "dpos": [
+        0,
+        -30
+       ]
+      }
+     ]
+    },
+    {
+     "img": "chars/folk_child_wave.png",
+     "depth": 0.6,
+     "pos": [
+      960,
+      1020
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 200,
+     "anim": [
+      {
+       "at": {
+        "line": 41,
+        "word": "一条心"
+       },
+       "dur": 0.4,
+       "ease": "back",
+       "dpos": [
+        0,
+        -30
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/frog_wave.png",
+     "depth": 0.6,
+     "pos": [
+      560,
+      1060
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 170,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 41,
+       "word": "一条心"
+      },
+      "sfx": "frog_croak"
+     }
+    }
+   ],
+   "actors": [
+    {
+     "id": "zxz",
+     "who": "赵襄子",
+     "img": "chars/zxz_calm.png",
+     "pos": [
+      220,
+      1640
+     ],
+     "h": 560,
+     "acts": [
+      {
+       "at": {
+        "line": 41,
+        "word": "一条心"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "赵襄子在城下，抬头望着城头"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 41,
+      "word": "一条心",
+      "dt": 0.3
+     },
+     "size": 100,
+     "name": "heart",
+     "pos": [
+      640,
+      900
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "赵襄子：「那里的百姓，会跟我一条心！」晋阳城头探出一排百姓一起挥手，人群中间一只青蛙也跟着挥手（笑点）"
+  },
+  {
+   "id": "s36",
+   "from": {
+    "line": 42
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 6
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 2100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850,
+     "blur": 6
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_grab.png",
+     "pos": [
+      240,
+      1470
+     ],
+     "h": 480,
+     "acts": [
+      {
+       "at": {
+        "line": 42,
+        "word": "智伯"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 43
+       },
+       "do": "shake",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 43,
+        "dt": 0.5
+       },
+       "swap": "chars/zb_point.png"
+      },
+      {
+       "at": {
+        "line": 44
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "题目问的就是他：智伯在宴席后面，听说赵襄子不给，脸一会儿红一会儿白，气得坐不住"
+    }
+   ],
+   "fx": [
+    {
+     "type": "page_edge",
+     "at": {
+      "line": 42
+     },
+     "dur": 0.6,
+     "peek": "chars/sgm_hi_point.png",
+     "peek_h": 760,
+     "peek_x": 540
+    },
+    {
+     "type": "kaoni",
+     "options": [
+      "算了",
+      "带兵打他"
+     ],
+     "answer": 1,
+     "at": {
+      "line": 44,
+      "dt": -4.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "考你 3/4：司马光从书页边探出来一下；「考你！」【算了】【带兵打他】、倒计时，「看答案！」时【带兵打他】打勾；智伯坐不住了"
+  },
+  {
+   "id": "s37",
+   "from": {
+    "line": 45
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/lantai/terrace.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 6
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_angry.png",
+     "pos": [
+      540,
+      1640
+     ],
+     "h": 880,
+     "acts": [
+      {
+       "at": {
+        "line": 45,
+        "word": "不给"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 45,
+        "word": "打他"
+       },
+       "do": "jump"
+      }
+     ],
+     "note": "智伯气得鬓发根根竖起来，握拳咬牙"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 45,
+      "word": "带兵"
+     },
+     "size": 110,
+     "name": "anger",
+     "follow": "zb",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    },
+    {
+     "move": "shake",
+     "at": {
+      "line": 45,
+      "word": "打他"
+     },
+     "dur": 0.3,
+     "amp": 10
+    }
+   ],
+   "note": "智伯气得鬓发竖起（笑点，出糗的是智伯）：「不给？那我就带兵打他！」"
+  },
+  {
+   "id": "s38",
+   "from": {
+    "line": 46
+   },
+   "size": "wide",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.5,
+     "pos": [
+      980,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 520
+    },
+    {
+     "img": "props/flag_zhi.png",
+     "depth": 0.8,
+     "pos": [
+      260,
+      1380
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 460,
+     "enter": {
+      "type": "slide_left",
+      "at": {
+       "line": 46,
+       "word": "智伯"
+      },
+      "sfx": "whoosh"
+     },
+     "sway": {
+      "x": 0,
+      "y": 4,
+      "period": 1.6,
+      "phase": 0
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 46,
+        "word": "冲向"
+       },
+       "dur": 1.2,
+       "ease": "smooth",
+       "dpos": [
+        200,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/flag_han.png",
+     "depth": 0.8,
+     "pos": [
+      140,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 420,
+     "enter": {
+      "type": "slide_left",
+      "at": {
+       "line": 46,
+       "word": "韩"
+      },
+      "sfx": "whoosh"
+     },
+     "sway": {
+      "x": 0,
+      "y": 4,
+      "period": 1.6,
+      "phase": 0.5
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 46,
+        "word": "冲向"
+       },
+       "dur": 1.2,
+       "ease": "smooth",
+       "dpos": [
+        200,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/flag_wei.png",
+     "depth": 0.8,
+     "pos": [
+      380,
+      1410
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 420,
+     "enter": {
+      "type": "slide_left",
+      "at": {
+       "line": 46,
+       "word": "魏"
+      },
+      "sfx": "whoosh"
+     },
+     "sway": {
+      "x": 0,
+      "y": 4,
+      "period": 1.6,
+      "phase": 1.0
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 46,
+        "word": "冲向"
+       },
+       "dur": 1.2,
+       "ease": "smooth",
+       "dpos": [
+        200,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_gaze.png",
+     "pos": [
+      560,
+      1640
+     ],
+     "h": 560,
+     "acts": [
+      {
+       "at": {
+        "line": 46,
+        "word": "冲向"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "智伯一手指着前面的晋阳，得意地带着队伍往前冲"
+    }
+   ],
+   "fx": [
+    {
+     "type": "lines_speed",
+     "dir": "left",
+     "at": {
+      "line": 46,
+      "word": "冲向"
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "pan",
+     "dx": 60
+    }
+   ],
+   "note": "智、韩、魏三面旗子一面接一面冒出来，跟着智伯朝晋阳的方向冲过去（只画旗子，不画兵器相交）"
+  },
+  {
+   "id": "s39",
+   "from": {
+    "line": 47
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "props/map_paper.png",
+     "depth": 1.0,
+     "pos": [
+      640,
+      800
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 680
+    }
+   ],
+   "actors": [
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_nod.png",
+     "pos": [
+      240,
+      1640
+     ],
+     "h": 560,
+     "acts": [
+      {
+       "at": {
+        "line": 47,
+        "word": "段规"
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 47,
+        "word": "一模一样"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "段规微微一笑，轻轻点头"
+    }
+   ],
+   "fx": [
+    {
+     "type": "map_arrow",
+     "pts": [
+      [
+       450,
+       980
+      ],
+      [
+       640,
+       800
+      ],
+      [
+       820,
+       640
+      ]
+     ],
+     "house": "智家",
+     "at": {
+      "line": 47,
+      "dt": 0.1
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 47,
+      "word": "一模一样"
+     },
+     "size": 100,
+     "name": "star",
+     "follow": "dg",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "知识：「和段规说的，一模一样！」地图上重新画出段规说过的那道箭头；段规在旁边微微点头（艺术化演绎）"
+  },
+  {
+   "id": "s40",
+   "from": {
+    "line": 48
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    },
+    {
+     "img": "props/frog_shoe.png",
+     "depth": 1.0,
+     "pos": [
+      120,
+      1430
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 180,
+     "enter": {
+      "type": "slide_left",
+      "at": {
+       "line": 48,
+       "dt": 0.2
+      },
+      "dur": 0.4
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 48,
+        "dt": 0.6
+       },
+       "dur": 1.0,
+       "ease": "smooth",
+       "dpos": [
+        140,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "zxz",
+     "who": "赵襄子",
+     "img": "chars/zxz_walk.png",
+     "pos": [
+      380,
+      1520
+     ],
+     "h": 560,
+     "acts": [
+      {
+       "at": {
+        "line": 48,
+        "word": "晋阳"
+       },
+       "do": "bounce"
+      }
+     ],
+     "anim": [
+      {
+       "at": {
+        "line": 48
+       },
+       "dur": 1.6,
+       "ease": "smooth",
+       "dpos": [
+        180,
+        0
+       ]
+      }
+     ],
+     "note": "赵襄子背着包袱大步走向晋阳城门"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "赵襄子：「走，去晋阳！」背着包袱大步走向城门；青蛙抱着他的一只鞋在后面一路小跑（笑点）"
+  },
+  {
+   "id": "s41",
+   "from": {
+    "line": 49
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1150
+    }
+   ],
+   "transition": {
+    "type": "page_turn",
+    "dur": 0.6
+   },
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      290,
+      1760
+     ],
+     "h": 860,
+     "acts": [
+      {
+       "at": {
+        "line": 49,
+        "word": "揭"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 49,
+        "word": "智伯"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "司马光在解说台后面按遥控器"
+    }
+   ],
+   "fx": [
+    {
+     "type": "screen",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      640,
+      640
+     ],
+     "w": 600,
+     "at": {
+      "line": 49,
+      "dt": 0.1
+     }
+    },
+    {
+     "type": "remote_click",
+     "pos": [
+      420,
+      1280
+     ],
+     "at": {
+      "line": 49,
+      "word": "揭"
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "解说台：「答案先揭一半：智伯以为——」司马光按一下遥控器，纸屏幕上亮出得意大笑的智伯"
+  },
+  {
+   "id": "s42",
+   "from": {
+    "line": 50
+   },
+   "size": "close",
+   "transition": {
+    "type": "tv_switch",
+    "pos": [
+     640,
+     640
+    ],
+    "w": 600
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    },
+    {
+     "img": "props/flag_han.png",
+     "depth": 0.7,
+     "pos": [
+      170,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 460,
+     "anim": [
+      {
+       "at": {
+        "line": 50,
+        "word": "怕我"
+       },
+       "dur": 0.5,
+       "ease": "back",
+       "rot": -14
+      }
+     ]
+    },
+    {
+     "img": "props/flag_wei.png",
+     "depth": 0.7,
+     "pos": [
+      900,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 460,
+     "anim": [
+      {
+       "at": {
+        "line": 50,
+        "word": "怕我"
+       },
+       "dur": 0.5,
+       "ease": "back",
+       "rot": 14
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_proud.png",
+     "pos": [
+      540,
+      1640
+     ],
+     "h": 880,
+     "acts": [
+      {
+       "at": {
+        "line": 50
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 50,
+        "word": "怕我"
+       },
+       "do": "wobble",
+       "dur": 0.4
+      }
+     ],
+     "note": "智伯叉腰昂头大笑，冠歪到一边"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "智伯叉腰昂头：「哈哈！大家都怕我！」身后韩、魏两面旗子都低下了头（笑点，出糗的是智伯）"
+  },
+  {
+   "id": "s43",
+   "notes": {
+    "jev_allow": [
+     "subject"
+    ],
+    "why": "金句卡（系列固定，全片 3 次）：这一句没有说到人，主体就是大字卡和「本事」「好心」两个图标（同第一场 s09 的金句卡）"
+   },
+   "from": {
+    "line": 51
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 10
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/icon_heart.png",
+     "depth": 1.0,
+     "pos": [
+      770,
+      1110
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 300,
+     "alpha": 0.4,
+     "anim": [
+      {
+       "at": {
+        "line": 51,
+        "word": "好心"
+       },
+       "dur": 0.15,
+       "alpha": 0.7
+      },
+      {
+       "at": {
+        "line": 51,
+        "word": "好心",
+        "dt": 0.25
+       },
+       "dur": 0.15,
+       "alpha": 0.4
+      },
+      {
+       "at": {
+        "line": 51,
+        "word": "好心",
+        "dt": 0.5
+       },
+       "dur": 0.15,
+       "alpha": 0.7
+      },
+      {
+       "at": {
+        "line": 51,
+        "word": "好心",
+        "dt": 0.75
+       },
+       "dur": 0.2,
+       "alpha": 0.4
+      }
+     ]
+    },
+    {
+     "img": "props/icon_bow.png",
+     "depth": 1.0,
+     "pos": [
+      310,
+      1110
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 300
+    }
+   ],
+   "fx": [
+    {
+     "type": "big_title",
+     "text": "光有本事不够\n还要有好心",
+     "pos": [
+      540,
+      650
+     ],
+     "size": 150,
+     "deco": "rays",
+     "at": {
+      "line": 51,
+      "dt": 0.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "知识：金句 2/3。大字卡「光有本事不够，还要有好心」砸下来，这一句说的就是画面上的两个图标：左边「本事」图标（弓箭车轮）亮着，右边「好心」图标（红心）是暗的，「滋滋」地闪了两下又暗下去——智伯本事有了，好心还没有"
+  },
+  {
+   "id": "s44",
+   "from": {
+    "line": 52
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 6
+    },
+    {
+     "img": "props/flag_han.png",
+     "depth": 1.0,
+     "pos": [
+      380,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 620,
+     "sway": {
+      "x": 0,
+      "y": 5,
+      "period": 2.0,
+      "phase": 0
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 52,
+        "word": "帮他"
+       },
+       "dur": 0.8,
+       "ease": "smooth",
+       "rot": 10,
+       "dpos": [
+        40,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/flag_wei.png",
+     "depth": 1.0,
+     "pos": [
+      700,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 620,
+     "sway": {
+      "x": 0,
+      "y": 5,
+      "period": 2.0,
+      "phase": 1.0
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 52,
+        "word": "帮他"
+       },
+       "dur": 0.8,
+       "ease": "smooth",
+       "rot": -10,
+       "dpos": [
+        -40,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 52,
+      "word": "帮他"
+     },
+     "size": 180,
+     "name": "question",
+     "pos": [
+      540,
+      560
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.05
+    }
+   ],
+   "note": "「但是，给地的韩、魏，会一直帮他吗？」韩、魏两面旗子悄悄往一起靠，旗角碰了一下；上面一个大问号"
+  },
+  {
+   "id": "s45",
+   "from": {
+    "line": 53
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1150
+    }
+   ],
+   "grade": "tense",
+   "transition": {
+    "type": "page_turn",
+    "dur": 0.6
+   },
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      290,
+      1760
+     ],
+     "h": 860,
+     "acts": [
+      {
+       "at": {
+        "line": 53,
+        "word": "最难"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "司马光神情一紧，把遥控器一按"
+    }
+   ],
+   "fx": [
+    {
+     "type": "big_title",
+     "text": "第 3 关：反",
+     "pos": [
+      640,
+      640
+     ],
+     "size": 160,
+     "at": {
+      "line": 53,
+      "dt": 0.05
+     }
+    },
+    {
+     "type": "remote_click",
+     "pos": [
+      420,
+      1280
+     ],
+     "at": {
+      "line": 53,
+      "word": "反"
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "解说台：「第 3 关，最难：反！」大字「第 3 关：反」，司马光按一下遥控器"
+  },
+  {
+   "id": "s46",
+   "from": {
+    "line": 54
+   },
+   "size": "close",
+   "transition": {
+    "type": "tv_switch",
+    "pos": [
+     640,
+     640
+    ],
+    "w": 600
+   },
+   "bg": [
+    {
+     "img": "props/gauge_wall_hi.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1560
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 54,
+        "dt": 0.2
+       },
+       "dur": 2.6,
+       "ease": "smooth",
+       "dpos": [
+        0,
+        -430
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1680
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 54,
+        "dt": 0.2
+       },
+       "dur": 2.6,
+       "ease": "smooth",
+       "dpos": [
+        0,
+        -430
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1860
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 54,
+        "dt": 0.2
+       },
+       "dur": 2.6,
+       "ease": "smooth",
+       "dpos": [
+        0,
+        -430
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      2040
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.5
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 54,
+        "dt": 0.2
+       },
+       "dur": 2.6,
+       "ease": "smooth",
+       "dpos": [
+        0,
+        -430
+       ]
+      }
+     ]
+    }
+   ],
+   "fx": [
+    {
+     "type": "progress",
+     "pos": [
+      760,
+      860
+     ],
+     "title": "水位",
+     "labels": [
+      "",
+      "",
+      "",
+      "",
+      "一版",
+      "二版",
+      "三版"
+     ],
+     "from": 0.1,
+     "to": 0.57,
+     "at": {
+      "line": 54,
+      "dt": 0.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "知识：大水涌向晋阳城墙（不画人在水里），城墙的夹板印一层层被水盖住，只剩最上面三层露在水上；右边的水位刻度涨到「三版」下面——「只剩三版，三块夹板高！」"
+  },
+  {
+   "id": "s47",
+   "from": {
+    "line": 55
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 6
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.7,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.0
+     },
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.75,
+     "pos": [
+      540,
+      1470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.4
+     },
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.7999999999999999,
+     "pos": [
+      540,
+      1610
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.8
+     },
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.85,
+     "pos": [
+      540,
+      1750
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2000000000000002
+     },
+     "blur": 6
+    },
+    {
+     "img": "props/stove_flooded.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 620
+    },
+    {
+     "img": "props/frog_jump.png",
+     "depth": 1.0,
+     "pos": [
+      560,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 260,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 55,
+       "word": "青蛙"
+      },
+      "dur": 0.3
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 55,
+        "word": "青蛙"
+       },
+       "dur": 0.5,
+       "ease": "out",
+       "dpos": [
+        140,
+        -200
+       ]
+      },
+      {
+       "at": {
+        "line": 55,
+        "word": "呱"
+       },
+       "dur": 0.3,
+       "rot": -10
+      }
+     ]
+    }
+   ],
+   "fx": [
+    {
+     "type": "splash",
+     "pos": [
+      560,
+      1260
+     ],
+     "size": 0.7,
+     "at": {
+      "line": 55,
+      "word": "青蛙"
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 55,
+      "word": "呱"
+     },
+     "size": 130,
+     "text": "呱！",
+     "pos": [
+      860,
+      860
+     ],
+     "sfx": "frog_croak"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "「灶里都长出了青蛙——呱！」城里泡了水的灶，一只青蛙从灶门跳出来，冲镜头「呱！」（呼应开头，笑点）"
+  },
+  {
+   "id": "s48",
+   "from": {
+    "line": 56
+   },
+   "size": "wide",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.7,
+     "pos": [
+      540,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.75,
+     "pos": [
+      540,
+      1470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.4
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.7999999999999999,
+     "pos": [
+      540,
+      1610
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.8
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.85,
+     "pos": [
+      540,
+      1750
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2000000000000002
+     }
+    }
+   ],
+   "actors": [
+    {
+     "id": "folk1",
+     "who": "晋阳百姓",
+     "img": "chars/folk_man_firm.png",
+     "pos": [
+      300,
+      1010
+     ],
+     "h": 250,
+     "acts": [
+      {
+       "at": {
+        "line": 56,
+        "word": "没有"
+       },
+       "do": "shake",
+       "dur": 0.5
+      },
+      {
+       "at": {
+        "line": 56,
+        "word": "投降"
+       },
+       "do": "shake",
+       "dur": 0.5
+      }
+     ],
+     "note": "晋阳城头的百姓抱着胳膊摇头：不投降"
+    },
+    {
+     "id": "folk2",
+     "who": "晋阳百姓",
+     "img": "chars/folk_man_firm.png",
+     "pos": [
+      540,
+      1000
+     ],
+     "h": 260,
+     "acts": [
+      {
+       "at": {
+        "line": 56,
+        "word": "没有",
+        "dt": 0.15
+       },
+       "do": "shake",
+       "dur": 0.5
+      },
+      {
+       "at": {
+        "line": 56,
+        "word": "投降",
+        "dt": 0.15
+       },
+       "do": "shake",
+       "dur": 0.5
+      }
+     ],
+     "note": "又一个百姓抱着胳膊摇头"
+    },
+    {
+     "id": "folk3",
+     "who": "晋阳百姓",
+     "img": "chars/folk_man_firm.png",
+     "pos": [
+      780,
+      1010
+     ],
+     "h": 250,
+     "acts": [
+      {
+       "at": {
+        "line": 56,
+        "word": "没有",
+        "dt": 0.3
+       },
+       "do": "shake",
+       "dur": 0.5
+      },
+      {
+       "at": {
+        "line": 56,
+        "word": "投降",
+        "dt": 0.3
+       },
+       "do": "shake",
+       "dur": 0.5
+      }
+     ],
+     "note": "又一个百姓抱着胳膊摇头"
+    }
+   ],
+   "fx": [
+    {
+     "type": "name_plate",
+     "name": "晋阳百姓",
+     "role": "跟赵家一条心",
+     "house": "赵家",
+     "pos": [
+      860,
+      420
+     ],
+     "size": 0.7,
+     "at": {
+      "line": 56,
+      "dt": 0.1
+     },
+     "dur": 2.4
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "「可城里，没有一个人想投降！」晋阳城头，百姓们抱着胳膊站成一排，一起摇头；城下是一片水（不画人在水里）"
+  },
+  {
+   "id": "s49",
+   "from": {
+    "line": 57
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1320
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     }
+    },
+    {
+     "img": "sets/camp/dike.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    },
+    {
+     "img": "props/chariot_back.png",
+     "depth": 1.0,
+     "pos": [
+      600,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1100
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/chariot_front.png",
+     "depth": 1.0,
+     "pos": [
+      600,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1100
+    },
+    {
+     "img": "props/horse.png",
+     "depth": 1.0,
+     "pos": [
+      900,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 360
+    }
+   ],
+   "actors": [
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_lookup.png",
+     "pos": [
+      195,
+      1330
+     ],
+     "h": 480,
+     "note": "韩康子站在车后头，腰板挺直"
+    },
+    {
+     "id": "wgh",
+     "who": "魏桓子",
+     "img": "chars/wgh_reins.png",
+     "pos": [
+      380,
+      1330
+     ],
+     "h": 480,
+     "acts": [
+      {
+       "at": {
+        "line": 57,
+        "word": "灭掉"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "魏桓子在中间握着缰绳驾车"
+    },
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_cheer.png",
+     "pos": [
+      590,
+      1330
+     ],
+     "h": 500,
+     "acts": [
+      {
+       "at": {
+        "line": 57,
+        "word": "哈哈"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 57,
+        "word": "灭掉"
+       },
+       "do": "jump"
+      }
+     ],
+     "note": "智伯站在车头，张开双臂仰头大笑，看着一片大水"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 57,
+      "word": "哈哈",
+      "dt": 0.2
+     },
+     "size": 120,
+     "text": "哈哈",
+     "pos": [
+      880,
+      820
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "智伯去看水势：站在战车上张开双臂大笑：「哈哈！原来水能灭掉一个国家！」魏桓子驾车，韩康子也在车上；车下一片大水"
+  },
+  {
+   "id": "s50",
+   "from": {
+    "line": 58
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1320
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     }
+    },
+    {
+     "img": "sets/camp/dike.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    },
+    {
+     "img": "props/chariot_back.png",
+     "depth": 1.0,
+     "pos": [
+      600,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1100
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/chariot_front.png",
+     "depth": 1.0,
+     "pos": [
+      600,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1100
+    },
+    {
+     "img": "props/horse.png",
+     "depth": 1.0,
+     "pos": [
+      900,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 360
+    }
+   ],
+   "actors": [
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_lookup.png",
+     "pos": [
+      195,
+      1330
+     ],
+     "h": 480,
+     "acts": [
+      {
+       "at": {
+        "line": 58,
+        "dt": 0.45
+       },
+       "swap": "chars/hkz_step.png"
+      },
+      {
+       "at": {
+        "line": 58,
+        "dt": 1.15
+       },
+       "swap": "chars/hkz_lookup.png"
+      }
+     ],
+     "note": "韩康子悄悄抬脚踩魏桓子的脚背，又马上装作看天"
+    },
+    {
+     "id": "wgh",
+     "who": "魏桓子",
+     "img": "chars/wgh_reins.png",
+     "pos": [
+      380,
+      1330
+     ],
+     "h": 480,
+     "acts": [
+      {
+       "at": {
+        "line": 58,
+        "dt": 0.1
+       },
+       "swap": "chars/wgh_elbow.png"
+      },
+      {
+       "at": {
+        "line": 58,
+        "dt": 1.1
+       },
+       "swap": "chars/wgh_reins.png"
+      }
+     ],
+     "note": "魏桓子悄悄用胳膊肘碰韩康子，又马上站得笔直"
+    },
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_cheer.png",
+     "pos": [
+      590,
+      1330
+     ],
+     "h": 500,
+     "acts": [
+      {
+       "at": {
+        "line": 58,
+        "dt": 0.85
+       },
+       "swap": "chars/zb_glance.png"
+      }
+     ],
+     "note": "智伯斜眼瞟过来"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 58,
+      "dt": 0.12
+     },
+     "size": 90,
+     "name": "exclaim",
+     "follow": "wgh",
+     "attach": "head"
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 58,
+      "dt": 0.47
+     },
+     "size": 90,
+     "name": "exclaim",
+     "follow": "hkz",
+     "attach": "head"
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 58,
+      "dt": 1.15
+     },
+     "size": 90,
+     "name": "sweat",
+     "follow": "hkz",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "笑点：魏桓子悄悄碰韩康子的胳膊肘，韩康子悄悄踩魏桓子的脚背（「！」连弹两下）；智伯斜眼瞟过来，两人立刻站得笔直，一起看天"
+  },
+  {
+   "id": "s51",
+   "from": {
+    "line": 59
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     },
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1320
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     },
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     },
+     "blur": 6
+    },
+    {
+     "img": "sets/camp/dike.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 6
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 6
+    },
+    {
+     "img": "props/chariot_back.png",
+     "depth": 1.0,
+     "pos": [
+      600,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1100,
+     "blur": 6
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/chariot_front.png",
+     "depth": 1.0,
+     "pos": [
+      600,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1100,
+     "blur": 6
+    },
+    {
+     "img": "props/horse.png",
+     "depth": 1.0,
+     "pos": [
+      900,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 360,
+     "blur": 6
+    }
+   ],
+   "actors": [
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_lookup.png",
+     "pos": [
+      200,
+      1620
+     ],
+     "h": 470,
+     "acts": [
+      {
+       "at": {
+        "line": 59,
+        "word": "他俩"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 60
+       },
+       "do": "wobble",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 60,
+        "dt": 0.9
+       },
+       "do": "shake",
+       "dur": 0.3
+      }
+     ],
+     "note": "题目问的「他俩」之一：韩康子眼珠子左右转，心里有事"
+    },
+    {
+     "id": "wgh",
+     "who": "魏桓子",
+     "img": "chars/wgh_reins.png",
+     "pos": [
+      810,
+      1620
+     ],
+     "h": 470,
+     "acts": [
+      {
+       "at": {
+        "line": 59,
+        "word": "他俩",
+        "dt": 0.2
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 60,
+        "dt": 0.4
+       },
+       "do": "wobble",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 60,
+        "dt": 1.3
+       },
+       "do": "shake",
+       "dur": 0.3
+      }
+     ],
+     "note": "题目问的「他俩」之一：魏桓子眼珠子左右转，心里有事"
+    }
+   ],
+   "fx": [
+    {
+     "type": "page_edge",
+     "at": {
+      "line": 59
+     },
+     "dur": 0.6,
+     "peek": "chars/sgm_hi_point.png",
+     "peek_h": 760,
+     "peek_x": 540
+    },
+    {
+     "type": "kaoni",
+     "options": [
+      "快把赵淹了",
+      "我的城也危险"
+     ],
+     "answer": 1,
+     "at": {
+      "line": 61,
+      "dt": -4.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "考你 4/4：司马光从书页边探出来一下；「考你！」【快把赵淹了】【我的城也危险】、倒计时，「看答案！」时【我的城也危险】打勾；韩、魏两人的眼珠子左右转"
+  },
+  {
+   "id": "s52",
+   "from": {
+    "line": 62
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     },
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1320
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     },
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     },
+     "blur": 8
+    },
+    {
+     "img": "sets/camp/dike.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "wgh",
+     "who": "魏桓子",
+     "img": "chars/wgh_stand_hi.png",
+     "pos": [
+      300,
+      1660
+     ],
+     "h": 610,
+     "acts": [
+      {
+       "at": {
+        "line": 62,
+        "word": "有水"
+       },
+       "do": "shake",
+       "dur": 0.4
+      }
+     ],
+     "note": "魏桓子心里一紧，悄悄看了一眼大水"
+    }
+   ],
+   "fx": [
+    {
+     "type": "bubble",
+     "img": "props/city_wei.png",
+     "pos": [
+      440,
+      1020
+     ],
+     "w": 640,
+     "inner_sway": 1.2,
+     "at": {
+      "line": 62,
+      "dt": 0.05
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 62,
+      "word": "有水"
+     },
+     "size": 90,
+     "name": "sweat",
+     "follow": "wgh",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "魏桓子的心里话（想象泡泡，原文是两人心里这样想，没有说出口）：泡泡里是他自己的城——「我的城边，也有水……」"
+  },
+  {
+   "id": "s53",
+   "from": {
+    "line": 63
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     },
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1320
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     },
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     },
+     "blur": 8
+    },
+    {
+     "img": "sets/camp/dike.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_lookup.png",
+     "pos": [
+      300,
+      1660
+     ],
+     "h": 600,
+     "acts": [
+      {
+       "at": {
+        "line": 63,
+        "word": "这样淹"
+       },
+       "do": "shake",
+       "dur": 0.4
+      }
+     ],
+     "note": "韩康子咽了口口水"
+    }
+   ],
+   "fx": [
+    {
+     "type": "bubble",
+     "img": "props/city_han.png",
+     "pos": [
+      440,
+      1020
+     ],
+     "w": 640,
+     "inner_sway": 1.2,
+     "at": {
+      "line": 63,
+      "dt": 0.05
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 63,
+      "word": "这样淹"
+     },
+     "size": 90,
+     "name": "exclaim",
+     "follow": "hkz",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "韩康子的心里话（想象泡泡）：泡泡里是他的城——「咱们的城，也能这样淹！」"
+  },
+  {
+   "id": "s54",
+   "from": {
+    "line": 64
+   },
+   "size": "medium",
+   "grade": "cool",
+   "transition": {
+    "type": "fade_paper",
+    "dur": 0.5
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    },
+    {
+     "img": "props/frog_flat.png",
+     "depth": 1.0,
+     "pos": [
+      740,
+      1430
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 220,
+     "alpha": 0.0,
+     "anim": [
+      {
+       "at": {
+        "line": 64,
+        "word": "溜",
+        "dt": 0.3
+       },
+       "dur": 0.05,
+       "alpha": 1.0
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "zmt",
+     "who": "张孟谈",
+     "img": "chars/zmt_sneak.png",
+     "pos": [
+      360,
+      1500
+     ],
+     "h": 560,
+     "enter": {
+      "type": "slide_left",
+      "dur": 0.5
+     },
+     "acts": [
+      {
+       "at": {
+        "line": 64,
+        "word": "溜",
+        "dt": 0.3
+       },
+       "swap": "chars/zmt_startle.png"
+      }
+     ],
+     "anim": [
+      {
+       "at": {
+        "line": 64,
+        "word": "张孟谈"
+       },
+       "dur": 1.2,
+       "ease": "smooth",
+       "dpos": [
+        220,
+        0
+       ]
+      }
+     ],
+     "note": "张孟谈披着黑布，弯腰踮脚偷偷溜出城；一脚踩到青蛙，吓得后仰"
+    }
+   ],
+   "fx": [
+    {
+     "type": "name_plate",
+     "name": "张孟谈",
+     "role": "赵家的谋士",
+     "house": "赵家",
+     "pos": [
+      860,
+      420
+     ],
+     "size": 0.8,
+     "at": {
+      "line": 64,
+      "dt": 0.1
+     },
+     "dur": 2.4
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 64,
+      "word": "溜",
+      "dt": 0.35
+     },
+     "size": 110,
+     "text": "呱！",
+     "pos": [
+      900,
+      1250
+     ],
+     "sfx": "frog_croak"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "夜晚：「赵襄子派张孟谈，偷偷溜出城。」张孟谈披着黑布从城门边溜出来；一脚踩到青蛙，「呱！」他吓一跳（笑点）"
+  },
+  {
+   "id": "s55",
+   "from": {
+    "line": 65
+   },
+   "size": "close",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "zmt",
+     "who": "张孟谈",
+     "img": "chars/zmt_hi_teeth.png",
+     "pos": [
+      480,
+      1660
+     ],
+     "h": 880,
+     "acts": [
+      {
+       "at": {
+        "line": 65,
+        "word": "嘴唇"
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 65,
+        "word": "冷"
+       },
+       "do": "shake",
+       "dur": 0.4
+      }
+     ],
+     "note": "张孟谈一手按着嘴唇、一手指着牙齿，认真地说"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 65,
+      "word": "冷"
+     },
+     "size": 120,
+     "text": "冷！",
+     "pos": [
+      880,
+      820
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "知识：张孟谈对韩、魏说：「嘴唇没了，牙齿就冷！」（唇亡齿寒）旁边弹出「冷！」"
+  },
+  {
+   "id": "s56",
+   "from": {
+    "line": 66
+   },
+   "size": "medium",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "props/flag_zhao.png",
+     "depth": 1.0,
+     "pos": [
+      300,
+      1300
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 500,
+     "sway": {
+      "x": 0,
+      "y": 4,
+      "period": 2.0,
+      "phase": 0
+     }
+    },
+    {
+     "img": "props/flag_han.png",
+     "depth": 1.0,
+     "pos": [
+      560,
+      1300
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 500,
+     "sway": {
+      "x": 0,
+      "y": 4,
+      "period": 2.0,
+      "phase": 0.7
+     }
+    },
+    {
+     "img": "props/flag_wei.png",
+     "depth": 1.0,
+     "pos": [
+      800,
+      1300
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 500,
+     "sway": {
+      "x": 0,
+      "y": 4,
+      "period": 2.0,
+      "phase": 1.4
+     }
+    }
+   ],
+   "fx": [
+    {
+     "type": "map_arrow",
+     "pts": [
+      [
+       330,
+       760
+      ],
+      [
+       460,
+       640
+      ],
+      [
+       580,
+       760
+      ]
+     ],
+     "house": "智家",
+     "at": {
+      "line": 66,
+      "word": "下一个"
+     }
+    },
+    {
+     "type": "map_arrow",
+     "pts": [
+      [
+       580,
+       760
+      ],
+      [
+       700,
+       640
+      ],
+      [
+       820,
+       760
+      ]
+     ],
+     "house": "智家",
+     "at": {
+      "line": 66,
+      "word": "你们"
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "知识：「赵没了，下一个就是你们！」赵、韩、魏三面旗子排成一排，一道虚线箭头从赵的旗子跳到韩，再跳到魏"
+  },
+  {
+   "id": "s57",
+   "from": {
+    "line": 67
+   },
+   "size": "medium",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "hkz",
+     "who": "韩康子",
+     "img": "chars/hkz_lookup.png",
+     "pos": [
+      220,
+      1640
+     ],
+     "h": 560,
+     "acts": [
+      {
+       "at": {
+        "line": 67,
+        "word": "排队"
+       },
+       "do": "wobble",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 67,
+        "word": "轮到你"
+       },
+       "do": "shake",
+       "dur": 0.4
+      }
+     ],
+     "note": "韩康子听得直冒汗"
+    }
+   ],
+   "fx": [
+    {
+     "type": "bubble",
+     "img": "props/bubble_shot.png",
+     "pos": [
+      300,
+      1060
+     ],
+     "w": 820,
+     "inner_sway": 1.2,
+     "at": {
+      "line": 67,
+      "dt": 0.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "notes": {
+    "jev_allow": [
+     "subject"
+    ],
+    "why": "主体是想象泡泡（bubble 特效）里的画 props/bubble_shot.png：小学生排队打针，前面的打完了，后面的一看轮到自己；泡泡从韩康子头边鼓出来；storyboard_jev 看不到特效里的画"
+   },
+   "note": "古今对照 3（想象泡泡）：泡泡从韩康子头边鼓出来，里面小朋友排队打针，前面的同学刚打完，后面的一看轮到自己，眼睛瞪得圆圆的（不画针扎进胳膊）"
+  },
+  {
+   "id": "s58",
+   "from": {
+    "line": 68
+   },
+   "size": "close",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 10
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 10
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 10
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/hands_stack.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1000
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 640,
+     "enter": {
+      "type": "drop",
+      "at": {
+       "dt": 0.05
+      },
+      "dur": 0.5,
+      "sfx": "pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.8
+       },
+       "dur": 0.3,
+       "ease": "back",
+       "scale": 1.06
+      }
+     ]
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.6
+     },
+     "size": 120,
+     "name": "pa",
+     "pos": [
+      860,
+      760
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "韩、魏和张孟谈的三只手叠在一起约好了，最上面多出一只青蛙的小手（「啪」，笑点）"
+  },
+  {
+   "id": "s59",
+   "from": {
+    "line": 69
+   },
+   "size": "close",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_nod.png",
+     "pos": [
+      360,
+      1660
+     ],
+     "h": 600,
+     "acts": [
+      {
+       "at": {
+        "line": 69,
+        "word": "变"
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 69,
+        "word": "来了"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "段规微微一笑，轻轻点头"
+    }
+   ],
+   "fx": [
+    {
+     "type": "smash",
+     "text": "变",
+     "pos": [
+      760,
+      700
+     ],
+     "size": 260,
+     "at": {
+      "line": 69,
+      "word": "变",
+      "dt": -0.14
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "「段规等的那个『变』，来了！」段规微微一笑点头；大字「变」砸下来"
+  },
+  {
+   "id": "s60",
+   "from": {
+    "line": 70
+   },
+   "size": "medium",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zxz",
+     "who": "赵襄子",
+     "img": "chars/zxz_hi_order.png",
+     "pos": [
+      420,
+      1680
+     ],
+     "h": 860,
+     "acts": [
+      {
+       "at": {
+        "line": 70,
+        "word": "今夜"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 70,
+        "word": "挖开"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "夜里，赵襄子右手用力往前一挥，坚定地下命令"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    },
+    {
+     "move": "punch",
+     "at": {
+      "line": 70,
+      "word": "挖开"
+     },
+     "amount": 0.08
+    }
+   ],
+   "note": "夜里，赵襄子一挥手：「今夜，挖开堤！」（只下命令，不画守堤的人）"
+  },
+  {
+   "id": "s61",
+   "notes": {
+    "jev_allow": [
+     "subject"
+    ],
+    "why": "燃点：这一句说的就是水——主体是夜里决口的土堤和掉头的大水（布景），这一镜故意没有人物（不画守堤的人、不画人被淹）"
+   },
+   "from": {
+    "line": 71
+   },
+   "size": "close",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1250
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1390
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     }
+    },
+    {
+     "img": "sets/camp/dike.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "anim": [
+      {
+       "at": {
+        "line": 71,
+        "dt": 0.4
+       },
+       "dur": 0.1,
+       "alpha": 0.0
+      }
+     ]
+    },
+    {
+     "img": "sets/camp/dike_breach.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1040,
+     "alpha": 0.0,
+     "anim": [
+      {
+       "at": {
+        "line": 71,
+        "dt": 0.4
+       },
+       "dur": 0.1,
+       "alpha": 1.0
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1660
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     }
+    }
+   ],
+   "fx": [
+    {
+     "type": "flash",
+     "at": {
+      "line": 71,
+      "dt": 0.4
+     }
+    },
+    {
+     "type": "lines_radial",
+     "pos": [
+      540,
+      1400
+     ],
+     "at": {
+      "line": 71,
+      "dt": 0.4
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "shake",
+     "at": {
+      "line": 71,
+      "dt": 0.4
+     },
+     "dur": 0.35,
+     "amp": 12
+    },
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "燃点：夜里，堤口「轰」地裂开（快切）"
+  },
+  {
+   "id": "s62",
+   "from": {
+    "line": 71,
+    "word": "过"
+   },
+   "size": "wide",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1250
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1390
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1100
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 1.2,
+       "ease": "out",
+       "dpos": [
+        -360,
+        -120
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1280
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 1.2,
+       "ease": "out",
+       "dpos": [
+        -360,
+        -120
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 1.2,
+       "ease": "out",
+       "dpos": [
+        -360,
+        -120
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.5
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 1.2,
+       "ease": "out",
+       "dpos": [
+        -360,
+        -120
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1820
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 2.0
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 1.2,
+       "ease": "out",
+       "dpos": [
+        -360,
+        -120
+       ]
+      }
+     ]
+    }
+   ],
+   "fx": [
+    {
+     "type": "big_title",
+     "text": "水，倒过来了！",
+     "pos": [
+      540,
+      720
+     ],
+     "size": 170,
+     "deco": "flame",
+     "at": {
+      "dt": 0.0
+     }
+    },
+    {
+     "type": "lines_speed",
+     "dir": "left",
+     "at": {
+      "dt": 0.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.05
+    }
+   ],
+   "note": "燃点：大字「水，倒过来了！」砸下来，速度线，大水掉头往智伯营那边冲"
+  },
+  {
+   "id": "s63",
+   "notes": {
+    "jev_allow": [
+     "subject"
+    ],
+    "why": "没有台词的动作镜头（快切）：大水冲垮智伯的营帐、兵四散跑开；兵是配角贴图，不画人被淹、不画兵器相交"
+   },
+   "from": {
+    "line": 72
+   },
+   "size": "wide",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/camp/tent_big.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1260
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 560
+    },
+    {
+     "img": "sets/camp/tent_s1.png",
+     "depth": 0.6,
+     "pos": [
+      230,
+      1280
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 420
+    },
+    {
+     "img": "sets/camp/tent_s2.png",
+     "depth": 0.6,
+     "pos": [
+      860,
+      1280
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 420
+    },
+    {
+     "img": "chars/sold_run1.png",
+     "depth": 0.9,
+     "pos": [
+      300,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 300,
+     "anim": [
+      {
+       "at": {
+        "dt": 0.1
+       },
+       "dur": 0.9,
+       "ease": "in",
+       "dpos": [
+        -420,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "chars/sold_run2.png",
+     "depth": 0.9,
+     "pos": [
+      760,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 300,
+     "anim": [
+      {
+       "at": {
+        "dt": 0.1
+       },
+       "dur": 0.9,
+       "ease": "in",
+       "dpos": [
+        420,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1380
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 0.8,
+       "ease": "out",
+       "dpos": [
+        -200,
+        -160
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1560
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 0.8,
+       "ease": "out",
+       "dpos": [
+        -200,
+        -160
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1740
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 0.8,
+       "ease": "out",
+       "dpos": [
+        -200,
+        -160
+       ]
+      }
+     ]
+    }
+   ],
+   "fx": [
+    {
+     "type": "splash",
+     "pos": [
+      540,
+      1300
+     ],
+     "size": 1.2,
+     "at": {
+      "dt": 0.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "shake",
+     "at": {
+      "dt": 0.1
+     },
+     "dur": 0.3,
+     "amp": 10
+    }
+   ],
+   "note": "燃点（快切）：大水冲垮智伯的营帐，智伯的兵四散跑开（不画人被淹，不画兵器相交）"
+  },
+  {
+   "id": "s64",
+   "from": {
+    "line": 72,
+    "dt": 1.0
+   },
+   "size": "medium",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky_night.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/camp/tent_big.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1260
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 560
+    },
+    {
+     "img": "sets/camp/tent_s1.png",
+     "depth": 0.6,
+     "pos": [
+      230,
+      1280
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 420
+    },
+    {
+     "img": "sets/camp/tent_s2.png",
+     "depth": 0.6,
+     "pos": [
+      860,
+      1280
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 420
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1600
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1780
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     }
+    },
+    {
+     "img": "props/flag_han.png",
+     "depth": 1.0,
+     "pos": [
+      120,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 520,
+     "enter": {
+      "type": "slide_left",
+      "at": {
+       "dt": 0.05
+      },
+      "dur": 0.3,
+      "sfx": "pop"
+     }
+    },
+    {
+     "img": "props/flag_zhao.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1320
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 460,
+     "enter": {
+      "type": "drop",
+      "at": {
+       "dt": 0.25
+      },
+      "dur": 0.4,
+      "sfx": "pop"
+     }
+    },
+    {
+     "img": "props/flag_wei.png",
+     "depth": 1.0,
+     "pos": [
+      910,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 520,
+     "enter": {
+      "type": "slide_right",
+      "at": {
+       "dt": 0.45
+      },
+      "dur": 0.3,
+      "sfx": "pop"
+     }
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_soaked.png",
+     "pos": [
+      540,
+      1680
+     ],
+     "h": 560,
+     "acts": [
+      {
+       "at": {
+        "dt": 0.3
+       },
+       "do": "shake",
+       "dur": 0.5
+      }
+     ],
+     "note": "智伯全身湿透，鬓发湿成一团贴在脸上，垂头丧气（笑点）"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "燃点：韩、赵、魏三面旗子从左、上、右三边「啪、啪、啪」围上来；中间的智伯湿透了，漂亮的鬓发湿成一团（情绪最高点）"
+  },
+  {
+   "id": "s65",
+   "from": {
+    "line": 73
+   },
+   "size": "medium",
+   "grade": "tense",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/camp/tent_big.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1260
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 560
+    },
+    {
+     "img": "sets/camp/tent_s1.png",
+     "depth": 0.6,
+     "pos": [
+      230,
+      1280
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 420
+    },
+    {
+     "img": "sets/camp/tent_s2.png",
+     "depth": 0.6,
+     "pos": [
+      860,
+      1280
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 420
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1600
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 0.5
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1780
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 7,
+      "period": 3.2,
+      "phase": 1.0
+     }
+    },
+    {
+     "img": "props/flag_zhi.png",
+     "depth": 1.0,
+     "pos": [
+      300,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 480,
+     "anim": [
+      {
+       "at": {
+        "line": 73,
+        "word": "大败"
+       },
+       "dur": 0.6,
+       "ease": "in",
+       "rot": -75,
+       "dpos": [
+        0,
+        60
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/plaque_zhi.png",
+     "depth": 1.0,
+     "pos": [
+      790,
+      900
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "h": 380,
+     "anim": [
+      {
+       "at": {
+        "line": 73,
+        "word": "没了"
+       },
+       "dur": 0.15,
+       "alpha": 0.0
+      }
+     ]
+    },
+    {
+     "img": "props/plaque_back.png",
+     "depth": 1.0,
+     "pos": [
+      790,
+      900
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "h": 380,
+     "alpha": 0.0,
+     "anim": [
+      {
+       "at": {
+        "line": 73,
+        "word": "没了"
+       },
+       "dur": 0.15,
+       "alpha": 1.0
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_soaked.png",
+     "pos": [
+      460,
+      1680
+     ],
+     "h": 540,
+     "acts": [
+      {
+       "at": {
+        "line": 73,
+        "word": "大败"
+       },
+       "do": "shake",
+       "dur": 0.5
+      }
+     ],
+     "note": "智伯垂头丧气站在水里（只到脚边），弓掉在地上"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "「智伯大败，智家没了——」智家的旗子倒进水里；「智」字木牌翻成空白（不说也不画「杀」，不画人被淹）"
+  },
+  {
+   "id": "s66",
+   "from": {
+    "line": 74
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      700
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      1150
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    }
+   ],
+   "actors": [
+    {
+     "id": "zgo",
+     "who": "智果",
+     "img": "chars/zgo_window.png",
+     "pos": [
+      540,
+      1500
+     ],
+     "h": 620,
+     "acts": [
+      {
+       "at": {
+        "line": 74,
+        "word": "辅果"
+       },
+       "do": "shake",
+       "dur": 0.5
+      },
+      {
+       "at": {
+        "line": 74,
+        "dt": 1.6
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "远处一扇窗户里，辅果（就是当年改了姓的智果）探出头，托着腮摇头叹气"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 74,
+      "word": "辅果"
+     },
+     "size": 120,
+     "text": "辅",
+     "pos": [
+      860,
+      900
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "「只剩早早改姓的辅果一家！」远处窗口里，辅果（就是当年的智果）摇头叹气，旁边一个「辅」字（回收智果改姓；笑点）"
+  },
+  {
+   "id": "s67",
+   "from": {
+    "line": 75
+   },
+   "size": "wide",
+   "grade": "gold",
+   "transition": {
+    "type": "page_turn",
+    "dur": 0.6
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/palace/hall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    }
+   ],
+   "fx": [
+    {
+     "type": "big_title",
+     "text": "五十年后",
+     "pos": [
+      540,
+      700
+     ],
+     "size": 190,
+     "deco": "none",
+     "at": {
+      "line": 75,
+      "dt": 0.1
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.05
+    }
+   ],
+   "note": "大字「五十年后」砸下来（换时间：翻书页转场）；背景是周王宫"
+  },
+  {
+   "id": "s68",
+   "from": {
+    "line": 76
+   },
+   "size": "wide",
+   "grade": "gold",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/palace/hall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/palace/slips_table.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1520
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 480
+    },
+    {
+     "img": "props/flag_han.png",
+     "depth": 0.9,
+     "pos": [
+      240,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 460,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 76,
+       "word": "韩"
+      },
+      "sfx": "pop"
+     }
+    },
+    {
+     "img": "props/flag_zhao.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1360
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 460,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 76,
+       "word": "赵"
+      },
+      "sfx": "pop"
+     }
+    },
+    {
+     "img": "props/flag_wei.png",
+     "depth": 0.9,
+     "pos": [
+      840,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 460,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 76,
+       "word": "魏"
+      },
+      "sfx": "pop"
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "知识：「周王把韩、赵、魏三家的后代封为诸侯。」周王宫的夯土台基和木柱，竹简策书摊在朱红矮案上；韩、赵、魏三面旗子一面接一面升起来（不用三人造型，不画圣旨龙袍）"
+  },
+  {
+   "id": "s69",
+   "from": {
+    "line": 77
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.1,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.2,
+     "pos": [
+      540,
+      470
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      540,
+      640
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100,
+     "blur": 8
+    },
+    {
+     "img": "sets/palace/hall.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1300,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1925
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "blur": 8
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_stand_hi.png",
+     "pos": [
+      540,
+      1640
+     ],
+     "h": 820,
+     "acts": [
+      {
+       "at": {
+        "line": 77,
+        "word": "智伯"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 77,
+        "word": "输"
+       },
+       "do": "shake",
+       "dur": 0.4
+      }
+     ],
+     "note": "当年那个最强的智伯，得意地昂着头"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 77,
+      "word": "输"
+     },
+     "size": 150,
+     "name": "question3",
+     "follow": "zb",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    },
+    {
+     "move": "punch",
+     "at": {
+      "line": 77,
+      "word": "输"
+     },
+     "amount": 0.08
+    }
+   ],
+   "note": "「可是，智伯到底输在哪儿？」智伯昂着头站在中间，头上冒出三个问号"
+  },
+  {
+   "id": "s70",
+   "from": {
+    "line": 78
+   },
+   "size": "medium",
+   "grade": "tense",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1150
+    },
+    {
+     "img": "chars/sgm_pillow.png",
+     "depth": 1.0,
+     "pos": [
+      760,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 170,
+     "anim": [
+      {
+       "at": {
+        "line": 78,
+        "dt": 1.4
+       },
+       "dur": 0.6,
+       "ease": "in",
+       "dpos": [
+        120,
+        300
+       ],
+       "rot": 200
+      }
+     ]
+    }
+   ],
+   "transition": {
+    "type": "fade_paper",
+    "dur": 0.6
+   },
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_doze.png",
+     "pos": [
+      420,
+      1660
+     ],
+     "h": 640,
+     "acts": [
+      {
+       "at": {
+        "line": 78,
+        "dt": 0.4
+       },
+       "do": "wobble",
+       "dur": 0.6
+      },
+      {
+       "at": {
+        "line": 78,
+        "dt": 1.4
+       },
+       "do": "jump"
+      }
+     ],
+     "note": "司马光坐在书桌前的椅子上打瞌睡，鼻涕泡一鼓一鼓；警枕咕噜噜滚下去，他一下惊醒"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "「写书的人，来了——」画面压暗：司马光在书桌前打瞌睡，警枕「咕噜噜」滚下去，他一下惊醒（试做集固定的警枕段）"
+  },
+  {
+   "id": "s71",
+   "from": {
+    "line": 79
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1150
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_bonk.png",
+     "pos": [
+      460,
+      1660
+     ],
+     "h": 640,
+     "acts": [
+      {
+       "at": {
+        "dt": 0.1
+       },
+       "do": "jump"
+      }
+     ],
+     "note": "司马光的脑门「咚」地磕在书桌上，帽翅一抖一抖，冒出小星星"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.15
+     },
+     "size": 120,
+     "name": "dong",
+     "pos": [
+      820,
+      900
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "shake",
+     "at": {
+      "dt": 0.15
+     },
+     "dur": 0.3,
+     "amp": 8
+    },
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "笑点：司马光的脑门「咚」地磕在书桌上，帽翅一抖一抖"
+  },
+  {
+   "id": "s72",
+   "from": {
+    "line": 80
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1150
+    },
+    {
+     "img": "props/frog_wait.png",
+     "depth": 1.0,
+     "pos": [
+      470,
+      820
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 150,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 80,
+       "word": "砸缸"
+      },
+      "sfx": "frog_croak"
+     }
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_rub.png",
+     "pos": [
+      460,
+      1660
+     ],
+     "h": 700,
+     "acts": [
+      {
+       "at": {
+        "line": 80,
+        "word": "司马光"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 80,
+        "word": "砸缸"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "司马光捧着书，摸着脑门，笑呵呵地看着观众"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "司马光摸着脑门笑：「我是司马光，就是小时候砸缸的那个！」一只青蛙从他的帽子顶上探出头（笑点）"
+  },
+  {
+   "id": "s73",
+   "from": {
+    "line": 81
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/study/book_page_hi.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/char_de.png",
+     "depth": 1.0,
+     "pos": [
+      560,
+      760
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "h": 300,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 81,
+       "word": "德者"
+      },
+      "sfx": "pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 81,
+        "word": "德者",
+        "dt": 0.4
+       },
+       "dur": 1.6,
+       "ease": "smooth",
+       "dpos": [
+        200,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/char_cai.png",
+     "depth": 1.0,
+     "pos": [
+      520,
+      1000
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "h": 260,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "line": 81,
+       "dt": 0.1
+      },
+      "sfx": "pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 81,
+        "word": "德者",
+        "dt": 0.6
+       },
+       "dur": 1.6,
+       "ease": "smooth",
+       "dpos": [
+        200,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_hi_read.png",
+     "pos": [
+      360,
+      1720
+     ],
+     "h": 760,
+     "acts": [
+      {
+       "at": {
+        "line": 81,
+        "word": "德者"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "司马光低头，一根手指点在书页上讲解"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "notes": {
+    "jev_allow": [
+     "kid"
+    ],
+    "why": "臣光曰原文点题，系列固定只念一句文言，下一镜马上用白话金句再说一遍"
+   },
+   "note": "知识（点题，文言）：「才者，德之资也；德者，才之帅也。」书页上浮出「才」「德」两个大字：「德」字走在前面领路，「才」字跟在后面（好心领着本事走）"
+  },
+  {
+   "id": "s74",
+   "from": {
+    "line": 82
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/study/book_page_hi.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/char_de.png",
+     "depth": 1.0,
+     "pos": [
+      760,
+      760
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "h": 300
+    },
+    {
+     "img": "props/char_cai.png",
+     "depth": 1.0,
+     "pos": [
+      720,
+      1000
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "h": 260
+    },
+    {
+     "img": "props/frog_hat.png",
+     "depth": 1.0,
+     "pos": [
+      420,
+      1160
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 200,
+     "enter": {
+      "type": "slide_left",
+      "at": {
+       "dt": 0.05
+      },
+      "dur": 0.4,
+      "sfx": "pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.5
+       },
+       "dur": 0.3,
+       "ease": "back",
+       "dpos": [
+        70,
+        -30
+       ]
+      },
+      {
+       "at": {
+        "dt": 0.85
+       },
+       "dur": 0.3,
+       "ease": "back",
+       "dpos": [
+        70,
+        30
+       ]
+      }
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "笑点：一只戴小帽子的青蛙也跟在「才」字后面，一蹦一蹦地排队走"
+  },
+  {
+   "id": "s75",
+   "from": {
+    "line": 83
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1150,
+     "blur": 6
+    },
+    {
+     "img": "props/icon_bow.png",
+     "depth": 1.0,
+     "pos": [
+      620,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 240
+    },
+    {
+     "img": "props/icon_heart.png",
+     "depth": 1.0,
+     "pos": [
+      880,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 240,
+     "alpha": 0.4,
+     "anim": [
+      {
+       "at": {
+        "line": 83,
+        "word": "好心"
+       },
+       "dur": 0.3,
+       "ease": "back",
+       "alpha": 1.0,
+       "scale": 1.15
+      }
+     ]
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_hi_point.png",
+     "pos": [
+      270,
+      1720
+     ],
+     "h": 760,
+     "acts": [
+      {
+       "at": {
+        "line": 83,
+        "word": "本事"
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 83,
+        "word": "好心"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "司马光笑着点头，伸手指着观众"
+    }
+   ],
+   "fx": [
+    {
+     "type": "big_title",
+     "text": "光有本事不够\n还要有好心",
+     "pos": [
+      620,
+      640
+     ],
+     "size": 130,
+     "deco": "rays",
+     "at": {
+      "line": 83,
+      "word": "本事",
+      "dt": -0.3
+     }
+    }
+   ],
+   "sfx": [
+    {
+     "name": "light_up",
+     "at": {
+      "line": 83,
+      "word": "好心"
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "知识：金句 3/3。司马光：「意思就是：光有本事不够，还要有好心。」大字卡落下；下面「本事」图标旁边，「好心」图标一下亮起来"
+  },
+  {
+   "id": "s76",
+   "from": {
+    "line": 84
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1150
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      290,
+      1760
+     ],
+     "h": 860,
+     "acts": [
+      {
+       "at": {
+        "line": 84,
+        "word": "碰倒"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 84,
+        "word": "笑"
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "司马光按一下遥控器，看着屏幕里的教室"
+    }
+   ],
+   "fx": [
+    {
+     "type": "screen",
+     "img": "props/screen_cup_before.png",
+     "pos": [
+      640,
+      640
+     ],
+     "w": 600,
+     "at": {
+      "line": 84,
+      "dt": 0.05
+     }
+    },
+    {
+     "type": "remote_click",
+     "pos": [
+      420,
+      1280
+     ],
+     "at": {
+      "line": 84,
+      "dt": 0.05
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "notes": {
+    "jev_allow": [
+     "subject"
+    ],
+    "why": "主体是解说台纸屏幕（screen 特效）里的画 props/screen_cup_before.png：教室里一个小孩的水杯被碰倒、旁边的人在笑；现代的东西只放在屏幕里，所以画面上最大的是解说的司马光"
+   },
+   "note": "生活落点：司马光按遥控器，纸屏幕里是现代教室：一个小孩的水杯被碰倒，旁边的人笑，小孩低下头（呼应宴会上智伯碰倒自己的杯子；现代东西只在屏幕里；不演家长老师）"
+  },
+  {
+   "id": "s77",
+   "from": {
+    "line": 85
+   },
+   "size": "close",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 6
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_hi_point.png",
+     "pos": [
+      540,
+      1720
+     ],
+     "h": 820,
+     "acts": [
+      {
+       "at": {
+        "line": 85,
+        "word": "笑不笑"
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "司马光转过来看着观众，指着你，眨眨眼"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "line": 85,
+      "word": "笑不笑"
+     },
+     "size": 120,
+     "name": "question",
+     "follow": "sgm",
+     "attach": "head"
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "司马光转过来问观众：「要是你，你笑不笑？」"
+  },
+  {
+   "id": "s78",
+   "from": {
+    "line": 86
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1150
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_towel.png",
+     "pos": [
+      300,
+      1660
+     ],
+     "h": 700,
+     "acts": [
+      {
+       "at": {
+        "dt": 0.2
+       },
+       "do": "bounce"
+      }
+     ],
+     "note": "司马光把一块手巾递向屏幕"
+    }
+   ],
+   "fx": [
+    {
+     "type": "screen",
+     "img": "props/screen_cup_before.png",
+     "pos": [
+      640,
+      640
+     ],
+     "w": 600,
+     "at": {
+      "dt": 0.0
+     }
+    },
+    {
+     "type": "screen",
+     "img": "props/screen_cup_after.png",
+     "pos": [
+      640,
+      640
+     ],
+     "w": 600,
+     "at": {
+      "dt": 0.5
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.9
+     },
+     "size": 100,
+     "name": "heart",
+     "pos": [
+      880,
+      480
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "温暖画面：司马光把手巾递进屏幕，屏幕里的小孩擦干了桌子、笑了，旁边的同学帮他扶起杯子（笑点）"
+  },
+  {
+   "id": "s79",
+   "notes": {
+    "jev_allow": [
+     "subject"
+    ],
+    "why": "没有台词的片尾人物卡：主体是 person_card 特效里智伯的收集卡「本事满分，好心不及格」，storyboard_jev 看不到特效里的卡片"
+   },
+   "from": {
+    "line": 87
+   },
+   "size": "medium",
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080,
+     "blur": 8
+    }
+   ],
+   "fx": [
+    {
+     "type": "person_card",
+     "img": "chars/zb_hi_laugh.png",
+     "name": "智伯",
+     "line": "本事满分，好心不及格",
+     "no": 1,
+     "pos": [
+      540,
+      900
+     ],
+     "at": {
+      "dt": 0.05
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.03
+    }
+   ],
+   "note": "片尾人物卡「第 1 张：智伯」翻着飞进来：「本事满分，好心不及格」"
+  },
+  {
+   "id": "s80",
+   "notes": {
+    "jev_allow": [
+     "subject"
+    ],
+    "why": "下集预告：主体是整幅图 props/teaser_rain.png（下雨的树林、挂在树上的猎具），按剧本不画魏文侯的脸，所以画面上没有人物"
+   },
+   "from": {
+    "line": 88
+   },
+   "size": "wide",
+   "grade": "cool",
+   "transition": {
+    "type": "fade_paper",
+    "dur": 0.6
+   },
+   "bg": [
+    {
+     "img": "props/teaser_rain.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fx": [
+    {
+     "type": "rain",
+     "at": {
+      "dt": 0.0
+     }
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 88,
+      "word": "强起来"
+     },
+     "size": 160,
+     "name": "question",
+     "pos": [
+      800,
+      560
+     ]
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.05
+    }
+   ],
+   "note": "下集预告：整屏压暗，下雨的树林边，雨点落在挂着的猎具上（只画雨和猎具，不画魏文侯的脸）：「下集：三家里，谁最先强起来？」"
+  },
+  {
+   "id": "s81",
+   "from": {
+    "line": 89
+   },
+   "size": "wide",
+   "grade": "cool",
+   "bg": [
+    {
+     "img": "props/teaser_rain.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/douli.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1000
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 360,
+     "enter": {
+      "type": "drop",
+      "at": {
+       "line": 89,
+       "word": "下雨"
+      },
+      "dur": 0.5,
+      "sfx": "pop"
+     }
+    }
+   ],
+   "fx": [
+    {
+     "type": "rain",
+     "at": {
+      "dt": 0.0
+     }
+    },
+    {
+     "type": "card_quest",
+     "text": "你给不给地？",
+     "sub": "要是你是韩康子",
+     "pos": [
+      540,
+      1260
+     ],
+     "at": {
+      "line": 89,
+      "dt": 1.2
+     }
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.04
+    }
+   ],
+   "note": "「一个下雨天的约会。」雨越下越大，一顶斗笠落下来；最后弹出一张卡片问孩子：「要是你是韩康子，你给不给地？」（在评论区回答）"
   }
  ],
  "name": "三家分晋"
