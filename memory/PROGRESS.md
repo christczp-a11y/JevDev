@@ -2,12 +2,11 @@
 
 > 最后更新：2026-09-29 晚（本地）
 
-## 当前阶段：tj01（三家分晋）第一场 Chris 通过（09-29 晚「刚才那个视频不错」），做整集
-- 方向：少儿版「古人云」动态漫画（DECISIONS 09-29）。引擎施工 A 合成器、B 特效包（32 特效 + 7 转场）、C 检查工具全部完成，用法见 `video/motion/README.md`。
-- **已发 Chris**：特效样片合集（734766f）、第一场样片（975b3dd），都是手机版（≤ 30 MiB）。
-- **进行中**：换金句（Chris 听不懂「本事是本钱，好心是队长」，PITFALLS S21，Jev 用 pick_v2 重挑）；画素材清单其余 24 张。**然后**：`ep-director` 从第 14 句往后写分镜表（第 4 步）→ 素材清单其余 24 张 + `screen_frame_v2`（4:3 纸屏幕，未拆图登记）用 Codex 画（第 5 步）→ 合成（第 6 步）→ reviewer 查一轮（第 7 步）。Chris 有意见先记 PITFALLS 再改（第 8 步）。
-- tj01 现状：台词定稿 `B_段规.json`（73 句台词，旁白 44%，Jev 挑的古今对照 / 考你 / 金句），Qwen 配音 `video/out/tj01_voice_qwen/`（232 秒），素材清单 `video/stories/tj01/素材清单.md`，分镜表 `storyboard.json`（现在只有第一场）。命令见 `video/stories/tj01/status.md`。
-- 待补：PITFALLS 待补 14（storyboard_jev 看不到泡泡里的画）、15（去掉镜头运动后的静止检查）；`video/tests/registry/` 4 项旧失败（旧场景目录已删）。
+## 当前阶段：tj01 按 Chris 定的新剧本重做整集（09-30）
+- 剧本：`video/stories/tj01/Chris定稿_Gemini版.md` 最后一版 + 主会话 9 处红线改法（Chris 否了 4 条，PITFALLS S26）；决定见 DECISIONS 09-30。旧剧本 `B_段规.json` 和旧分镜表停用（第一场样片 Chris 说动效画面可以，故事要换）。
+- **进行中**：director 写 `G_尊重.json`（第 2 步）；builder 改 script_check 读 episode.json 的 `structure`；builder 画智伯（名牌）、赵襄子（眼镜）定妆图。
+- **然后**：Qwen 配音（第 3 步）→ director 写整集分镜表（第 4 步，复用引擎和素材）→ 按素材清单画缺的图（第 5 步，智伯和赵襄子用到的姿势照定妆图重画）→ 合成（第 6 步）→ reviewer 一轮（第 7 步）→ 发 Chris 整集（手机版 ≤ 30 MiB）。
+- 待补：PITFALLS 待补 14、15；`video/tests/registry/` 4 项旧失败。
 
 ## 装机（09-29 检查通过）
 - `bash scripts/cloud_setup.sh` 全部通过：Python 依赖（含 OpenCV 5.0）、ffmpeg、字体（`video/vendor/fonts/` 全量 Noto Sans SC Bold + ZCOOL KuaiLe）、背景音乐 `video/assets/audio/bgm_main.mp3`、Jev key 和连通（实测调用成功）、Codex 已登录。
