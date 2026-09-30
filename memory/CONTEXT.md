@@ -94,3 +94,4 @@
 - 检查：`video/contact.py`（连续帧联系表，`--follow` 跟人物）；`video/logic_qa.py`（每集必做的合理性复查）；`video/motion_qa.py`（改前 vs 改后动作比较）；`video/story.py`（剧本质检）
 - 素材：Codex CLI `codex exec -m gpt-6-astra -c 'model_reasoning_effort="low"' -s workspace-write -C <目录> -i <参考图> -`（只在本地可用）；绿幕素材用 `video/split_sheet.py` 切，透明底用 `video/split_alpha.py` 切
 - 依赖：`requirements.txt` + `python -m playwright install chromium` + ffmpeg；字体从 Google Fonts 在线加载
+- 手机端（Remote Control）收文件上限 30 MiB；发视频前压成手机版（做法见 docs/workflow/7-成片检查.md「发给 Chris」）。
