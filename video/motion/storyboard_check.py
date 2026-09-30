@@ -1004,7 +1004,8 @@ def check_facing(sh, out, tl, rep):
         s0, s1 = tl.speech_span(i)
         ov = min(s1, sh.t1) - max(s0, sh.t0)
         if ov >= 0.3:
-            speakers[ln["who"]] = speakers.get(ln["who"], 0.0) + ov
+            for w in str(ln["who"]).split("+"):   # 齐声「甲+乙+丙」逐个算
+                speakers[w] = speakers.get(w, 0.0) + ov
     for a in acts:
         rel_ = rel_of(tl, sh.t0)
         try:
@@ -1208,7 +1209,7 @@ def run(sb_arg, registry=REGISTRY, no_plugins=False, assets_root=None):
         check_namecards(shots, outs, rep)
         flush_asset_msgs(ctx, rep)
         # 时间线里说话的人 vs 人物的 who
-        speakers = {ln["who"] for i, ln in enumerate(tl.lines) if tl.is_speech(i)}
+        speakers = {w for i, ln in enumerate(tl.lines) if tl.is_speech(i) for w in str(ln["who"]).split("+")}
         known_names = {owner_name(r["owner"])[0] for r in ctx.registry.values()}
         warned = set()
         for sh in shots:

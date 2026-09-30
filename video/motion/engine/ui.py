@@ -138,7 +138,8 @@ class UI:
             ln = self.tl.lines[i]
             out = []
             for fa, fb, lines, first, last in self.events(i):
-                im, cy = subtitle_image(ln["who"], lines, self._color(ln["who"]), C.SUB_FONT)
+                who = str(ln["who"])
+                im, cy = subtitle_image(who.replace("+", "、"), lines, self._color(who.split("+")[0]), C.SUB_FONT)   # 齐声：标签写「甲、乙、丙」，用第一个人的颜色
                 sp = sprite_from_pil(im, self.S)
                 out.append((fa, fb, sp, cy / im.height, first, last))
             self._subs[i] = out

@@ -44,6 +44,17 @@ voice.py 在主环境 .venv 里跑，用子进程调 video/tts/qwen_worker.py：
   没写的句子用说话人的默认语气（cast / series_voice.json 里的 tone）。语气和默认语气一样（去掉标点后）也用默认参考音。
   仪式句用系列录音，不许写语气。timeline.json 里 tts.tone 记这一句用的语气。
 
+心声（语气里写「心声」）
+  剧本 "tone" 里写 "心声、小声、紧张"：这一句是心里话。声音用去掉「心声」后的语气（这里是「小声、紧张」，没剩下就用默认语气），不另外设计；
+  念完按缓存里的原句加一点处理（INNER_FILTER：高频压到 3.5 kHz 以下 + 两个很轻的回声），孩子听得出是在心里说。缓存里的原句不动，
+  NN.mp3 是加了处理的；timeline.json 里 tts.effect = "心声"，时长按处理后的文件量。
+
+齐声（说话人写成「甲+乙+丙」）
+  例：["韩康子+魏桓子+张孟谈", "今晚，看咱们联手大反击！"]。每个角色各按这一句的语气念一遍（各自的声音、各自的语气变体、各自的缓存），
+  起点对齐叠在一起，总长按最长的那条；每条先压低（乘 1/√n），再把几个声音都在念的那一段的响度调到各条的平均，合起来和普通一句差不多响。
+  角色都要有声音（cast 里或系列声音）；timeline.json 里这一句的 who 照剧本写（"甲+乙+丙"），tts.voice 是几个声音名用 + 连起来，
+  tts.chorus 列出每个声音和缓存键。voice_text、tone 对三个声音都生效。下游（口型、字幕）按 "+" 拆开，才知道是谁在说话。
+
 时间线按「真正说完话的时刻」算（不按整段 mp3 的时长）
   每句的 t1 = 有声部分的结束 + TAIL_KEEP（0.15 秒）；下一句仍是 t1 + 句间停顿（series_voice.json 的 gap，0.3 秒）接上。
   有声部分怎么量：ffmpeg 把 mp3 解成 16 kHz 单声道 PCM，每 FRAME（10 毫秒）一帧，一帧里最大的采样比 SILENCE_DB（−50 dBFS）大就算有声，
@@ -123,6 +134,10 @@ MAX_VT_CHANGES = 3      # voice_text 最多改几个字（去掉标点以后逐�
 VARIANT_CANDIDATES = 3  # 一个语气变体的参考音设计几个候选（挑和默认参考音最像的）
 DEFAULT_REF_TEXT = "大家好呀，今天我有一个有趣的故事，想讲给你们听。"
 BANNED_DESC = ("低沉", "沙哑", "气声", "阴森", "阴冷", "邪恶", "恐怖", "神秘", "阴沉")   # PITFALLS A4
+CHORUS = "+"            # 说话人写成「甲+乙+丙」= 齐声：每个声音各念一遍，起点对齐叠在一起
+INNER = "心声"          # 语气里写「心声」= 这一句是心里话：声音还用去掉「心声」后的语气，念完加一点混响、压低高频
+INNER_FILTER = "lowpass=f=3500,aecho=0.8:0.85:45|90:0.25|0.12"   # 心声的处理：高频压到 3.5 kHz 以下 + 两个很轻的回声（约 45、90 毫秒）
+AUDIO_SR = 24000        # 合成出来的 mp3 都是 24 kHz 单声道（to_mp3）
 
 # 多音字表里常见的繁体写法 → 简体（够用就行，不是完整的繁简转换；不在表里的繁体字会打印一句说明）
 _PAIRS = (
@@ -195,12 +210,27 @@ def compose_instruct(desc, tone):
     return desc.strip().rstrip("。") + "。" + (tone.strip().rstrip("。") + "。" if tone.strip() else "")
 
 
+def speaker_parts(who):
+    """剧本里的说话人 → 角色列表：「甲+乙+丙」是齐声（三个声音一起念），别的都是一个角色。"""
+    return [p.strip() for p in who.split(CHORUS)] if CHORUS in who else [who]
+
+
+def split_inner(tone):
+    """语气 → (去掉「心声」的语气, 是不是心声)。「心声、小声、紧张」→（「小声、紧张」, True）；声音跟去掉「心声」后的语气走，不另外设计。"""
+    t = (tone or "").strip()
+    if INNER not in t:
+        return t, False
+    return re.sub(r"^[\s，,、；;：:]+|[\s，,、；;：:]+$", "", t.replace(INNER, "", 1)), True
+
+
 def make_voice(who, base, line_tone=""):
-    """（角色, 这一句的语气）→ 声音：vid（文件名）、设计用的描述/语气/参考文字/指令、是不是语气变体。"""
+    """（角色, 这一句的语气）→ 声音：vid（文件名）、设计用的描述/语气/参考文字/指令、是不是语气变体、是不是心声（inner）。
+    语气里写了「心声」：声音用去掉「心声」后的语气（没剩下就用默认语气），inner=True，念完由 apply_inner 加处理。"""
+    line_tone, inner = split_inner(line_tone)
     vid = vid_for(who, line_tone, base["tone"])
     tone = base["tone"] if vid == who else line_tone.strip()
     return {"vid": vid, "who": who, "desc": base["desc"], "tone": tone, "ref_text": base["ref_text"],
-            "instruct": compose_instruct(base["desc"], tone), "variant": vid != who}
+            "instruct": compose_instruct(base["desc"], tone), "variant": vid != who, "inner": inner}
 
 
 def voice_files(vid):
@@ -511,6 +541,55 @@ def to_mp3(wav, mp3):
     os.replace(tmp, mp3)
 
 
+def apply_inner(src, dst):
+    """心声：把一句话（mp3）加一点混响、压低高频，存成 dst（mp3）。缓存里的原句不动；每次运行按缓存重做一遍。"""
+    dst = Path(dst)
+    tmp = dst.with_name(dst.name + ".part")
+    p = subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-af", INNER_FILTER, "-ac", "1", "-ar", str(AUDIO_SR), "-b:a", "64k", "-f", "mp3", str(tmp)],
+                       capture_output=True)
+    if p.returncode != 0:
+        die(f"ffmpeg 给 {src} 加心声处理失败（返回码 {p.returncode}）：{p.stderr.decode('utf-8', 'replace').strip()[:200]}")
+    os.replace(tmp, dst)
+
+
+def _decode_f32(path):
+    p = subprocess.run(["ffmpeg", "-v", "error", "-i", str(path), "-f", "f32le", "-ac", "1", "-ar", str(AUDIO_SR), "-"], capture_output=True)
+    if p.returncode != 0:
+        die(f"ffmpeg 解不开 {path}（返回码 {p.returncode}）：{p.stderr.decode('utf-8', 'replace').strip()[:200]}")
+    return np.frombuffer(p.stdout, dtype=np.float32).astype(np.float64)
+
+
+def _active_rms(x):
+    """有声部分的均方根（只算绝对值大于峰值 2% 的采样，静音和尾巴不拉低响度）。"""
+    a = np.abs(x)
+    m = a > 0.02 * max(float(a.max()), 1e-9) if len(a) else a
+    return float(np.sqrt(np.mean(x[m] ** 2))) if len(a) and m.any() else 0.0
+
+
+def mix_chorus(srcs, dst):
+    """齐声：几段 mp3 起点对齐叠在一起，总长按最长的那条。每条先乘 1/√n（几个声音各压低一点），再把叠出来的有声部分响度调到
+    「各条有声响度的平均」——合起来和普通一句差不多响；峰值超过 0.97 就整体压回去。"""
+    xs = [_decode_f32(p) for p in srcs]
+    n = max(len(x) for x in xs)
+    mix = sum(np.pad(x, (0, n - len(x))) for x in xs) / np.sqrt(len(xs))
+    common = min(len(x) for x in xs)       # 几个声音都在念的那一段（最短那条的长度）；太短就量整段
+    if common < 0.3 * AUDIO_SR:
+        common = n
+    target, have = float(np.mean([_active_rms(x[:common]) for x in xs])), _active_rms(mix[:common])
+    if have > 1e-9:
+        mix = mix * (target / have)
+    peak = float(np.abs(mix).max())
+    if peak > 0.97:
+        mix = mix * (0.97 / peak)
+    dst = Path(dst)
+    tmp = dst.with_name(dst.name + ".part")
+    p = subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "f32le", "-ar", str(AUDIO_SR), "-ac", "1", "-i", "-", "-b:a", "64k", "-f", "mp3", str(tmp)],
+                       input=mix.astype(np.float32).tobytes(), capture_output=True)
+    if p.returncode != 0:
+        die(f"ffmpeg 转不了齐声的混音（返回码 {p.returncode}）：{p.stderr.decode('utf-8', 'replace').strip()[:200]}")
+    os.replace(tmp, dst)
+
+
 def cache_key(spoken, vid, ref_sha):
     return hashlib.sha1("\n".join([spoken, vid, ref_sha or "", MODELS["clone"], str(SEED)]).encode("utf-8")).hexdigest()[:16]
 
@@ -689,7 +768,7 @@ def main():
         if not (k.isdigit() and re.match(r"^\d+(\.\d+)?$", v)):
             die(f"动作行号参数 {x!r} 要写成「行号=秒」，例如 13=8.6")
         act[int(k)] = float(v)
-    speakers = {r[2] for r in lines if r[2] != ACTION and r[3]}
+    speakers = {p for r in lines if r[2] != ACTION and r[3] for p in speaker_parts(r[2])}   # 齐声「甲+乙」里的每个角色都算说话人
     ep_path, errs, notes = story.parent / "episode.json", [], []
     raw_cast, banned = load_episode(ep_path, errs, notes)
     cast = load_cast(raw_cast, ep_path, chars, speakers, errs, notes)
@@ -708,13 +787,21 @@ def main():
             errs.append(f"--redesign {w}：{w} 是系列固定声音，重设计要先问 Chris，同意后再加 --force")
         elif w not in specs:
             errs.append(f"--redesign {w}：{w} 不是这一集的角色")
-    plan, voices = {}, {}      # plan：行号 → (声音, 配音文字)；voices：声音名 → 声音
+    plan, voices = {}, {}      # plan：行号 → [(声音, 配音文字), ...]（齐声有几个角色就有几项，别的都是一项）；voices：声音名 → 声音
     for i, (_, _, who, text, _) in enumerate(lines):
-        if who == ACTION or not text or (who, text) in ceremony or who not in specs:
+        if who == ACTION or not text or (who, text) in ceremony:
             continue
-        v = make_voice(who, specs[who], tones.get(text, ""))
-        plan[i] = (v, vt.get(text, text))
-        voices[v["vid"]] = v
+        parts = speaker_parts(who)
+        if CHORUS in who and (len(parts) < 2 or "" in parts or len(set(parts)) != len(parts)):
+            errs.append(f"lines[{i}] 的说话人「{who}」：齐声要写成「甲+乙+丙」，至少两个、不能有空的、不能重复")
+            continue
+        if any(p not in specs for p in parts):
+            continue
+        plan[i] = []
+        for p in parts:
+            v = make_voice(p, specs[p], tones.get(text, ""))
+            plan[i].append((v, vt.get(text, text)))
+            voices[v["vid"]] = v
     for v in list(voices.values()):    # 语气变体要拿角色的默认参考音当基准
         if v["variant"] and v["who"] not in voices:
             voices[v["who"]] = make_voice(v["who"], specs[v["who"]], "")
@@ -749,7 +836,7 @@ def main():
     cache.mkdir(exist_ok=True)
     tmp = out / "_tts"
     todo = {}       # （声音名, 配音文字）→ 编号：缓存里没有的，同一句只念一次
-    for v, spoken in plan.values():
+    for v, spoken in (x for parts in plan.values() for x in parts):
         if voice_exists(v["vid"]) and (cache / f"{cache_key(spoken, v['vid'], sha256_file(voice_files(v['vid'])[0]))}.mp3").exists():
             continue
         todo.setdefault((v["vid"], spoken), len(todo))
@@ -777,12 +864,21 @@ def main():
                 src, row["series_audio"], spoken, key, tone = "系列录音", rec["file"], text, None, rec.get("tone", "")
                 vid = vid_for(who, tone, chars[who]["tone"])
             else:
-                v, spoken = plan[i]
-                vid, tone = v["vid"], v["tone"]
-                key = cache_key(spoken, vid, ref_sha[vid])
-                src = "合成" if key in fresh else "缓存"
-                fresh.discard(key)
-                shutil.copyfile(cache / f"{key}.mp3", f)
+                parts = plan[i]
+                spoken = parts[0][1]
+                keys = [cache_key(sp, v["vid"], ref_sha[v["vid"]]) for v, sp in parts]
+                vid, tone, key = "+".join(v["vid"] for v, _ in parts), parts[0][0]["tone"], "+".join(keys)
+                src = "合成" if any(k in fresh for k in keys) else "缓存"
+                fresh.difference_update(keys)
+                inner = any(v["inner"] for v, _ in parts)
+                if len(parts) > 1:            # 齐声：每个声音各念一遍，起点对齐叠在一起
+                    mix_chorus([cache / f"{k}.mp3" for k in keys], f)
+                    if inner:
+                        apply_inner(f, f)
+                elif inner:                   # 心声：缓存里的原句不动，NN.mp3 是加了处理的
+                    apply_inner(cache / f"{keys[0]}.mp3", f)
+                else:
+                    shutil.copyfile(cache / f"{keys[0]}.mp3", f)
             count[src] += 1
             kept.add(f.name)
             raw, end = duration(f), voiced_end(f)
@@ -791,6 +887,10 @@ def main():
             row.update({"dur_raw": round(raw, 3), "voiced_end": round(end, 2), "trim": round(raw - d, 2)})
             row["audio"] = f.name
             row["tts"] = {"voice": vid, "tone": tone, "text": spoken, "key": key, "from": src}
+            if not rec and len(plan[i]) > 1:
+                row["tts"]["chorus"] = [{"voice": v["vid"], "key": k} for (v, _), k in zip(plan[i], keys)]
+            if not rec and inner:
+                row["tts"]["effect"] = INNER
             if spoken != text:
                 row["voice_text"] = spoken
         row["t0"], row["t1"] = round(t, 2), round(t + d, 2)

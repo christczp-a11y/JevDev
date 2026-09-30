@@ -12,6 +12,7 @@
   VOICE_TEST_HEAD    假 wav 开头补这么多秒静音（模仿克隆出来句首的静音），测句首静音只留 HEAD_KEEP
   VOICE_TEST_TAIL    假 wav 结尾补这么多秒静音，测时间线裁静音
   VOICE_TEST_MUTE    =1：假 wav 整段都是静音（音量 0），测「读不到声音就不裁」
+  VOICE_TEST_FREQ    念一句的正弦波频率（Hz）；不设就按声音名+文字算一个 300–800 Hz 的（测心声压高频时设成 6000）
 """
 import hashlib
 import importlib.util
@@ -76,7 +77,7 @@ def fake_run_worker(job, workdir):
     for j in job["speak"]:
         log(kind="speak", text=j["text"], voice=j["voice"], job=j["job"])
         n = len("".join(c for c in j["text"] if c.isalnum()))
-        freq = 300 + int(hashlib.sha1((j["voice"] + j["text"]).encode("utf-8")).hexdigest(), 16) % 500
+        freq = int(os.environ["VOICE_TEST_FREQ"]) if os.environ.get("VOICE_TEST_FREQ") else 300 + int(hashlib.sha1((j["voice"] + j["text"]).encode("utf-8")).hexdigest(), 16) % 500
         dur = 0.3 + 0.25 * n / float(speeds.get(j["voice"], speeds.get("*", 1.0)))
         wav(j["out"], dur, freq)
         res["speak"][j["job"]] = {"dur": round(dur, 2), "gen_s": 0.1}

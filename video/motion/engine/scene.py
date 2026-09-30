@@ -315,7 +315,7 @@ class Scene:
             lo, hi = self.t0 - 1.0, self.t0 + self.dur + 1.0
             out = []
             for i, ln in enumerate(self.tl.lines):
-                if ln["who"] == who and self.tl.is_speech(i):
+                if who in str(ln["who"]).split("+") and self.tl.is_speech(i):   # 「甲+乙+丙」齐声：三个人都算在说话
                     s0, s1 = self.tl.speech_span(i)
                     if s1 >= lo and s0 <= hi:
                         out.append((s0, s1))
