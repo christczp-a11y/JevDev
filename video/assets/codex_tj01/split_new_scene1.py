@@ -8,6 +8,8 @@
   bubble_nickname2  -> props/bubble_nickname.png（v1 的大个子表情太凶，重画成 2）
   banquet_row       -> sets/lantai/banquet_row.png（3 张案连成一整排，一张图）
   shadow_screen     -> sets/shadow/screen.png（整幅不透明，原样拷贝）
+  zgo_shadow_l      -> chars/zgo_shadow_l.png（智果皮影朝左，重画的，不是镜像：PITFALLS M1）
+  dg_kneel_l        -> chars/dg_kneel_l.png（段规跪坐朝左，重画的，右衽）
 """
 import sys
 from pathlib import Path
@@ -67,7 +69,7 @@ def save(dst, arr):
 
 
 def main():
-    todo = sys.argv[1:] or ["stove_flooded", "zb_shadow_young", "icons_new", "bubble_nickname2", "banquet_row", "shadow_screen"]
+    todo = sys.argv[1:] or ["stove_flooded", "zb_shadow_young", "icons_new", "bubble_nickname2", "banquet_row", "shadow_screen", "zgo_shadow_l", "dg_kneel_l"]
     for n in todo:
         src = HERE / f"{n}.png"
         if not src.exists():
@@ -82,6 +84,8 @@ def main():
             assert len(ps) == 3, f"icons_new 切出 {len(ps)} 件"
             for (y, x, c), nm in zip(ps, ["icon_look", "icon_speech", "icon_resolve"]):
                 save(f"props/{nm}.png", c)
+        elif n in ("zgo_shadow_l", "dg_kneel_l"):
+            save(f"chars/{n}.png", union_crop(src))
         elif n == "bubble_nickname2":
             save("props/bubble_nickname.png", union_crop(src))
         elif n == "banquet_row":
