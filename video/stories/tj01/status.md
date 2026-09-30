@@ -43,7 +43,8 @@
   预览（540×960，约 25 秒）：`.venv/Scripts/python video/motion/render.py tj01 --preview --out video/out/tj01/scene1/preview`
   正式（1080×1920、30 帧，配音 + 音效 + 背景音乐，约 1.5 分钟；有缓存时只重渲改过的镜头）：`.venv/Scripts/python video/motion/render.py tj01 --out video/out/tj01/scene1/build`，出 `build/tj01.mp4 / .wav / .report.json`，再复制成 `video/out/tj01/scene1/tj01_scene1.mp4 / .wav / .report.json`
   抽帧（每秒 1 帧联系表 + 每镜头前 2 秒每秒 10 帧）：`.venv/Scripts/python video/motion/review_frames.py video/out/tj01/scene1/tj01_scene1.mp4 tj01 --out video/out/tj01/scene1`
-  第一场自动检查（2026-09-29）：响度 −16.1 LUFS、真峰值 −2.0 dB、闪烁 0 处、静止 > 1.5 秒 0 处、台词没有人声 0 句、警告 0 条，退出码 0
+  分镜 Jev 检查：`.venv/Scripts/python video/motion/storyboard_jev.py video/stories/tj01/storyboard.json`（要先设 TYPESAFE_API_KEY，见下面「环境」），退出码 0（s12 主体是泡泡里的画，已放行）
+  第一场自动检查（导演改完分镜表、s13 换成智伯在左段规在右之后重出）：响度 −16.1 LUFS、真峰值 −2.1 dB、闪烁 0 处、静止 > 1.5 秒 0 处、台词没有人声 0 句、合成器警告 0 条，退出码 0；storyboard_check 0 错（2 条警告：s02 考你从上一句起演、s10 韩康子低头扭脸朝右，都是有意的）
 - 基线估算：`.venv/Scripts/python video/story.py video/stories/ep01 --only N6 --out video/out/story_test/report_N6_v2_estimate_0929.json`
 - 基线真实时间线：先配音 `NARRATOR_RATE=+6% .venv/Scripts/python video/voice.py video/stories/ep01/N6_你搬不搬.json video/out/ep01v2_voice_0929 2=1.0 9=1.2 13=8.6 22=1.2 29=3.3`，再 `.venv/Scripts/python video/story.py video/stories/ep01 --only N6 --timeline video/out/ep01v2_voice_0929/timeline.json --out video/out/story_test/report_N6_v2_timeline_0929.json`
 - 环境（Git Bash）：`export PYTHONIOENCODING=utf-8; export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`，Python 用 `.venv/Scripts/python`

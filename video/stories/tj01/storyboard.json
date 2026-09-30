@@ -936,7 +936,7 @@
      "depth": 0.85,
      "pos": [
       540,
-      1200
+      1182
      ],
      "anchor": [
       0.5,
@@ -970,7 +970,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1380
+      1344
      ],
      "anchor": [
       0.5,
@@ -983,6 +983,74 @@
       "y": 6,
       "period": 3.4,
       "phase": 0.6
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 3,
+        "dt": 0.2
+       },
+       "dur": 2.0,
+       "ease": "smooth",
+       "dpos": [
+        0,
+        260
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1506
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.9
+     },
+     "anim": [
+      {
+       "at": {
+        "line": 3,
+        "dt": 0.2
+       },
+       "dur": 2.0,
+       "ease": "smooth",
+       "dpos": [
+        0,
+        260
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1668
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
      },
      "anim": [
       {
@@ -1164,6 +1232,35 @@
      "repeat": "x"
     },
     {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1644
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1650,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1833
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1750,
+     "repeat": "x"
+    },
+    {
      "img": "sets/jin_land/fore.png",
      "depth": 1.0,
      "pos": [
@@ -1184,10 +1281,10 @@
      "who": "智伯",
      "img": "chars/zb_stand_hi.png",
      "pos": [
-      280,
+      335,
       1560
      ],
-     "h": 820,
+     "h": 760,
      "enter": "pop",
      "acts": [
       {
@@ -1214,10 +1311,10 @@
      "type": "stat_card",
      "name": "智伯",
      "pos": [
-      700,
-      920
+      715,
+      880
      ],
-     "w": 480,
+     "w": 450,
      "gap": 0.3,
      "at": {
       "line": 4,
@@ -1261,8 +1358,8 @@
      "name": "star",
      "follow": "zb",
      "offset": [
-      -150,
-      -760
+      -140,
+      -705
      ],
      "at": {
       "line": 4,
@@ -2059,6 +2156,64 @@
       1
      ],
      "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1290
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1438
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1450,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1604
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1600,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1750,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -2252,6 +2407,68 @@
      "blur": 8
     },
     {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1290
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1438
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1450,
+     "repeat": "x",
+     "flip": true,
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1604
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1600,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1750,
+     "repeat": "x",
+     "flip": true,
+     "blur": 8
+    },
+    {
      "img": "sets/lantai/banquet_row.png",
      "depth": 1.0,
      "pos": [
@@ -2408,6 +2625,68 @@
      "blur": 10
     },
     {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1290
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x",
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1438
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1450,
+     "repeat": "x",
+     "flip": true,
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1604
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1600,
+     "repeat": "x",
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1750,
+     "repeat": "x",
+     "flip": true,
+     "blur": 10
+    },
+    {
      "img": "sets/lantai/banquet_row.png",
      "depth": 1.0,
      "pos": [
@@ -2524,15 +2803,73 @@
       1
      ],
      "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1290
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1438
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1450,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1604
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1600,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1750,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
     {
      "id": "dg",
      "who": "段规",
-     "img": "chars/dg_kneel.png",
+     "img": "chars/dg_kneel_l.png",
      "pos": [
-      250,
+      770,
       1470
      ],
      "h": 400,
@@ -2545,14 +2882,14 @@
        "do": "nod"
       }
      ],
-     "note": "段规跪坐在左边，低着头看着智伯，一声不吭"
+     "note": "段规跪坐在右边，朝左，低着头看着智伯，一声不吭"
     },
     {
      "id": "zb",
      "who": "智伯",
      "img": "chars/zb_cup.png",
      "pos": [
-      660,
+      290,
       1470
      ],
      "h": 440,
@@ -2615,8 +2952,8 @@
     {
      "type": "sticker",
      "pos": [
-      900,
-      900
+      225,
+      850
      ],
      "at": {
       "line": 13,
