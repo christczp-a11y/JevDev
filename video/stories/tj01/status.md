@@ -44,6 +44,13 @@
   （动作行秒数 = 剧本估算秒数。新目录第一次约 15 分钟，可以先把 `video/out/tj01_voice_qwen/cache/*.mp3` 拷进 `video/out/tj01_voice_g/cache/`，同一句同一声音直接用缓存；之后重跑走缓存约 1 分钟。参考音都在 `video/assets/audio/voices/`；本剧新设计的 3 个：`韩康子@坚定干脆`（129 Hz）、`魏桓子@坚定干脆`（105.5 Hz）、`张孟谈@坚定干脆`（114 Hz），手挑方法同上一轮（json 的 `pick` 记着）。`G_尊重.json` 的 `tone`：魏桓子、韩康子两句心里话写成「心声、小声、紧张」（声音是去掉「心声」后的「小声、紧张」，不另设计，念完由 voice.py 加混响和压低高频）；第 36 句说话人「韩康子+魏桓子+张孟谈」是齐声（三个声音各念一遍、起点对齐叠在一起）。`voice_text` 4 条：两条导演写的（「我……我不想给……」→「我…我不想给…」，「天哪…」那句加逗号、换省略号），两条配音时加的（lines[1]「如果一个全校第一……」加 3 个逗号、lines[3]「时光倒流，两千四百多年……」加 1 个逗号，都只改标点，原来超过每秒 5 个字）。）
   过关：`.venv/Scripts/python video/script_check.py video/stories/tj01/G_尊重.json --timeline video/out/tj01_voice_g/timeline.json`；`.venv/Scripts/python video/story.py video/stories/tj01 --only G_尊重 --timeline video/out/tj01_voice_g/timeline.json`
   voice.py 新增（09-30）：说话人写「甲+乙+丙」= 齐声，语气写「心声」= 心里话处理，说明在 `video/voice.py` 文件头；测试 `video/tests/voice/test_chorus.py`（`bash video/tests/voice/run_all.sh test_chorus`）
+- 第 6 步合成（整集，G 版分镜表 80 镜 / 206.1 秒；配音 `video/out/tj01_voice_g/`）。Git Bash、仓库根目录、`export PYTHONIOENCODING=utf-8`，不用显卡：
+  分镜检查：`.venv/Scripts/python video/motion/storyboard_check.py video/stories/tj01/storyboard.json`（必须 0 错）
+  预览（540×960，约 3 分钟）：`.venv/Scripts/python video/motion/render.py tj01 --preview --out video/out/tj01/full/preview`
+  整集正式版（1080×1920、30 帧，配音 + 音效 + 背景音乐；冷启动约 10 分钟，缓存命中时只重渲改过的镜头，最后的拼接编码约 5 分钟）：放后台跑 `nohup bash -c '.venv/Scripts/python video/motion/render.py tj01 --out video/out/tj01/full/build > video/out/tj01/full/build_log.txt 2>&1; echo EXIT=$? >> video/out/tj01/full/build_log.txt' &`，出 `build/tj01.mp4 / .wav / .report.json`，再复制成 `video/out/tj01/full/tj01_full.mp4 / .wav / .report.json`
+  抽帧（每秒 1 帧联系表 26 张 + 每镜头前 2 秒每秒 10 帧动作条 80 张）：`.venv/Scripts/python video/motion/review_frames.py video/out/tj01/full/tj01_full.mp4 tj01 --out video/out/tj01/full`
+  整集自动检查（2026-09-30）：响度 −16.0 LUFS、真峰值 −2.0 dB、闪烁 0 处、静止 > 1.5 秒 0 处、台词没有人声 0 句、合成器警告 0 条，退出码 0；storyboard_check 0 错（2 条朝向警告：s48、s50 智伯坐战车车头面朝前进方向，是有意的）
+  重画的素材（同名）进来以后只重渲用到它的镜头：直接再跑上面的整集命令，缓存按图的内容哈希自动判断
 - 第 6 步合成（第一场，第 0–13 句 = 0–33.4 秒；配音时间线 `video/out/tj01_voice_qwen/timeline.json`）。Git Bash、仓库根目录、`export PYTHONIOENCODING=utf-8`，不用显卡：
   先过分镜检查：`.venv/Scripts/python video/motion/storyboard_check.py video/stories/tj01/storyboard.json`（必须 0 错）
   预览（540×960，约 25 秒）：`.venv/Scripts/python video/motion/render.py tj01 --preview --out video/out/tj01/scene1/preview`

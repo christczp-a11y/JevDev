@@ -279,8 +279,8 @@
      },
      "text": "噗！",
      "pos": [
-      850,
-      650
+      810,
+      830
      ],
      "size": 110
     },
@@ -341,10 +341,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "actors": [
@@ -435,10 +435,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "actors": [
@@ -538,10 +538,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080,
+     "w": 1280,
      "blur": 5
     }
    ],
@@ -1090,10 +1090,10 @@
      "img": "sets/study/book_page_hi.png",
      "depth": 1.0,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "actors": [
@@ -1103,7 +1103,7 @@
      "img": "chars/zb_b_cheer.png",
      "pos": [
       540,
-      1400
+      1470
      ],
      "h": 620,
      "enter": {
@@ -1127,9 +1127,9 @@
      "text": "资治通鉴",
      "pos": [
       540,
-      450
+      490
      ],
-     "size": 170
+     "size": 140
     },
     {
      "type": "smash",
@@ -1140,16 +1140,16 @@
      "text": "第一案",
      "pos": [
       540,
-      650
+      688
      ],
-     "size": 200,
+     "size": 170,
      "color": "red"
     }
    ],
    "camera": [
     {
      "move": "push",
-     "amount": 0.04
+     "amount": 0.03
     }
    ],
    "note": "一本书翻开：书页上砸下「资治通鉴」「第一案」（《资治通鉴》开篇讲的第一个故事），这个故事的主角智伯像立体书一样从书页里「噗」地弹出来"
@@ -1306,8 +1306,8 @@
      },
      "text": "LV.MAX",
      "pos": [
-      840,
-      560
+      780,
+      570
      ],
      "size": 100,
      "color": "gold"
@@ -5077,10 +5077,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "actors": [
@@ -5090,7 +5090,7 @@
      "img": "chars/sgm_frown.png",
      "pos": [
       540,
-      1700
+      1580
      ],
      "h": 560,
      "acts": [
@@ -5673,7 +5673,7 @@
       540,
       520
      ],
-     "size": 130,
+     "size": 108,
      "deco": "rays"
     },
     {
@@ -6441,10 +6441,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "actors": [
@@ -9034,7 +9034,7 @@
      "text": "不给",
      "pos": [
       540,
-      520
+      585
      ],
      "size": 240,
      "color": "green"
@@ -10223,6 +10223,72 @@
        ]
       }
      ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      2220
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.1
+       },
+       "dur": 2.0,
+       "ease": "smooth",
+       "dpos": [
+        0,
+        -430
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      2400
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 30,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.1
+       },
+       "dur": 2.0,
+       "ease": "smooth",
+       "dpos": [
+        0,
+        -430
+       ]
+      }
+     ]
     }
    ],
    "fx": [
@@ -10363,13 +10429,28 @@
      "repeat": "x",
      "flip": true,
      "blur": 5
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/stove_flooded.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1460
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 900
     },
     {
      "img": "sets/jin_land/water.png",
-     "depth": 0.8,
+     "depth": 1.0,
      "pos": [
       540,
-      1180
+      1190
      ],
      "anchor": [
       0.5,
@@ -10386,7 +10467,7 @@
     },
     {
      "img": "sets/jin_land/water.png",
-     "depth": 0.8500000000000001,
+     "depth": 1.0,
      "pos": [
       540,
       1330
@@ -10406,10 +10487,10 @@
     },
     {
      "img": "sets/jin_land/water.png",
-     "depth": 0.9,
+     "depth": 1.0,
      "pos": [
       540,
-      1480
+      1470
      ],
      "anchor": [
       0.5,
@@ -10426,10 +10507,10 @@
     },
     {
      "img": "sets/jin_land/water.png",
-     "depth": 0.9500000000000001,
+     "depth": 1.0,
      "pos": [
       540,
-      1630
+      1610
      ],
      "anchor": [
       0.5,
@@ -10441,23 +10522,48 @@
       "x": 26,
       "y": 6,
       "period": 3.4,
-      "phase": 1.2
+      "phase": 1.2000000000000002
      }
-    }
-   ],
-   "fg": [
+    },
     {
-     "img": "props/stove_flooded.png",
+     "img": "sets/jin_land/water.png",
      "depth": 1.0,
      "pos": [
       540,
-      1460
+      1750
      ],
      "anchor": [
       0.5,
-      1
+      0
      ],
-     "h": 900
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.6
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1890
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 2.0
+     }
     },
     {
      "img": "props/frog_jump.png",
@@ -10928,6 +11034,35 @@
      ],
      "w": 1700,
      "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1600
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     },
     {
      "img": "sets/jin_land/fore.png",
@@ -11410,6 +11545,35 @@
      "repeat": "x"
     },
     {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1600
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1745
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
+    },
+    {
      "img": "sets/jin_land/fore.png",
      "depth": 1.0,
      "pos": [
@@ -11696,6 +11860,48 @@
       "phase": 0.8
      },
      "blur": 5
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.75,
+     "pos": [
+      540,
+      1600
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.8
+     },
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.8,
+     "pos": [
+      540,
+      1740
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
+     },
+     "blur": 5
     }
    ],
    "actors": [
@@ -11853,6 +12059,48 @@
       "y": 6,
       "period": 3.4,
       "phase": 0.8
+     },
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.75,
+     "pos": [
+      540,
+      1600
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.8
+     },
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.8,
+     "pos": [
+      540,
+      1740
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
      },
      "blur": 5
     }
@@ -12014,6 +12262,48 @@
       "y": 6,
       "period": 3.4,
       "phase": 0.8
+     },
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.75,
+     "pos": [
+      540,
+      1600
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.8
+     },
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.8,
+     "pos": [
+      540,
+      1740
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
      },
      "blur": 5
     }
@@ -12577,6 +12867,26 @@
       "period": 3.4,
       "phase": 1.2
      }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1790
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
+     }
     }
    ],
    "actors": [
@@ -12611,7 +12921,7 @@
      "text": "唇亡齿寒",
      "pos": [
       540,
-      520
+      540
      ],
      "size": 190
     },
@@ -13077,6 +13387,26 @@
       "period": 3.4,
       "phase": 1.2
      }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1790
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
+     }
     }
    ],
    "fg": [
@@ -13312,6 +13642,21 @@
         "word": "反击"
        },
        "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 36,
+        "word": "联手"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 36,
+        "word": "反击"
+       },
+       "do": "bounce",
+       "amp": 14
       }
      ],
      "note": "张孟谈抱拳，恳切又坚定"
@@ -13332,6 +13677,21 @@
         "word": "反击"
        },
        "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 36,
+        "word": "联手"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 36,
+        "word": "反击"
+       },
+       "do": "bounce",
+       "amp": 14
       }
      ],
      "note": "魏桓子认真点头，手按胸口"
@@ -13352,6 +13712,21 @@
         "word": "反击"
        },
        "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 36,
+        "word": "联手"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 36,
+        "word": "反击"
+       },
+       "do": "bounce",
+       "amp": 14
       }
      ],
      "note": "韩康子（朝左）咬着牙，下定决心"
@@ -14414,6 +14789,26 @@
       "period": 3.4,
       "phase": 0.8
      }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1770
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.6
+     }
     }
    ],
    "fx": [
@@ -14798,10 +15193,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "actors": [
@@ -14810,7 +15205,7 @@
      "who": "司马光",
      "img": "chars/sgm_hi_read.png",
      "pos": [
-      270,
+      330,
       1760
      ],
      "h": 780,
@@ -14901,10 +15296,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "actors": [
@@ -14992,10 +15387,10 @@
      "img": "sets/study/book_page_hi.png",
      "depth": 1.0,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "fg": [
@@ -15093,10 +15488,10 @@
      "img": "sets/study/book_page_hi.png",
      "depth": 1.0,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "fg": [
@@ -15253,10 +15648,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080,
+     "w": 1280,
      "blur": 5
     }
    ],
@@ -15298,7 +15693,7 @@
      "text": "才能",
      "pos": [
       540,
-      540
+      575
      ],
      "size": 230
     }
@@ -15323,10 +15718,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080,
+     "w": 1280,
      "blur": 5
     }
    ],
@@ -15337,7 +15732,7 @@
      "img": "chars/sgm_hi_remote.png",
      "pos": [
       230,
-      1760
+      1650
      ],
      "h": 700,
      "note": "司马光举着遥控器，笑呵呵地看着泡泡"
@@ -15415,10 +15810,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080,
+     "w": 1280,
      "blur": 5
     }
    ],
@@ -15429,7 +15824,7 @@
      "img": "chars/sgm_finger.png",
      "pos": [
       240,
-      1720
+      1600
      ],
      "h": 570,
      "acts": [
@@ -15506,10 +15901,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080,
+     "w": 1280,
      "blur": 5
     }
    ],
@@ -15520,7 +15915,7 @@
      "img": "chars/sgm_thumb.png",
      "pos": [
       540,
-      1700
+      1590
      ],
      "h": 600,
      "acts": [
@@ -15584,10 +15979,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080,
+     "w": 1280,
      "blur": 5
     }
    ],
@@ -15663,10 +16058,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080,
+     "w": 1280,
      "blur": 5
     }
    ],
@@ -15677,7 +16072,7 @@
      "img": "chars/sgm_frown.png",
      "pos": [
       250,
-      1700
+      1590
      ],
      "h": 560,
      "note": "司马光捋着胡子，皱眉看着泡泡"
@@ -15744,10 +16139,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "actors": [
@@ -15757,7 +16152,7 @@
      "img": "chars/sgm_book.png",
      "pos": [
       270,
-      1700
+      1590
      ],
      "h": 570,
      "acts": [
@@ -15876,10 +16271,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "actors": [
@@ -15889,7 +16284,7 @@
      "img": "chars/sgm_thumb.png",
      "pos": [
       270,
-      1700
+      1590
      ],
      "h": 600,
      "acts": [
@@ -16003,10 +16398,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080,
+     "w": 1280,
      "blur": 5
     }
    ],
@@ -16068,7 +16463,7 @@
      "text": "德不配位",
      "pos": [
       540,
-      470
+      520
      ],
      "size": 170,
      "color": "red"
@@ -16108,10 +16503,10 @@
      "img": "sets/study/wall.png",
      "depth": 0.3,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080,
+     "w": 1280,
      "blur": 5
     }
    ],
@@ -16482,10 +16877,10 @@
      "img": "props/teaser_rain.png",
      "depth": 1.0,
      "pos": [
-      0,
+      -100,
       0
      ],
-     "w": 1080
+     "w": 1280
     }
    ],
    "fg": [
@@ -16539,7 +16934,7 @@
    "camera": [
     {
      "move": "push",
-     "amount": 0.05
+     "amount": 0.03
     }
    ],
    "note": "下集预告：魏家的旗子往前一步；下雨的树林边，雨点落在一套猎具上，一顶竹编斗笠从上面落下来：魏家一个神秘的「雨天约定」（只画雨、猎具和斗笠，不画魏文侯的脸）",
