@@ -1,1 +1,1 @@
-{"screen": [124, 107, 1101, 672], "note": "坐标是 props/screen_frame.png 的像素（1278×882）：screen = 框里那块米黄纸面的位置 [x0,y0,x1,y1]（约 16:9；Codex 额度用完，4:3 的重画还没做，4:3 的内容图放进去左右会留纸边）。"}
+{"screen": [122, 106, 913, 710], "size": [1047, 960], "note": "\u5750\u6807\u662f props/screen_frame.png \u7684\u50cf\u7d20\uff081047\u00d7960\uff09\uff1ascreen = \u6846\u91cc\u90a3\u5757\u7c73\u9ec4\u7eb8\u9762\u7684\u4f4d\u7f6e [x0,y0,x1,y1]\uff08791\u00d7604\uff0c\u6bd4\u4f8b 1.310\uff0c\u7ea6 4:3\uff09\uff1b\u6765\u81ea codex_series/screen_frame_v2.png\u3002"}
