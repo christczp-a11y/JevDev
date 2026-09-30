@@ -12,7 +12,8 @@
   "golden_max_chars": 16,
   "bigq_by": 30,
   "levels": 3,
-  "pov_every_level": false
+  "pov_every_level": false,
+  "ending_ceremony": false
  },
  "cast": {
   "智伯": {
