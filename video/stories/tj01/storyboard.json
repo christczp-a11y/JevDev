@@ -303,15 +303,14 @@
      "img": "props/frog_jump.png",
      "depth": 0.95,
      "pos": [
-      700,
-      860
+      760,
+      1010
      ],
      "anchor": [
       0.5,
       0.5
      ],
      "w": 280,
-     "flip": true,
      "enter": {
       "type": "pop",
       "at": {
@@ -329,8 +328,8 @@
        "dur": 0.55,
        "ease": "out",
        "dpos": [
-        -80,
-        -90
+        60,
+        -120
        ]
       },
       {
@@ -340,7 +339,7 @@
        },
        "dur": 0.3,
        "ease": "smooth",
-       "rot": -12
+       "rot": -10
       }
      ]
     }
@@ -376,27 +375,29 @@
     {
      "type": "splash",
      "pos": [
-      800,
-      1150
+      860,
+      1160
      ],
      "at": {
       "line": 0,
       "dt": 0.45
      },
-     "size": 1.0
+     "size": 0.8,
+     "layer": "back"
     },
     {
      "type": "sticker",
      "text": "呱！",
      "pos": [
-      640,
-      700
+      910,
+      760
      ],
      "at": {
       "line": 0,
       "dt": 0.7
      },
-     "size": 150
+     "size": 120,
+     "sfx": "frog_croak"
     }
    ],
    "camera": [
@@ -616,20 +617,20 @@
      "depth": 1.0,
      "pos": [
       560,
-      1340
+      1190
      ],
      "anchor": [
       0.5,
       0.5
      ],
-     "w": 540,
+     "w": 500,
      "enter": {
-      "type": "drop",
+      "type": "pop",
       "at": {
        "line": 1,
        "dt": 0.05
       },
-      "dur": 0.5,
+      "dur": 0.4,
       "sfx": "paper_unfold"
      }
     },
@@ -637,14 +638,14 @@
      "img": "props/hand_grab.png",
      "depth": 1.0,
      "pos": [
-      340,
-      1330
+      330,
+      1190
      ],
      "anchor": [
       0.5,
       0.5
      ],
-     "w": 400,
+     "w": 380,
      "enter": {
       "type": "slide_left",
       "at": {
@@ -673,8 +674,8 @@
      "img": "props/frog_wait.png",
      "depth": 1.0,
      "pos": [
-      840,
-      1000
+      880,
+      970
      ],
      "anchor": [
       0.5,
@@ -682,15 +683,26 @@
      ],
      "w": 230,
      "enter": {
-      "type": "drop",
+      "type": "fade",
       "at": {
        "line": 1,
        "dt": 0.9
       },
-      "dur": 0.5,
-      "sfx": "pop"
+      "dur": 0.08
      },
      "anim": [
+      {
+       "at": {
+        "line": 1,
+        "dt": 0.9
+       },
+       "dur": 0.25,
+       "ease": "out",
+       "dpos": [
+        0,
+        120
+       ]
+      },
       {
        "at": {
         "line": 2,
@@ -713,8 +725,8 @@
      "img": "props/frog_tongue.png",
      "depth": 1.0,
      "pos": [
-      860,
-      1000
+      890,
+      1090
      ],
      "anchor": [
       0.5,
@@ -750,9 +762,12 @@
       "不给"
      ],
      "at": {
-      "line": 1
+      "line": 0,
+      "dt": 0.34
      },
-     "sfx": null
+     "sfx": null,
+     "y": 420,
+     "end_stamp": "第2关揭晓"
     }
    ],
    "sfx": [
@@ -763,38 +778,31 @@
      }
     },
     {
+     "name": "click",
+     "at": {
+      "line": 1,
+      "dt": 0.38
+     }
+    },
+    {
+     "name": "click",
+     "at": {
+      "line": 1,
+      "dt": 1.38
+     }
+    },
+    {
+     "name": "click",
+     "at": {
+      "line": 1,
+      "dt": 2.38
+     }
+    },
+    {
      "name": "pop",
      "at": {
       "line": 1,
-      "dt": 0.55
-     }
-    },
-    {
-     "name": "pop",
-     "at": {
-      "line": 1,
-      "dt": 0.7
-     }
-    },
-    {
-     "name": "click",
-     "at": {
-      "line": 1,
-      "dt": 1.1
-     }
-    },
-    {
-     "name": "click",
-     "at": {
-      "line": 1,
-      "dt": 2.1
-     }
-    },
-    {
-     "name": "click",
-     "at": {
-      "line": 1,
-      "dt": 3.1
+      "dt": 1.15
      }
     }
    ],
@@ -804,7 +812,7 @@
      "amount": 0.04
     }
    ],
-   "note": "考你 1/4：「有人跟你要地，给不给？」智伯赭红袖子的大手从左边伸进来去抓一张画着城的地图；【给】【不给】两个按钮弹出，倒计时转圈；青蛙蹲在按钮旁边歪头等你，舌头一伸一缩。这一题先不揭晓，答案在第 2 关"
+   "note": "考你 1/4：「有人跟你要地，给不给？」智伯赭红袖子的大手从左边伸进来去抓一张画着城的地图；【给】【不给】两个按钮弹出，倒计时转圈；青蛙从上面轻轻落到按钮右下方，歪头等你，舌头一伸一缩。这一题先不揭晓，答案在第 2 关；倒数最后一拍盖章「第 2 关揭晓」"
   },
   {
    "id": "s03",
@@ -990,6 +998,20 @@
        ]
       }
      ]
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1600,
+     "repeat": "x"
     }
    ],
    "actors": [
@@ -1013,10 +1035,14 @@
     {
      "type": "lines_focus",
      "pos": [
-      540,
-      220
+      580,
+      980
      ],
-     "clear": 320,
+     "clear": [
+      580,
+      980,
+      440
+     ],
      "at": {
       "line": 3,
       "word": "为什么"
@@ -1034,7 +1060,7 @@
      "size": 1.0,
      "at": {
       "line": 3,
-      "word": "智伯"
+      "dt": 0.3
      }
     },
     {
@@ -1065,51 +1091,7 @@
      "amount": 0.08
     }
    ],
-   "note": "大问题（顶部标题条整集都在，集中线聚到标题条上）：智伯站在前面得意地大笑，头上冒出三个问号；他身后，晋阳城外的大水退下去，夯土城墙露出一层层夹板印（本集的概念物：水位刻度）",
-   "fg": [
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
-     "pos": [
-      540,
-      1540
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
-     "pos": [
-      540,
-      1690
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
-     "pos": [
-      540,
-      1840
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    }
-   ]
+   "note": "大问题（顶部标题条整集都在，集中线聚到标题条上）：智伯站在前面得意地大笑，头上冒出三个问号；他身后，晋阳城外的大水退下去，夯土城墙露出一层层夹板印（本集的概念物：水位刻度）"
   },
   {
    "id": "s04",
@@ -1146,7 +1128,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      680
+      700
      ],
      "anchor": [
       0.5,
@@ -1159,7 +1141,7 @@
      "depth": 0.4,
      "pos": [
       540,
-      820
+      1150
      ],
      "anchor": [
       0.5,
@@ -1172,7 +1154,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1290
+      1470
      ],
      "anchor": [
       0.5,
@@ -1182,59 +1164,17 @@
      "repeat": "x"
     },
     {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
      "pos": [
       540,
-      1440
+      1930
      ],
      "anchor": [
       0.5,
-      0
+      1
      ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1590
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1740
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1890
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
+     "w": 1600,
      "repeat": "x"
     }
    ],
@@ -1244,11 +1184,10 @@
      "who": "智伯",
      "img": "chars/zb_stand_hi.png",
      "pos": [
-      780,
+      280,
       1560
      ],
      "h": 820,
-     "flip": true,
      "enter": "pop",
      "acts": [
       {
@@ -1258,6 +1197,13 @@
        },
        "do": "wobble",
        "dur": 0.5
+      },
+      {
+       "at": {
+        "line": 4,
+        "word": "样样"
+       },
+       "do": "nod"
       }
      ],
      "note": "智伯登场：最高大，得意地昂着头，握着弓（弓不对人），甩了甩漂亮的鬓发"
@@ -1268,19 +1214,40 @@
      "type": "stat_card",
      "name": "智伯",
      "pos": [
-      340,
-      960
+      700,
+      920
      ],
-     "w": 520,
+     "w": 480,
+     "gap": 0.3,
      "at": {
       "line": 4,
-      "word": "五样"
+      "dt": 0.1
      },
      "rows": [
       {
-       "label": "本事",
+       "label": "高又帅",
+       "stars": 5,
+       "icon": "props/icon_look.png"
+      },
+      {
+       "label": "会射箭",
        "stars": 5,
        "icon": "props/icon_bow.png"
+      },
+      {
+       "label": "才艺多",
+       "stars": 5,
+       "icon": "props/icon_qin.png"
+      },
+      {
+       "label": "口才好",
+       "stars": 5,
+       "icon": "props/icon_speech.png"
+      },
+      {
+       "label": "很果断",
+       "stars": 5,
+       "icon": "props/icon_resolve.png"
       },
       {
        "label": "好心",
@@ -1292,15 +1259,16 @@
     {
      "type": "sticker",
      "name": "star",
-     "pos": [
-      760,
-      800
+     "follow": "zb",
+     "offset": [
+      -150,
+      -760
      ],
      "at": {
       "line": 4,
       "word": "本事"
      },
-     "size": 110
+     "size": 100
     }
    ],
    "camera": [
@@ -1309,18 +1277,19 @@
      "amount": 0.05
     }
    ],
-   "note": "知识：智伯登场，属性卡弹出，「本事 ★★★★★」五颗星一颗颗亮起，「好心」只亮一颗（暗的）；智伯甩鬓发，头发上闪一颗小星星（笑点）"
+   "note": "知识：智伯登场（站在左边，面朝右看着属性卡）。属性卡按史料的五样本事一条条亮：高又帅（美鬓长大）、会射箭（射御足力）、才艺多（伎艺毕给）、口才好（巧文辩惠）、很果断（强毅果敢），每条五颗星一颗颗亮；最后一格「好心」只亮一颗（暗的）；智伯甩鬓发，头边闪一颗小星星（笑点）"
   },
   {
    "id": "s05",
    "from": {
-    "line": 5
+    "line": 5,
+    "dt": -0.32
    },
    "size": "wide",
    "grade": "memory",
    "transition": {
     "type": "fade_paper",
-    "dur": 0.7
+    "dur": 0.4
    },
    "bg": [
     {
@@ -1361,7 +1330,24 @@
       1480
      ],
      "h": 640,
-     "note": "皮影：智伯的爸爸智宣子，老、驼背、拄杖，正要选儿子接班"
+     "note": "皮影：智伯的爸爸智宣子，老、驼背、拄杖，正要选儿子接班",
+     "acts": [
+      {
+       "at": {
+        "line": 5,
+        "dt": 0.9
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 5,
+        "dt": 1.9
+       },
+       "do": "wobble",
+       "dur": 0.4
+      }
+     ]
     },
     {
      "id": "zbY",
@@ -1372,21 +1358,40 @@
       1480
      ],
      "h": 700,
-     "note": "皮影：年轻的智伯，昂着头很得意"
+     "note": "皮影：年轻的智伯，昂着头很得意",
+     "acts": [
+      {
+       "at": {
+        "line": 5,
+        "dt": 1.3
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 5,
+        "dt": 2.2
+       },
+       "do": "nod"
+      }
+     ]
     },
     {
      "id": "zgo",
      "who": "智果",
-     "img": "chars/zgo_shadow.png",
+     "img": "chars/zgo_shadow_l.png",
      "pos": [
       775,
       1480
      ],
      "h": 660,
-     "flip": true,
      "enter": {
       "type": "slide_right",
-      "dur": 0.45
+      "at": {
+       "line": 5,
+       "dt": -0.12
+      },
+      "dur": 0.4
      },
      "acts": [
       {
@@ -1395,6 +1400,14 @@
         "word": "不好"
        },
        "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 5,
+        "dt": 2.3
+       },
+       "do": "wobble",
+       "dur": 0.4
       }
      ],
      "note": "皮影：智果从右边冲进来，举手拦住：「别选他！」"
@@ -1544,13 +1557,12 @@
     {
      "id": "zgo",
      "who": "智果",
-     "img": "chars/zgo_shadow.png",
+     "img": "chars/zgo_shadow_l.png",
      "pos": [
       700,
       1600
      ],
      "h": 900,
-     "flip": true,
      "acts": [
       {
        "at": {
@@ -1558,6 +1570,22 @@
         "word": "智家"
        },
        "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 6,
+        "dt": 1.3
+       },
+       "do": "shake",
+       "dur": 0.4
+      },
+      {
+       "at": {
+        "line": 6,
+        "dt": 1.95
+       },
+       "do": "wobble",
+       "dur": 0.35
       }
      ],
      "note": "皮影特写：智果急得手一挥"
@@ -1653,11 +1681,20 @@
       {
        "at": {
         "line": 7,
-        "dt": 0.5
+        "dt": 0.45
+       },
+       "dur": 0.18,
+       "ease": "smooth",
+       "rot": -8
+      },
+      {
+       "at": {
+        "line": 7,
+        "dt": 0.75
        },
        "dur": 0.2,
-       "ease": "smooth",
-       "sx": -1.0
+       "ease": "back",
+       "rot": 0
       }
      ],
      "note": "皮影：智宣子摆摆手，把头一扭——不听"
@@ -1675,7 +1712,8 @@
       "line": 7,
       "dt": 0.15
      },
-     "size": 150
+     "size": 150,
+     "sfx": "hmph"
     }
    ],
    "camera": [
@@ -1726,9 +1764,9 @@
     {
      "id": "zgo",
      "who": "智果",
-     "img": "chars/zgo_shadow.png",
+     "img": "chars/zgo_shadow_l.png",
      "pos": [
-      540,
+      560,
       1560
      ],
      "h": 820,
@@ -1736,7 +1774,14 @@
       {
        "at": {
         "line": 8,
-        "word": "智"
+        "dt": 0.1
+       },
+       "do": "nod"
+      },
+      {
+       "at": {
+        "line": 8,
+        "word": "姓"
        },
        "do": "wobble",
        "dur": 0.4
@@ -1752,21 +1797,19 @@
        "at": {
         "line": 8,
         "word": "辅",
-        "dt": 0.3
+        "dt": 0.25
        },
-       "do": "bounce"
-      }
-     ],
-     "anim": [
+       "swap": "chars/zgo_shadow.png"
+      },
       {
        "at": {
         "line": 8,
         "word": "辅",
-        "dt": 0.25
+        "dt": 0.4
        },
-       "dur": 0.2,
-       "ease": "smooth",
-       "sx": -1.0
+       "do": "exit",
+       "dir": "right",
+       "dur": 0.4
       }
      ],
      "note": "皮影：智果撕下胸前的「智」字，啪地贴上「辅」字，转身就走"
@@ -1776,35 +1819,25 @@
     {
      "type": "sticker",
      "text": "智",
-     "pos": [
-      560,
-      1010
+     "follow": "zgo",
+     "offset": [
+      0,
+      -560
      ],
      "at": {
       "line": 8
      },
      "size": 120,
-     "dur": 1.0
-    },
-    {
-     "type": "sticker",
-     "text": "嘶",
-     "pos": [
-      800,
-      820
-     ],
-     "at": {
-      "line": 8,
-      "word": "智"
-     },
-     "size": 120
+     "dur": 1.34,
+     "exit": "tear"
     },
     {
      "type": "sticker",
      "text": "辅",
-     "pos": [
-      560,
-      1010
+     "follow": "zgo",
+     "offset": [
+      0,
+      -560
      ],
      "at": {
       "line": 8,
@@ -1827,7 +1860,7 @@
      "amount": 0.08
     }
    ],
-   "note": "笑点：智果「嘶」地撕下衣服上的「智」字，「啪」贴上一个「辅」字，转身就走"
+   "note": "笑点：皮影智果先面朝左对着爸爸，「嘶」地把胸前的「智」字撕成两半，「啪」贴上一个「辅」字，转过身朝右就走"
   },
   {
    "id": "s09",
@@ -1957,14 +1990,23 @@
      "amount": 0.04
     }
    ],
-   "note": "知识：金句 1/3（这就是智果的意思）。大字卡砸下来「本事是本钱，好心是队长」；下面左边是「本事」图标（弓箭车轮），右边是「好心」图标（红心），好心一开始是暗的，念到「好心」时亮起来、弹一下，头上闪一颗星（它才是队长）"
+   "note": "知识：金句 1/3（这就是智果的意思）。大字卡砸下来「本事是本钱，好心是队长」；下面左边是「本事」图标（弓箭车轮），右边是「好心」图标（红心），好心一开始是暗的，念到「好心」时亮起来、弹一下，头上闪一颗星（它才是队长）",
+   "sfx": [
+    {
+     "name": "light_up",
+     "at": {
+      "line": 9,
+      "word": "好心"
+     }
+    }
+   ]
   },
   {
    "id": "s10",
    "from": {
     "line": 10
    },
-   "size": "wide",
+   "size": "medium",
    "transition": {
     "type": "page_turn",
     "dur": 0.7
@@ -1984,7 +2026,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      520
+      470
      ],
      "anchor": [
       0.5,
@@ -1997,7 +2039,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      680
+      640
      ],
      "anchor": [
       0.5,
@@ -2010,83 +2052,13 @@
      "depth": 0.6,
      "pos": [
       540,
-      1250
+      1330
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 1100
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1240
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1390
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1540
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1690
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1840
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
+     "w": 1300
     }
    ],
    "actors": [
@@ -2095,10 +2067,10 @@
      "who": "智伯",
      "img": "chars/zb_point.png",
      "pos": [
-      280,
-      1300
+      290,
+      1470
      ],
-     "h": 360,
+     "h": 490,
      "acts": [
       {
        "at": {
@@ -2106,21 +2078,38 @@
         "word": "笑话"
        },
        "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 10,
+        "dt": 2.6
+       },
+       "do": "wobble",
+       "dur": 0.4
       }
      ],
-     "note": "智伯跪坐在宴席上，伸着食指指着韩康子咧嘴嘲笑"
+     "note": "智伯跪坐在宴席后面，伸着食指指着韩康子咧嘴嘲笑"
     },
     {
      "id": "hkz",
      "who": "韩康子",
      "img": "chars/hkz_low.png",
      "pos": [
-      640,
-      1300
+      770,
+      1470
      ],
-     "h": 350,
-     "flip": true,
-     "note": "韩康子低着头缩着肩，眼泪汪汪"
+     "h": 500,
+     "acts": [
+      {
+       "at": {
+        "line": 10,
+        "word": "韩康子"
+       },
+       "do": "shake",
+       "dur": 0.4
+      }
+     ],
+     "note": "韩康子低着头缩着肩，把脸扭开，眼泪汪汪"
     }
    ],
    "fg": [
@@ -2129,13 +2118,26 @@
      "depth": 1.0,
      "pos": [
       540,
-      1300
+      1460
      ],
      "anchor": [
       0.5,
       0.5
      ],
-     "w": 1300
+     "w": 2100
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1930
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1850
     }
    ],
    "fx": [
@@ -2144,9 +2146,9 @@
      "text": "第 1 关：忍",
      "pos": [
       540,
-      600
+      450
      ],
-     "size": 170,
+     "size": 150,
      "at": {
       "line": 10,
       "dt": 0.05
@@ -2154,32 +2156,32 @@
      "dur": 1.4
     },
     {
-     "type": "sticker",
-     "text": "哈哈",
-     "pos": [
-      330,
-      820
-     ],
-     "at": {
-      "line": 10,
-      "word": "笑话"
-     },
-     "size": 140
-    },
-    {
      "type": "name_plate",
      "name": "韩康子",
      "role": "韩家主人",
      "house": "韩家",
      "pos": [
-      640,
-      420
+      560,
+      560
      ],
      "size": 0.8,
      "at": {
       "line": 10,
-      "word": "韩康子"
+      "dt": 0.3
      }
+    },
+    {
+     "type": "sticker",
+     "text": "哈哈",
+     "pos": [
+      330,
+      860
+     ],
+     "at": {
+      "line": 10,
+      "word": "笑话"
+     },
+     "size": 130
     }
    ],
    "camera": [
@@ -2188,7 +2190,7 @@
      "dx": -50
     }
    ],
-   "note": "第 1 关：忍（大字）。蓝台宴会全景：夯土高台上的木亭，一长排矮案；智伯跪坐着伸手指着韩康子哈哈大笑，韩康子低着头"
+   "note": "第 1 关：忍（大字）。蓝台宴会中景：智伯跪坐着伸手指着韩康子哈哈大笑，韩康子低着头把脸扭开；前面一长排宴席"
   },
   {
    "id": "s11",
@@ -2212,7 +2214,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      520
+      470
      ],
      "anchor": [
       0.5,
@@ -2226,7 +2228,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      680
+      640
      ],
      "anchor": [
       0.5,
@@ -2240,43 +2242,41 @@
      "depth": 0.6,
      "pos": [
       540,
-      1250
+      1330
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 1100,
+     "w": 1300,
      "blur": 8
     },
     {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
      "pos": [
       540,
-      1240
+      1460
      ],
      "anchor": [
       0.5,
-      0
+      0.5
      ],
-     "w": 1528,
-     "repeat": "x",
+     "w": 2100,
      "blur": 8
     },
     {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
      "pos": [
       540,
-      1390
+      1930
      ],
      "anchor": [
       0.5,
-      0
+      1
      ],
-     "w": 1528,
-     "repeat": "x",
+     "w": 1850,
      "blur": 8
     }
    ],
@@ -2298,6 +2298,13 @@
        },
        "do": "wobble",
        "dur": 0.6
+      },
+      {
+       "at": {
+        "line": 11,
+        "dt": 1.9
+       },
+       "do": "nod"
       }
      ],
      "note": "段规特写：低着头、抿紧嘴唇、两手攥着袖子，忍着一声不吭"
@@ -2316,7 +2323,7 @@
      "size": 0.9,
      "at": {
       "line": 11,
-      "word": "段规"
+      "dt": 0.2
      }
     },
     {
@@ -2339,54 +2346,7 @@
      "amount": 0.06
     }
    ],
-   "note": "镜头推到段规：他攥紧袖子、嘴抿成一条线，旁边一个「忍」字贴纸（不仁落到具体的事；不拿段规开玩笑）",
-   "fg": [
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
-     "pos": [
-      540,
-      1520
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x",
-     "blur": 8
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
-     "pos": [
-      540,
-      1670
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x",
-     "blur": 8
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
-     "pos": [
-      540,
-      1820
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x",
-     "blur": 8
-    }
-   ]
+   "note": "镜头推到段规：他攥紧袖子、嘴抿成一条线，旁边一个「忍」字贴纸（不仁落到具体的事；不拿段规开玩笑）"
   },
   {
    "id": "s12",
@@ -2410,7 +2370,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      520
+      470
      ],
      "anchor": [
       0.5,
@@ -2424,7 +2384,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      680
+      640
      ],
      "anchor": [
       0.5,
@@ -2438,88 +2398,41 @@
      "depth": 0.6,
      "pos": [
       540,
-      1250
+      1330
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 1100,
+     "w": 1300,
      "blur": 10
     },
     {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
+     "img": "sets/lantai/banquet_row.png",
+     "depth": 1.0,
      "pos": [
       540,
-      1240
+      1460
      ],
      "anchor": [
       0.5,
-      0
+      0.5
      ],
-     "w": 1528,
-     "repeat": "x",
+     "w": 2100,
      "blur": 10
     },
     {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
      "pos": [
       540,
-      1390
+      1930
      ],
      "anchor": [
       0.5,
-      0
+      1
      ],
-     "w": 1528,
-     "repeat": "x",
-     "blur": 10
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1540
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x",
-     "blur": 10
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1690
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x",
-     "blur": 10
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1840
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x",
+     "w": 1850,
      "blur": 10
     }
    ],
@@ -2535,7 +2448,8 @@
      "at": {
       "line": 12,
       "dt": 0.1
-     }
+     },
+     "inner_sway": 1.2
     }
    ],
    "camera": [
@@ -2555,7 +2469,8 @@
   {
    "id": "s13",
    "from": {
-    "line": 13
+    "line": 12,
+    "word": "同学"
    },
    "to": {
     "line": 13
@@ -2576,7 +2491,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      520
+      470
      ],
      "anchor": [
       0.5,
@@ -2589,7 +2504,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      680
+      640
      ],
      "anchor": [
       0.5,
@@ -2602,118 +2517,70 @@
      "depth": 0.6,
      "pos": [
       540,
-      1250
+      1330
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 1100
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1240
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1390
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1540
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1690
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1840
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1528,
-     "repeat": "x"
+     "w": 1300
     }
    ],
    "actors": [
     {
-     "id": "zb",
-     "who": "智伯",
-     "img": "chars/zb_cup.png",
+     "id": "dg",
+     "who": "段规",
+     "img": "chars/dg_kneel.png",
      "pos": [
-      380,
-      1320
+      250,
+      1470
      ],
      "h": 400,
      "acts": [
       {
        "at": {
         "line": 13,
+        "dt": 0.5
+       },
+       "do": "nod"
+      }
+     ],
+     "note": "段规跪坐在左边，低着头看着智伯，一声不吭"
+    },
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_cup.png",
+     "pos": [
+      660,
+      1470
+     ],
+     "h": 440,
+     "acts": [
+      {
+       "at": {
+        "line": 12,
+        "word": "起外号"
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 13
+       },
+       "do": "wobble",
+       "dur": 0.3
+      },
+      {
+       "at": {
+        "line": 13,
         "dt": 0.35
        },
        "swap": "chars/zb_spill.png",
-       "h": 560
+       "h": 506
       }
      ],
-     "note": "智伯举着漆耳杯仰头大笑，胳膊一甩把杯子碰倒，酒洒了一身，愣住"
-    },
-    {
-     "id": "dg",
-     "who": "段规",
-     "img": "chars/dg_kneel.png",
-     "pos": [
-      800,
-      1320
-     ],
-     "h": 360,
-     "flip": true,
-     "note": "段规低着头，一声不吭"
+     "note": "智伯举着漆耳杯仰头大笑，笑得前仰后合，胳膊一甩杯子翻了，酒洒了自己一身，站起来愣住"
     }
    ],
    "fg": [
@@ -2722,73 +2589,52 @@
      "depth": 1.0,
      "pos": [
       540,
-      1300
+      1460
      ],
      "anchor": [
       0.5,
       0.5
      ],
-     "w": 1300
+     "w": 2100
     },
     {
-     "img": "props/cup_spill.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 1.0,
      "pos": [
-      600,
-      1190
+      540,
+      1930
      ],
      "anchor": [
       0.5,
-      0.5
+      1
      ],
-     "h": 150,
-     "enter": {
-      "type": "pop",
-      "at": {
-       "line": 13,
-       "dt": 0.35
-      }
-     }
+     "w": 1850
     }
    ],
    "fx": [
     {
-     "type": "splash",
-     "pos": [
-      570,
-      1185
-     ],
-     "at": {
-      "line": 13,
-      "dt": 0.35
-     },
-     "size": 0.65
-    },
-    {
      "type": "sticker",
-     "name": "pa",
      "pos": [
-      700,
+      900,
       900
      ],
      "at": {
       "line": 13,
       "dt": 0.38
      },
-     "size": 150
+     "size": 140,
+     "text": "哗！"
     },
     {
      "type": "sticker",
      "name": "sweat",
-     "pos": [
-      530,
-      780
-     ],
+     "follow": "zb",
+     "attach": "head",
      "at": {
       "line": 13,
       "dt": 0.7
      },
-     "size": 120
+     "size": 110
     }
    ],
    "camera": [
@@ -2806,7 +2652,8 @@
      "amp": 10
     }
    ],
-   "note": "笑点（出糗的是智伯）：智伯笑得前仰后合，把自己的杯子碰倒了，酒「哗」地洒了一身，他站起来低头看着湿衣服愣住；段规低着头一声不吭"
+   "note": "笑点（出糗的是智伯）：智伯笑得前仰后合，胳膊一甩，手里的杯子翻了，酒「哗」地洒了他自己一身，站起来低头看着湿衣服愣住；段规在旁边低着头一声不吭"
   }
- ]
+ ],
+ "name": "三家分晋"
 }
