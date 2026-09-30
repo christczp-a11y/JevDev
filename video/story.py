@@ -179,7 +179,7 @@ def load_folder(folder, only=None):
     ep = {k: v for k, v in ep.items() if k not in NOT_FOR_JEV}   # cast 只给 voice.py 用、banned 只给检查用，不发给 Jev
     loaded = []
     for p in sorted(folder.glob("*.json")):
-        if p.name == "episode.json":
+        if p.name in ("episode.json", "storyboard.json"):   # 分镜表（第 4 步）也放在集目录里，不是剧本
             continue
         text = p.read_text(encoding="utf-8")
         loaded.append((p, text, json.loads(text)))
