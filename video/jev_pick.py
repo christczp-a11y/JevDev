@@ -18,7 +18,7 @@
   每条评论问四个是 / 否题：看懂了、没看懂、想看下一集、有意见（概率 ≥ 0.5 算属于这一类，可以同时属于几类，都不到算「其他」）。
   自动混进一条一眼能看出类别的对照评论（「下一集什么时候更新」），它没被分到「想看下一集」，就报警、退出码 1。
 
-做法（题目在 rubrics/pick_v1.json，改题不改代码）
+做法（题目在 rubrics/pick_v2.json，改题不改代码）
   每个候选按类别问几道 score 题（5 档，换成 0–1），再和其他每个候选两两比较，a、b 两种顺序各问一次取平均，得胜率；
   综合 = 0.5 × 平均分 + 0.5 × 胜率。对照项是自动混进去的、故意很差的一项（每个类别一句固定的话）。
   结果按（模型、状态、题目）的哈希缓存在 video/out/jev_pick_cache.json，重跑不重复花钱；加一个候选只多花和它有关的调用。
@@ -46,7 +46,7 @@ sys.stderr.reconfigure(encoding="utf-8")
 
 from jevdev import jev  # noqa: E402
 
-RUBRIC_NAME = "pick_v1"   # 新旧分数不混着比：改题另存 pick_v2.json
+RUBRIC_NAME = "pick_v2"   # 新旧分数不混着比：改题另存新版本（v2：金句加「一听就懂」，PITFALLS S21）
 RUBRIC = jev.load_rubric(RUBRIC_NAME)
 AUDIENCE = RUBRIC["audience"]
 W_SCORE, W_WIN = RUBRIC["weights"]["score"], RUBRIC["weights"]["winrate"]
@@ -311,13 +311,13 @@ def main():
     print(f"调用 {c['requests']} 次新请求，{c['cached']} 次用了缓存（输入 {c['input_tokens']} / 输出 {c['output_tokens']} 词元）" + (f"；结果写到 {a.out}" if a.out else ""))
     if not r["control_last"]:
         if a.category == "classify":
-            print("⚠ 对照评论没分对：这次的分类不可信，先改题（rubrics/pick_v1.json）或检查评论文本再跑。", file=sys.stderr)
+            print("⚠ 对照评论没分对：这次的分类不可信，先改题（rubrics/pick_v2.json）或检查评论文本再跑。", file=sys.stderr)
         else:
             c = r["control"]
             if c["rank_in_pool"] == c["pool_size"]:
-                print("⚠ 对照项和最差的候选平分：分不出高低，这次的排名不可信。先改候选或改题（rubrics/pick_v1.json）再跑。", file=sys.stderr)
+                print("⚠ 对照项和最差的候选平分：分不出高低，这次的排名不可信。先改候选或改题（rubrics/pick_v2.json）再跑。", file=sys.stderr)
                 sys.exit(1)
-            print(f"⚠ 对照项排在池子里第 {c['rank_in_pool']} / {c['pool_size']}，没排最后：这次的排名不可信。先改候选（是不是几个都差不多）或改题（rubrics/pick_v1.json）再跑。", file=sys.stderr)
+            print(f"⚠ 对照项排在池子里第 {c['rank_in_pool']} / {c['pool_size']}，没排最后：这次的排名不可信。先改候选（是不是几个都差不多）或改题（rubrics/pick_v2.json）再跑。", file=sys.stderr)
         sys.exit(1)
     print("对照项排在最后：这次的排名可信。" if a.category != "classify" else "对照评论分对了：这次的分类可信。")
 
