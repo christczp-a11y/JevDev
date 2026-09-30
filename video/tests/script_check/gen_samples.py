@@ -1,10 +1,14 @@
 """生成 script_check 的测试样例（改了要重新生成：python video/tests/script_check/gen_samples.py）。
 ok.json 是一版迷你的合格剧本（三关、四次考你、视角人物段规在每一关都出现）；bad_*.json 每份只坏一处（个别会连带别的错，测试只认它该报的那一条）；warn_*.json 只应该有警告；
-*_timeline.json 是配套的真实时间线（voice.py 输出的格式的最小子集）。episode.json 提供 cast 和 banned。"""
+*_timeline.json 是配套的真实时间线（voice.py 输出的格式的最小子集）。episode.json 提供 cast 和 banned。
+structure/<目录>/ 是用了 episode.json 的 structure 字段的样例（每个目录一份 episode.json = 一种结构设置，目录里的剧本共用它）：
+  vote/ 是 tj01 新结构（开头不考你、只有一次弹幕投票、不停顿、金句一次、大问题晚一点）；no_ceremony/、golden_max4/、two_levels/、pov_any/、pause_two/ 各改一个键；
+  bad_keys/ 是写错的 structure；partial/ 只写了一个键（别的用默认值）。"""
 import json
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+KAO = "考考你！"
 EP = {"core_question": "测试",
       "cast": {"智伯": {"voice": "zh-CN-YunjianNeural"}, "段规": {"voice": "zh-CN-YunxiaNeural"}, "赵襄子": {"voice": "zh-CN-YunyangNeural"}},
       "banned": {"知伯": "异名，通鉴写智伯", "豫让": "暴力情节整段跳过"}}
@@ -80,7 +84,9 @@ def timeline(d, shift_from=None, shift=0.0):
 
 
 def w(name, d):
-    (HERE / name).write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
+    p = HERE / name
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
 def mk(name, edits=None, notes=None, drop_level_starts=False):
@@ -93,6 +99,51 @@ def mk(name, edits=None, notes=None, drop_level_starts=False):
         d["notes"].pop("level_starts")
     w(name, d)
     return d
+
+
+# ---- structure 样例：从 ROWS 改出来的新结构剧本
+# 新结构（tj01 的新剧本）：开头不考你（第一句是钩子）、一集只有一次弹幕投票（第 2 关）、不停顿、没有「看答案！」、金句只说一次（点题之后的白话翻译）、大问题晚一点念完。
+# 下标是 ROWS 的下标：值 None = 删掉这一句；元组 = 换成这一句。
+VOTE_EDIT = {
+    0: ("司马光", "最强的智伯，被浇成了落汤鸡！", "智伯被大水浇成落汤鸡（笑点）", 2.5),
+    1: ("旁白", "两千四百年前，晋国最强的人，就是他。", "日历飞速倒翻", 3.8),
+    2: None,                                                                          # 开头的停顿
+    3: ("旁白", "最强的智伯，为什么输了？", "大问题横幅", 2.2),                                    # 大问题晚一点念完（9.4 秒）：默认的 7.3 秒过不了，structure.bigq_by = 10 才过
+    5: ("司马光", "可是他对人不好。", "（铺垫）", 0),                                   # 金句只留最后一次
+    8: ("段规", "主公，听我一句！", "段规拉了拉智伯的袖子", 0),                         # 第 1 关的「考你」换成对话
+    9: None, 10: None, 16: None,                                                       # 停顿、看答案
+    18: ("司马光", "智伯怒了，要动手了！", "司马光探头", 0),
+    19: None, 20: None,
+    23: ("司马光", "他以为自己最大！", "（铺垫）", 0),
+    27: ("司马光", "他俩心里，也慌了！", "司马光探头", 0),
+    28: None, 29: None,
+}
+VOTE_INSERT = {15: [("司马光", "考考你：给还是不给？弹幕告诉我！", "司马光举牌定格，弹幕飘过", 4.0)]}   # 全集唯一一次考你（弹幕投票）
+S_VOTE = {"opening_quiz": False, "quiz_count": 1, "quiz_pause": False, "golden_count": 1, "golden_max_chars": 12,
+          "bigq_by": 10, "levels": 3, "pov_every_level": True}
+
+
+def derive(plan, ins=None, notes=None):
+    """plan / ins 见 VOTE_EDIT / VOTE_INSERT；level_starts 自动按画面里的「第 N 关」找。"""
+    rows = []
+    for i, r in enumerate(ROWS):
+        r = plan.get(i, r)
+        if r is not None:
+            rows.append(list(r))
+        rows.extend(list(x) for x in (ins or {}).get(i, []))
+    nt = {"level_starts": [next(k for k, r in enumerate(rows) if f"第 {n} 关" in r[2]) for n in (1, 2, 3)]}
+    nt.update(notes or {})
+    return build(rows, nt)
+
+
+def vote(edit=None, insert=None, notes=None):
+    return derive({**VOTE_EDIT, **(edit or {})}, {**VOTE_INSERT, **(insert or {})}, notes)
+
+
+def sdir(name, structure):
+    """structure/<name>/episode.json：和 EP 一样，再加一个 structure 字段。"""
+    w(f"structure/{name}/episode.json", {**EP, "structure": structure})
+    return f"structure/{name}/"
 
 
 def main():
@@ -162,6 +213,49 @@ def main():
     (qdir / "bad_same_desc" / "episode.json").write_text(json.dumps(qep, ensure_ascii=False, indent=1), encoding="utf-8")
     (qdir / "bad_same_desc" / "bad_same_desc.json").write_text(json.dumps(build([list(r) for r in ROWS]), ensure_ascii=False, indent=1), encoding="utf-8")
     mk("warn_long_line.json", {4: ("旁白", "智伯本事大，可对人不好，智家会没！", ROWS[4][2], 9.0)})
+    # ---- 说话人写成 A+B+C（几个人齐声）：逐个查声音；全是男声才算一句男声
+    mk("ok_chorus.json", {30: ("段规+赵襄子", ROWS[30][1], ROWS[30][2], 0)})
+    mk("bad_chorus_no_voice.json", {30: ("段规+魏桓子", ROWS[30][1], ROWS[30][2], 0)})
+    mk("bad_chorus_male_run.json", {12: ("智伯+段规", ROWS[12][1], ROWS[12][2], 0)})
+    # ---- 用了 episode.json 的 structure
+    d = sdir("vote", S_VOTE)
+    ok_vote = vote()
+    w(d + "ok_vote.json", ok_vote)
+    w(d + "ok_vote_timeline.json", timeline(ok_vote))
+    # 真实时间线里大问题（第 bi 句）起后移：10.5 秒才念完 = 超过 10 + 容差 0.3；10.3 秒正好在容差边上，算过
+    bi = next(i for i, r in enumerate(ok_vote["lines"]) if r[3] == NOTES["big_question"])
+    w(d + "bad_bigq_timeline.json", timeline(ok_vote, bi, round(10.5 - ok_vote["lines"][bi][1], 2)))
+    w(d + "ok_bigq_edge_timeline.json", timeline(ok_vote, bi, round(10.3 - ok_vote["lines"][bi][1], 2)))
+    quiz8 = ("司马光", "考你：智伯听不听劝？", "（考你）【听】【不听】", 0)
+    quiz27 = ("司马光", "考你：他俩说什么？", "（考你）【咱们也怕】", 0)
+    w(d + "bad_three_quizzes.json", vote({8: quiz8, 27: quiz27}))
+    w(d + "bad_pause_and_reveal.json", vote({9: ("动作", "", "停 1.2 秒：倒计时转圈、滴答声；不揭晓", 1.2), 10: ("司马光", "看答案！", "【不听】亮起", 0)}))
+    w(d + "bad_opening_quiz.json", vote({0: ("司马光", KAO, "司马光弹出来（笑点）", 1.2)}))
+    w(d + "bad_bigq_late.json", vote({1: (*VOTE_EDIT[1][:3], 5.5)}))
+    w(d + "bad_golden_twice.json", vote({23: ("旁白", "好心是队长。", "（金句）", 0)}))
+    # 结尾没有「写书的人，来了——」：默认要报错；ending_ceremony 为 false 就不查
+    no_xie = vote({35: None}, notes={"ending_order": ["封为诸侯", "德者，才之帅也", "下集"]})
+    w(d + "bad_no_ceremony.json", no_xie)
+    d = sdir("no_ceremony", {**S_VOTE, "ending_ceremony": False})
+    w(d + "ok_no_ceremony.json", no_xie)
+    d = sdir("golden_max4", {**S_VOTE, "golden_max_chars": 4})
+    w(d + "bad_golden_long.json", ok_vote)
+    d = sdir("two_levels", {**S_VOTE, "levels": 2})
+    starts = ok_vote["notes"]["level_starts"]
+    w(d + "ok_two_levels.json", vote(notes={"level_starts": starts[:2]}))
+    w(d + "bad_levels_mismatch.json", ok_vote)
+    d = sdir("pov_any", {**S_VOTE, "pov_every_level": False})
+    w(d + "ok_pov_not_every.json", vote({24: ("旁白", ROWS[24][1], "第 3 关；城头一片水", 0), 31: ("旁白", "说过：等着变。这个变，来了！", "两人点头（艺术化演绎）", 0)}))
+    w(d + "bad_pov_nowhere.json", vote(notes={"pov": "张孟谈"}))
+    d = sdir("pause_two", {"quiz_count": 2})
+    drop = {8: None, 9: None, 10: None, 27: None, 28: None, 29: None}            # 留下开头一次和第 2 关一次
+    w(d + "ok_pause_two.json", derive(drop))
+    w(d + "bad_pause_count.json", build([list(r) for r in ROWS]))
+    w(d + "bad_pause_range.json", derive({**drop, 19: ("动作", "", "停 2.5 秒：倒计时转圈、滴答声；不揭晓", 2.5)}))
+    d = sdir("bad_keys", {"quiz_cnt": 1, "quiz_count": "1", "quiz_pause": 0, "bigq_by": -3, "levels": 0})
+    w(d + "bad_keys.json", build([list(r) for r in ROWS]))
+    d = sdir("partial", {"golden_count": 1})
+    w(d + "bad_partial.json", build([list(r) for r in ROWS]))
 
 
 if __name__ == "__main__":

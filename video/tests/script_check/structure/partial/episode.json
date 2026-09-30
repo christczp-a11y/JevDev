@@ -1,0 +1,21 @@
+{
+ "core_question": "测试",
+ "cast": {
+  "智伯": {
+   "voice": "zh-CN-YunjianNeural"
+  },
+  "段规": {
+   "voice": "zh-CN-YunxiaNeural"
+  },
+  "赵襄子": {
+   "voice": "zh-CN-YunyangNeural"
+  }
+ },
+ "banned": {
+  "知伯": "异名，通鉴写智伯",
+  "豫让": "暴力情节整段跳过"
+ },
+ "structure": {
+  "golden_count": 1
+ }
+}
