@@ -5,10 +5,13 @@
         后面再写一个 screen（同一个 pos）就是换画面（新画从中间往两边展开盖住旧的）；img 可以不写（空白纸屏）；w 木框显示宽度（默认 860，原图 1278）；dur
         4:3 的画放进去：屏幕纸面是 16:9（约 981×565 像素），画按「完整放进去」缩放，左右留纸边，外面一圈白纸边像贴上去的照片
   {"type": "remote_click", "pos": [700, 900], "at": {...}}                                                  按遥控器：按钮处一圈涟漪 + 几道短线 + 「叮」的一声；pos 是按钮的屏幕位置；color（默认朱红）
-  {"type": "bubble", "img": "props/bubble_nickname.png", "pos": [400, 620], "at": {...}}                     想象泡泡（props/bubble_cloud.png）：从人物头旁边的尾巴那一头「鼓」出来；
-        img 泡泡里的画（相对 video/assets；缩放到放进云里）；text 不放画、放几个大字（≤ 8 个字）；flip 尾巴放到右下；w 显示宽度（默认 820，原图 1357）；dur
+  {"type": "bubble", "img": "props/bubble_nickname.png", "pos": [330, 1040], "at": {...}}                    想象泡泡（props/bubble_cloud.png）：**pos 是尾巴尖，要点在说话人的头顶旁边**，泡泡从那里往上、往另一边「鼓」出来；
+        泡泡会自动缩小、夹进安全区（y 360–1400、x 80–1000，尾巴尖不动）；放不下（宽 < 460）出片前报错；
+        img 泡泡里的画（相对 video/assets；缩放到放进云里）；text 不放画、放几个大字（≤ 8 个字）；flip 尾巴放到右下；w 显示宽度的上限（默认 820，原图 1357）；inner_sway 里面的画和泡泡的晃动幅度（默认 1；0 = 不动。泡泡本身轻轻呼吸，里面的画上下浮动 + 轻轻鼓动，不许冻住）；dur
   {"type": "page_edge", "at": {...}}                                                                        书页边（props/page_edge.png）：从画面下面滑上来，盖住司马光的下半截，像他躲在书页后面；
-        y 书页上沿的位置（默认 1240）；w 显示宽度（默认 1180，原图 1510）；dur 停留几秒（之后滑下去）；人物写在 actors 里，出场用 slide 或 pop，画在书页边后面
+        y 书页上沿的位置（默认 1240）；w 显示宽度（默认 1180，原图 1510）；dur 停留几秒（之后滑下去）；
+        peek 探出来的人物半身图（相对 video/assets，如 chars/sgm_hi_remote.png）、peek_h 人高（860）、peek_x 中心 x（540）：人物从书页后面升起来、落下去以前先缩回去，**半身像平切的下沿一直藏在书页后面**；
+        不写 peek 就只有书页（人物写在 actors 里的话，要自己保证它的下沿不露出来：出场用画外、书页盖住它）
 音效：screen → screen_on，remote_click → click，bubble → bubble_pop，page_edge → page_slide。
 """
 import json
@@ -45,7 +48,7 @@ def _sassets(p):
     return [FRAME, FRAME_LAY] + ([p["img"]] if p.get("img") else [])
 
 
-@fx("screen", layer="front", sfx="screen_on", assets=_sassets, check=_scheck)
+@fx("screen", params=['img', 'pos', 'w'], layer="front", sfx="screen_on", assets=_sassets, check=_scheck)
 def screen(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -97,7 +100,7 @@ def screen(canvas, t, params, at):
 
 
 # ============================== 按遥控器 ==============================
-@fx("remote_click", layer="front", sfx="click", check=lambda p: P.need_pos(p) + ([P.bad_color(p.get("color"))] if P.bad_color(p.get("color")) else []))
+@fx("remote_click", params=['pos', 'color'], layer="front", sfx="click", check=lambda p: P.need_pos(p) + ([P.bad_color(p.get("color"))] if P.bad_color(p.get("color")) else []))
 def remote_click(canvas, t, params, at):
     u = t - at
     if u < 0 or u > 0.7:
@@ -130,8 +133,30 @@ def remote_click(canvas, t, params, at):
 
 
 # ============================== 想象泡泡 ==============================
+BUB_AR = 920 / 1357                       # 泡泡图的高 / 宽
+BUB_MIN_W = 460                            # 缩到比这还小就不像泡泡了（放不下 → 报错，让人换位置）
+SAFE_X0, SAFE_X1, SAFE_Y0, SAFE_Y1 = 80.0, 1000.0, 360.0, 1400.0
+
+
+def bubble_width(W, px, py, flip):
+    """泡泡自动夹进安全区（y 360–1400、x 80–1000）：尾巴尖 (px, py) 固定不动（它要指着说话人的头），泡泡的宽度按能放下的最大值缩小。
+    尾巴在左下（flip 时在右下），泡泡从尾巴尖往上、往另一边长出来：尾巴尖离左边（右边）多远、离上边多远，泡泡就最宽多宽。"""
+    ax, ay = (0.96 if flip else 0.04), 0.92
+    lim = [W, (py - SAFE_Y0) / (ay * BUB_AR), (SAFE_Y1 - py) / ((1 - ay) * BUB_AR)]
+    if flip:
+        lim += [(px - SAFE_X0) / ax, (SAFE_X1 - px) / (1 - ax)]
+    else:
+        lim += [(SAFE_X1 - px) / (1 - ax), (px - SAFE_X0) / ax]
+    return max(min(lim), 0.0)
+
+
 def _bcheck(p):
     errs = P.need_pos(p) if "pos" in p else []
+    if "pos" in p and not errs:
+        w = bubble_width(float(p.get("w", 820)), p["pos"][0], p["pos"][1], bool(p.get("flip", False)))
+        if w < BUB_MIN_W:
+            errs.append(f"bubble 的尾巴尖 pos={p['pos']} 太靠边 / 太靠上，安全区（y 360–1400、x 80–1000）里最多放下宽 {w:.0f} 的泡泡（要 ≥ {BUB_MIN_W}）："
+                        f"pos 往下或往中间挪，或者写 flip 把尾巴换到另一边")
     if p.get("text") is not None:
         if not isinstance(p["text"], str) or not 1 <= len(p["text"]) <= 8:
             errs.append("bubble 的 text 要写 1–8 个字")
@@ -144,45 +169,70 @@ def _bassets(p):
     return [CLOUD, CLOUD_LAY] + ([p["img"]] if p.get("img") else [])
 
 
-@fx("bubble", layer="front", sfx="bubble_pop", assets=_bassets, check=_bcheck)
+@fx("bubble", params=['img', 'text', 'pos', 'w', 'flip', 'inner_sway'], layer="front", sfx="bubble_pop", assets=_bassets, check=_bcheck)
 def bubble(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
     if u < 0 or P.gone(u, dur, 0.3):
         return
     lay = _lay(canvas, CLOUD_LAY)
-    W = float(params.get("w", 820))
     flip = bool(params.get("flip", False))
     px, py = params.get("pos", [C.W / 2, 620])
+    W = float(int(bubble_width(float(params.get("w", 820)), px, py, flip)))          # 自动缩进安全区里；尾巴尖 = pos 不动
     k = W / 1357
     fo = P.fade_out(u, dur, 0.3)
     x0, y0, x1, y1 = lay["content"]
     cw, ch = (x1 - x0) * k, (y1 - y0) * k
 
-    def build():
+    def build_cloud():
         base = P.fit_width(P.load_pil(canvas, CLOUD), W)
-        if params.get("img"):
-            pic = _fit(P.load_pil(canvas, params["img"]), cw * 0.96, ch * 0.96)
-            base.alpha_composite(pic, (int(round((x0 + x1) / 2 * k - pic.width / 2)), int(round((y0 + y1) / 2 * k - pic.height / 2))))
-        elif params.get("text"):
-            t_ = P.text_image(params["text"], "title", int(min(ch * 0.7, cw / len(params["text"]) * 0.9)), P.INK)
-            base.alpha_composite(t_, (int(round((x0 + x1) / 2 * k - t_.width / 2)), int(round((y0 + y1) / 2 * k - t_.height / 2))))
         if flip:
             base = base.transpose(P.Image.FLIP_LEFT_RIGHT)
         return P.add_shadow(base, (-6 if flip else 6, 10), 9, 0.32)
-    sp = P.sprite(canvas, ("bubble", params.get("img"), params.get("text"), W, flip), build)
+
+    def build_inner():
+        if params.get("img"):
+            return _fit(P.load_pil(canvas, params["img"]), cw * 0.96, ch * 0.96)
+        if params.get("text"):
+            return P.text_image(params["text"], "title", int(min(ch * 0.7, cw / len(params["text"]) * 0.9)), P.INK)
+        return None
+    cloud = P.sprite(canvas, ("bubble_cloud", W, flip), build_cloud)
+    inner_im = build_inner() if (params.get("img") or params.get("text")) else None
     s, sx, sy = P.pop_xy(u, 2.0, 6.0, 0.08)
     ax = 0.96 if flip else 0.04                                                # 从尾巴那一头鼓出来
-    canvas.blit(sp, px, py, scale=max(s, 0.0), sx=sx, sy=sy, rot=(-2.0 if not flip else 2.0) * math.exp(-4 * u) * math.cos(2 * math.pi * 2.2 * u),
-                alpha=min(1.0, u / 0.06) * fo, anchor=(ax, 0.92), depth=0)
+    sway = float(params.get("inner_sway", 1.0))                                # 0 = 不动；1 = 默认；泡泡本身轻轻呼吸，里面的画上下浮动 + 轻轻鼓动（不许冻住）
+    breath = 1.0 + 0.014 * sway * math.sin(2 * math.pi * u / 2.8)
+    rot = (-2.0 if not flip else 2.0) * math.exp(-4 * u) * math.cos(2 * math.pi * 2.2 * u) + 0.8 * sway * math.sin(2 * math.pi * u / 3.4 + 1.0)
+    al = min(1.0, u / 0.06) * fo
+    canvas.blit(cloud, px, py, scale=max(s, 0.0) * breath, sx=sx, sy=sy, rot=rot, alpha=al, anchor=(ax, 0.92), depth=0)
+    if inner_im is not None:
+        sp_in = P.sprite(canvas, ("bubble_inner", params.get("img"), params.get("text"), W), lambda: inner_im)
+        pad = 22.0
+        cx_in = (x0 + x1) / 2 * k
+        if flip:
+            cx_in = W - cx_in
+        off = (pad + cx_in - ax * cloud.wd, pad + (y0 + y1) / 2 * k - 0.92 * cloud.hd)          # 画的中心离尾巴尖（云的支点）多远，设计像素
+        bob = 8.0 * sway * math.sin(2 * math.pi * u / 2.2 + 0.8)
+        pulse = 1.0 + 0.022 * sway * math.sin(2 * math.pi * u / 1.9)
+        g = P.Group(px, py, max(s, 0.0) * breath, rot)
+        gx, gy = g.pt(off[0] * sx, (off[1] + bob) * sy)
+        canvas.blit(sp_in, gx, gy, scale=max(s, 0.0) * breath * pulse, rot=rot + 1.6 * sway * math.sin(2 * math.pi * u / 2.6), alpha=al, depth=0)
 
 
 # ============================== 书页边 ==============================
-@fx("page_edge", layer="front", sfx="page_slide", assets=lambda p: [PAGE], check=lambda p: [])
+def _pgcheck(p):
+    errs = []
+    if p.get("peek") and not (isinstance(p["peek"], str) and p["peek"].endswith(".png")):
+        errs.append("page_edge 的 peek 要写探出来的人物半身图路径（.png，相对 video/assets）")
+    return errs
+
+
+@fx("page_edge", params=['y', 'w', 'peek', 'peek_h', 'peek_x'], layer="front", sfx="page_slide", assets=lambda p: [PAGE] + ([p["peek"]] if p.get("peek") else []), check=_pgcheck)
 def page_edge(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
-    if u < 0 or P.gone(u, dur, 0.45):
+    OUT_DELAY, OUT_DUR = 0.2, 0.45
+    if u < 0 or P.gone(u, dur, OUT_DELAY + OUT_DUR + 0.05):
         return
     W = float(params.get("w", 1180))
     y_top = float(params.get("y", 1240))
@@ -191,8 +241,23 @@ def page_edge(canvas, t, params, at):
     y_final = y_top + H / 2
     up = P.spring(u, 1.7, 6.0) if u < 1.5 else 1.0
     y = y_final + (C.H + 100 - y_final) * (1 - min(up, 1.12))
-    if dur is not None and u > dur:
-        y = y_final + (C.H + 200 - y_final) * anim.in_cubic((u - dur) / 0.45)
+    x_out = 0.0 if dur is None else max(u - dur - OUT_DELAY, 0.0)
+    if dur is not None and u > dur + OUT_DELAY:
+        y = y_final + (C.H + 200 - y_final) * anim.in_cubic(x_out / OUT_DUR)
+    page_top = y - H / 2 + 24                                                   # 书页图的上沿（去掉一圈投影的边）；纸面的上沿是一道弧，比它低 55–79 像素，半身像的下沿在 page_top + 120，比弧最低处还低 40 像素
+    # 探出来的人物：先画（在书页后面）。半身像的下沿永远藏在书页下面 120 像素：书页升起来以后人才慢慢升起来，落下去以前人先缩回去，
+    # 所以半身像平切的下沿从头到尾不会露出来
+    if params.get("peek"):
+        ph = float(params.get("peek_h", 860))
+        px = float(params.get("peek_x", C.W / 2))
+        img = params["peek"]
+        bust = P.sprite(canvas, ("peek", img, ph), lambda: P.add_shadow(P.fit_height(P.load_pil(canvas, img), ph), (3, 5), 7, 0.28, 16))
+        rise = P.spring(u - 0.3, 2.0, 6.5) if u > 0.3 else 0.0
+        rise = min(rise, 1.08)
+        if dur is not None and u > dur:
+            rise = min(rise, 1.0) * (1 - anim.in_cubic((u - dur) / 0.3))
+        bottom = page_top + 120 + (ph + 20) * (1 - rise)
+        canvas.blit(bust, px, bottom, anchor=(0.5, 1.0), alpha=max(0.0, min(1.0, (u - 0.06) / 0.05)), depth=0)      # 书页完全不透明以后半身像才画（书页淡入的头几帧盖不住它）
     canvas.blit(sp, C.W / 2, y, alpha=min(1.0, u / 0.05), depth=0)
     # 书页下面接一块纸色，一直铺到画面底边（书页图本身只有上半截）
     y_bot = y + sp.hd / 2 - 36

@@ -71,7 +71,7 @@ def _board(title, labels):
     return im, (x0, y0, x1, y1)
 
 
-@fx("progress", layer="front", sfx="gauge_pop", check=_check)
+@fx("progress", params=['pos', 'title', 'labels', 'from', 'to', 'pop_in', 'color', 'kind', 'size'], layer="front", sfx="gauge_pop", check=_check)
 def progress(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")

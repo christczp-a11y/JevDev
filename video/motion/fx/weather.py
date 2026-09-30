@@ -5,7 +5,8 @@
   {"type": "splash", "pos": [540, 1350], "at": {...}}                水花：pos 是落水点；水滴像纸剪的小蓝水滴，抛起来划弧线落下，脚下一圈圈涟漪；size 大小（默认 1，0.6–1.6）
   {"type": "flame", "pos": [540, 1300], "w": 640, "at": {...}}        纸剪火焰：一排三层纸剪（橙红、橙、黄）的火苗，轻轻摇；pos 是火苗底边中点，w 是整排宽度（默认 640）；
                                                                     count（火苗数，默认 7）、height（最高的火苗高，默认 360）、dur
-音效：rain → rain，splash → splash，flame → whoomp（写 sfx: null 静音）。火焰只画成温暖的橙黄色，不用血红，不发红光。
+音效：rain → rain，splash → splash，flame → whoomp（写 sfx: null 静音）。火焰只画成温暖的橙黄色，不用血红，不发红光；
+**火焰不许和人物叠在一起**：出片前 check 会查火苗的框和镜头里每个人物的框，重叠就报错（火放在画面边上，或者只放在 big_title 的字周围）。
 """
 import math
 
@@ -26,7 +27,7 @@ def _check(p):
 
 
 # ============================== 雨 ==============================
-@fx("rain", layer="front", sfx="rain", check=_check)
+@fx("rain", params=['dim', 'density', 'slant'], layer="front", sfx="rain", check=_check)
 def rain(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -69,7 +70,7 @@ def _drop(size):
     return P.edged(im, 4)
 
 
-@fx("splash", layer="front", sfx="splash", check=lambda p: P.need_pos(p))
+@fx("splash", params=['pos', 'size'], layer="front", sfx="splash", check=lambda p: P.need_pos(p))
 def splash(canvas, t, params, at):
     u = t - at
     if u < 0 or u > 1.9:
@@ -150,7 +151,27 @@ def _flame(w, h, skew, layer_edge=True):
     return P.edged(P.Image.fromarray(a.astype(np.uint8), "RGBA"), 5)
 
 
-@fx("flame", layer="front", sfx="whoomp", check=_check)
+def flame_box(p):
+    """一排火苗占的框（设计坐标）：底边中点 pos，宽 w（两头各多出半朵火苗），高 height。"""
+    px, py = p["pos"]
+    W, Hm = float(p.get("w", 640)), float(p.get("height", 360))
+    return (px - W / 2 - 0.25 * Hm, py - Hm, px + W / 2 + 0.25 * Hm, py + 0.03 * Hm)
+
+
+def _fcheck(p, shot=None):
+    """火焰不许和人物叠在一起（儿童安全：不能像人站在火里）：火苗的框和镜头里任何一个人物的框有重叠就报错。火只放在大字标题周围或画面边上。"""
+    errs = _check(p)
+    if errs or "pos" not in p:
+        return errs + ([] if "pos" in p else ["flame 缺 pos: [x, y]（火苗底边中点）"])
+    fb = flame_box(p)
+    for a in P.actor_boxes(shot):
+        if P.boxes_overlap(fb, a["body"], margin=8.0):
+            errs.append(f"flame 和人物 {a['id']} 重叠（火苗框 {[round(x) for x in fb]}，人物框 {[round(x) for x in a['body']]}）：火焰不许挡在人物身上，"
+                        f"挪到画面边上（pos / w 改一下）或者只放在大字标题（big_title 的 deco: flame）周围")
+    return errs
+
+
+@fx("flame", params=['pos', 'w', 'height', 'count'], layer="front", sfx="whoomp", check=_fcheck)
 def flame(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")

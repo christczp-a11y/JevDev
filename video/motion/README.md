@@ -66,7 +66,8 @@ python video/motion/render.py path/to/storyboard.json ...      直接给分镜�
   "rituals": [{"type": "kaoni", "at": {"line": 1}, "options": ["给", "不给"]}]
 }
 ```
-- `title`：1–2 行，做顶部标题条。`no`：第几集（标题条上的小字「光爷爷讲通鉴 · 第 N 集」）。
+- `title`：1–2 行，做顶部标题条。`no`：第几集；`name`：本集名（标题条上面的小字「第 N 集 · <本集名>」，不写就只有「第 N 集」；系列名只在右上角水印里出现一次）。
+- `bgm_start`（可选）：背景音乐从第几秒开始放（默认 0；样片合集避开音乐里的空拍用）。
 - `voice`：配音目录（里面有 `timeline.json`），先按仓库根目录找，再按分镜表所在目录找。
 - `speakers`：说话人 → 家名（`video/series_style.json` 的 `houses`）或 `#rrggbb`，用来给字幕上的说话人标签上色。司马光固定红色、旁白固定灰褐色；不在表里的用旁白色。
 - `rituals`：系列仪式（考你、人物卡……），每一项就是一个特效（`type` 是特效名，`at` 是锚点），交给它开始那一刻所在的镜头去画。特效本身是阶段 B 的事。
@@ -140,7 +141,7 @@ python video/motion/render.py path/to/storyboard.json ...      直接给分镜�
 
 ## 自动加上去的东西（分镜表里不写）
 
-- **顶部标题条**（y 90–330）：`title` 两行大字（ZCOOL KuaiLe）+ 上方小字「光爷爷讲通鉴 · 第 N 集」，整集都在；**水印**「光爷爷的资治通鉴大冒险」右上角。
+- **顶部标题条**（y 90–330）：`title` 两行大字（ZCOOL KuaiLe）+ 上方小字「第 N 集 · <本集名>」，整集都在；**水印**「光爷爷的资治通鉴大冒险」右上角。
 - **字幕**（中心 y≈1480）：米色纸卡、墨色粗体（Noto Sans SC Bold）；上方**说话人标签**（司马光红色、旁白灰褐色、其他人家族色）。每行最多 15 字、每页最多 2 行；台词更长就按标点分页，页与页的分界按字数比例落在有声部分里。
   出现的帧 = 这一句 `t0` × 30 取最近的整数帧（差 ≤ 0.5 帧），淡入 3 帧、淡出 3 帧。
 - 字体只有两种：ZCOOL KuaiLe（标题、砸字、贴纸字）和 Noto Sans SC Bold（其余）。ZCOOL 没有的字逐字用 Noto 补，两种都没有的字报错。
@@ -186,6 +187,8 @@ def flash(canvas, t, params, at):
   - `sfx`：默认音效名，在特效的 `at` 时刻自动加进混音；分镜表里这个特效写 `"sfx": null` 关掉，写别的名字换掉。
   - `assets(params)` → 这个特效要读的图的路径列表（绝对路径，或相对 `video/assets/`）：出片前检查它们在不在（缺了报错）、内容算进缓存哈希。**读文件的特效必须写这个**，否则图换了缓存不更新。
   - `check(params)` → 错误说明列表（缺字段、名字不对……），出片前调用，空 = 没问题。
+    `check` 可以写成 `check(params)` 或 `check(params, shot)`：后一种拿到整个镜头的字典（人物、图层、sfx……），用来查要看整个镜头才知道的错（`flame` 和人物重叠就报错）、记下这个镜头的信息（氛围粒子避开人物的脸：`_avoid`）、或者往镜头的 `sfx` 表里追加音效（`fx/_paper.py` 的 `add_sfx`：sticker 撕掉的 `tear`、stat_card 每颗星的 `star_ding`、kaoni 盖章的 `pop`；出片前 check 在主进程和渲染进程各跑一遍，`add_sfx` 不会重复加）。
+    特效画的时候 `canvas.actor_state[人物 id]` 是这一帧这个人物的变换（x、y 脚底点、scale、sx、sy、rot、alpha、flip、depth、wd、hd），sticker 的 follow 就用它。
     `check` 在出片前对每个特效调用一次、音效表在那之后才收集，所以特效可以在 `check` 里往 `params` 补默认的 `sfx`（`fx/_paper.py` 的 `auto_sfx`：分镜表没写才补，写了 / 写 `null` 就不动）；砸字、清单、属性卡按「几下」选 `slam_N` / `list_N` / `stat_N` 就是这样。
 - 每个特效画完要能被缓存：**只依赖 `(t, params, at, canvas)`，不许有隐藏状态**（同一个镜头在不同进程里渲，结果必须一样）。
 - 字体只有两种，用 `canvas.assets.text(..., "title" | "body")`，不要自己 `ImageFont.truetype` 别的字体。
@@ -213,8 +216,9 @@ def dissolve(a, b, p, params, canvas):
 `video/motion/sfx/<名字>.wav`，全部程序合成（`sfx/synth.py`：numpy + scipy，钟琴 / 马林巴 / 木琴 + 低通噪声，五声音阶，不刺耳；`python video/motion/sfx/synth.py` 重新生成，结果固定，`.wav` 一起提交）。
 全系列同一个特效用同一个声音；每个音效的「重音」按特效的动画时间摆好（特效的音效在它的 `at` 响，转场的在切点响），时间常数在 `sfx/timing.py`（特效和合成共用）。
 加新音效：在 `synth.py` 里写一个函数（单声道 44.1 kHz，峰值约 0.5）、登记进 `SOUNDS`，跑一遍脚本。`tests/test_fx.py` 会查每个文件：单声道 44.1 kHz、峰值、头尾没有咔嗒声、10 kHz 以上没有能量。
-现有：`pop` `whoosh` `burst` `focus` `slam_1..6` `list_1..6` `stat_1..6` `paper_unfold` `city_pop` `draw` `shine` `twinkle` `party` `dust_puff` `rain` `splash` `whoomp` `tone_shift` `flash` `kaoni` `plate_drop` `person_card`
-`card_quest` `card_fail` `card_title` `card_mvp` `title_boom` `gauge_pop` `screen_on` `click` `bubble_pop` `page_slide`；转场：`page_flip` `paper_swipe` `brush` `iris` `fade_soft` `whip` `tv_click`。
+现有：`pop` `whoosh` `burst` `focus` `slam_1..6` `list_1..6` `stat_open` `stat_row_1..6` `paper_unfold` `city_pop` `draw` `shine` `twinkle` `party` `dust_puff` `rain` `splash` `whoomp` `tone_shift` `flash` `kaoni` `plate_drop` `person_card`
+`card_quest` `card_fail` `card_title` `card_mvp` `title_boom` `gauge_pop` `screen_on` `click` `bubble_pop` `page_slide`；
+分镜表 `sfx` 里按名字用的：`frog_croak`（蛙叫「呱呱」）、`hmph`（「哼」，短促下滑的低音管音色，不用人声）、`tear`（撕纸）、`light_up`（一样东西亮起来）、`star_ding`（属性卡亮一颗星「叮」，stat_card 自动一颗一声）；转场：`page_flip` `paper_swipe` `brush` `iris` `fade_soft` `whip` `tv_click`。
 
 ### 本集专用 / 测试用的插件
 
@@ -227,44 +231,47 @@ def dissolve(a, b, p, params, canvas):
 所有特效的动作都是时间的函数（弹簧过冲、缓动、不抖、不闪），画法是纸的样子：白纸边、柔和纸影、纸纹。样片合集（`tests/fx_reel/`，见下）每个特效演一遍，写特效的参数照着它抄。
 
 **写法约定**
+- **写了特效不认识的参数 = 出片前报错**（和分镜表拼错字段一律报错同一个规矩）：每个特效登记时（`@fx(name, params=[...])`）声明自己认的参数，通用的 `type / at / dur / sfx / layer / note` 不用声明；转场同理（`@transition(name, params=[...])`，通用的 `type / dur / note`）。本集专用的插件不声明就不查。
+- **每个特效都可以写 `"layer": "back"`**（画在背景之上、人物之下）或 `"front"`（人物和前景之上），覆盖它登记的默认；比如水花画在人物后面。
 - **一条特效 = 一个时刻 = 一个声音。** 一步一步出来的东西拆成几条特效，各写各的锚点，就能一条一条卡在台词的字上：地图 = `map` + `map_city`×n + `map_arrow`×m；进度物每变一次写一条 `progress`。
-  例外：砸字、清单、属性卡内部有固定节奏（0.14 + 0.17k 秒 / 0.55 秒一条 / 0.75 秒一行），音效按「几下」选 `slam_N` / `list_N` / `stat_N`（出片前 `check` 自动补进 `sfx`，分镜表自己写了就不动）；考你的整个流程固定 5.8 秒。时间常数在 `sfx/timing.py`，特效和音效共用。
+  例外：砸字、清单内部有固定节奏（0.14 + 0.17k 秒 / 0.55 秒一条），音效按「几下」选 `slam_N` / `list_N`；属性卡的行间隔可以用 `gap` 改，它的音效（每行 `stat_row_N`、每颗星 `star_ding`）出片前按 gap 逐个排进镜头的音效表（出片前 `check` 自动补进 `sfx`，分镜表自己写了就不动）；考你的整个流程固定 5.8 秒。时间常数在 `sfx/timing.py`，特效和音效共用。
 - 位置：主体安全区 y 360–1400、左右各留 80；最下面 300、右边 140 是平台遮挡区，别放东西。除了 `sticker`（贴在画上，`depth` 默认 1 跟着镜头），别的特效都钉在屏幕上。
 - 字只用两种字体（ZCOOL KuaiLe / Noto Sans SC Bold）；参数里的字出片前查缺字。颜色可以写 `"#rrggbb"`、名字（ink red cream white gold orange green blue sky brown），也可以写 `"house": "智家"` 取 `video/series_style.json` 的家族颜色。
 - 闪烁：特效包里没有会闪的东西（闪白一集最多 3–4 次，两次隔 1 秒以上）。
 
 | 类别 | 特效 | 参数（`at` / `dur` / `sfx` 省略） | 默认音效 | 用在哪 |
 |---|---|---|---|---|
-| 漫画线 | `lines_focus` 集中线 | `pos`、`clear` 中间留白半径（360）、`color`（墨）、`alpha`、`count` | `focus` | 惊讶、揭晓、点题 |
+| 漫画线 | `lines_focus` 集中线 | `pos` / `center`（往哪里收拢）、`clear`：**`[x, y, r]` 这个圆里一根线都不画**（让开脸；写一个数 = 以 center 为圆心的半径；不写 = 半径 380）、`color`（墨）、`alpha`（0.30）、`count`；线细而淡，只在「圆心到画面边」的外半程可见 | `focus` | 惊讶、揭晓、点题 |
 | | `lines_radial` 放射速度线 | `pos`、`color`（米白）、`alpha`、`count` | `burst` | 「燃」、冲刺、大喊 |
 | | `lines_speed` 横向速度线 | `dir`（left / right = 线飞的方向）、`y0` `y1`（高度范围）、`color`、`count` | `whoosh` | 人在跑、快 |
-| 贴纸 | `sticker` | `name`（图片贴纸）或 `text`（文字贴纸）、`pos`、`size`、`rot`、`flip`、`color`、`depth` | `pop` | 反应和笑点，见下面的贴纸表 |
+| 贴纸 | `sticker` | `name`（图片贴纸）或 `text`（文字贴纸）、`pos`、`size`、`rot`、`flip`、`color`、`depth`；**`follow`: 人物 id + `offset: [dx, dy]`（离脚底中点，人物原大小时）或 `attach: "head"`：贴纸挂在人物身上，跟着出场 / 跳 / 呼吸 / 视差动，人物翻身（flip / sx 变负）位置跟着镜像；`exit: "tear"`（要写 `dur`）：到 dur 那一刻从中间撕成毛边的两半，翻着落下，音效 `tear` 自动排进镜头** | `pop` | 反应和笑点，见下面的贴纸表 |
 | 砸字 | `smash` | `text` 1–6 个字、`pos`、`size`（300）、`color` / `house`、`shake`（震屏像素，默认 9，≤ 16） | `slam_1`…`slam_6` | 关键词、数字、结论；第 k 个字在 `at`+0.14+0.17k 落地 |
 | 清单 | `checklist` | `items` 1–6 条、`pos`（第一条中心，每条下移 128）、`mark`（check / star / none）、`w` | `list_1`…`list_6` | 本事、理由、功绩 |
-| 属性卡 | `stat_card` | `name`、`rows` 1–6 行 `{label, stars 0–5, icon}`、`pos`、`w`（760）；底板 `props/card_attr.png` | `stat_1`…`stat_6` | 讲人物，「本事 ★★★★★ / 好心 ★」逐行亮起 |
+| 属性卡 | `stat_card` | `name`、`rows` 1–6 行 `{label, stars 0–5, icon}`（**有几行画几格**：卡片按行数裁短，奇数行最后一个空格抹掉）、`pos`、`w`（760）、**`gap`（行与行亮起的间隔秒数，默认 0.75，0.15–2.0；6 行写 0.3 只要 2.3 秒）**、`star_ding`（false = 星星不出声）；底板 `props/card_attr.png` | `stat_open`（+ 每行 `stat_row_N`、每颗星 `star_ding`，自动排） | 讲人物，「本事 ★★★★★ / 好心 ★」逐行亮起 |
 | 地图 | `map` | `pos`、`w`（940）、`dim` 背景压暗；底板 `props/map_paper.png` | `paper_unfold` | 讲地理、行军 |
 | | `map_city` | `pos`、`name`、`house` / `color`、`icon`（现成圆形城图标）、`size` | `city_pop` | 城标落在地图上 |
 | | `map_arrow` | `pts` 路径点（≥ 2）、`house` / `color`、`width` | `draw` | 虚线箭头 0.8 秒画出，画完箭头弹一下 |
 | 氛围 | `rays` 光芒（画在人物后面） | `pos`、`color`、`alpha`、`count`、`radius` | `shine` | 高潮、胜利 |
-| | `sparkle` 闪粉 | `area`、`count` | `twinkle` | 宝物、变身 |
-| | `confetti` 纸屑彩带 | `mode`（burst 喷起 / fall 飘落）、`count` | `party` | 胜利 |
-| | `dust` 灰尘 | `mode`（float 飘 / puff 扬起）、`area` / `pos`、`size` | `dust_puff`（只有 puff 出声） | 旧屋、行军、落地 |
+| | `sparkle` 闪粉 | `area`、`count`、`avoid` | `twinkle` | 宝物、变身 |
+| | `confetti` 纸屑彩带 | `mode`（burst 喷起 / fall 飘落）、`count`、`avoid` | `party` | 胜利 |
+| | `dust` 灰尘 | `mode`（float 飘 / puff 扬起：一团柔和的尘雾颗粒 + 碎纸屑，向两边和上面散开、胀大、1 秒左右淡掉）、`area` / `pos`、`size`、`avoid` | `dust_puff`（只有 puff 出声） | 旧屋、行军、落地 |
+| | （闪粉、纸屑、飘着的灰尘**自动避开人物的脸**：出片前 `check` 按镜头里每个人物的图和 `pos` / `h` 算出脸框，粒子飘近脸框会渐隐，不会盖住脸；`avoid: []` 关掉，`avoid: [[x0,y0,x1,y1]]` 自己指定） | | | |
 | | `rain` 雨 | `dim`（压暗 0.16）、`density`、`slant` | `rain` | 天气 |
-| | `splash` 水花 | `pos`、`size` | `splash` | 落水、水涨 |
-| | `flame` 纸剪火焰 | `pos`（底边中点）、`w`、`height`、`count` | `whoomp` | 燃点（橙黄，不用血红） |
+| | `splash` 水花 | `pos`、`size`、`layer`（写 `"back"` 画在人物后面；默认在前面） | `splash` | 落水、水涨 |
+| | `flame` 纸剪火焰 | `pos`（底边中点）、`w`、`height`、`count`；**不许和人物的框重叠（出片前报错）** | `whoomp` | 燃点（橙黄，不用血红）；放在画面两边或 big_title 的字周围 |
 | 调色 | 镜头的 `grade` 字段（引擎自带）：`normal` `warm` `gold` `cool` `memory`（旧纸黄 + 颗粒 + 暗角）`tense`（稍暗 + 暗角） | | | 回忆、紧张 |
-| | `tone` 镜头中间换色 | `tone`（gold warm cool night memory tense）、`ramp`（扫过用多久，0.7）、`sweep` | `tone_shift` | 颜色分段：得意 gold、密谋 night、从前 memory、胜利 warm |
+| | `tone` 镜头中间换色 | `tone`（gold warm cool night memory tense）、`from`（换色以前的色调）、`delay`（先等几秒）、`ramp`（扫过用多久，0.7）、`sweep`；写了 `from` 就不要再写镜头的 `grade`（grade 盖在特效上面，会叠出灰雾）；night 是乘法调的深蓝夜晚 | `tone_shift` | 颜色分段：得意 gold、密谋 night、从前 memory、胜利 warm |
 | 闪 | `flash` 柔和闪白 | 不带参数：盖 55% 白、0.1 秒（3 帧） | `flash` | 重大揭晓，一集 ≤ 3–4 次 |
-| 考你 | `kaoni` | `options` 1–3 个、`answer`（正确选项序号）、`y`；「考你！」按钮 → 选项 → 3-2-1 圈 → 「看答案！」，共 5.8 秒 | `kaoni` | 系列仪式，每集 4 次（也可写进分镜表的 `rituals`） |
+| 考你 | `kaoni` | `options` 1–3 个、`answer`（正确选项序号）、`y`、**`end_stamp`（≤ 6 个字：最后一拍 3.75 秒在计时器上盖一个小章，章和计时器一起缩走，不像被剪断；盖章一声 pop 自动排进镜头）**；「考你！」按钮 → 选项 → 3-2-1 圈 → 「看答案！」，共 5.8 秒 | `kaoni` | 系列仪式，每集 4 次（也可写进分镜表的 `rituals`） |
 | 进度物 | `progress` | `pos`（默认 [740, 900]）、`title`、`labels`、`from` / `to`（0–1）、`pop_in`、`color`、`kind`（water / fill）、`size` | `gauge_pop` | 本集的概念物（水位刻度），变化时整体弹一下 |
 | 人物卡 | `person_card` | `img`、`name`、`line`（一句话）、`no`、`stats`、`w`（700）；底板 `props/card_char.png` | `person_card` | 每集结尾的收藏卡 |
-| 人名牌 | `name_plate` | `name`、`role`（身份）、`house` / `color`、`pos`（挂点 = 牌子顶部中点）、`size`（1.15） | `plate_drop` | 人物第一次出场（竖排大字 + 小字身份，家族颜色） |
+| 人名牌 | `name_plate` | `name`、`role`（身份）、`house` / `color`、`pos`（挂点 = 牌子顶部中点）、`size`（1.15）、`dur`（**默认 2.4 = 落下 0.42 + 能看清 2.0 秒；能看清的时间 < 1.5 秒（dur < 1.92）出片前报错**） | `plate_drop` | 人物第一次出场（竖排大字 + 小字身份，家族颜色） |
 | 游戏卡片 | `card_quest` `card_fail` `card_title` `card_mvp` | `text`（主文字）、`sub`（小字，默认：任务 / 任务失败 / 获得称号 / 本集 MVP）、`pos` | `card_quest` `card_fail` `card_title` `card_mvp` | 关卡开始 / 结束、揭晓 |
 | 大字标题 | `big_title` | `text`（1–2 行，长了自动分行）、`pos`、`deco`（rays / flame / none）、`color`、`size`（220）、`shake` | `title_boom` | 「第 1 关：忍」「水，倒过来了！」 |
 | 解说台 | `screen` 纸屏幕 | `img`（屏幕里的画）、`pos`、`w`；框 `props/screen_frame.png`；再写一条同位置的 = 换画 | `screen_on` | 司马光的书房 = 后墙 `sets/study/wall.png` + 书桌 `sets/study/desk.png`（`fg`）+ 高清半身 `chars/sgm_hi_remote.png` + 屏幕 |
 | | `remote_click` | `pos`（按钮位置）、`color` | `click` | 「按一下」，再接转场 `tv_switch` |
-| | `bubble` 想象泡泡 | `img` 或 `text`、`pos`、`w`（820）、`flip`；底板 `props/bubble_cloud.png` | `bubble_pop` | 古今对照的想象画 |
-| | `page_edge` 书页边 | `y`（书页上沿，1240）、`w`；`props/page_edge.png` | `page_slide` | 「考你」时司马光从书页后面探出来（人物画在它后面） |
+| | `bubble` 想象泡泡 | `img` 或 `text`、`pos`（**尾巴尖，点在说话人的头顶旁边**）、`w`（宽度上限 820，放不下自动缩小，夹进安全区 y 360–1400、x 80–1000，尾巴尖不动；宽 < 460 放不下就报错）、`flip`、`inner_sway`（默认 1：泡泡轻轻呼吸，里面的画上下浮动 + 轻轻鼓动，0 = 不动，不许冻住）；底板 `props/bubble_cloud.png` | `bubble_pop` | 古今对照的想象画 |
+| | `page_edge` 书页边 | `y`（书页上沿，1240）、`w`、`peek`（探出来的人物半身图）、`peek_h`、`peek_x`；`props/page_edge.png` | `page_slide` | 「考你」时司马光从书页后面探出来：写 `peek`，书页升起来以后人才升起来、落下去以前人先缩回去，半身像的平切下沿一直藏在书页后面 |
 
 **贴纸**（`video/motion/stickers/`，`sticker` 的 `name`）：`question` 问号　`question3` 三个问号　`exclaim` 感叹号　`bulb` 灯泡　`sweat` 汗滴　`anger` 怒气　`star` 闪光星星　`star_eyes` 星星眼　`heart` 小心心　`dong`「咚」　`pa`「啪」　`sou`「嗖」。
 来源 `video/assets/codex_series/stickers_v1.png`（9 个）和 `stickers_v2.png`（3 个），`python video/motion/stickers/build.py` 拆图（去绿底、去绿边、修白纸边）；文字贴纸（`text`）用来临时写别的拟声字。
@@ -275,15 +282,17 @@ def dissolve(a, b, p, params, canvas):
 |---|---|---|---|---|
 | `page_turn` 翻书页 | 0.7 | 一页纸从右往左卷起来，露出带圆柱明暗的纸背（浅浅透出旧画面）和新画面 | `side`（right / left） | `page_flip` |
 | `paper_wipe` 纸片擦过 | 0.8 | 三条彩色纸片（朱红、金、米白，带白纸边和软阴影）斜着扫过 | `colors`、`dir` | `paper_swipe` |
-| `ink_wipe` 墨笔刷 | 0.7 | 几条墨笔从左刷到右，笔头钝、尾巴飞白，刷过的地方是新画面 | `strokes`（4）、`dir` | `brush` |
-| `iris` 圆圈收拢 | 0.7 | 纸圈收成一点，再从一点放开（圈外是纸色，带白纸边） | `pos` 圆心、`color` 纸色 | `iris` |
+| `ink_wipe` 墨笔刷 | 0.7 | 一两道粗墨笔从左往右一笔扫过：笔头圆、边缘平滑起伏，笔肚一整块浓墨，笔尾是一缕一缕的飞白（毛刷纹路里露着新画面），带纸纹；上下两笔叠着盖满 | `strokes`（2）、`dir` | `brush` |
+| `iris` 圆圈收拢 | 0.7 | 纸圈收成一点，再从一点放开（圈外是纸色，带白纸边）；缓动按圈里画面的**面积**走，画面亮度逐帧平滑变化 | `pos` 圆心、`color` 纸色 | `iris` |
 | `fade_paper` 淡到纸色 | 0.7 | 淡到一整张纸，再淡入下一镜 | | `fade_soft` |
 | `whip` 甩镜 | 0.28 | 整幅画面横着甩出去，带运动模糊 | `dir`（left right up down） | `whip` |
-| `tv_switch` 解说台切进故事 | 0.8 | 纸屏幕位置的一块小画面展开成整个画面（圆角边框） | `pos`、`w` 屏幕宽 | `tv_click` |
+| `tv_switch` 解说台切进故事 | 0.8 | **前一镜要先放好纸屏幕（`screen`）**：屏幕里的画先叠化成故事的画，再从纸面大小放大到盖满整个画面 | `pos` 纸面中心、`w` 纸面宽（414；屏幕木框宽 540 时 pos = 框中心 + (−11, −22)） | `tv_click` |
 | `dissolve` 交叉淡化 | 0.4 | 接口示例 | | |
 
 **特效样片合集**：`video/motion/tests/fx_reel/`——`build_reel.py` 生成分镜表 `storyboard.json` 和配音时间线 `voice/timeline.json`（43 个镜头，每个特效 2–3 秒，画面下方一个小标签写名字；带音效和背景音乐，用三句现成的配音试字幕）；
 出片 `python video/motion/render.py video/motion/tests/fx_reel/storyboard.json --final --out video/out/motion/fx_reel`；`make_review.py <mp4>` 出联系表（每秒 1 帧）和每个镜头动作段的每秒 10 帧抽帧条；`fx/label.py` 是样片专用的名字标签。
+**晋地外景怎么铺**（样片合集 `build_reel.py` 的 `TERRAIN` / `WATER`，正式的集照抄）：远山三层 → 灌木丛 `fore.png`（画在地平线上）→ 四条一条比一条大的草土带 `ground.png`（w 1300 / 1500 / 1700 / 1900，`repeat: "x"`，隔一条 `flip`），每一条的上沿（草）盖住上一条的平切下沿——**相邻两条的间距 = 上一条高度 × 0.8**，最后一条的下沿在画面外面；这样从地平线到画面底没有空带、看不到平切边。河边：草土带后面接三条一条比一条大的 `water.png`，同样的叠法。
+
 开发时看单个特效：`python video/motion/tests/fx_peek.py '{"type":"smash","text":"本事","pos":[540,800]}' --t 0,0.1,0.2,0.4 --out x.png`（转场用 `--transition`）。
 
 ## 自动检查和报告

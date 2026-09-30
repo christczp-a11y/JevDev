@@ -7,11 +7,15 @@
 
 属性卡（游戏属性面板：名字、6 格图标、「本事 ★★★★★」逐条亮起来；底板 props/card_attr.png）：
   {"type": "stat_card", "name": "智伯", "rows": [{"label": "本事", "stars": 5, "icon": "props/icon_look.png"}, {"label": "好心", "stars": 1}], "at": {...}}
-  rows 1–6 行，按「先左后右、一行一行」填格子；label ≤ 3 个字；stars 0–5（亮几颗）；icon 可选（格子里的圆形图标，相对 video/assets）；
-  pos 卡片正中心（默认 [540, 900]）；w 显示宽度（默认 760，原图 949）；dur 停留几秒；sfx 默认按行数选 stat_1 … stat_6。第 k 行比第 k−1 行晚 0.75 秒亮起。
+  rows 1–6 行，按「先左后右、一行一行」填格子，**有几条画几格**（卡片高度跟着行数裁短，奇数行最后一格空的那一个抹掉）；label ≤ 3 个字；stars 0–5（亮几颗）；icon 可选（格子里的圆形图标，相对 video/assets）；
+  pos 卡片正中心（默认 [540, 900]）；w 显示宽度（默认 760，原图 949）；dur 停留几秒；gap 行与行亮起的间隔秒数（默认 0.75，允许 0.15–2.0；行数多、镜头短就写小，比如 6 行写 0.3 只要 2.3 秒）。
+  音效：sfx 默认 `stat_open`（卡片滑进来），每行亮起时一声 `stat_row_N`（按行序，调一行比一行高）、每颗星一声 `star_ding`——后两种出片前按 gap 排进镜头的音效表，所以改 gap 音效跟着走。
+  每亮一颗星响一声 `star_ding`（一颗一声，出片前自动排进镜头的音效表；写 "star_ding": false 关掉）。
 """
 import json
 import math
+
+import numpy as np
 
 from engine import anim
 from engine import consts as C
@@ -61,7 +65,7 @@ def _strip(text, w, mark):
     return im
 
 
-@fx("checklist", layer="front", sfx="list_1", check=_lcheck)
+@fx("checklist", params=['items', 'pos', 'mark', 'w'], layer="front", sfx="list_1", check=_lcheck)
 def checklist(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -106,11 +110,37 @@ def _layout(canvas):
     return json.loads(canvas.assets.resolve(LAYOUT).read_text(encoding="utf-8"))
 
 
+def _card_pil(canvas, lay, n):
+    """底板按行数裁成刚好放得下 n 格的样子：一行 2 格，有几行留几行（把多余的行整段切掉，上下两半接起来；纸是竖向均匀的，接缝看不出来）；
+    最后一行只有一格（n 是奇数）时，把没用的那一格（凹槽 + 横条）抹掉，用周围的纸补上。返回 (PIL 图, 裁完的高度)。"""
+    import cv2
+    im = P.load_pil(canvas, CARD)
+    arr = np.array(im)
+    R = (n + 1) // 2
+    cys = [s["circle"][1] for s in lay["slots"][0::2]]                    # 每一行的中心 y（原图像素）
+    bottom_from = int(cys[-1] + 122)                                        # 最后一行下面那条缝：这以下是空白纸 + 底边
+    keep_end = int(cys[R - 1] + 122)
+    if n % 2 == 1:                                                          # 抹掉最后一行右边没用的格子
+        slot = lay["slots"][n]
+        cx, cy, r = slot["circle"]
+        bx0, by0, bx1, by1 = slot["bar"]
+        m = np.zeros(arr.shape[:2], np.uint8)
+        cv2.circle(m, (int(cx), int(cy)), int(r) + 14, 255, -1)
+        cv2.rectangle(m, (int(bx0) - 8, int(by0) - 8), (int(bx1) + 8, int(by1) + 8), 255, -1)
+        rgb = cv2.inpaint(np.ascontiguousarray(arr[..., :3][..., ::-1]), m, 7, cv2.INPAINT_TELEA)[..., ::-1]
+        noise = P.paper_tex(arr.shape[1], arr.shape[0], 5).astype(np.float32) * 2.4
+        fill = np.clip(rgb.astype(np.float32) + noise[..., None], 0, 255).astype(np.uint8)
+        arr[m > 0, :3] = fill[m > 0]
+    if R < 3:
+        arr = np.concatenate([arr[:keep_end], arr[bottom_from:]], axis=0)
+    return P.Image.fromarray(arr, "RGBA"), arr.shape[0]
+
+
 def _rows(p):
     return [r for r in p.get("rows", []) if isinstance(r, dict)]
 
 
-def _scheck(p):
+def _scheck(p, shot=None):
     errs = []
     rows = _rows(p)
     if not 1 <= len(rows) <= T.STAT_MAX:
@@ -124,7 +154,18 @@ def _scheck(p):
     if p.get("name"):
         errs += P.glyph_errors(p["name"])
     errs += P.glyph_errors(*[r.get("label", "") for r in rows])
-    P.auto_sfx(p, f"stat_{len(rows)}")
+    g = p.get("gap", T.STAT_GAP)
+    if not isinstance(g, (int, float)) or not 0.15 <= g <= 2.0:
+        errs.append(f"stat_card 的 gap（行与行亮起的间隔秒数）要写 0.15–2.0 的数（默认 {T.STAT_GAP}）")
+    if not errs and shot is not None:
+        # 每行亮起一声 stat_row_N、每颗星亮起一声 star_ding：出片前把每个时刻排进这个镜头的音效表（特效自己只能在 at 那一刻带一个音效）
+        at = p.get("at")
+        for i, r in enumerate(_rows(p)):
+            if p.get("sfx", "x") is not None:
+                P.add_sfx(shot, at, 0.45 + g * i + 0.12, f"stat_row_{i + 1}")
+            if p.get("star_ding", True) is not False:
+                for j in range(int(r.get("stars", 0))):
+                    P.add_sfx(shot, at, 0.45 + g * i + 0.22 + 0.11 * j, "star_ding")
     return errs
 
 
@@ -134,7 +175,7 @@ def _sassets(p):
     return out
 
 
-@fx("stat_card", layer="front", sfx="stat_1", assets=_sassets, check=_scheck)
+@fx("stat_card", params=['name', 'rows', 'pos', 'w', 'max', 'star_ding', 'gap'], layer="front", sfx="stat_open", assets=_sassets, check=_scheck)
 def stat_card(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -145,14 +186,16 @@ def stat_card(canvas, t, params, at):
     k = W / CW                                                   # 卡片像素 → 设计像素
     cx, cy = params.get("pos", [C.W / 2, 900])
     fo = P.fade_out(u, dur, 0.3)
-    base = P.sprite(canvas, ("card_attr", W), lambda: P.add_shadow(P.fit_width(P.load_pil(canvas, CARD), W), (6, 10), 9, 0.34))
+    nrows = len(_rows(params))
+    card_im, CHe = _card_pil(canvas, lay, nrows)
+    base = P.sprite(canvas, ("card_attr", W, nrows), lambda: P.add_shadow(P.fit_width(card_im, W), (6, 10), 9, 0.34))
     s, sx, sy = P.pop_xy(u, f=1.8, d=6.2, squash=0.05)
     slide = 260 * (1 - anim.out_cubic(u / 0.45))
     g = P.Group(cx, cy + slide, s, -3.5 * (1 - anim.smooth(u / 0.5)))
     canvas.blit(base, g.cx, g.cy, scale=g.g, sx=sx, sy=sy, rot=g.rot, alpha=min(1.0, u / 0.1) * fo, depth=0)
 
     def loc(x, y):                                               # 卡片像素坐标 → 卡片中心为原点的设计像素
-        return (x - CW / 2) * k, (y - CH / 2) * k
+        return (x - CW / 2) * k, (y - CHe / 2) * k
 
     name = params.get("name")
     if name and u > 0.25:
@@ -162,12 +205,13 @@ def stat_card(canvas, t, params, at):
         ps, psx, psy = P.pop_xy(a, 2.6, 8.0, 0.08)
         lx, ly = loc((x0 + x1) / 2, (y0 + y1) / 2)
         P.draw_group(canvas, nsp, g, lx, ly, sc=ps, sx=psx, sy=psy, alpha=fo)
+    gap = float(params.get("gap", T.STAT_GAP))
     n = int(params.get("max", 5))
     ssz = int(STAR * k * 1.4)
     esp = P.sprite(canvas, ("star_off", ssz), lambda: P.star_image(ssz, (222, 202, 168), (200, 176, 140)))
     lsp2 = P.sprite(canvas, ("star_on", ssz), lambda: P.edged(P.star_image(ssz, P.GOLD, (215, 140, 40)), 3, False))
     for i, r in enumerate(_rows(params)):
-        a = u - (0.45 + T.STAT_GAP * i)
+        a = u - (0.45 + gap * i)
         if a < 0:
             continue
         slot = lay["slots"][i]

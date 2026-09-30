@@ -3,7 +3,7 @@
 
 SLAM_FALL, SLAM_STAG, SLAM_MAX = 0.14, 0.17, 6          # 砸字：每个字下落 0.14 秒，第 k 个字比第 k−1 个晚 0.17 秒落地
 LIST_GAP, LIST_MAX = 0.55, 6                            # 清单：每条晚 0.55 秒弹出
-STAT_GAP, STAT_MAX = 0.75, 6                            # 属性卡：每一行晚 0.75 秒亮
+STAT_GAP, STAT_MAX = 0.75, 6                            # 属性卡：每一行晚 0.75 秒亮（默认；stat_card 的 gap 参数可以改）
 KAONI_BTN, KAONI_OPT, KAONI_RING, KAONI_COUNT, KAONI_ANS, KAONI_END = 0.0, 0.55, 1.1, 3, 4.1, 5.8
 # 考你：0 秒「考你！」按钮弹出；0.55 秒起选项一个个弹出；1.1 秒倒计时圈出现，3、2、1 每秒一下（1.1 / 2.1 / 3.1）；4.1 秒「看答案！」；5.8 秒收掉
 FLASH_DUR = 0.10                                        # 柔和闪白：3 帧

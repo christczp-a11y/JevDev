@@ -2,7 +2,7 @@
 
 人名牌（人物第一次出场：竖排大字写名字，下面一行小字写身份，家族颜色；像挂着的木牌一样落下来晃两下）：
   {"type": "name_plate", "name": "智伯", "role": "智家老大", "house": "智家", "pos": [230, 330], "at": {...}}
-  name 2–4 个字；role ≤ 8 个字；house 家名（video/series_style.json 里的，决定颜色）或 color: "#rrggbb"；pos 是牌子挂点（牌子顶部中点）；size 大小倍数（默认 1.15）；dur 停留几秒（默认到镜头结束）。
+  name 2–4 个字；role ≤ 8 个字；house 家名（video/series_style.json 里的，决定颜色）或 color: "#rrggbb"；pos 是牌子挂点（牌子顶部中点）；size 大小倍数（默认 1.15）；dur 停留几秒（**默认 2.4：落下 0.42 秒 + 能看清 2.0 秒**；能看清的时间 = dur − 0.42，< 1.5 秒出片前报错，所以 dur ≥ 1.92；想留到镜头结束写一个大数）。
   牌子放在人物旁边、别压脸；位置要在主体安全区里（y 360 以下、左右留 80）。sfx plate_drop。
 
 人物卡（片尾收藏卡，底板 props/card_char.png）：
@@ -53,6 +53,9 @@ def _hc_errors(p):
 
 
 # ============================== 人名牌 ==============================
+PLATE_FALL, PLATE_DUR, PLATE_MIN_VISIBLE = 0.42, 2.4, 1.5
+
+
 def _pcheck(p):
     errs = _hc_errors(p) + P.need_pos(p)
     n, r = p.get("name"), p.get("role", "")
@@ -63,6 +66,9 @@ def _pcheck(p):
         errs.append("name_plate 的 role（身份）不要超过 8 个字")
     if not p.get("house") and not p.get("color"):
         errs.append("name_plate 要写 house（家名）或 color")
+    dur = p.get("dur", PLATE_DUR)
+    if not isinstance(dur, (int, float)) or dur - PLATE_FALL < PLATE_MIN_VISIBLE:
+        errs.append(f"name_plate 的 dur={dur!r}：牌子落下要 {PLATE_FALL} 秒，之后能看清的时间（不算淡入淡出）要 ≥ {PLATE_MIN_VISIBLE} 秒，所以 dur ≥ {PLATE_FALL + PLATE_MIN_VISIBLE:.2f}（不写 = {PLATE_DUR}）")
     return errs + P.glyph_errors(n, r)
 
 
@@ -97,10 +103,10 @@ def _plate(name, role, col):
     return out
 
 
-@fx("name_plate", layer="front", sfx="plate_drop", check=_pcheck)
+@fx("name_plate", params=['name', 'role', 'house', 'color', 'pos', 'size'], layer="front", sfx="plate_drop", check=_pcheck)
 def name_plate(canvas, t, params, at):
     u = t - at
-    dur = params.get("dur")
+    dur = params.get("dur", PLATE_DUR)
     if u < 0 or P.gone(u, dur):
         return
     col = _house_or_color(params, P.INK)
@@ -109,7 +115,7 @@ def name_plate(canvas, t, params, at):
     sp = P.sprite(canvas, ("plate", name, role, col), lambda: _plate(name, role, col))
     px, py = params["pos"]
     fo = P.fade_out(u, dur)
-    fall = 0.42
+    fall = PLATE_FALL
     if u < fall:
         y = py - 560 * (1 - anim.bounce_out(u / fall))
         ang = 0.0
@@ -155,7 +161,7 @@ def _wrap2(s, per=10):
     return [s[:cut], s[cut:]]
 
 
-@fx("person_card", layer="front", sfx="person_card", assets=_cassets, check=_cscheck)
+@fx("person_card", params=['img', 'name', 'line', 'no', 'stats', 'w', 'pos'], layer="front", sfx="person_card", assets=_cassets, check=_cscheck)
 def person_card(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -434,7 +440,7 @@ def _game(kind, sfx, default_sub, builder, anim_kind):
             SP = FX.get("sparkle")
             if SP is not None:
                 SP.fn(canvas, t, {"area": [px - 380, py - 260, px + 380, py + 200], "count": 10, "dur": 1.1}, at + 0.3)
-    fx(kind, layer="front", sfx=sfx, check=_mvp_check if kind == "card_mvp" else _gcheck(kind))(draw)
+    fx(kind, params=["text", "sub", "pos"], layer="front", sfx=sfx, check=_mvp_check if kind == "card_mvp" else _gcheck(kind))(draw)
     return draw
 
 
@@ -467,7 +473,7 @@ def _split(text):
     return [text[:len(text) // 2], text[len(text) // 2:]]
 
 
-@fx("big_title", layer="front", sfx="title_boom", check=_tcheck)
+@fx("big_title", params=['text', 'pos', 'deco', 'color', 'house', 'size', 'shake'], layer="front", sfx="title_boom", check=_tcheck)
 def big_title(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")

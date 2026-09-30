@@ -441,3 +441,64 @@ class Group:
 def draw_group(canvas, sp, grp, lx, ly, sc=1.0, sx=1.0, sy=1.0, rot=0.0, alpha=1.0, anchor=(0.5, 0.5), depth=0.0):
     x, y = grp.pt(lx, ly)
     canvas.blit(sp, x, y, scale=grp.g * sc, sx=sx, sy=sy, rot=grp.rot + rot, alpha=alpha, anchor=anchor, depth=depth)
+
+
+# ============================== 人物框（check(params, shot) 和氛围避脸用） ==============================
+FACE_FRAC = (0.25, 0.75, 0.0, 0.40)        # 脸在人物图里的位置：x0, x1, y0, y1（占图宽 / 图高的比例，同 storyboard_check）
+
+
+@functools.lru_cache(maxsize=256)
+def _img_size(path):
+    with Image.open(path) as im:
+        return im.size
+
+
+def actor_boxes(shot):
+    """一个镜头里所有人物的框：[{"id", "body": (x0, y0, x1, y1), "face": (...)}]（设计坐标；按分镜表里的 pos / h 和图片宽高比算，不含出场动画）。
+    图片找不到（本集专用素材）的人物跳过。shot = 分镜表里的一个镜头字典（check(params, shot) 拿到的就是它）。"""
+    out = []
+    for a in (shot or {}).get("actors", []):
+        try:
+            sw, sh = _img_size(str(C.ASSETS / a["img"]))
+            x, y = a["pos"]
+            H = float(a["h"])
+        except (KeyError, TypeError, ValueError, OSError):
+            continue
+        W = H * sw / sh
+        x0, y0 = x - W / 2, y - H
+        f = FACE_FRAC
+        out.append({"id": a.get("id", a["img"]), "body": (x0, y0, x0 + W, y),
+                    "face": (x0 + f[0] * W, y0 + f[2] * H, x0 + f[1] * W, y0 + f[3] * H)})
+    return out
+
+
+def boxes_overlap(a, b, margin=0.0):
+    return a[0] < b[2] - margin and b[0] < a[2] - margin and a[1] < b[3] - margin and b[1] < a[3] - margin
+
+
+def face_avoid(shot, pad=40):
+    """氛围粒子要避开的框：每个人物的脸框，四周多留 pad 像素。check 里 params["_avoid"] = face_avoid(shot)。"""
+    return [[round(b["face"][0] - pad), round(b["face"][1] - pad), round(b["face"][2] + pad), round(b["face"][3] + pad)] for b in actor_boxes(shot)]
+
+
+def avoid_alpha(boxes, x, y, soft=70.0):
+    """点 (x, y) 离最近的避让框有多远 → 0..1 的不透明度系数：在框里 0，离开 soft 像素以上 1，中间平滑（粒子飘过脸边上会渐隐，不会突然消失）。"""
+    k = 1.0
+    for x0, y0, x1, y1 in boxes or ():
+        dx = max(x0 - x, 0.0, x - x1)
+        dy = max(y0 - y, 0.0, y - y1)
+        d = math.hypot(dx, dy)
+        k = min(k, anim.smooth(d / soft))
+    return k
+
+
+def add_sfx(shot, at, dt, name):
+    """往镜头的 sfx 表里加一条：锚点 at（分镜表里这个特效的 at）往后 dt 秒响 name。已经有同样的一条就不重复加（check 在主进程和渲染进程各跑一遍）。"""
+    if shot is None:
+        return
+    a = dict(at) if isinstance(at, dict) else {}
+    a["dt"] = round(float(a.get("dt", 0.0)) + dt, 4)
+    entry = {"name": name, "at": a}
+    lst = shot.setdefault("sfx", [])
+    if entry not in lst:
+        lst.append(entry)

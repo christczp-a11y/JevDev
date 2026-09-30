@@ -19,6 +19,7 @@ from fx import fx
 from sfx import timing as T
 
 SHAKE_DUR = 0.28
+EXIT = 0.3
 
 
 def _color(p):
@@ -42,11 +43,11 @@ def _check(p):
     return errs
 
 
-@fx("smash", layer="front", sfx="slam_1", check=_check)
+@fx("smash", params=['text', 'pos', 'size', 'color', 'house', 'shake'], layer="front", sfx="slam_1", check=_check)
 def smash(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
-    if u < 0 or P.gone(u, dur):
+    if u < 0 or P.gone(u, dur, EXIT):
         return
     text = params["text"]
     n = len(text)
@@ -75,7 +76,10 @@ def smash(canvas, t, params, at):
     lim = C.SHAKE_AMP_MAX
     dx, dy = max(-lim, min(lim, dx)), max(-lim, min(lim, dy))
     P.shift_screen(canvas, dx, dy)
-    fo = P.fade_out(u, dur)
+    # 退场：字带着白纸边和纸影一起缩小 0.3 秒，前 40% 不透明度不变（白边在浅色背景上一淡就看不见，所以先缩、后淡），后面一起淡出
+    v = 0.0 if dur is None else anim.clamp((u - dur) / EXIT)
+    fo = 1.0 - anim.smooth((v - 0.4) / 0.6)
+    shrink = 1.0 - 0.45 * anim.in_cubic(v)
     for k in range(n):
         land = T.SLAM_FALL + T.SLAM_STAG * k
         s0 = land - T.SLAM_FALL
@@ -93,7 +97,7 @@ def smash(canvas, t, params, at):
             q = math.exp(-a * 9.5) * math.cos(2 * math.pi * 2.9 * a)
             y, sc = by, 1.0
             sx, sy, rot = 1.0 + 0.24 * q, 1.0 - 0.30 * q, tilt[k] * 0.5 * math.exp(-a * 5) * math.cos(2 * math.pi * 2.0 * a)
-        canvas.blit(sp, xs[k] + dx, y, scale=sc * (1 if dur is None else max(fo, 0.001)), sx=sx, sy=sy, rot=rot, alpha=fo, anchor=(0.5, 0.93), depth=0)
+        canvas.blit(sp, xs[k] + dx, y, scale=sc * shrink, sx=sx, sy=sy, rot=rot, alpha=fo, anchor=(0.5, 0.93), depth=0)
         a = u - land
         if 0 <= a < 0.5:
             # 冲击环：变大、变细、变淡

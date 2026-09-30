@@ -75,7 +75,8 @@ class UI:
         if not lines:
             return None
         w, h = 960, C.TITLE_Y1 - C.TITLE_Y0
-        kick = text_image(C.KICKER_FMT.format(no=sb.get("no", "")), "body", 30, C.RED)
+        kick_text = C.KICKER_FMT.format(no=sb.get("no", ""), name=sb.get("name", "")).rstrip(" ·")          # 没写本集名就只剩「第 N 集」
+        kick = text_image(kick_text, "body", 30, C.RED)
         cols = [C.INK, C.RED]
         gap, avail = 8, h - 20 - kick.height - 14
         size = min(84, int(880 // max(len(l) for l in lines)))

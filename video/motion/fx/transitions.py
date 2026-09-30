@@ -7,10 +7,10 @@ tv_switch（解说台的纸屏幕展开成整个画面，「按一下，画面�
   iris         dur 0.7  pos: [x, y] 圆心（默认画面中心偏上 [540, 900]，可以对准主体）；color: 纸色（默认米白，也可 ink / 家族色）
   fade_paper   dur 0.7  淡到纸色再淡入下一镜（换时间、换场）
   whip         dur 0.28 dir: left（默认，画面往左甩，下一镜从右边进来）/ right / up / down
-  tv_switch    dur 0.8  pos: [x, y] 纸屏幕中心（默认 [540, 700]，要和 screen 特效的 pos 一致）；w: 起始屏幕宽（默认 800）
+  tv_switch    dur 0.8  前一镜要先放好纸屏幕（`screen` 特效）；pos: 纸屏幕**纸面**的中心，w: 纸面的宽（默认 414；纸面 = 木框宽 × 0.765，中心比木框中心偏 (−0.021, −0.040)×框宽）。
+               屏幕里的画先叠化成故事的画，再从纸面大小放大到盖满整个画面
 """
 import functools
-import math
 
 import cv2
 import numpy as np
@@ -59,6 +59,7 @@ def _paper_bg(w, h, base=(238, 228, 208)):
 
 def _mix(a, b, m):
     """m: float32 (h, w) 0..1 → a*(1-m) + b*m。"""
+    m = np.asarray(m, np.float32)
     if m.ndim == 2:
         m = m[..., None]
     return (a.astype(np.float32) * (1 - m) + b.astype(np.float32) * m).astype(np.uint8)
@@ -73,7 +74,7 @@ def _shadow_from(mask, canvas, dx, dy, blur, strength):
 
 
 # ============================== 淡到纸色 ==============================
-@transition("fade_paper", dur=0.7, sfx="fade_soft", check=_pcheck())
+@transition("fade_paper", params=[], dur=0.7, sfx="fade_soft", check=_pcheck())
 def fade_paper(a, b, p, params, canvas):
     bg = _paper_bg(canvas.w, canvas.h)
     if p < 0.5:
@@ -84,19 +85,36 @@ def fade_paper(a, b, p, params, canvas):
 
 
 # ============================== 圆圈收拢 ==============================
-@transition("iris", dur=0.7, sfx="iris", check=_pcheck())
+@functools.lru_cache(maxsize=16)
+def _iris_dists(cx, cy):
+    """屏幕上每个点（粗网格）到圆心的距离，排好序：第 q 分位数 = 「圆里正好装下画面 q 这么多面积」时的半径。"""
+    gy, gx = np.mgrid[0:96, 0:54].astype(np.float32)
+    d = np.hypot((gx + 0.5) * (C.W / 54) - cx, (gy + 0.5) * (C.H / 96) - cy).ravel()
+    return np.sort(d)
+
+
+def _iris_radius(area, cx, cy):
+    """圆里装着画面的面积比例 area（0..1）→ 半径（设计像素）。"""
+    d = _iris_dists(round(cx), round(cy))
+    if area <= 0:
+        return 0.0
+    if area >= 1:
+        return float(d[-1]) * 1.03
+    return float(np.interp(area * (len(d) - 1), np.arange(len(d)), d))
+
+
+@transition("iris", params=['pos', 'color'], dur=0.7, sfx="iris", check=_pcheck())
 def iris(a, b, p, params, canvas):
+    """圆圈收拢再放开。缓动按「圈里画面的面积」走，不按半径走：面积随时间 smooth 地变，亮度（旧画面 → 纸色 → 新画面）就不会在两三帧里跳掉大半。"""
     S = canvas.S
     h, w = canvas.h, canvas.w
     cx, cy = params.get("pos", [C.W / 2, 900])
     col = P.rgb(params.get("color"), (238, 228, 208))
-    R0 = math.hypot(max(cx, C.W - cx), max(cy, C.H - cy)) * 1.02
     if p < 0.5:
-        r = R0 * (1 - anim.smooth(p / 0.5)) ** 1.0
-        inner = a
+        area, inner = 1.0 - anim.smooth(p / 0.5), a
     else:
-        r = R0 * anim.smooth((p - 0.5) / 0.5)
-        inner = b
+        area, inner = anim.smooth((p - 0.5) / 0.5), b
+    r = _iris_radius(area, cx, cy)
     bg = _paper_bg(w, h, tuple(col)) if col != (238, 228, 208) else _paper_bg(w, h)
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     d = np.hypot(xx - cx * S, yy - cy * S)
@@ -104,12 +122,12 @@ def iris(a, b, p, params, canvas):
     inside = 1.0 - _smoothstep(d, rr - 1.2, rr + 1.2)                    # 圈里面（抗锯齿）
     ring = (1.0 - _smoothstep(np.abs(d - (rr + 7 * S)), 6 * S, 8 * S)) * (d >= rr - 1)      # 圈外那一圈白纸边
     out = _mix(bg, inner, inside)
-    out = _mix(out, np.full_like(out, (P.WHITE[2], P.WHITE[1], P.WHITE[0])), (ring * (1 - inside)).astype(np.float32) * (r > 2))
+    out = _mix(out, np.full_like(out, (P.WHITE[2], P.WHITE[1], P.WHITE[0])), (ring * (1 - inside)).astype(np.float32) * (0 < area < 1))
     return out
 
 
 # ============================== 甩镜 ==============================
-@transition("whip", dur=0.28, sfx="whip", check=_pcheck())
+@transition("whip", params=['dir'], dur=0.28, sfx="whip", check=_pcheck())
 def whip(a, b, p, params, canvas):
     d = params.get("dir", "left")
     h, w = a.shape[:2]
@@ -135,7 +153,7 @@ def whip(a, b, p, params, canvas):
 
 
 # ============================== 纸片擦过 ==============================
-@transition("paper_wipe", dur=0.8, sfx="paper_swipe", check=_pcheck())
+@transition("paper_wipe", params=['colors', 'dir'], dur=0.8, sfx="paper_swipe", check=_pcheck())
 def paper_wipe(a, b, p, params, canvas):
     S = canvas.S
     h, w = canvas.h, canvas.w
@@ -182,61 +200,85 @@ def _paper_tex_cache(w, h):
 
 # ============================== 墨笔刷 ==============================
 @functools.lru_cache(maxsize=8)
-def _bristles(h, seed=5):
-    rng = np.random.default_rng(seed)
-    n = rng.standard_normal(h).astype(np.float32)
-    n = cv2.GaussianBlur(n[None, :], (0, 0), 2.2)[0] * 3.2 + cv2.GaussianBlur(rng.standard_normal(h).astype(np.float32)[None, :], (0, 0), 9)[0] * 5.5
-    return np.clip(n / (n.std() + 1e-6), -2.5, 2.5)
+def _brush_rows(h, n, seed=5):
+    """每一笔的「毛刷」：每一行（y）一个 0..1 的数 s（大的 = 这一缕毛刷带的墨多、飞白拖得长），相邻几行差不多（缕宽 6–12 像素），整体在 0..1 里均匀分布。"""
+    out = []
+    for i in range(n):
+        rng = np.random.default_rng(seed * 31 + i)
+        z = cv2.GaussianBlur(rng.standard_normal(h).astype(np.float32)[None, :], (0, 0), 3.0)[0] + 0.5 * cv2.GaussianBlur(rng.standard_normal(h).astype(np.float32)[None, :], (0, 0), 1.2)[0]
+        rank = np.argsort(np.argsort(z)).astype(np.float32) / max(h - 1, 1)
+        out.append(rank)
+    return out
 
 
 @functools.lru_cache(maxsize=8)
-def _jitter_x(w, seed=9):
+def _smooth_noise(n, sigma, seed):
     rng = np.random.default_rng(seed)
-    n = cv2.GaussianBlur(rng.standard_normal(w).astype(np.float32)[None, :], (0, 0), 7)[0]
-    n2 = cv2.GaussianBlur(rng.standard_normal(w).astype(np.float32)[None, :], (0, 0), 1.6)[0]
-    return np.clip((n * 4.0 + n2 * 1.2) / 2.0, -2.5, 2.5)
+    z = cv2.GaussianBlur(rng.standard_normal(n).astype(np.float32)[None, :], (0, 0), sigma)[0]
+    return z / (z.std() + 1e-6)
 
 
-@transition("ink_wipe", dur=0.7, sfx="brush", check=_pcheck())
+@transition("ink_wipe", params=['strokes', 'dir'], dur=0.7, sfx="brush", check=_pcheck())
 def ink_wipe(a, b, p, params, canvas):
-    """几条粗笔画的墨从左刷到右：笔头钝钝的（一排毛刷的参差），尾巴是飞白；墨条上下互相叠着，刷过的地方露出新画面。"""
+    """毛笔刷过去：一两道粗墨笔从左往右一笔扫过。笔头是圆的、边缘有一点不规则（但平滑）；笔肚一整块浓墨，刷过的地方露出新画面；
+    笔尾是「飞白」：一缕一缕拖长短不一的墨丝，毛刷的纹路里露着新画面。墨里有纸纤维的纹理，上下两笔边缘微微起伏并且叠着盖满。
+    strokes：笔数（默认 2）；dir：right（默认）/ left。"""
     S = canvas.S
     h, w = canvas.h, canvas.w
-    n = int(params.get("strokes", 4))
+    n = max(1, min(int(params.get("strokes", 2)), 4))
     right = params.get("dir", "right") == "right"
-    bris = _bristles(h)
     yy = np.arange(h, dtype=np.float32)[:, None]
     X = np.arange(w, dtype=np.float32)[None, :]
     if not right:
         X = (w - 1) - X
-    jx = _jitter_x(w)[None, :]
-    band_h = h / n
-    Lw = 0.55 * w
-    stag = 0.08
+    rows = _brush_rows(h, n)
+    band = h / n
+    core_len = 0.20 * w
+    tail_len = 0.46 * w
+    lead_r = 0.16 * band
+    f_start, f_end = -0.10 * w, w + core_len + tail_len + 0.10 * w
+    stag = 0.18 if n > 1 else 0.0
     ink_m = np.zeros((h, w), np.float32)
     b_m = np.zeros((h, w), np.float32)
+    xs = np.arange(w, dtype=np.float32)
     for i in range(n):
         q = np.clip((p - i * stag) / (1 - (n - 1) * stag), 0, 1)
-        f = -40 * S + (w + Lw + 80 * S) * anim.smooth(q)
-        y0 = (i - 0.30) * band_h + jx * 9 * S                                      # 每一笔上下沿参差不齐，互相叠着盖满
-        y1 = (i + 1.30) * band_h + jx[:, ::-1] * 9 * S
-        vert = _smoothstep(yy, y0 - 1.5, y0 + 1.5) * (1 - _smoothstep(yy, y1 - 1.5, y1 + 1.5))
-        xf = f + bris[:, None] * 7 * S                                              # 笔头：钝，毛刷参差
-        xt = f - Lw * (0.70 + 0.11 * bris[:, None])                                # 尾巴：飞白
-        ink_i = _smoothstep(X, xt - 1.0, xt + 1.0) * (1 - _smoothstep(X, xf - 1.0, xf + 1.0)) * vert
-        b_i = (1 - _smoothstep(X, xt - 1.0, xt + 1.0)) * vert
+        f = f_start + (f_end - f_start) * (0.75 * anim.smooth(q) + 0.25 * q)              # 中段快、两头慢，一笔下去的手感
+        # 这一笔占的行：[y0, y1]，上下都多出一截，和相邻一笔叠着
+        tilt = 0.05 * h * (xs / w - 0.5) * (1 if i % 2 == 0 else -1)
+        w0 = np.clip(_smooth_noise(w, 110.0, 11 + i)[:w], -2, 2) * 0.05 * band                   # 上下沿的起伏（平滑，最多 ±0.1 笔宽）
+        w1 = np.clip(_smooth_noise(w, 110.0, 21 + i)[:w], -2, 2) * 0.05 * band
+        y0 = (i - 0.45) * band + w0 + tilt if i == 0 else (i - 0.20) * band + w0 + tilt              # 第一笔的上沿、最后一笔的下沿在画面外面；相邻两笔各叠 0.2 笔宽，起伏也漏不出缝
+        y1 = (i + 1.45) * band + w1 + tilt if i == n - 1 else (i + 1.20) * band + w1 + tilt
+        vert = _smoothstep(yy, y0[None, :] - 2.5 * S, y0[None, :] + 2.5 * S) * (1 - _smoothstep(yy, y1[None, :] - 2.5 * S, y1[None, :] + 2.5 * S))
+        yc = ((i + 0.5) * band)
+        u = np.clip((yy[:, 0] - yc) / (0.60 * band), -1, 1)                                  # 行相对笔中心的位置 -1..1
+        wob = 9.0 * S * _smooth_noise(h, 12.0, 31 + i)                                       # 笔头边缘的不规则，平滑的
+        xf = f - lead_r * u ** 2 * 2.2 + wob                                                # 笔头：圆的（中间冲得最远）
+        s = rows[i]
+        xm = xf - core_len * (0.75 + 0.25 * s)                                              # 浓墨笔肚的尾端（也是新画面露出来的边界）
+        ls = tail_len * s ** 1.6                                                             # 这一行飞白拖多长
+        XF, XM, LS = xf[:, None], xm[:, None], ls[:, None]
+        core = _smoothstep(X, XM - 1.2, XM + 1.2) * (1 - _smoothstep(X, XF - 1.2, XF + 1.2))
+        strand = (1 - _smoothstep(XM - X, 0.0, np.maximum(LS, 1.0))) * (X <= XM + 1.0) * (LS > 6.0)       # 飞白：从笔肚往回一缕一缕淡出
+        strand = strand * (0.55 + 0.45 * _smoothstep(s[:, None], 0.25, 0.6))
+        ink_i = np.maximum(core, strand * 0.92) * vert
+        b_i = (1 - _smoothstep(X, XM - 1.2, XM + 1.2)) * vert
         ink_m = np.maximum(ink_m, ink_i)
         b_m = np.maximum(b_m, b_i)
     out = _mix(a, b, b_m)
     tex = _paper_tex_cache(w, h)
     ink = np.empty((h, w, 3), np.float32)
     ink[:] = (C.INK[2], C.INK[1], C.INK[0])
-    ink = ink * (1 + 0.16 * tex[..., None]) + 8
+    ink = ink * (1 + 0.14 * tex[..., None]) + 6
+    # 墨条的边缘比中间浓一点点（墨在纸上聚边）
+    edge_dark = np.clip(1.0 - ink_m, 0, 1) * ink_m * 4.0
+    ink = ink * (1 - 0.18 * edge_dark[..., None])
     return _mix(out, np.clip(ink, 0, 255).astype(np.uint8), ink_m)
 
 
 # ============================== 翻书页 ==============================
-@transition("page_turn", dur=0.7, sfx="page_flip", check=_pcheck())
+@transition("page_turn", params=['side'], dur=0.7, sfx="page_flip", check=_pcheck())
 def page_turn(a, b, p, params, canvas):
     """一页纸从右往左卷起来撕下去：左边是还没翻的旧画面，中间一卷带圆柱明暗的纸背（浅浅透出旧画面的镜像），右边露出新画面；卷得过去的地方有软阴影。"""
     S = canvas.S
@@ -281,18 +323,18 @@ def page_turn(a, b, p, params, canvas):
 
 
 # ============================== 解说台切到故事 ==============================
-@transition("tv_switch", dur=0.8, sfx="tv_click", check=_pcheck())
+@transition("tv_switch", params=['pos', 'w'], dur=0.8, sfx="tv_click", check=_pcheck())
 def tv_switch(a, b, p, params, canvas):
     S = canvas.S
     h, w = canvas.h, canvas.w
     cx, cy = params.get("pos", [C.W / 2, 700])
-    w0 = float(params.get("w", 800))
-    h0 = w0 * 0.58
-    g = anim.smooth(min(p / 0.25, 1.0))                                       # 前 25%：小画面从屏幕位置「亮」出来（0 → 屏幕大小）
-    e = anim.smooth(max(p - 0.25, 0.0) / 0.75)                                 # 后 75%：从屏幕大小放大到盖满画面
-    x0f, y0f = cx - w0 / 2 * g, cy - h0 / 2 * g
+    w0 = float(params.get("w", 414))
+    h0 = w0 * 0.576                                                            # 纸屏幕的纸面是 16:9（props/screen_frame.png）
+    e = anim.smooth(p)                                                         # 整个转场：纸面大小的矩形放大到盖满整个画面
+    alpha_in = anim.smooth(p / 0.2)                                            # 前 20%：屏幕里的画换成故事里的画（叠化），再开始放大
+    x0f, y0f = cx - w0 / 2, cy - h0 / 2
     left_, top_ = x0f * (1 - e), y0f * (1 - e)
-    right_, bot_ = cx + w0 / 2 * g + (C.W - (cx + w0 / 2 * g)) * e, cy + h0 / 2 * g + (C.H - (cy + h0 / 2 * g)) * e
+    right_, bot_ = x0f + w0 + (C.W - (x0f + w0)) * e, y0f + h0 + (C.H - (y0f + h0)) * e
     zoom = 1.0 + 0.10 * e
     A = cv2.resize(a, None, fx=zoom, fy=zoom, interpolation=cv2.INTER_LINEAR)
     ox, oy = int((A.shape[1] - w) * (cx * S / w)), int((A.shape[0] - h) * (cy * S / h))
@@ -301,7 +343,7 @@ def tv_switch(a, b, p, params, canvas):
         A = cv2.resize(A, (w, h))
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     rx0, ry0, rx1, ry1 = left_ * S, top_ * S, right_ * S, bot_ * S
-    r = max(0.0, min(44 * S * (1 - e), (rx1 - rx0) / 2 - 1, (ry1 - ry0) / 2 - 1))
+    r = max(0.0, min(8 * S * (1 - e), (rx1 - rx0) / 2 - 1, (ry1 - ry0) / 2 - 1))
     # 圆角矩形距离场
     qx = np.abs(xx - (rx0 + rx1) / 2) - ((rx1 - rx0) / 2 - r)
     qy = np.abs(yy - (ry0 + ry1) / 2) - ((ry1 - ry0) / 2 - r)
@@ -320,11 +362,9 @@ def tv_switch(a, b, p, params, canvas):
             canvas_b[y_a:y_a + hh, x_a:x_a + ww] = Bs[sy_a:sy_a + hh, sx_a:sx_a + ww]
     else:
         canvas_b = b
-    shadow = (1 - _smoothstep(dist, 0, 40 * S)) * (1 - inside) * 0.30 * (1 - e)
+    grow = min(1.0, e * 8.0)                                                   # 刚开始矩形就是纸面本身（外面已经是解说台的木框），边框和阴影随着放大才出现
+    shadow = (1 - _smoothstep(dist, 0, 40 * S)) * (1 - inside) * 0.30 * (1 - e) * grow
     out = (A.astype(np.float32) * (1 - shadow[..., None])).astype(np.uint8)
-    frame_w = 22 * S * (1 - e)
-    frame = (1 - _smoothstep(np.abs(dist - frame_w / 2), frame_w / 2 - 1, frame_w / 2 + 1)) * (dist > -1) * (frame_w > 1.0)
-    out = _mix(out, np.full_like(out, (60, 80, 110)), frame.astype(np.float32))
-    edge = (1 - _smoothstep(np.abs(dist - frame_w - 5 * S), 4 * S, 5.5 * S)) * (dist > frame_w) * (frame_w > 1.0)
+    edge = (1 - _smoothstep(np.abs(dist - 4 * S), 2.5 * S, 5 * S)) * (dist > 0) * grow
     out = _mix(out, np.full_like(out, (P.WHITE[2], P.WHITE[1], P.WHITE[0])), (edge * (1 - inside)).astype(np.float32) * 0.9)
-    return _mix(out, canvas_b, inside.astype(np.float32))
+    return _mix(out, _mix(A, canvas_b, alpha_in), inside.astype(np.float32))

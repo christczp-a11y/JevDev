@@ -46,7 +46,7 @@ def _mcheck(p):
     return P.need_pos(p) if "pos" in p else []
 
 
-@fx("map", layer="front", sfx="paper_unfold", assets=lambda p: [MAP], check=_mcheck)
+@fx("map", params=['pos', 'w', 'dim'], layer="front", sfx="paper_unfold", assets=lambda p: [MAP], check=_mcheck)
 def map_(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -99,7 +99,7 @@ def _castle(size, col):
     return P.edged(im, 8)
 
 
-@fx("map_city", layer="front", sfx="city_pop", assets=_cassets, check=_c2check)
+@fx("map_city", params=['pos', 'name', 'house', 'color', 'icon', 'size'], layer="front", sfx="city_pop", assets=_cassets, check=_c2check)
 def map_city(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -187,7 +187,7 @@ def _head(size, col):
     return P.add_shadow(P.edged(im, 6, False), (3, 5), 5, 0.3)
 
 
-@fx("map_arrow", layer="front", sfx="draw", check=_acheck)
+@fx("map_arrow", params=['pts', 'house', 'color', 'width'], layer="front", sfx="draw", check=_acheck)
 def map_arrow(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")

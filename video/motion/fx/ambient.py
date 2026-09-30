@@ -7,7 +7,7 @@
   {"type": "confetti", "at": {...}, "mode": "burst"}                    纸屑彩带：burst = 从画面下面两角喷起来再落下；fall = 从上面一直飘下来
       count（默认 100）、dur（fall 默认到镜头结束，burst 约 2.6 秒落完）
   {"type": "dust", "at": {...}, "mode": "float"}                        灰尘：float = 光里飘着的小尘（旧屋、行军、废墟）；puff = 在 pos 落地扬起一团尘（脚下、落地、撞击）
-      float：area、count（默认 40）、dur；puff：pos、size（默认 150）
+      float：area、count（默认 40）、dur；puff：pos（脚底）、size（默认 150）：一团柔和的尘雾颗粒（大的很淡很糊、中的、细碎的纸屑）向两边和上面散开，边散边胀大，1 秒左右淡掉
 音效：rays → shine，sparkle → twinkle，confetti → party，dust 的 puff → dust_puff（float 不出声）（写 sfx: null 静音）。
 """
 import math
@@ -23,8 +23,12 @@ from fx import fx
 DEF_AREA = [80, 360, 1000, 1400]
 
 
-def _check(p):
+def _check(p, shot=None):
     errs = []
+    if shot is not None and "avoid" not in p:
+        p["_avoid"] = P.face_avoid(shot)                    # 出片前自动记下这个镜头里每个人物的脸框：粒子飘到脸边上会渐隐，不会盖住脸（想关掉写 "avoid": []；想自己指定写 "avoid": [[x0, y0, x1, y1], ...]）
+    elif "avoid" in p:
+        p["_avoid"] = p["avoid"]
     if P.bad_color(p.get("color")):
         errs.append(P.bad_color(p.get("color")))
     for k in ("pos",):
@@ -48,7 +52,7 @@ def _radial(w, h, cx, cy, R, power):
     return _grad[key]
 
 
-@fx("rays", layer="back", sfx="shine", check=_check)
+@fx("rays", params=['pos', 'color', 'alpha', 'count', 'radius'], layer="back", sfx="shine", check=lambda p: _check(p))
 def rays(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -105,7 +109,7 @@ def _star4(size, col):
 SPARK_COLS = [(255, 236, 170), (255, 255, 255), (255, 208, 96), (196, 230, 255)]
 
 
-@fx("sparkle", layer="front", sfx="twinkle", check=_check)
+@fx("sparkle", params=['area', 'count', 'avoid'], layer="front", sfx="twinkle", check=_check)
 def sparkle(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -135,7 +139,7 @@ def sparkle(canvas, t, params, at):
         sp = P.sprite(canvas, ("star4", sz, int(ci[i])), lambda sz=sz, c=int(ci[i]): _star4(sz, SPARK_COLS[c]))
         x = min(max(px[i] + ox, x0), x1)
         y = min(max(py[i] + oy, y0), y1) - 28 * s
-        canvas.blit(sp, x, y, scale=env, rot=rot0[i] + 40 * s, alpha=min(1.0, env * 1.3) * fo, depth=1.0)
+        canvas.blit(sp, x, y, scale=env, rot=rot0[i] + 40 * s, alpha=min(1.0, env * 1.3) * fo * P.avoid_alpha(params.get("_avoid"), x, y), depth=1.0)
 
 
 # ============================== 纸屑彩带 ==============================
@@ -150,14 +154,14 @@ def _piece(col, w, h):
     return P.Image.fromarray(a.astype(np.uint8), "RGBA")
 
 
-def _ccheck(p):
-    errs = _check(p)
+def _ccheck(p, shot=None):
+    errs = _check(p, shot)
     if p.get("mode", "burst") not in ("burst", "fall"):
         errs.append("confetti 的 mode 只能是 burst / fall")
     return errs
 
 
-@fx("confetti", layer="front", sfx="party", check=_ccheck)
+@fx("confetti", params=['mode', 'count', 'avoid'], layer="front", sfx="party", check=_ccheck)
 def confetti(canvas, t, params, at):
     u = t - at
     mode = params.get("mode", "burst")
@@ -201,12 +205,12 @@ def confetti(canvas, t, params, at):
             continue
         sp = P.sprite(canvas, ("piece", int(ci[i]), int(szw[i]), int(szh[i])), lambda i=i: _piece(CONF[int(ci[i])], int(szw[i]), int(szh[i])))
         flip = math.cos(spin[i] * u + ph[i])
-        canvas.blit(sp, x, y, sx=flip if abs(flip) > 0.08 else 0.08, rot=rot0[i] + spin[i] * 20 * u, alpha=fo, depth=0)
+        canvas.blit(sp, x, y, sx=flip if abs(flip) > 0.08 else 0.08, rot=rot0[i] + spin[i] * 20 * u, alpha=fo * P.avoid_alpha(params.get("_avoid"), x, y), depth=0)
 
 
 # ============================== 灰尘 ==============================
-def _dcheck(p):
-    errs = _check(p)
+def _dcheck(p, shot=None):
+    errs = _check(p, shot)
     if p.get("mode", "float") not in ("float", "puff"):
         errs.append("dust 的 mode 只能是 float / puff")
     if p.get("mode") == "puff" and "pos" not in p:
@@ -215,7 +219,7 @@ def _dcheck(p):
     return errs
 
 
-@fx("dust", layer="front", sfx="dust_puff", check=_dcheck)
+@fx("dust", params=['mode', 'area', 'count', 'pos', 'size', 'color', 'avoid'], layer="front", sfx="dust_puff", check=_dcheck)
 def dust(canvas, t, params, at):
     u = t - at
     mode = params.get("mode", "float")
@@ -239,29 +243,54 @@ def dust(canvas, t, params, at):
             x = x0 + (x - x0) % (x1 - x0)
             y = y0 + (y - y0) % (y1 - y0)
             tw = 0.5 + 0.5 * math.sin(1.3 * u + ph[i] * 2)
-            P.circle(canvas, m, (x, y), r[i] * (0.8 + 0.4 * tw), int(120 + 110 * tw))
+            P.circle(canvas, m, (x, y), r[i] * (0.8 + 0.4 * tw), int((120 + 110 * tw) * P.avoid_alpha(params.get("_avoid"), x, y)))
         m = cv2.GaussianBlur(m, (0, 0), max(0.6, 0.9 * canvas.S))
         P.blend(canvas, m, col, 0.7 * min(1.0, u / 0.6) * fo)
         return
-    # puff：一团尘从脚下扬起来，往两边散开，变淡
+    # puff：从脚下扬起来的一团尘：一大堆柔和的尘雾颗粒（大的很淡很糊、中的、细的碎纸屑），向两边和上面散开，边散边胀大，然后一起淡掉
     px, py = params["pos"]
-    size = float(params.get("size", 150))
+    k = float(params.get("size", 150)) / 150.0
     rng = np.random.default_rng(P.seed_of("puff", round(px), round(py)))
-    a = min(1.0, u / 0.9)
-    lumps = 9
-    m1, m2 = P.new_mask(canvas), P.new_mask(canvas)
-    for i in range(lumps):
-        side = -1 if i % 2 == 0 else 1
-        k = i // 2
-        r0 = size * (0.18 + 0.05 * rng.uniform())
-        spread = size * (0.5 + 0.22 * k) * anim.out_cubic(a)
-        rise = size * (0.10 + 0.13 * k) * anim.out_cubic(a) * (0.6 + 0.4 * rng.uniform())
-        cx = px + side * spread
-        cy = py - rise
-        r = r0 * (1 + 1.1 * anim.out_cubic(a)) * (1 + 0.15 * k)
-        P.circle(canvas, m1, (cx + 4, cy + 6), r)
-        P.circle(canvas, m2, (cx, cy), r)
-    P.blend(canvas, m1, (60, 44, 30), 0.16 * (1 - a) ** 0.8 * fo)
-    edge = cv2.dilate(m2, np.ones((max(3, round(9 * canvas.S)),) * 2, np.uint8))
-    P.blend(canvas, edge, P.WHITE, 0.85 * (1 - a) ** 0.8 * fo)
-    P.blend(canvas, m2, col, 0.95 * (1 - a) ** 0.8 * fo)
+    S = canvas.S
+    cols = [(232, 216, 186), (200, 176, 142), (170, 148, 120)]                         # 米白、浅土黄、暖灰
+    groups = [P.new_mask(canvas) for _ in range(6)]                                    # 3 种颜色 × (雾、粒)
+    ph = 0.0
+    n = 104
+    for i in range(n):
+        kind = 0 if i < 16 else (1 if i < 84 else 2)                                   # 0 大雾 1 颗粒 2 碎纸屑
+        delay = rng.uniform(0.0, 0.12)
+        life = rng.uniform(0.75, 1.25)
+        te = u - delay
+        if te < 0 or te > life:
+            continue
+        ang = math.radians(rng.uniform(-172, -8))
+        v = rng.uniform(140, 420) * k * (0.6 if kind == 0 else 1.0)
+        c = 3.0
+        run = (1 - math.exp(-c * te)) / c
+        x = px + rng.uniform(-0.3, 0.3) * 150 * k + math.cos(ang) * v * run * 1.25
+        y = py - 6 * k + math.sin(ang) * v * run * 0.8 - 26 * k * te                   # 往上飘一点
+        r0 = (rng.uniform(34, 58) if kind == 0 else rng.uniform(3, 9) if kind == 1 else rng.uniform(4, 8)) * k
+        r = r0 * (1 + 1.5 * (1 - math.exp(-2.5 * te)))
+        f = te / life
+        al = (0.42 if kind == 0 else 0.75 if kind == 1 else 0.95) * anim.smooth(te / 0.07) * (1 - anim.smooth((f - 0.30) / 0.70))
+        if al <= 0.01:
+            continue
+        ci = int(rng.integers(0, 3))
+        m = groups[ci * 2 + (0 if kind == 0 else 1)]
+        val = int(255 * al)
+        if kind == 2:                                                                    # 碎纸屑：小的斜方片，转着
+            a0 = rng.uniform(0, 6.28) + rng.uniform(-6, 6) * te
+            cs, sn = math.cos(a0), math.sin(a0)
+            w_, h_ = r * 1.6, r * 0.9
+            P.fill_poly(canvas, m, [(x + cs * w_ - sn * h_, y + sn * w_ + cs * h_), (x - cs * w_ - sn * h_, y - sn * w_ + cs * h_),
+                                    (x - cs * w_ + sn * h_, y - sn * w_ - cs * h_), (x + cs * w_ + sn * h_, y + sn * w_ - cs * h_)], val)
+        else:
+            tmp = P.new_mask(canvas)
+            P.circle(canvas, tmp, (x, y), r, val)
+            np.maximum(m, tmp, out=m)
+    for ci in range(3):
+        haze, grain = groups[ci * 2], groups[ci * 2 + 1]
+        if haze.any():
+            P.blend(canvas, cv2.GaussianBlur(haze, (0, 0), max(1.0, 16 * k * S)), cols[ci], fo)
+        if grain.any():
+            P.blend(canvas, cv2.GaussianBlur(grain, (0, 0), max(0.6, 2.4 * k * S)), cols[ci], fo)

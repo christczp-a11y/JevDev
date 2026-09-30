@@ -12,7 +12,7 @@ from engine import anim
 from fx import transition
 
 
-@transition("dissolve", dur=0.4)
+@transition("dissolve", params=[], dur=0.4)
 def dissolve(a, b, p, params, canvas):
     e = anim.smooth(p)
     return cv2.addWeighted(a, 1.0 - e, b, e, 0)

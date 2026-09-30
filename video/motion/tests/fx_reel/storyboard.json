@@ -5,7 +5,9 @@
   "特效样片合集，",
   "每个特效 2–3 秒"
  ],
+ "name": "特效样片",
  "voice": "video/motion/tests/fx_reel/voice",
+ "bgm_start": 6.0,
  "note": "阶段 B 交付：特效包的全部特效和转场各演一遍。build_reel.py 生成本文件，别手改。",
  "shots": [
   {
@@ -51,25 +53,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -80,17 +68,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -115,11 +149,16 @@
       540,
       900
      ],
+     "clear": [
+      540,
+      800,
+      300
+     ],
      "dur": 1.6
     },
     {
      "type": "label",
-     "text": "1 / 43  漫画线：集中线 lines_focus",
+     "text": "1 / 45  漫画线：集中线 lines_focus",
      "at": {
       "dt": 0
      }
@@ -169,25 +208,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -198,17 +223,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -237,7 +308,7 @@
     },
     {
      "type": "label",
-     "text": "2 / 43  漫画线：放射速度线 lines_radial",
+     "text": "2 / 45  漫画线：放射速度线 lines_radial",
      "at": {
       "dt": 0
      }
@@ -287,25 +358,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -316,17 +373,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -352,7 +455,7 @@
     },
     {
      "type": "label",
-     "text": "3 / 43  漫画线：横向速度线 lines_speed",
+     "text": "3 / 45  漫画线：横向速度线 lines_speed",
      "at": {
       "dt": 0
      }
@@ -402,25 +505,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -431,17 +520,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -509,7 +644,7 @@
     },
     {
      "type": "label",
-     "text": "4 / 43  贴纸：问号 汗滴 怒气 感叹号 sticker",
+     "text": "4 / 45  贴纸：问号 汗滴 怒气 感叹号 sticker",
      "at": {
       "dt": 0
      }
@@ -559,25 +694,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -588,17 +709,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -646,7 +813,7 @@
      "name": "heart",
      "pos": [
       300,
-      1000
+      860
      ],
      "size": 210,
      "rot": -10
@@ -665,7 +832,7 @@
     },
     {
      "type": "label",
-     "text": "5 / 43  贴纸：灯泡 星星眼 小心心 星星 sticker",
+     "text": "5 / 45  贴纸：灯泡 星星眼 小心心 星星 sticker",
      "at": {
       "dt": 0
      }
@@ -715,25 +882,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -744,17 +897,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -822,7 +1021,7 @@
     },
     {
      "type": "label",
-     "text": "6 / 43  贴纸：咚 啪 嗖（拟声字） sticker",
+     "text": "6 / 45  贴纸：咚 啪 嗖（拟声字） sticker",
      "at": {
       "dt": 0
      }
@@ -872,25 +1071,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -901,17 +1086,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -941,7 +1172,7 @@
     },
     {
      "type": "label",
-     "text": "7 / 43  砸字：本事（带震屏） smash",
+     "text": "7 / 45  砸字：本事（带震屏） smash",
      "at": {
       "dt": 0
      }
@@ -991,25 +1222,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -1020,17 +1237,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -1061,7 +1324,7 @@
     },
     {
      "type": "label",
-     "text": "8 / 43  砸字：五样本事（四个字） smash",
+     "text": "8 / 45  砸字：五样本事（四个字） smash",
      "at": {
       "dt": 0
      }
@@ -1111,25 +1374,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -1140,31 +1389,66 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
-    }
-   ],
-   "actors": [
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
     {
-     "id": "sgm",
-     "who": "司马光",
-     "img": "chars/sgm_finger.png",
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
-      270,
-      1600
+      540,
+      1423
      ],
-     "h": 540
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
+   "actors": [],
    "fx": [
     {
      "type": "checklist",
@@ -1172,19 +1456,20 @@
       "dt": 0.25
      },
      "items": [
-      "会打仗",
-      "会写文章",
       "个子高",
-      "口才好"
+      "鬓发美",
+      "射箭赶车样样行",
+      "琴棋书画都会",
+      "做事果断"
      ],
      "pos": [
       540,
-      580
+      560
      ]
     },
     {
      "type": "label",
-     "text": "9 / 43  清单：一条条弹出 checklist",
+     "text": "9 / 45  清单：一条条弹出 checklist",
      "at": {
       "dt": 0
      }
@@ -1235,25 +1520,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -1264,17 +1535,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -1321,7 +1638,7 @@
     },
     {
      "type": "label",
-     "text": "10 / 43  属性卡：本事 ★★★★★ / 好心 ★ stat_card",
+     "text": "10 / 45  属性卡：本事 ★★★★★ / 好心 ★ stat_card",
      "at": {
       "dt": 0
      }
@@ -1372,25 +1689,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -1401,17 +1704,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [],
@@ -1478,7 +1827,7 @@
     },
     {
      "type": "label",
-     "text": "11 / 43  地图：纸地图 城标 虚线箭头 map",
+     "text": "11 / 45  地图：纸地图 城标 虚线箭头 map",
      "at": {
       "dt": 0
      }
@@ -1529,25 +1878,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -1558,17 +1893,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -1598,7 +1979,7 @@
     },
     {
      "type": "label",
-     "text": "12 / 43  氛围：光芒 rays",
+     "text": "12 / 45  氛围：光芒 rays",
      "at": {
       "dt": 0
      }
@@ -1648,25 +2029,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -1677,17 +2044,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -1718,7 +2131,7 @@
     },
     {
      "type": "label",
-     "text": "13 / 43  氛围：闪粉 sparkle",
+     "text": "13 / 45  氛围：闪粉 sparkle",
      "at": {
       "dt": 0
      }
@@ -1768,25 +2181,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -1797,17 +2196,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -1832,7 +2277,7 @@
     },
     {
      "type": "label",
-     "text": "14 / 43  氛围：纸屑彩带（喷起）confetti",
+     "text": "14 / 45  氛围：纸屑彩带（喷起）confetti",
      "at": {
       "dt": 0
      }
@@ -1882,25 +2327,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -1911,17 +2342,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -1948,7 +2425,7 @@
     },
     {
      "type": "label",
-     "text": "15 / 43  氛围：纸屑彩带（飘落）confetti",
+     "text": "15 / 45  氛围：纸屑彩带（飘落）confetti",
      "at": {
       "dt": 0
      }
@@ -1998,25 +2475,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -2027,17 +2490,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -2075,7 +2584,7 @@
     },
     {
      "type": "label",
-     "text": "16 / 43  氛围：灰尘（float 飘 / puff 扬起） dust",
+     "text": "16 / 45  氛围：灰尘（float 飘 / puff 扬起） dust",
      "at": {
       "dt": 0
      }
@@ -2125,25 +2634,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -2154,17 +2649,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -2189,7 +2730,7 @@
     },
     {
      "type": "label",
-     "text": "17 / 43  氛围：雨 rain",
+     "text": "17 / 45  氛围：雨 rain",
      "at": {
       "dt": 0
      }
@@ -2239,25 +2780,40 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
+      1075
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
+     "w": 1500,
      "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1275
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
     },
     {
      "img": "sets/jin_land/water.png",
      "depth": 1.0,
      "pos": [
       540,
-      1420
+      1400
      ],
      "anchor": [
       0.5,
@@ -2265,25 +2821,69 @@
      ],
      "w": 1500,
      "repeat": "x",
+     "flip": false,
      "sway": {
       "x": 16,
-      "y": 5,
+      "y": 4,
       "period": 3.2
      }
     },
     {
-     "img": "sets/jin_land/fore.png",
+     "img": "sets/jin_land/water.png",
      "depth": 1.0,
      "pos": [
       540,
-      1640
+      1543
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1500,
-     "repeat": "x"
+     "w": 1650,
+     "repeat": "x",
+     "flip": false,
+     "sway": {
+      "x": 20,
+      "y": 4,
+      "period": 3.6,
+      "phase": 1.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1701
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "flip": false,
+     "sway": {
+      "x": 24,
+      "y": 4,
+      "period": 4.0,
+      "phase": 2.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1873
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1800,
+     "repeat": "x",
+     "flip": false
     }
    ],
    "actors": [],
@@ -2311,7 +2911,7 @@
     },
     {
      "type": "label",
-     "text": "18 / 43  氛围：水花 splash",
+     "text": "18 / 45  氛围：水花 splash",
      "at": {
       "dt": 0
      }
@@ -2361,25 +2961,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -2390,17 +2976,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -2409,7 +3041,7 @@
      "who": "赵襄子",
      "img": "chars/zxz_stand.png",
      "pos": [
-      330,
+      540,
       1610
      ],
      "h": 560
@@ -2422,16 +3054,30 @@
       "dt": 0.15
      },
      "pos": [
-      600,
-      1620
+      150,
+      1640
      ],
-     "w": 760,
-     "height": 380,
+     "w": 240,
+     "height": 340,
      "dur": 2.4
     },
     {
+     "type": "flame",
+     "at": {
+      "dt": 0.3
+     },
+     "pos": [
+      930,
+      1640
+     ],
+     "w": 240,
+     "height": 340,
+     "dur": 2.3,
+     "sfx": null
+    },
+    {
      "type": "label",
-     "text": "19 / 43  氛围：纸剪火焰 flame",
+     "text": "19 / 45  氛围：纸剪火焰（放在画面两边，不挡人） flame",
      "at": {
       "dt": 0
      }
@@ -2481,25 +3127,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -2510,17 +3142,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -2538,7 +3216,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "20 / 43  调色：回忆 grade: memory（旧纸黄 + 颗粒 + 暗角）",
+     "text": "20 / 45  调色：回忆 grade: memory（旧纸黄 + 颗粒 + 暗角）",
      "at": {
       "dt": 0
      }
@@ -2589,25 +3267,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -2618,17 +3282,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -2646,7 +3356,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "21 / 43  调色：紧张 grade: tense（稍暗 + 暗角）",
+     "text": "21 / 45  调色：紧张 grade: tense（稍暗 + 暗角）",
      "at": {
       "dt": 0
      }
@@ -2697,25 +3407,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -2726,17 +3422,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -2755,20 +3497,21 @@
     {
      "type": "tone",
      "at": {
-      "dt": 1.0
+      "dt": 0.0
      },
      "tone": "night",
-     "ramp": 0.9
+     "from": "gold",
+     "delay": 1.1,
+     "ramp": 1.0
     },
     {
      "type": "label",
-     "text": "22 / 43  颜色分段：金色（得意）→ 蓝色夜晚（密谋） grade / tone",
+     "text": "22 / 45  颜色分段：金色（得意）→ 蓝色夜晚（密谋） tone",
      "at": {
       "dt": 0
      }
     }
-   ],
-   "grade": "gold"
+   ]
   },
   {
    "id": "R23",
@@ -2813,25 +3556,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -2842,17 +3571,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -2889,7 +3664,7 @@
     },
     {
      "type": "label",
-     "text": "23 / 43  柔和闪白（≤60%，3 帧） flash",
+     "text": "23 / 45  柔和闪白（≤60%，3 帧） flash",
      "at": {
       "dt": 0
      }
@@ -2939,25 +3714,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -2968,31 +3729,66 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
-    }
-   ],
-   "actors": [
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
     {
-     "id": "sgm",
-     "who": "司马光",
-     "img": "chars/sgm_finger.png",
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
-      270,
-      1600
+      540,
+      1423
      ],
-     "h": 540
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
+   "actors": [],
    "fx": [
     {
      "type": "kaoni",
@@ -3003,11 +3799,12 @@
       "给",
       "不给"
      ],
-     "answer": 1
+     "answer": 1,
+     "end_stamp": "揭晓"
     },
     {
      "type": "label",
-     "text": "24 / 43  考你：「考你！」按钮 + 倒计时圈 + 「看答案！」 kaoni",
+     "text": "24 / 45  考你：「考你！」按钮 + 倒计时圈 + 「看答案！」 kaoni",
      "at": {
       "dt": 0
      }
@@ -3057,25 +3854,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -3086,17 +3869,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -3134,7 +3963,7 @@
     },
     {
      "type": "label",
-     "text": "25 / 43  进度物：水位刻度（变化时弹一下） progress",
+     "text": "25 / 45  进度物：水位刻度（变化时弹一下） progress",
      "at": {
       "dt": 0
      }
@@ -3155,6 +3984,107 @@
       0
      ],
      "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1075
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1275
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [],
@@ -3176,7 +4106,7 @@
     },
     {
      "type": "label",
-     "text": "26 / 43  人物卡（片尾收藏卡） person_card",
+     "text": "26 / 45  人物卡（片尾收藏卡） person_card",
      "at": {
       "dt": 0
      }
@@ -3226,25 +4156,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -3255,17 +4171,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -3274,10 +4236,10 @@
      "who": "智伯",
      "img": "chars/zb_hi_laugh.png",
      "pos": [
-      700,
-      1660
+      720,
+      1400
      ],
-     "h": 980
+     "h": 800
     }
    ],
    "fx": [
@@ -3296,7 +4258,7 @@
     },
     {
      "type": "label",
-     "text": "27 / 43  人名牌：竖排大字 + 身份，家族颜色 name_plate",
+     "text": "27 / 45  人名牌：竖排大字 + 身份，家族颜色 name_plate",
      "at": {
       "dt": 0
      }
@@ -3346,25 +4308,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -3375,17 +4323,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [],
@@ -3403,7 +4397,7 @@
     },
     {
      "type": "label",
-     "text": "28 / 43  游戏卡片：任务 card_quest",
+     "text": "28 / 45  游戏卡片：任务 card_quest",
      "at": {
       "dt": 0
      }
@@ -3453,25 +4447,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -3482,17 +4462,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [],
@@ -3510,7 +4536,7 @@
     },
     {
      "type": "label",
-     "text": "29 / 43  游戏卡片：任务失败 card_fail",
+     "text": "29 / 45  游戏卡片：任务失败 card_fail",
      "at": {
       "dt": 0
      }
@@ -3560,25 +4586,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -3589,17 +4601,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [],
@@ -3617,7 +4675,7 @@
     },
     {
      "type": "label",
-     "text": "30 / 43  游戏卡片：获得称号 card_title",
+     "text": "30 / 45  游戏卡片：获得称号 card_title",
      "at": {
       "dt": 0
      }
@@ -3667,25 +4725,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -3696,17 +4740,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [],
@@ -3724,7 +4814,7 @@
     },
     {
      "type": "label",
-     "text": "31 / 43  游戏卡片：本集 MVP card_mvp",
+     "text": "31 / 45  游戏卡片：本集 MVP card_mvp",
      "at": {
       "dt": 0
      }
@@ -3774,25 +4864,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -3803,17 +4879,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [],
@@ -3832,7 +4954,7 @@
     },
     {
      "type": "label",
-     "text": "32 / 43  大字标题：第 1 关：忍（光芒） big_title",
+     "text": "32 / 45  大字标题：第 1 关：忍（光芒） big_title",
      "at": {
       "dt": 0
      }
@@ -3882,25 +5004,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -3911,17 +5019,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [],
@@ -3940,7 +5094,7 @@
     },
     {
      "type": "label",
-     "text": "33 / 43  大字标题：水，倒过来了！（纸剪火焰） big_title",
+     "text": "33 / 45  大字标题：水，倒过来了！（纸剪火焰） big_title",
      "at": {
       "dt": 0
      }
@@ -4013,7 +5167,7 @@
     },
     {
      "type": "label",
-     "text": "34 / 43  解说台：书房 + 纸屏幕 + 按遥控器 screen / remote_click",
+     "text": "34 / 45  解说台：书房 + 纸屏幕 + 按遥控器 screen / remote_click",
      "at": {
       "dt": 0
      }
@@ -4078,25 +5232,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -4107,17 +5247,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -4140,14 +5326,14 @@
      },
      "img": "props/cup_plain_spill.png",
      "pos": [
-      360,
-      660
+      345,
+      1050
      ],
      "w": 820
     },
     {
      "type": "label",
-     "text": "35 / 43  想象泡泡 bubble",
+     "text": "35 / 45  想象泡泡（尾巴指着司马光的头，自动夹进安全区） bubble",
      "at": {
       "dt": 0
      }
@@ -4170,19 +5356,7 @@
      "w": 1280
     }
    ],
-   "actors": [
-    {
-     "id": "sgmhi",
-     "who": "司马光",
-     "img": "chars/sgm_hi_remote.png",
-     "pos": [
-      540,
-      1600
-     ],
-     "h": 860,
-     "enter": "slide_left"
-    }
-   ],
+   "actors": [],
    "fx": [
     {
      "type": "page_edge",
@@ -4190,11 +5364,14 @@
       "dt": 0.3
      },
      "y": 1200,
-     "dur": 2.2
+     "dur": 1.7,
+     "peek": "chars/sgm_hi_remote.png",
+     "peek_h": 880,
+     "peek_x": 540
     },
     {
      "type": "label",
-     "text": "36 / 43  书页边（考你时司马光从书页后探出来） page_edge",
+     "text": "36 / 45  书页边（考你时司马光从书页后探出来） page_edge",
      "at": {
       "dt": 0
      }
@@ -4232,7 +5409,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "37 / 43  转场：翻书页 page_turn",
+     "text": "37 / 45  转场：翻书页 page_turn",
      "at": {
       "dt": 0
      }
@@ -4300,25 +5477,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -4329,17 +5492,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -4357,7 +5566,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "38 / 43  转场：纸片擦过 paper_wipe",
+     "text": "38 / 45  转场：纸片擦过 paper_wipe",
      "at": {
       "dt": 0
      }
@@ -4398,7 +5607,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "39 / 43  转场：墨笔刷 ink_wipe",
+     "text": "39 / 45  转场：墨笔刷 ink_wipe",
      "at": {
       "dt": 0
      }
@@ -4466,25 +5675,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -4495,17 +5690,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -4523,7 +5764,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "40 / 43  转场：圆圈收拢 iris",
+     "text": "40 / 45  转场：圆圈收拢 iris",
      "at": {
       "dt": 0
      }
@@ -4580,25 +5821,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -4609,17 +5836,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -4637,7 +5910,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "41 / 43  转场：淡到纸色 fade_paper",
+     "text": "41 / 45  转场：淡到纸色 fade_paper",
      "at": {
       "dt": 0
      }
@@ -4677,8 +5950,20 @@
    ],
    "fx": [
     {
+     "type": "screen",
+     "at": {
+      "dt": 0.05
+     },
+     "img": "props/map_silk.png",
+     "pos": [
+      800,
+      700
+     ],
+     "w": 540
+    },
+    {
      "type": "label",
-     "text": "42 / 43  转场：甩镜 whip",
+     "text": "42 / 45  转场：甩镜 whip",
      "at": {
       "dt": 0
      }
@@ -4747,25 +6032,11 @@
      "w": 1080
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/fore.png",
      "depth": 0.9,
      "pos": [
       540,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1400,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/fore.png",
-     "depth": 0.95,
-     "pos": [
-      540,
-      1525
+      1075
      ],
      "anchor": [
       0.5,
@@ -4776,17 +6047,63 @@
     },
     {
      "img": "sets/jin_land/ground.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
       540,
-      1745
+      1275
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1400,
-     "repeat": "x"
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
     }
    ],
    "actors": [
@@ -4804,7 +6121,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "43 / 43  转场：解说台切进故事 tv_switch",
+     "text": "43 / 45  转场：解说台切进故事 tv_switch",
      "at": {
       "dt": 0
      }
@@ -4813,11 +6130,388 @@
    "transition": {
     "type": "tv_switch",
     "pos": [
-     800,
-     700
+     789,
+     678
     ],
-    "w": 540
+    "w": 414
    }
+  },
+  {
+   "id": "R44",
+   "from": {
+    "line": 49
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1075
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1275
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      700,
+      1500
+     ],
+     "h": 820,
+     "enter": "pop",
+     "acts": [
+      {
+       "at": {
+        "dt": 1.0
+       },
+       "do": "jump"
+      },
+      {
+       "at": {
+        "dt": 1.9
+       },
+       "do": "shake"
+      }
+     ]
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.6
+     },
+     "follow": "zb",
+     "attach": "head",
+     "name": "anger",
+     "size": 250
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.9
+     },
+     "follow": "zb",
+     "offset": [
+      -250,
+      -640
+     ],
+     "name": "sweat",
+     "size": 200,
+     "dur": 1.4,
+     "exit": "tear"
+    },
+    {
+     "type": "label",
+     "text": "44 / 45  贴纸：挂在人物身上 follow + 撕掉 exit tear",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R45",
+   "from": {
+    "line": 50
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1075
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1275
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
+    }
+   ],
+   "actors": [
+    {
+     "id": "frog",
+     "img": "props/frog_croak.png",
+     "pos": [
+      540,
+      1450
+     ],
+     "h": 330,
+     "enter": "pop"
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.35
+     },
+     "name": "exclaim",
+     "pos": [
+      790,
+      1050
+     ],
+     "size": 220,
+     "sfx": null
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 1.25
+     },
+     "name": "anger",
+     "pos": [
+      300,
+      1050
+     ],
+     "size": 230,
+     "sfx": null
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 2.05
+     },
+     "name": "bulb",
+     "pos": [
+      540,
+      760
+     ],
+     "size": 280,
+     "sfx": null
+    },
+    {
+     "type": "label",
+     "text": "45 / 45  系列音效：蛙叫 frog_croak / 哼 hmph / 亮起来 light_up（分镜表 sfx 里按名字用）",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "sfx": [
+    {
+     "name": "frog_croak",
+     "at": {
+      "dt": 0.35
+     }
+    },
+    {
+     "name": "hmph",
+     "at": {
+      "dt": 1.25
+     }
+    },
+    {
+     "name": "light_up",
+     "at": {
+      "dt": 2.05
+     }
+    }
+   ]
   }
  ]
 }

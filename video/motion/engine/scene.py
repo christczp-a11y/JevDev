@@ -3,6 +3,7 @@
 
 解析（分镜表 → 元素）和画图分开：解析很便宜，出片前主进程对每个镜头都解析一遍，把所有错一次报完；图在第一次画的时候才读。
 """
+import inspect
 import math
 
 import cv2
@@ -17,6 +18,15 @@ from .canvas import Canvas
 
 class SceneError(ValueError):
     pass
+
+
+def _wants_shot(fn):
+    """特效的 check 可以写成 check(params) 或 check(params, shot)：后一种拿到整个镜头的字典（人物、图层……），用来查「和人物重叠」这类要看整个镜头才知道的错。"""
+    try:
+        ps = [p for p in inspect.signature(fn).parameters.values() if p.kind in (p.POSITIONAL_ONLY, p.POSITIONAL_OR_KEYWORD)]
+    except (TypeError, ValueError):
+        return False
+    return len(ps) >= 2
 
 
 LAYER_KEYS = {"img", "depth", "pos", "anchor", "w", "h", "scale", "flip", "blur", "alpha", "repeat", "sway", "anim", "enter", "note"}
@@ -245,6 +255,9 @@ class Element:
             x += float(s.get("x", 0)) * math.sin(2 * math.pi * t_abs / per + ph)
             y += float(s.get("y", 0)) * math.sin(2 * math.pi * t_abs * 1.35 / per + 1.3 + ph)
         sp = self._sprite(path, size)
+        if self.kind == "actor":         # 给特效看的（sticker 的 follow）：这一帧这个人物在哪、多大、转了多少、有没有翻
+            cv.actor_state[self.spec.get("id", self.img)] = dict(x=x, y=y, scale=scale, sx=sx, sy=sy, rot=rot, alpha=alpha, flip=self.flip, depth=self.depth,
+                                                                 wd=sp.wd, hd=sp.hd, anchor=self.anchor)
         cv.blit(sp, x, y, scale=scale, sx=sx, sy=sy, rot=rot, alpha=alpha, anchor=self.anchor, depth=self.depth)
 
 
@@ -276,7 +289,7 @@ class Scene:
             if typ not in fx_table:
                 raise SceneError(f"{w}：没有叫 {typ!r} 的特效（已登记：{sorted(fx_table)}）")
             plug = fx_table[typ]
-            errs = plug.check(e) if plug.check else []
+            errs = (plug.check(e, spec) if _wants_shot(plug.check) else plug.check(e)) if plug.check else []
             if errs:
                 raise SceneError(f"{w}：{'；'.join(errs)}")
             at = self.rel(e["at"]) if "at" in e else 0.0
@@ -352,7 +365,7 @@ class Scene:
 
     def _fx(self, cv, tt, layer):
         for at, plug, e in self.fx:
-            if plug.layer == layer and tt >= at:
+            if e.get("layer", plug.layer) == layer and tt >= at:                 # 分镜表里给这个特效写 "layer": "back" / "front" 可以改它画在人物后面还是前面
                 plug.fn(cv, tt, e, at)
 
     def _grade(self, cv, t_abs):

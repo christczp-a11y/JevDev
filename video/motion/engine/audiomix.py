@@ -166,6 +166,7 @@ def build(plan):
             place(sfx, clip * 10 ** ((C.SFX_GAIN_DB + g) / 20), t)
     # 背景音乐：整首调到和配音同样的 RMS，再按（没人说话 −13 dB / 说话时再 −10 dB）压
     raw = decode(C.BGM)
+    raw = raw[int(float(plan.sb.get("bgm_start", 0.0)) * SR):]        # 分镜表可以写 bgm_start：从音乐第几秒开始放（样片合集避开音乐里的空拍）
     bgm = loop_bgm(raw, n_abs)
     bgm = bgm * 10 ** ((C.VOICE_TARGET_DB - float(db(np.sqrt(np.mean(raw ** 2))))) / 20)
     env = duck_envelope(voice, n_abs)

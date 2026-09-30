@@ -28,6 +28,7 @@ class Canvas:
 
     def reset(self):
         self.img[:] = _PAPER_BGR
+        self.actor_state = {}           # 人物 id → 这一帧的变换（scene.py 画完人物写进来；特效 follow 用，只读）
 
     # ---------- 镜头变换 ----------
     def xform(self, x, y, depth=0.0):

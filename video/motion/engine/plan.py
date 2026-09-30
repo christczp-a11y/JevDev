@@ -14,7 +14,7 @@ from .sprites import AssetError, AssetStore, font_file, missing_glyphs
 from .timeline import AnchorError, Timeline
 from .ui import UI
 
-TOP_KEYS = {"episode", "no", "title", "voice", "shots", "rituals", "speakers", "note", "notes"}
+TOP_KEYS = {"episode", "no", "title", "voice", "shots", "rituals", "speakers", "bgm_start", "name", "note", "notes"}
 KNOWN_ERRORS = (SceneError, AssetError, AnchorError, ValueError, KeyError, TypeError)
 
 
@@ -254,7 +254,7 @@ def build_plan(sb_path, only=None, scale=1.0):
     lines = sb.get("title") or []
     if not isinstance(lines, list) or len(lines) > 2 or not all(isinstance(x, str) for x in lines):
         errors.append("title 要写成 1–2 行文字的列表，比如 [\"最强的智伯，\", \"为什么输了？\"]")
-    text = "".join(lines if isinstance(lines, list) else []) + "".join(l["text"] for l in tl.lines)
+    text = "".join(lines if isinstance(lines, list) else []) + "".join(l["text"] for l in tl.lines) + str(sb.get("name", ""))
     for sp in shots:
         for e in sp.spec.get("fx", []):
             if isinstance(e.get("text"), str):

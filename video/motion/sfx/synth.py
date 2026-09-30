@@ -225,22 +225,22 @@ def list_(n):
     return _finish(y, 0.5)
 
 
-def stat(n):
-    """属性卡：卡片滑进来「唰」+ 「咚」；每一行亮起时一串上行的钟琴（每行的调更高），后面星星一颗颗「叮」。"""
-    total = 0.45 + TM.STAT_GAP * (n - 1) + 1.0
-    y = buf(total)
+def stat_open():
+    """属性卡滑进来：「唰」+ 「咚」（0.45 秒内）。每行亮起的 `stat_row_N` 和每颗星的 `star_ding` 是单独的音效，
+    由 stat_card 出片前按 gap（行间隔）排进镜头的音效表，所以行间隔可以改。"""
+    y = buf(0.7)
     place(y, noise_sweep(0.32, 400, 2200, 31, 0.65) * 0.7, 0.0, 1.0)
     place(y, thud(160, 60, 0.25, 15, 0.2, seed=32), 0.36, 0.7)
-    scale = ["C5", "D5", "E5", "G5", "A5", "C6"]
-    for i in range(n):
-        t0 = 0.45 + TM.STAT_GAP * i
-        base = scale[i]
-        place(y, pluck(360, 820, 0.14, 24.0), t0, 0.5)
-        for j in range(5):
-            nt = PENTA[min(j + i, len(PENTA) - 1)]
-            place(y, glock(N[nt], 0.5), t0 + 0.22 + 0.11 * j, 0.42 - 0.03 * j)
-        place(y, marimba(N[base], 0.45), t0 + 0.12, 0.5)
-    return _finish(y, 0.5)
+    return _finish(y, 0.5, 0.004, 0.06)
+
+
+def stat_row(i):
+    """属性卡里第 i 行（从 1 数）亮起：「啵」+ 马林巴，一行比一行高一个音（五声音阶）。"""
+    nt = ["C5", "D5", "E5", "G5", "A5", "C6"][i - 1]
+    y = buf(0.7)
+    place(y, pluck(360, 820, 0.14, 24.0), 0.0, 0.5)
+    place(y, marimba(N[nt], 0.5), 0.1, 0.9)
+    return _finish(y, 0.42, 0.003, 0.08)
 
 
 def paper_unfold():
@@ -550,18 +550,86 @@ def tv_click():
     return _finish(y, 0.46, 0.003, 0.1)
 
 
+def star_ding():
+    """属性卡里星星亮一颗：清脆短促的一声钟琴「叮」（一颗一声，全系列同一个声音）。"""
+    y = mix(0.55, [(0.0, glock(N["E6"], 0.5), 0.9), (0.0, glock(N["E6"] * 2, 0.3), 0.18), (0.0, pluck(1500, 2200, 0.05, 60) * 0.2, 1.0)])
+    return _finish(y, 0.36, 0.002, 0.06)
+
+
+def light_up():
+    """一样东西亮起来：一道往上滑的柔和「呜~」+ 钟琴「叮」+ 一点闪粉，越到后面越亮。"""
+    t = _t(0.8)
+    f = 330 * (2.0 ** (1.3 * (1 - np.exp(-t * 4.0)) / (1 - np.exp(-3.2))))
+    sw = np.sin(2 * np.pi * np.cumsum(f) / SR) * (1 - np.exp(-t * 20)) * np.exp(-t * 2.6)
+    y = mix(1.0, [(0.0, sw, 0.5), (0.22, glock(N["G6"], 0.7), 0.5), (0.3, glock(N["C7"], 0.6), 0.3), (0.34, twinkle_bits(0.5, 7), 0.5)])
+    return _finish(y, 0.42, 0.004, 0.1)
+
+
+def twinkle_bits(d, seed):
+    r = _rng(seed)
+    y = buf(d)
+    for i in range(4):
+        place(y, glock(N[["E6", "G6", "A6", "C7"][int(r.integers(0, 4))]], 0.3), 0.07 * i + r.uniform(0, 0.03), 0.3)
+    return y
+
+
+def frog_croak():
+    """可爱的蛙叫「呱」：两下短促的、圆圆的，带一点上滑的喉音（脉冲串 + 共振峰），不吓人。"""
+    def gua(d, f0, f1):
+        t = _t(d)
+        f = f0 + (f1 - f0) * np.sin(np.pi * np.minimum(t / d, 1.0) * 0.5) ** 1.0
+        ph = 2 * np.pi * np.cumsum(f) / SR
+        pulse = np.sin(ph) + 0.55 * np.sin(2 * ph + 0.4) + 0.3 * np.sin(3 * ph + 1.1)
+        am = 0.6 + 0.4 * np.sin(2 * np.pi * 34 * t)                                        # 喉部的颤动
+        y = np.tanh(1.6 * pulse) * am
+        y = bandpass(y, 500, 1500, 2) + 0.35 * lowpass(y, 500, 2)
+        env = np.sin(np.pi * np.minimum(t / d, 1.0)) ** 0.7
+        return y * env
+    y = mix(0.75, [(0.0, gua(0.2, 210, 300), 1.0), (0.24, gua(0.24, 190, 330), 0.85)])
+    return _finish(y, 0.46, 0.004, 0.06)
+
+
+def hmph():
+    """「哼」（不用人声）：短促下滑的一声，像小低音管——方波加低通、音高从 330 滑到 190 Hz，开头一小口气。"""
+    t = _t(0.28)
+    f = 190 + 140 * np.exp(-t * 11)
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    y = (np.sign(np.sin(ph)) * 0.5 + np.sin(ph)) * np.exp(-t * 9.0) * np.minimum(1.0, t / 0.006)
+    y = lowpass(y, 1100, 3)
+    breath = lowpass(_rng(401).normal(0, 1, len(t)), 1800) * np.exp(-t * 90) * 0.5
+    return _finish(y + breath, 0.44, 0.003, 0.05)
+
+
+def tear():
+    """撕纸：一阵「嘶啦」——带纤维颗粒的噪声，音量一段一段地起伏（一点一点撕开），开头有一下「嗤」，低通在 7 kHz，不刺耳。"""
+    d = 0.55
+    n = int(d * SR)
+    t = np.arange(n) / SR
+    r = _rng(411)
+    base = bandpass(r.normal(0, 1, n), 1200, 6500, 2)
+    rip = np.abs(lowpass(r.normal(0, 1, n), 38)) * 2.6                                 # 撕的一抖一抖
+    rip = rip / rip.max()
+    env = np.minimum(1.0, t / 0.012) * np.exp(-t * 4.2) * (0.35 + 0.65 * rip)
+    grain = (r.random(n) < 0.010).astype(np.float64)                                    # 纸纤维断掉的小「噼」
+    grain = lowpass(np.convolve(grain, np.hanning(9), "same"), 6000) * 5.0 * np.exp(-t * 5.0)
+    y = base * env + grain * 0.35
+    return _finish(y, 0.44, 0.004, 0.09)
+
+
 SOUNDS = {"pop": pop, "whoosh": whoosh, "burst": burst, "focus": focus, "paper_unfold": paper_unfold, "city_pop": city_pop, "draw": draw, "shine": shine,
           "twinkle": twinkle, "party": party, "dust_puff": dust_puff, "rain": rain, "splash": splash, "whoomp": whoomp, "tone_shift": tone_shift, "flash": flash,
           "kaoni": kaoni, "plate_drop": plate_drop, "person_card": person_card, "card_quest": card_quest, "card_fail": card_fail, "card_title": card_title,
           "card_mvp": card_mvp, "title_boom": title_boom, "gauge_pop": gauge_pop, "screen_on": screen_on, "click": click, "bubble_pop": bubble_pop,
           "page_slide": page_slide, "page_flip": page_flip, "paper_swipe": paper_swipe, "brush": brush, "iris": iris, "fade_soft": fade_soft, "whip": whip,
-          "tv_click": tv_click}
+          "tv_click": tv_click,
+          "star_ding": star_ding, "light_up": light_up, "frog_croak": frog_croak, "hmph": hmph, "tear": tear}
 for _k in range(1, TM.SLAM_MAX + 1):
     SOUNDS[f"slam_{_k}"] = (lambda k=_k: slam(k))
 for _k in range(1, TM.LIST_MAX + 1):
     SOUNDS[f"list_{_k}"] = (lambda k=_k: list_(k))
+SOUNDS["stat_open"] = stat_open
 for _k in range(1, TM.STAT_MAX + 1):
-    SOUNDS[f"stat_{_k}"] = (lambda k=_k: stat(k))
+    SOUNDS[f"stat_row_{_k}"] = (lambda k=_k: stat_row(k))
 
 
 def write(name, y):
