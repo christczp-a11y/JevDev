@@ -89,11 +89,24 @@
      "w": 1300
     },
     {
+     "img": "props/stove_flooded.png",
+     "depth": 0.9,
+     "pos": [
+      820,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 520
+    },
+    {
      "img": "sets/jin_land/water.png",
      "depth": 0.7,
      "pos": [
       540,
-      1300
+      1210
      ],
      "anchor": [
       0.5,
@@ -116,7 +129,7 @@
        "ease": "out",
        "dpos": [
         0,
-        -170
+        -80
        ]
       }
      ]
@@ -126,7 +139,7 @@
      "depth": 0.75,
      "pos": [
       540,
-      1440
+      1350
      ],
      "anchor": [
       0.5,
@@ -149,23 +162,142 @@
        "ease": "out",
        "dpos": [
         0,
-        -170
+        -80
        ]
       }
      ]
     },
     {
-     "img": "props/stove_flooded.png",
-     "depth": 0.9,
+     "img": "sets/jin_land/water.png",
+     "depth": 0.8,
      "pos": [
-      820,
-      1330
+      540,
+      1490
      ],
      "anchor": [
       0.5,
-      1
+      0
      ],
-     "h": 520
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.8
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.1
+       },
+       "dur": 1.1,
+       "ease": "out",
+       "dpos": [
+        0,
+        -80
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.85,
+     "pos": [
+      540,
+      1630
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.1
+       },
+       "dur": 1.1,
+       "ease": "out",
+       "dpos": [
+        0,
+        -80
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1770
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.6
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.1
+       },
+       "dur": 1.1,
+       "ease": "out",
+       "dpos": [
+        0,
+        -80
+       ]
+      }
+     ]
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1910
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 2.0
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.1
+       },
+       "dur": 1.1,
+       "ease": "out",
+       "dpos": [
+        0,
+        -80
+       ]
+      }
+     ]
     },
     {
      "img": "props/frog_jump.png",
@@ -219,7 +351,7 @@
      "who": "司马光",
      "img": "chars/sgm_hi_point.png",
      "pos": [
-      360,
+      420,
       1560
      ],
      "h": 740,
@@ -237,7 +369,9 @@
      "type": "page_edge",
      "at": {
       "dt": 0.0
-     }
+     },
+     "y": 1250,
+     "w": 1900
     },
     {
      "type": "splash",
@@ -373,8 +507,7 @@
       "y": 6,
       "period": 3.4,
       "phase": 0.0
-     },
-     "blur": 6
+     }
     },
     {
      "img": "sets/jin_land/water.png",
@@ -394,8 +527,87 @@
       "y": 6,
       "period": 3.4,
       "phase": 0.4
-     },
-     "blur": 6
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.8,
+     "pos": [
+      540,
+      1410
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.8
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.85,
+     "pos": [
+      540,
+      1550
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.2
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 1.6
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 0.95,
+     "pos": [
+      540,
+      1830
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 2.0
+     }
     }
    ],
    "fg": [
@@ -486,6 +698,14 @@
        },
        "dur": 0.05,
        "alpha": 0.0
+      },
+      {
+       "at": {
+        "line": 2,
+        "dt": 0.75
+       },
+       "dur": 0.05,
+       "alpha": 1.0
       }
      ]
     },
@@ -654,6 +874,20 @@
       1
      ],
      "w": 1300
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.6,
+     "pos": [
+      540,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
     },
     {
      "img": "sets/jin_land/water.png",
@@ -831,7 +1065,51 @@
      "amount": 0.08
     }
    ],
-   "note": "大问题（顶部标题条整集都在，集中线聚到标题条上）：智伯站在前面得意地大笑，头上冒出三个问号；他身后，晋阳城外的大水退下去，夯土城墙露出一层层夹板印（本集的概念物：水位刻度）"
+   "note": "大问题（顶部标题条整集都在，集中线聚到标题条上）：智伯站在前面得意地大笑，头上冒出三个问号；他身后，晋阳城外的大水退下去，夯土城墙露出一层层夹板印（本集的概念物：水位刻度）",
+   "fg": [
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1540
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1840
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    }
+   ]
   },
   {
    "id": "s04",
@@ -894,7 +1172,63 @@
      "depth": 0.9,
      "pos": [
       540,
-      1380
+      1290
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1590
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1740
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1890
      ],
      "anchor": [
       0.5,
@@ -934,7 +1268,7 @@
      "type": "stat_card",
      "name": "智伯",
      "pos": [
-      370,
+      340,
       960
      ],
      "w": 520,
@@ -989,6 +1323,24 @@
     "dur": 0.7
    },
    "bg": [
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      360
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      180
+     ],
+     "w": 1080
+    },
     {
      "img": "sets/shadow/screen.png",
      "depth": 0.3,
@@ -1055,10 +1407,10 @@
      "role": "智伯的爸爸",
      "house": "智家",
      "pos": [
-      190,
-      380
+      170,
+      360
      ],
-     "size": 0.85,
+     "size": 0.8,
      "at": {
       "line": 5,
       "dt": 0.1
@@ -1070,10 +1422,10 @@
      "role": "智家长辈",
      "house": "智家",
      "pos": [
-      640,
-      380
+      790,
+      360
      ],
-     "size": 0.85,
+     "size": 0.8,
      "at": {
       "line": 5,
       "dt": 0.4
@@ -1104,6 +1456,24 @@
    "size": "close",
    "grade": "memory",
    "bg": [
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      360
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      180
+     ],
+     "w": 1080
+    },
     {
      "img": "sets/shadow/screen.png",
      "depth": 0.3,
@@ -1236,6 +1606,24 @@
      "depth": 0.3,
      "pos": [
       0,
+      360
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      180
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
       0
      ],
      "w": 1080
@@ -1306,6 +1694,24 @@
    "size": "medium",
    "grade": "memory",
    "bg": [
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      360
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      180
+     ],
+     "w": 1080
+    },
     {
      "img": "sets/shadow/screen.png",
      "depth": 0.3,
@@ -1431,6 +1837,24 @@
    "size": "medium",
    "grade": "memory",
    "bg": [
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      360
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/shadow/screen.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      180
+     ],
+     "w": 1080
+    },
     {
      "img": "sets/shadow/screen.png",
      "depth": 0.3,
@@ -1600,6 +2024,62 @@
      "pos": [
       540,
       1240
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1390
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1540
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1840
      ],
      "anchor": [
       0.5,
@@ -1783,6 +2263,21 @@
      "w": 1528,
      "repeat": "x",
      "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1390
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 8
     }
    ],
    "actors": [
@@ -1792,7 +2287,7 @@
      "img": "chars/dg_hi_tight.png",
      "pos": [
       460,
-      1600
+      1660
      ],
      "h": 900,
      "acts": [
@@ -1829,7 +2324,7 @@
      "text": "忍",
      "pos": [
       760,
-      980
+      1040
      ],
      "at": {
       "line": 11,
@@ -1844,7 +2339,54 @@
      "amount": 0.06
     }
    ],
-   "note": "镜头推到段规：他攥紧袖子、嘴抿成一条线，旁边一个「忍」字贴纸（不仁落到具体的事；不拿段规开玩笑）"
+   "note": "镜头推到段规：他攥紧袖子、嘴抿成一条线，旁边一个「忍」字贴纸（不仁落到具体的事；不拿段规开玩笑）",
+   "fg": [
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1520
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1670
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 8
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1820
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 8
+    }
+   ]
   },
   {
    "id": "s12",
@@ -1911,6 +2453,66 @@
      "pos": [
       540,
       1240
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1390
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1540
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "blur": 10
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1840
      ],
      "anchor": [
       0.5,
@@ -2021,6 +2623,62 @@
      ],
      "w": 1528,
      "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1390
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1540
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1840
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x"
     }
    ],
    "actors": [
@@ -2097,21 +2755,21 @@
     {
      "type": "splash",
      "pos": [
-      600,
-      1170
+      570,
+      1185
      ],
      "at": {
       "line": 13,
       "dt": 0.35
      },
-     "size": 0.8
+     "size": 0.65
     },
     {
      "type": "sticker",
      "name": "pa",
      "pos": [
       700,
-      960
+      900
      ],
      "at": {
       "line": 13,
