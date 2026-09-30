@@ -7,7 +7,8 @@ tv_switch（解说台的纸屏幕展开成整个画面，「按一下，画面�
   iris         dur 0.7  pos: [x, y] 圆心（默认画面中心偏上 [540, 900]，可以对准主体）；color: 纸色（默认米白，也可 ink / 家族色）
   fade_paper   dur 0.7  淡到纸色再淡入下一镜（换时间、换场）
   whip         dur 0.28 dir: left（默认，画面往左甩，下一镜从右边进来）/ right / up / down
-  tv_switch    dur 0.8  前一镜要先放好纸屏幕（`screen` 特效）；pos: 纸屏幕**纸面**的中心，w: 纸面的宽（默认 414；纸面 = 木框宽 × 0.765，中心比木框中心偏 (−0.021, −0.040)×框宽）。
+  tv_switch    dur 0.8  前一镜要先放好纸屏幕（`screen` 特效）；pos: 纸屏幕**纸面**的中心，w: 纸面的宽（默认 = 木框宽 540 时的纸面宽 408；纸面宽 = 木框宽 × 0.7555，纸面中心比木框中心偏 (−0.0057, −0.0688)×框宽；
+               纸面的长宽比读 props/screen_frame.layout.json，现在是 791×604，约 4:3）。
                屏幕里的画先叠化成故事的画，再从纸面大小放大到盖满整个画面
 """
 import functools
@@ -322,14 +323,21 @@ def page_turn(a, b, p, params, canvas):
     return np.ascontiguousarray(out[:, ::-1] if left else out)
 
 
+def _screen_layout(canvas):
+    import json
+    return json.loads(canvas.assets.resolve("props/screen_frame.layout.json").read_text(encoding="utf-8"))
+
+
 # ============================== 解说台切到故事 ==============================
 @transition("tv_switch", params=['pos', 'w'], dur=0.8, sfx="tv_click", check=_pcheck())
 def tv_switch(a, b, p, params, canvas):
     S = canvas.S
     h, w = canvas.h, canvas.w
     cx, cy = params.get("pos", [C.W / 2, 700])
-    w0 = float(params.get("w", 414))
-    h0 = w0 * 0.576                                                            # 纸屏幕的纸面是 16:9（props/screen_frame.png）
+    sx0, sy0, sx1, sy1 = _screen_layout(canvas)["screen"]
+    FW = _screen_layout(canvas)["size"][0]
+    w0 = float(params.get("w", 540.0 * (sx1 - sx0) / FW))                    # 默认：木框宽 540 时纸面的宽
+    h0 = w0 * (sy1 - sy0) / (sx1 - sx0)                                          # 纸面的长宽比读 props/screen_frame.layout.json（不写死）
     e = anim.smooth(p)                                                         # 整个转场：纸面大小的矩形放大到盖满整个画面
     alpha_in = anim.smooth(p / 0.2)                                            # 前 20%：屏幕里的画换成故事里的画（叠化），再开始放大
     x0f, y0f = cx - w0 / 2, cy - h0 / 2
@@ -353,8 +361,8 @@ def tv_switch(a, b, p, params, canvas):
     sc = max((rx1 - rx0) / w, (ry1 - ry0) / h, 0.05)
     Bs = cv2.resize(b, None, fx=sc, fy=sc, interpolation=cv2.INTER_AREA if sc < 1 else cv2.INTER_LINEAR) if sc < 0.999 else b
     canvas_b = np.zeros_like(b)
-    if sc < 0.999:
-        ox_, oy_ = int(round(rx0)), int(round(ry0))
+    if sc < 0.999:                                                             # 故事画面铺满裁边：放大到盖满矩形，中心对着矩形中心（露出的是画面正中间那一块）
+        ox_, oy_ = int(round((rx0 + rx1) / 2 - Bs.shape[1] / 2)), int(round((ry0 + ry1) / 2 - Bs.shape[0] / 2))
         x_a, y_a = max(0, ox_), max(0, oy_)
         sx_a, sy_a = x_a - ox_, y_a - oy_
         hh, ww = min(Bs.shape[0] - sy_a, h - y_a), min(Bs.shape[1] - sx_a, w - x_a)

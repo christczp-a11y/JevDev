@@ -123,6 +123,11 @@ class TestSfxFiles(unittest.TestCase):
         self.assertLessEqual(dur, T.KAONI_END + 0.6)
 
 
+def fxreg_smooth(p):
+    from engine import anim
+    return anim.smooth(p)
+
+
 TIMES = [0.02, 0.05, 0.08, 0.12, 0.2, 0.3, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5]
 
 
@@ -396,10 +401,67 @@ class TestReviewFixes(unittest.TestCase):
         """前一镜放着纸屏幕：转场第一帧和前一镜几乎一样（小窗口从屏幕纸面上长出来，不是从空墙上冒出来）。"""
         a, b, cv = TestTransitions().frames()
         plug = fxreg.TRANSITIONS["tv_switch"]
-        o = plug.fn(a, b, 0.02, {"type": "tv_switch", "pos": [789, 678], "w": 414}, cv)
+        o = plug.fn(a, b, 0.02, {"type": "tv_switch", "pos": [797, 663], "w": 408}, cv)
         self.assertLess(float(np.abs(o.astype(int) - a).mean()), 1.0)
-        o2 = plug.fn(a, b, 0.6, {"type": "tv_switch", "pos": [789, 678], "w": 414}, cv)
+        o2 = plug.fn(a, b, 0.6, {"type": "tv_switch", "pos": [797, 663], "w": 408}, cv)
         self.assertGreater(float(np.abs(o2.astype(int) - a).mean()), 20.0)
+
+    def test_screen_picture_covers_the_paper_exactly(self):
+        """放进纸屏幕的画铺满裁边：不管画是什么长宽比，画的范围 = layout.json 里的纸面，四周不露到框外、里面不留空边。"""
+        import cv2
+        lay = json.loads((C.ASSETS / "props" / "screen_frame.layout.json").read_text(encoding="utf-8"))
+        FW, FH = lay["size"]
+        x0, y0, x1, y1 = lay["screen"]
+        W, pos, S = 540.0, (800.0, 700.0), 0.5
+        k = W / FW
+        paper = (pos[0] + (x0 - FW / 2) * k, pos[1] + (y0 - FH / 2) * k, pos[0] + (x1 - FW / 2) * k, pos[1] + (y1 - FH / 2) * k)
+        d = common.fresh("screen_geo")
+        tl = Timeline.load(REEL / "voice")
+        for aspect in (1.42, 1.0, 2.2, 0.6):
+            name = f"magenta_{aspect}.png"
+            im = np.zeros((600, int(round(600 * aspect)), 3), np.uint8)
+            im[:] = (255, 0, 255)
+            cv2.imwrite(str(d / name), im)
+            store = AssetStore(S, [d])
+            spec = dict(BLANK_SPEC, bg=[], fx=[{"type": "screen", "img": name, "pos": list(pos), "w": W, "at": {"dt": 0.0}}])
+            sc = Scene(spec, tl, 0.0, 9.0, store, fxreg.FX)
+            cv = Canvas(store, S, C.FPS, 9.0, seed=1)
+            f = frame(sc, cv, 1.0).astype(int)
+            mag = (f[..., 0] > 200) & (f[..., 2] > 200) & (f[..., 1] < 60)
+            ys, xs = np.nonzero(mag)
+            box = (xs.min() / S, ys.min() / S, (xs.max() + 1) / S, (ys.max() + 1) / S)
+            for got, want in zip(box, paper):
+                self.assertAlmostEqual(got, want, delta=3.0, msg=f"画（比例 {aspect}）的范围 {box} 和纸面 {paper} 对不上")
+            inner = mag[int((paper[1] + 3) * S):int((paper[3] - 3) * S), int((paper[0] + 3) * S):int((paper[2] - 3) * S)]
+            self.assertGreater(float(inner.mean()), 0.995, f"画（比例 {aspect}）没铺满纸面，留了空边")
+            self.assertGreaterEqual(paper[2] - paper[0], 0.7 * W)
+
+    def test_tv_switch_rect_matches_the_paper_and_is_filled(self):
+        """tv_switch 的起点矩形 = 纸面（长宽比读 layout.json，不是写死的 16:9），矩形里的故事画面铺满，不留空边。"""
+        lay = json.loads((C.ASSETS / "props" / "screen_frame.layout.json").read_text(encoding="utf-8"))
+        FW, FH = lay["size"]
+        x0, y0, x1, y1 = lay["screen"]
+        S = 0.5
+        store = AssetStore(S, [])
+        cv = Canvas(store, S, C.FPS, 1.0)
+        a = np.full((cv.h, cv.w, 3), (60, 60, 60), np.uint8)
+        b = np.full((cv.h, cv.w, 3), (0, 200, 0), np.uint8)
+        plug = fxreg.TRANSITIONS["tv_switch"]
+        w0 = 540.0 * (x1 - x0) / FW
+        h0 = w0 * (y1 - y0) / (x1 - x0)
+        cx, cy = 797.0, 663.0
+        self.assertAlmostEqual(h0 / w0, (y1 - y0) / (x1 - x0), places=6)
+        for p in (0.2, 0.35):
+            e = fxreg_smooth(p)
+            want = (cx - w0 / 2) * (1 - e), (cy - h0 / 2) * (1 - e), (cx - w0 / 2) + w0 + (C.W - (cx - w0 / 2 + w0)) * e, (cy - h0 / 2) + h0 + (C.H - (cy - h0 / 2 + h0)) * e
+            o = plug.fn(a, b, p, {"type": "tv_switch", "pos": [cx, cy], "w": w0}, cv).astype(int)
+            green = (o[..., 1] > 190) & (o[..., 0] < 20) & (o[..., 2] < 20)
+            ys, xs = np.nonzero(green)
+            box = (xs.min() / S, ys.min() / S, (xs.max() + 1) / S, (ys.max() + 1) / S)
+            for got, wnt in zip(box, want):
+                self.assertAlmostEqual(got, wnt, delta=6.0, msg=f"p={p}：矩形 {box} 和预期 {want} 对不上")
+            inner = green[int(box[1] * S) + 6:int(box[3] * S) - 6, int(box[0] * S) + 6:int(box[2] * S) - 6]
+            self.assertGreater(float(inner.mean()), 0.995, f"p={p}：矩形里的故事画面没铺满")
 
     def test_reel_terrain_has_no_gaps(self):
         """样片合集的晋地外景：从 y=1250 一直到画面底，每一行都被地面盖住（不露出奶油色的纸底 / 天空的空带）。"""

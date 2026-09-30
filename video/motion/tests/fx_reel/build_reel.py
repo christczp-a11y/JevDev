@@ -132,7 +132,7 @@ shot("转场：圆圈收拢 iris", 2.2, actors=[dict(ZXZ, pos=[540, 1610])], tra
 shot("转场：淡到纸色 fade_paper", 2.2, actors=[ZB], transition={"type": "fade_paper"})
 shot("转场：甩镜 whip", 2.0, bg=STUDY, fg=DESK, actors=[dict(SGM_HI, enter=None)], transition={"type": "whip", "dir": "left"},
      fx=[F("screen", 0.05, img="props/map_silk.png", pos=[800, 700], w=540)])
-shot("转场：解说台切进故事 tv_switch", 2.4, actors=[ZB], transition={"type": "tv_switch", "pos": [789, 678], "w": 414})
+shot("转场：解说台切进故事 tv_switch", 2.4, actors=[ZB], transition={"type": "tv_switch", "pos": [797, 663], "w": 408})
 # ---------------------------------------------------------------- 十、新增（第一场样片 reviewer 提的特效层需求）
 shot("贴纸：挂在人物身上 follow + 撕掉 exit tear", 3.2, actors=[dict(ZB, pos=[700, 1500], h=820, enter="pop", acts=[{"at": {"dt": 1.0}, "do": "jump"}, {"at": {"dt": 1.9}, "do": "shake"}])], fx=[
     F("sticker", 0.6, follow="zb", attach="head", name="anger", size=250), F("sticker", 0.9, follow="zb", offset=[-250, -640], name="sweat", size=200, dur=1.4, exit="tear")])

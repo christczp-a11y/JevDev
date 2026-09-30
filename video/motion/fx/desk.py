@@ -3,7 +3,8 @@
 
   {"type": "screen", "img": "props/screen_cup_before.png", "pos": [540, 700], "w": 860, "at": {...}}      纸屏幕：木框立在书桌上，屏幕里的画「展开」出现；
         后面再写一个 screen（同一个 pos）就是换画面（新画从中间往两边展开盖住旧的）；img 可以不写（空白纸屏）；w 木框显示宽度（默认 860，原图 1278）；dur
-        4:3 的画放进去：屏幕纸面是 16:9（约 981×565 像素），画按「完整放进去」缩放，左右留纸边，外面一圈白纸边像贴上去的照片
+        屏幕纸面的位置和大小、木框原图尺寸都读 props/screen_frame.layout.json（"size"、"screen"）：换框图只改那个 json，代码不用动；
+        放进去的画一律「铺满裁边」（cover）：按纸面的长宽比放大到刚好盖满、居中裁掉多出来的，四周不露到框外、也不留空边（不管画是 4:3、1.42 还是别的比例）
   {"type": "remote_click", "pos": [700, 900], "at": {...}}                                                  按遥控器：按钮处一圈涟漪 + 几道短线 + 「叮」的一声；pos 是按钮的屏幕位置；color（默认朱红）
   {"type": "bubble", "img": "props/bubble_nickname.png", "pos": [330, 1040], "at": {...}}                    想象泡泡（props/bubble_cloud.png）：**pos 是尾巴尖，要点在说话人的头顶旁边**，泡泡从那里往上、往另一边「鼓」出来；
         泡泡会自动缩小、夹进安全区（y 360–1400、x 80–1000，尾巴尖不动）；放不下（宽 < 460）出片前报错；
@@ -39,6 +40,15 @@ def _fit(im, w, h):
     return im.resize((max(1, round(im.width * s)), max(1, round(im.height * s))), P.Image.LANCZOS)
 
 
+def _cover(im, w, h):
+    """铺满裁边：放大到刚好盖满 w×h，居中裁掉多出来的。输出正好 w×h。"""
+    w, h = max(1, round(w)), max(1, round(h))
+    s = max(w / im.width, h / im.height)
+    r = im.resize((max(w, round(im.width * s)), max(h, round(im.height * s))), P.Image.LANCZOS)
+    x, y = (r.width - w) // 2, (r.height - h) // 2
+    return r.crop((x, y, x + w, y + h))
+
+
 # ============================== 纸屏幕 ==============================
 def _scheck(p):
     return P.need_pos(p) if "pos" in p else []
@@ -57,7 +67,7 @@ def screen(canvas, t, params, at):
     lay = _lay(canvas, FRAME_LAY)
     W = float(params.get("w", 860))
     px, py = params.get("pos", [C.W / 2, 700])
-    FW, FH = 1278, 882
+    FW, FH = lay["size"]                                                   # 框图原尺寸（layout.json 里读，不写死）
     k = W / FW
     fo = P.fade_out(u, dur, 0.3)
     frame = P.sprite(canvas, ("screenf", W), lambda: P.add_shadow(P.fit_width(P.load_pil(canvas, FRAME), W), (6, 10), 9, 0.34))
@@ -72,9 +82,7 @@ def screen(canvas, t, params, at):
     img = params["img"]
 
     def build():
-        pic = _fit(P.load_pil(canvas, img), sw * 0.94, sh * 0.94)
-        pic = P.add_shadow(P.edged(pic, max(5, int(sh * 0.016)), False), (3, 5), 5, 0.3, 14)
-        return pic
+        return _cover(P.load_pil(canvas, img), sw, sh)                     # 铺满纸面，不加白边、不留空边
     sp = P.sprite(canvas, ("screenc", img, W), build)
     # 展开：从中间往两边（横向遮罩），0.4 秒，展开时中间一道亮线
     e = anim.smooth(u / 0.4)
