@@ -47,9 +47,9 @@ SPEECH = {   # 现成的配音：名字 → (说话人, 字幕, audio, series_au
     "wuyang": ("旁白", "智伯有五样本事，样样比别人强！", "04.mp3", None, 3.144, 2.63, 0.36, 2.78),
 }
 
-# 背景音乐从第 6 秒开始放：背景音乐自己每隔十几秒有一段 1–2 秒的空拍，从头放的话有两处正好落在没有音效、没有配音的地方（38 秒、94 秒附近）；
-# 6 秒是把「空拍 ∧ 没有音效 ∧ 没有配音」的总时长压到最小（9.25 秒，最长一段 1.0 秒；从头放是 11.5 秒 / 1.5 秒）的起点（一次性算的，改了镜头顺序要重算）。
-BGM_START = 6.0
+# 背景音乐从第 13 秒开始放：背景音乐自己每隔十几秒有一段 1–2 秒的空拍；13 秒是把「空拍 ∧ 没有音效 ∧ 没有配音」的总时长压到最小（9.75 秒，最长一段 1.0 秒）的起点
+# （一次性算的，改了镜头顺序 / 增减镜头要重算）。
+BGM_START = 13.0
 
 SHOTS = []
 
@@ -139,6 +139,16 @@ shot("贴纸：挂在人物身上 follow + 撕掉 exit tear", 3.2, actors=[dict(
 shot("系列音效：蛙叫 frog_croak / 哼 hmph / 亮起来 light_up（分镜表 sfx 里按名字用）", 3.2, actors=[{"id": "frog", "img": "props/frog_croak.png", "pos": [540, 1450], "h": 330, "enter": "pop"}], fx=[
     F("sticker", 0.35, name="exclaim", pos=[790, 1050], size=220, sfx=None), F("sticker", 1.25, name="anger", pos=[300, 1050], size=230, sfx=None),
     F("sticker", 2.05, name="bulb", pos=[540, 760], size=280, sfx=None)], sfx=[{"name": "frog_croak", "at": {"dt": 0.35}}, {"name": "hmph", "at": {"dt": 1.25}}, {"name": "light_up", "at": {"dt": 2.05}}])
+
+
+# ---------------------------------------------------------------- 十一、tj01 新剧本要的三个特效（弹幕、定格、翻日历）
+shot("弹幕：纸条从右往左飞过，避开人物的脸 danmaku", 4.6, actors=[dict(SGM, pos=[300, 1620], h=560)], fx=[
+    F("danmaku", 0.2, texts=["给！", "不给！", "给！", "我选不给", "不给！", "给！"], dur=3.0, density=1.4)])
+shot("定格：司马光按遥控器，画面停住，叠上弹幕 freeze", 5.0, bg=STUDY, fg=DESK, actors=[dict(SGM_HI, pos=[300, 1500], h=800)],
+     camera=[{"move": "push", "amount": 0.07}], fx=[
+    F("sticker", 0.4, name="sweat", follow="sgmhi", offset=[250, -720], size=190, sfx=None), F("remote_click", 1.1, pos=[480, 1150]),
+    F("freeze", 1.2, dur=2.4), F("danmaku", 1.5, texts=["给！", "不给！", "给！", "不给！"], dur=1.6, density=0.9, area=[0, 420, 1080, 1100])])
+shot("转场：翻日历（飞快往前倒翻，停在「战国」） calendar_flip", 3.0, actors=[dict(ZB, pos=[540, 1620], h=900)], transition={"type": "calendar_flip", "stop_text": "两千四百多年前 · 战国"})
 
 
 # ---------------------------------------------------------------- 生成

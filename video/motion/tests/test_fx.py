@@ -23,8 +23,8 @@ from engine.timeline import Timeline
 REEL = common.TESTS / "fx_reel"
 NEED_FX = ["lines_radial", "lines_focus", "lines_speed", "sticker", "smash", "checklist", "stat_card", "map", "map_city", "map_arrow", "rays", "sparkle",
            "confetti", "dust", "rain", "splash", "flame", "tone", "flash", "kaoni", "progress", "person_card", "name_plate", "card_quest", "card_fail",
-           "card_title", "card_mvp", "big_title", "remote_click", "screen", "bubble", "page_edge"]
-NEED_TR = ["page_turn", "paper_wipe", "ink_wipe", "iris", "fade_paper", "whip", "tv_switch", "dissolve"]
+           "card_title", "card_mvp", "big_title", "remote_click", "screen", "bubble", "page_edge", "danmaku", "freeze"]
+NEED_TR = ["page_turn", "paper_wipe", "ink_wipe", "iris", "fade_paper", "whip", "tv_switch", "calendar_flip", "dissolve"]
 COUNT_SFX = [f"{k}_{i}" for k, n in (("slam", 6), ("list", 6), ("stat_row", 6)) for i in range(1, n + 1)]
 BLANK_SPEC = {"id": "t", "from": {"line": 0}, "bg": [], "actors": []}
 
@@ -164,7 +164,8 @@ def _fx_test(name):
         for t, sfx, g in sc.sfx_events():
             self.assertTrue((C.SFX_DIR / f"{sfx}.wav").exists(), f"{name} 要的音效 {sfx} 不存在")
         used = sc.fx[0][2].get("sfx", fxreg.FX[name].sfx)
-        self.assertEqual(len(sc.sfx_events()) >= 1, used is not None, f"{name} 的音效和登记不符")
+        via_check = name in ("danmaku",)                                   # 音效由 check 按每条纸条的时刻排进镜头的音效表（登记的默认音效是 None）
+        self.assertEqual(len(sc.sfx_events()) >= 1, used is not None or (via_check and entry.get("sfx", "x") is not None), f"{name} 的音效和登记不符")
         blank = frame(blank_sc, blank_cv, 0.0)
         # 还没到 at：什么都不画
         for t in (0.0, 0.2, 0.49):
@@ -657,6 +658,130 @@ class TestNewFxParams(unittest.TestCase):
         with self.assertRaises(PlanError) as cm:
             build_plan(d / "storyboard.json")
         self.assertIn("𠮷", str(cm.exception))
+
+
+class TestDanmakuFreezeCalendar(unittest.TestCase):
+    """tj01 新剧本要的三个特效：danmaku、freeze、calendar_flip。"""
+
+    def scene_with(self, fx_list, actors=(), bg=None, S=0.5, camera=None):
+        tl = Timeline.load(REEL / "voice")
+        store = AssetStore(S, [REEL])
+        spec = dict(BLANK_SPEC, bg=bg or [{"img": "sets/jin_land/sky.png", "depth": 0.0, "pos": [0, 0], "w": 1080}], actors=list(actors), fx=[dict(e) for e in fx_list])
+        if camera:
+            spec["camera"] = camera
+        sc = Scene(spec, tl, 0.0, 9.0, store, fxreg.FX)
+        return sc, Canvas(store, S, C.FPS, 9.0, seed=1), spec
+
+    def test_danmaku_params_and_sfx(self):
+        e = {"type": "danmaku", "texts": ["给！", "不给！", "给！", "我选不给"], "at": {"dt": 0.5}, "dur": 3.0, "density": 1.0}
+        sc, cv, spec = self.scene_with([e])
+        ws = [x for x in spec["sfx"] if x["name"] == "danmaku_whoosh"]
+        self.assertEqual(len(ws), 10)                                                         # density 1 ≈ 10 条，每条飞出来一声
+        self.assertGreater(min(x["at"]["dt"] for x in ws), 0.49)
+        self.assertLess(max(x["at"]["dt"] for x in ws), 0.5 + 3.0)                            # 都在 dur 内陆续出场
+        self.assertTrue(all(x["gain"] <= -2.0 for x in ws))                                   # 很轻
+        chk = fxreg.FX["danmaku"].check
+        self.assertTrue(chk({"texts": []}))
+        self.assertTrue(chk({"texts": ["一二三四五六七八九十一"]}))                            # > 10 字
+        self.assertTrue(chk({"texts": ["给"], "area": [0, 100, 1080, 900]}))                   # 进标题条：报错
+        self.assertTrue(chk({"texts": ["给"], "area": [0, 400, 1080, 1500]}))                  # 进字幕区：报错
+        self.assertTrue(chk({"texts": ["给"], "density": 9}))
+        self.assertEqual(chk({"texts": ["给"], "density": 0.3}), [])
+        many = dict(e, density=2.4)
+        self.assertGreaterEqual(len(self.scene_with([many])[2]["sfx"]), 20)
+        sc2, _, spec2 = self.scene_with([dict(e, sfx=None)])
+        self.assertEqual(spec2.get("sfx", []), [])
+
+    def test_danmaku_stays_in_its_band_and_avoids_faces(self):
+        person = {"id": "sgm", "img": "chars/sgm_finger.png", "pos": [300, 1000], "h": 700}
+        e = {"type": "danmaku", "texts": ["给！", "不给！", "给！", "我选不给"], "at": {"dt": 0.0}, "dur": 3.0, "density": 2.0}
+        sc, cv, _ = self.scene_with([e], [person])
+        sc0, cv0, _ = self.scene_with([{"type": "label", "text": "x", "at": {"dt": 99.0}}], [person])
+        from fx import _paper as P
+        face = P.actor_boxes({"actors": [person]})[0]["face"]
+        S = cv.S
+        seen = 0
+        for t in (0.8, 1.4, 2.0, 2.6, 3.2):
+            d = (frame(sc, cv, t) != frame(sc0, cv0, t)).any(axis=2)
+            seen += int(d.sum())
+            self.assertEqual(int(d[:int(340 * S)].sum()), 0, "弹幕画进了标题条（y < 340）")
+            self.assertEqual(int(d[int(1420 * S):].sum()), 0, "弹幕画进了字幕区（y > 1420）")
+            self.assertEqual(int(d[int(face[1] * S):int(face[3] * S), int(face[0] * S):int(face[2] * S)].sum()), 0, "弹幕盖住了人物的脸")
+        self.assertGreater(seen, 3000)
+        self.assertTrue((frame(sc, cv, 8.0) == frame(sc0, cv0, 8.0)).all())                   # 飞完了，什么都不剩
+
+    def test_freeze_stops_the_scene_and_resumes_on_real_time(self):
+        import cv2
+        person = {"id": "zb", "img": "chars/zb_hi_laugh.png", "pos": [540, 1600], "h": 900, "acts": [{"at": {"dt": 0.4}, "do": "jump"}, {"at": {"dt": 1.4}, "do": "jump"}]}
+        cam = [{"move": "push", "amount": 0.06}]
+        fz = {"type": "freeze", "at": {"dt": 1.0}, "dur": 1.0}
+        scf, cvf, _ = self.scene_with([fz], [person], camera=cam)
+        scn, cvn, _ = self.scene_with([{"type": "label", "text": "x", "at": {"dt": 99.0}}], [person], camera=cam)
+        inner = (slice(int(300 * cvf.S), int(1500 * cvf.S)), slice(int(120 * cvf.S), int(960 * cvf.S)))
+        self.assertTrue((frame(scf, cvf, 0.8) == frame(scn, cvn, 0.8)).all())                  # 定格前和没有定格完全一样
+        a, b, c = (frame(scf, cvf, t) for t in (1.3, 1.6, 1.9))
+        self.assertTrue((a[inner] == b[inner]).all() and (b[inner] == c[inner]).all(), "定格中画面还在动")
+        moving = frame(scn, cvn, 1.3)[inner], frame(scn, cvn, 1.6)[inner]
+        self.assertFalse((moving[0] == moving[1]).all())                                        # 对照：不定格是在动的
+
+        def sat(f):
+            return float(cv2.cvtColor(f[inner], cv2.COLOR_BGR2HSV)[..., 1].mean())
+        self.assertLess(sat(a), sat(frame(scn, cvn, 1.0)) * 0.95)                               # 降饱和
+        self.assertTrue((frame(scf, cvf, 2.4) == frame(scn, cvn, 2.4)).all())                   # 恢复：接上「现在」的时间，和从没定格过的一模一样
+        self.assertTrue((frame(scf, cvf, 3.0) == frame(scn, cvn, 3.0)).all())
+        self.assertGreater(float(a[:int(30 * cvf.S), :].astype(int).mean()), 150)               # 纸框套在四周
+        corner = (a[int(20 * cvf.S):int(90 * cvf.S), int(40 * cvf.S):int(130 * cvf.S)] != frame(scn, cvn, 1.3)[int(20 * cvf.S):int(90 * cvf.S), int(40 * cvf.S):int(130 * cvf.S)])
+        self.assertTrue(corner.any())                                                           # 角上有小贴纸
+
+    def test_freeze_lets_later_effects_run(self):
+        """定格开始以后才开始的特效（弹幕）照常走；画面（人物、镜头）停住。"""
+        person = {"id": "zb", "img": "chars/zb_hi_laugh.png", "pos": [540, 1600], "h": 900}
+        dm = {"type": "danmaku", "texts": ["给！", "不给！"], "at": {"dt": 1.2}, "dur": 1.6, "density": 1.0}
+        scf, cvf, _ = self.scene_with([{"type": "freeze", "at": {"dt": 1.0}, "dur": 2.0}, dm], [person])
+        a, b = frame(scf, cvf, 1.8), frame(scf, cvf, 2.3)
+        self.assertGreater(int((a != b).any(axis=2).sum()), 1500)                               # 弹幕在飞
+        chk = fxreg.FX["freeze"].check
+        self.assertTrue(chk({"dur": 99}))
+        self.assertTrue(chk({"corner": "middle"}))
+        self.assertEqual(chk({"dur": 2.4, "corner": "br"}), [])
+
+    def test_calendar_flip_flips_fast_and_stops_on_the_text(self):
+        a = np.full((960, 540, 3), (200, 160, 120), np.uint8)
+        b = np.full((960, 540, 3), (90, 140, 90), np.uint8)
+        store = AssetStore(0.5, [])
+        cv = Canvas(store, 0.5, C.FPS, 1.0)
+        plug = fxreg.TRANSITIONS["calendar_flip"]
+        self.assertAlmostEqual(plug.dur, 1.2)
+        prm = {"type": "calendar_flip", "stop_text": "两千四百多年前 · 战国"}
+        n = round(plug.dur * C.FPS)
+        outs = [plug.fn(a, b, (i + 0.5) / n, prm, cv) for i in range(n)]
+        fl = [float(np.abs(outs[i + 1].astype(int) - outs[i]).mean()) for i in range(2, 13)]     # 翻页阶段：飞快在翻，每一帧都和上一帧不一样
+        self.assertGreater(sum(1 for v in fl if v > 1.0), 7)
+        still = [float(np.abs(outs[i + 1].astype(int) - outs[i]).mean()) for i in range(19, 25)]  # 停住以后日历不动（背景在 0.44–0.56 之间换，日历遮着）
+        self.assertLess(max(still), 4.0)
+        blank = plug.fn(a, b, 0.6, dict(prm, stop_text="战国"), cv)                                # 停住的那一页上真有字
+        self.assertGreater(float(np.abs(outs[20].astype(int) - blank).mean()), 0.5)
+        diff = (np.abs(outs[20].astype(int) - (b * 0.74).astype(int)).max(axis=2) > 12)          # 日历在主体安全区里（背景被压暗 26%）
+        rows = np.nonzero(diff.any(axis=1))[0]
+        self.assertGreaterEqual(rows.min() / 0.5, 360 - 40)
+        self.assertLessEqual(rows.max() / 0.5, 1400 + 40)
+        self.assertTrue(plug.check({"stop_text": "一二三四五六七八九十一 · 战国"}))
+        self.assertTrue(plug.check({"stop_text": "  "}))
+        self.assertEqual(plug.check({}), [])
+
+    def test_calendar_flip_sound_starts_with_the_first_flip(self):
+        from engine.plan import build_plan
+        from sfx import timing as T
+        plan = build_plan(REEL / "storyboard.json", None, 0.5)
+        sp = next(x for x in plan.shots if x.trans and x.trans["type"] == "calendar_flip")
+        ev = [t for t, n, g, sid in plan.sfx_events if n == "calendar_flip"]
+        self.assertEqual(len(ev), 1)
+        cut = sp.f0 / C.FPS
+        self.assertAlmostEqual(ev[0] - cut, T.CAL_START * T.CAL_DUR - 0.5 * T.CAL_DUR, places=2)   # 比切点早约 0.54 秒：翻页一开始就响
+        self.assertLess(ev[0], cut)
+        with wave.open(str(C.SFX_DIR / "calendar_flip.wav")) as w:
+            dur = w.getnframes() / 44100
+        self.assertGreater(dur, (T.cal_starts()[-1] + T.cal_flip_dur(T.CAL_N - 1) - T.cal_starts()[0]) * T.CAL_DUR)   # 音效盖得住整个翻页
 
 
 class TestTransitions(unittest.TestCase):

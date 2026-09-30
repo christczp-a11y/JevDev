@@ -296,6 +296,8 @@ class Scene:
             self.fx.append((at, plug, e))
             if at > dur:
                 self.warnings.append(f"{w}：{typ} 开始在镜头结束以后（{at:.2f} > {dur:.2f} 秒），永远不会出现")
+        # 定格：freeze 特效在 [at, at+dur) 这段时间里，场景（背景、人物、镜头、它之前开始的特效）停在 at 那一帧；它自己和它之后开始的特效照常走
+        self.freezes = [(at, float(e.get("dur", 2.0))) for at, plug, e in self.fx if plug.name == "freeze"]
         self.sfx = []      # (镜头内秒, 名字, 增益 dB)
         for i, e in enumerate(spec.get("sfx", [])):
             _unknown(e, {"name", "at", "gain"}, f"镜头 {self.id} sfx[{i}]")
@@ -347,26 +349,33 @@ class Scene:
     # ---------- 画一帧 ----------
     def draw(self, cv: Canvas, t, t_abs):
         tt = max(t, 0.0)
-        zoom, px, py, (bx, by) = self.camera.state(tt, t_abs)
+        fa = next((a for a, d in self.freezes if a <= tt < a + d), None)          # 定格中：场景用 fa 那一刻的时间
+        te = tt if fa is None else fa
+        ta = t_abs - (tt - te)
+        zoom, px, py, (bx, by) = self.camera.state(te, ta)
         cv.reset()
         cv.zoom, cv.px, cv.py = zoom, px, py
         for e in self.bg:
-            e.draw(cv, tt, t_abs)
-        self._fx(cv, tt, "back")
+            e.draw(cv, te, ta)
+        self._fx(cv, tt, te, fa, "back")
         for e in self.actors:
-            e.draw(cv, tt, t_abs)
+            e.draw(cv, te, ta)
         for e in self.fg:
-            e.draw(cv, tt, t_abs)
-        self._fx(cv, tt, "front")
-        self._grade(cv, t_abs)
+            e.draw(cv, te, ta)
+        self._fx(cv, tt, te, fa, "front")
+        self._grade(cv, ta)
         if bx > 1.5 or by > 1.5:                       # 甩镜的运动模糊
             kx, ky = max(1, int(round(bx * cv.S)) | 1), max(1, int(round(by * cv.S)) | 1)
             cv.img[:] = cv2.blur(cv.img, (kx, ky))
 
-    def _fx(self, cv, tt, layer):
+    def _fx(self, cv, tt, te, fa, layer):
         for at, plug, e in self.fx:
-            if e.get("layer", plug.layer) == layer and tt >= at:                 # 分镜表里给这个特效写 "layer": "back" / "front" 可以改它画在人物后面还是前面
-                plug.fn(cv, tt, e, at)
+            if e.get("layer", plug.layer) != layer:                              # 分镜表里给这个特效写 "layer": "back" / "front" 可以改它画在人物后面还是前面
+                continue
+            live = fa is None or at >= fa - 1e-9                                 # 定格中：定格开始以后才开始的特效（弹幕、按钮……）照常走，之前开始的跟着画面停住
+            tu = tt if live else te
+            if tu >= at:
+                plug.fn(cv, tu, e, at)
 
     def _grade(self, cv, t_abs):
         tint, a, vig, grain = GRADES[self.grade]

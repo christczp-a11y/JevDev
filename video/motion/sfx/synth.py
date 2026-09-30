@@ -616,13 +616,49 @@ def tear():
     return _finish(y, 0.44, 0.004, 0.09)
 
 
+def danmaku_whoosh():
+    """弹幕纸条飞过：轻快的「嗖」——一小阵从高到中的气流 + 一点纸的颤动，0.3 秒，很轻（一屏十几条，每条都响，所以不能吵）。"""
+    y = mix(0.32, [(0.0, noise_sweep(0.26, 3400, 1100, 501, 0.7, curve=lambda f: f ** 0.7), 1.0), (0.02, pluck(1500, 700, 0.12, 26) * 0.35, 1.0)])
+    return _finish(y, 0.36, 0.004, 0.06)
+
+
+def calendar_flip():
+    """翻日历（0.8 秒，和 timing.py 的翻页时刻对齐，从第一张翻起的那一刻开始）：7 张纸页「刷、刷、刷……」——一张比一张慢，每张是一小阵纸的沙沙声 + 尾巴上一点「啪」；
+    翻停那一下「嗒」+ 一声马林巴。翻页开始在 CAL_START（p）、每张间隔见 cal_starts，音效里以第一张为 0 秒。"""
+    dur = TM.CAL_DUR
+    st = TM.cal_starts()
+    y = buf(0.95)
+    t_first = st[0] * dur
+    for i, s0 in enumerate(st):
+        t0 = s0 * dur - t_first
+        fd = TM.cal_flip_dur(i) * dur
+        n = int(fd * SR * 1.1)
+        r = _rng(600 + i)
+        noise = bandpass(r.normal(0, 1, n), 1500, 6500, 2)
+        env = np.sin(np.pi * np.linspace(0, 1, n)) ** 1.4 * (1.0 - 0.25 * np.linspace(0, 1, n))
+        place(y, noise * env, t0 + 0.005, 0.85 - 0.04 * i)
+        place(y, thud(520 - 25 * i, 240, 0.06, 55, 0.6, seed=610 + i), t0 + fd * 0.82, 0.30)          # 翻到底「啪」
+    t_end = (st[-1] + TM.cal_flip_dur(len(st) - 1)) * dur - t_first
+    place(y, thud(210, 80, 0.2, 18, 0.7, seed=620), t_end, 0.8)
+    place(y, marimba(N["G5"], 0.5), t_end, 0.7)
+    place(y, glock(N["D6"], 0.6), t_end + 0.02, 0.2)
+    return _finish(y, 0.46, 0.004, 0.1)
+
+
+def freeze():
+    """定格「咔哒」：两下干脆的机械快门——「咔」（高一点）、0.07 秒后「哒」（低一点），再加一声很轻的下滑「嗡」（画面停住、纸框合上）。"""
+    y = mix(0.6, [(0.0, thud(900, 380, 0.05, 90, 1.0, seed=701), 0.9), (0.0, xylo(N["E6"], 0.12), 0.25), (0.07, thud(520, 210, 0.07, 60, 0.9, seed=702), 1.0),
+                  (0.07, marimba(N["A4"], 0.25), 0.35), (0.1, pluck(420, 160, 0.3, 9.0) * 0.3, 1.0)])
+    return _finish(y, 0.46, 0.002, 0.08)
+
+
 SOUNDS = {"pop": pop, "whoosh": whoosh, "burst": burst, "focus": focus, "paper_unfold": paper_unfold, "city_pop": city_pop, "draw": draw, "shine": shine,
           "twinkle": twinkle, "party": party, "dust_puff": dust_puff, "rain": rain, "splash": splash, "whoomp": whoomp, "tone_shift": tone_shift, "flash": flash,
           "kaoni": kaoni, "plate_drop": plate_drop, "person_card": person_card, "card_quest": card_quest, "card_fail": card_fail, "card_title": card_title,
           "card_mvp": card_mvp, "title_boom": title_boom, "gauge_pop": gauge_pop, "screen_on": screen_on, "click": click, "bubble_pop": bubble_pop,
           "page_slide": page_slide, "page_flip": page_flip, "paper_swipe": paper_swipe, "brush": brush, "iris": iris, "fade_soft": fade_soft, "whip": whip,
           "tv_click": tv_click,
-          "star_ding": star_ding, "light_up": light_up, "frog_croak": frog_croak, "hmph": hmph, "tear": tear}
+          "danmaku_whoosh": danmaku_whoosh, "calendar_flip": calendar_flip, "freeze": freeze, "star_ding": star_ding, "light_up": light_up, "frog_croak": frog_croak, "hmph": hmph, "tear": tear}
 for _k in range(1, TM.SLAM_MAX + 1):
     SOUNDS[f"slam_{_k}"] = (lambda k=_k: slam(k))
 for _k in range(1, TM.LIST_MAX + 1):

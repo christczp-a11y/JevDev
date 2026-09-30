@@ -209,7 +209,7 @@ def dissolve(a, b, p, params, canvas):
 - `a`：前一镜这一帧，`b`：后一镜这一帧（BGR uint8，形状 `(canvas.h, canvas.w, 3)`，**没有字幕和标题条**）；`p`：0..1 的线性进度（缓动自己在函数里加）；`params`：`transition` 字典；`canvas`：拿 `.assets` / `.w` / `.h` / `.S` / `.rng` 用。返回混好的一帧，不许改 `a`、`b`。
 - **转场以切点为中心**：切点前 `dur/2` 是前一镜的收尾，切点后 `dur/2` 是后一镜的开头；两个镜头各自多渲这么长（前一镜的镜头运动继续走，后一镜停在开头的姿势）；配音时间线不动。
   每个镜头长度要装得下前后两个转场，否则报错。
-- 登记参数同特效（`sfx` 在切点触发、`assets`、`check`）。
+- 登记参数同特效（`sfx` 在切点触发、`assets`、`check`、`params`）。**`sfx_dt`**（秒，可以是负数）让转场的音效比切点早 / 晚响：翻日历的翻页声在翻页一开始（切点前约半秒）就响，就是登记时写了 `sfx_dt=-0.54`（`engine/plan.py` 排音效时加上它）。
 
 ### 音效
 
@@ -217,8 +217,8 @@ def dissolve(a, b, p, params, canvas):
 全系列同一个特效用同一个声音；每个音效的「重音」按特效的动画时间摆好（特效的音效在它的 `at` 响，转场的在切点响），时间常数在 `sfx/timing.py`（特效和合成共用）。
 加新音效：在 `synth.py` 里写一个函数（单声道 44.1 kHz，峰值约 0.5）、登记进 `SOUNDS`，跑一遍脚本。`tests/test_fx.py` 会查每个文件：单声道 44.1 kHz、峰值、头尾没有咔嗒声、10 kHz 以上没有能量。
 现有：`pop` `whoosh` `burst` `focus` `slam_1..6` `list_1..6` `stat_open` `stat_row_1..6` `paper_unfold` `city_pop` `draw` `shine` `twinkle` `party` `dust_puff` `rain` `splash` `whoomp` `tone_shift` `flash` `kaoni` `plate_drop` `person_card`
-`card_quest` `card_fail` `card_title` `card_mvp` `title_boom` `gauge_pop` `screen_on` `click` `bubble_pop` `page_slide`；
-分镜表 `sfx` 里按名字用的：`frog_croak`（蛙叫「呱呱」）、`hmph`（「哼」，短促下滑的低音管音色，不用人声）、`tear`（撕纸）、`light_up`（一样东西亮起来）、`star_ding`（属性卡亮一颗星「叮」，stat_card 自动一颗一声）；转场：`page_flip` `paper_swipe` `brush` `iris` `fade_soft` `whip` `tv_click`。
+`card_quest` `card_fail` `card_title` `card_mvp` `title_boom` `gauge_pop` `screen_on` `click` `bubble_pop` `page_slide` `danmaku_whoosh` `freeze`；
+分镜表 `sfx` 里按名字用的：`frog_croak`（蛙叫「呱呱」）、`hmph`（「哼」，短促下滑的低音管音色，不用人声）、`tear`（撕纸）、`light_up`（一样东西亮起来）、`star_ding`（属性卡亮一颗星「叮」，stat_card 自动一颗一声）；转场：`calendar_flip`（翻日历）`page_flip` `paper_swipe` `brush` `iris` `fade_soft` `whip` `tv_click`。
 
 ### 本集专用 / 测试用的插件
 
@@ -271,6 +271,8 @@ def dissolve(a, b, p, params, canvas):
 | 解说台 | `screen` 纸屏幕 | `img`（屏幕里的画）、`pos`、`w`；框 `props/screen_frame.png`；再写一条同位置的 = 换画 | `screen_on` | 司马光的书房 = 后墙 `sets/study/wall.png` + 书桌 `sets/study/desk.png`（`fg`）+ 高清半身 `chars/sgm_hi_remote.png` + 屏幕 |
 | | `remote_click` | `pos`（按钮位置）、`color` | `click` | 「按一下」，再接转场 `tv_switch` |
 | | `bubble` 想象泡泡 | `img` 或 `text`、`pos`（**尾巴尖，点在说话人的头顶旁边**）、`w`（宽度上限 820，放不下自动缩小，夹进安全区 y 360–1400、x 80–1000，尾巴尖不动；宽 < 460 放不下就报错）、`flip`、`inner_sway`（默认 1：泡泡轻轻呼吸，里面的画上下浮动 + 轻轻鼓动，0 = 不动，不许冻住）；底板 `props/bubble_cloud.png` | `bubble_pop` | 古今对照的想象画 |
+| | `danmaku` 弹幕 | `texts` 1–16 条（每条 ≤ 10 字，循环用）、`dur`（陆续放出来用多久，默认 3.0）、`density`（默认 1.0 ≈ 10 条，0.3 ≈ 3，2.4 ≈ 24）、`area`（[x0,y0,x1,y1]，默认 [0,360,1080,1380]；**y 必须在 340–1400 之内**，不压标题条和字幕卡，出片前报错）、`avoid`（自动避开人物的脸框，同氛围粒子）；手撕边小纸条（米白 / 鹅黄 / 天蓝 / 薄荷 / 粉，白纸边、纸影），大小、速度、行错开，飞的时候上下飘、微微晃 | `danmaku_whoosh`（每条飞出来一声，很轻，出片前按每条的出场时刻排进镜头） | 「把你的选择打在弹幕上」；特效总共持续 `dur` + 约 3 秒 |
+| | `freeze` 定格 | `dur`（默认 2.0，0.3–8）、`corner`（tl 默认 / bl / br）、`pos`、`desat`（降饱和，默认 0.24）；画面（背景、人物、镜头、定格以前开始的特效）停在 at 那一帧，降一点饱和度，四周套一圈纸框（0.2 秒合上、0.25 秒打开），角上一个红色「⏸」贴纸；**定格开始以后才开始的特效（弹幕、按钮）照常走**；dur 到了接上「现在」的时间（锚点不错位） | `freeze`（「咔哒」） | 司马光按遥控器，画面定格（引擎：`scene.py` 里认 type 是 freeze 的特效，定格这段时间场景用 at 那一刻的时间画） |
 | | `page_edge` 书页边 | `y`（书页上沿，1240）、`w`、`peek`（探出来的人物半身图）、`peek_h`、`peek_x`；`props/page_edge.png` | `page_slide` | 「考你」时司马光从书页后面探出来：写 `peek`，书页升起来以后人才升起来、落下去以前人先缩回去，半身像的平切下沿一直藏在书页后面 |
 
 **贴纸**（`video/motion/stickers/`，`sticker` 的 `name`）：`question` 问号　`question3` 三个问号　`exclaim` 感叹号　`bulb` 灯泡　`sweat` 汗滴　`anger` 怒气　`star` 闪光星星　`star_eyes` 星星眼　`heart` 小心心　`dong`「咚」　`pa`「啪」　`sou`「嗖」。
@@ -286,6 +288,7 @@ def dissolve(a, b, p, params, canvas):
 | `iris` 圆圈收拢 | 0.7 | 纸圈收成一点，再从一点放开（圈外是纸色，带白纸边）；缓动按圈里画面的**面积**走，画面亮度逐帧平滑变化 | `pos` 圆心、`color` 纸色 | `iris` |
 | `fade_paper` 淡到纸色 | 0.7 | 淡到一整张纸，再淡入下一镜 | | `fade_soft` |
 | `whip` 甩镜 | 0.28 | 整幅画面横着甩出去，带运动模糊 | `dir`（left right up down） | `whip` |
+| `calendar_flip` 翻日历 | 1.2 | 一本纸日历（皇历）从上面落下来，旧画面压暗；7 张纸页飞快地往前倒翻（干支年一个接一个往回退、日子往回数，先快后慢，约 0.3 秒翻完），停在 `stop_text` 那一页（「 · 」分两行：前半小字、后半朱红大字），停约 0.55 秒能看清，然后日历放大淡出；切点在日历遮着的时候悄悄换成新画面 | `stop_text`（默认「两千四百多年前 · 战国」，每行 ≤ 10 字）、`pos`（日历中心，默认 [540, 880]，高约 1000 在安全区内） | `calendar_flip`（「刷刷刷」翻页声，翻页一开始就响：登记 `sfx_dt`，比切点早约 0.54 秒；按 dur 1.2 做，改 dur 声音不跟着变） |
 | `tv_switch` 解说台切进故事 | 0.8 | **前一镜要先放好纸屏幕（`screen`）**：屏幕里的画先叠化成故事的画，再从纸面大小放大到盖满整个画面 | `pos` 纸面中心、`w` 纸面宽（默认 408 = 木框宽 540 时的纸面；pos = 框中心 + (−0.0057, −0.0688)×框宽；纸面比例读 layout.json） | `tv_click` |
 | `dissolve` 交叉淡化 | 0.4 | 接口示例 | | |
 

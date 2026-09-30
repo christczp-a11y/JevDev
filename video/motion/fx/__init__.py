@@ -18,8 +18,9 @@ _loaded = set()
 
 
 class FxSpec:
-    def __init__(self, name, fn, layer="front", sfx=None, assets=None, check=None, dur=None):
+    def __init__(self, name, fn, layer="front", sfx=None, assets=None, check=None, dur=None, sfx_dt=0.0):
         self.name, self.fn, self.layer, self.sfx, self.assets, self.check, self.dur = name, fn, layer, sfx, assets, check, dur
+        self.sfx_dt = sfx_dt            # 转场音效相对切点的偏移（秒；负数 = 切点之前就响，翻日历的翻页声要在翻页开始时响）
         self.local = _loading_local     # 是不是分镜表旁边的本集 / 测试插件
 
 
@@ -84,12 +85,13 @@ def fx(name, layer="front", sfx=None, assets=None, check=None, params=None):
     return deco
 
 
-def transition(name, dur=0.4, sfx=None, assets=None, check=None, params=None):
+def transition(name, dur=0.4, sfx=None, assets=None, check=None, params=None, sfx_dt=0.0):
     """登记一个转场。dur 是默认时长（秒），分镜表里 "transition": {"type": name, "dur": 0.3} 可以改。
     转场以「切点」为中心：前 dur/2 是前一镜的收尾、后 dur/2 是后一镜的开头，两镜各自多渲这么长；配音时间线不动。
+    sfx_dt：音效相对切点的偏移秒数（默认 0 = 切点；负数 = 提前，音效里不用塞前导静音）。
     params：这个转场认的参数名列表（不含 type / dur / note），分镜表里写了别的就报错（不许悄悄忽略）；不写 = 不查。"""
     def deco(fn):
-        _register(TRANSITIONS, "转场", name, FxSpec(name, fn, "front", sfx, assets, _guarded("转场", name, check, params, COMMON_TR, False), dur))
+        _register(TRANSITIONS, "转场", name, FxSpec(name, fn, "front", sfx, assets, _guarded("转场", name, check, params, COMMON_TR, False), dur, sfx_dt))
         return fn
     return deco
 

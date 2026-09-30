@@ -7,7 +7,7 @@
  ],
  "name": "特效样片",
  "voice": "video/motion/tests/fx_reel/voice",
- "bgm_start": 6.0,
+ "bgm_start": 13.0,
  "note": "阶段 B 交付：特效包的全部特效和转场各演一遍。build_reel.py 生成本文件，别手改。",
  "shots": [
   {
@@ -158,7 +158,7 @@
     },
     {
      "type": "label",
-     "text": "1 / 45  漫画线：集中线 lines_focus",
+     "text": "1 / 48  漫画线：集中线 lines_focus",
      "at": {
       "dt": 0
      }
@@ -308,7 +308,7 @@
     },
     {
      "type": "label",
-     "text": "2 / 45  漫画线：放射速度线 lines_radial",
+     "text": "2 / 48  漫画线：放射速度线 lines_radial",
      "at": {
       "dt": 0
      }
@@ -455,7 +455,7 @@
     },
     {
      "type": "label",
-     "text": "3 / 45  漫画线：横向速度线 lines_speed",
+     "text": "3 / 48  漫画线：横向速度线 lines_speed",
      "at": {
       "dt": 0
      }
@@ -644,7 +644,7 @@
     },
     {
      "type": "label",
-     "text": "4 / 45  贴纸：问号 汗滴 怒气 感叹号 sticker",
+     "text": "4 / 48  贴纸：问号 汗滴 怒气 感叹号 sticker",
      "at": {
       "dt": 0
      }
@@ -832,7 +832,7 @@
     },
     {
      "type": "label",
-     "text": "5 / 45  贴纸：灯泡 星星眼 小心心 星星 sticker",
+     "text": "5 / 48  贴纸：灯泡 星星眼 小心心 星星 sticker",
      "at": {
       "dt": 0
      }
@@ -1021,7 +1021,7 @@
     },
     {
      "type": "label",
-     "text": "6 / 45  贴纸：咚 啪 嗖（拟声字） sticker",
+     "text": "6 / 48  贴纸：咚 啪 嗖（拟声字） sticker",
      "at": {
       "dt": 0
      }
@@ -1172,7 +1172,7 @@
     },
     {
      "type": "label",
-     "text": "7 / 45  砸字：本事（带震屏） smash",
+     "text": "7 / 48  砸字：本事（带震屏） smash",
      "at": {
       "dt": 0
      }
@@ -1324,7 +1324,7 @@
     },
     {
      "type": "label",
-     "text": "8 / 45  砸字：五样本事（四个字） smash",
+     "text": "8 / 48  砸字：五样本事（四个字） smash",
      "at": {
       "dt": 0
      }
@@ -1469,7 +1469,7 @@
     },
     {
      "type": "label",
-     "text": "9 / 45  清单：一条条弹出 checklist",
+     "text": "9 / 48  清单：一条条弹出 checklist",
      "at": {
       "dt": 0
      }
@@ -1638,7 +1638,7 @@
     },
     {
      "type": "label",
-     "text": "10 / 45  属性卡：本事 ★★★★★ / 好心 ★ stat_card",
+     "text": "10 / 48  属性卡：本事 ★★★★★ / 好心 ★ stat_card",
      "at": {
       "dt": 0
      }
@@ -1827,7 +1827,7 @@
     },
     {
      "type": "label",
-     "text": "11 / 45  地图：纸地图 城标 虚线箭头 map",
+     "text": "11 / 48  地图：纸地图 城标 虚线箭头 map",
      "at": {
       "dt": 0
      }
@@ -1979,7 +1979,7 @@
     },
     {
      "type": "label",
-     "text": "12 / 45  氛围：光芒 rays",
+     "text": "12 / 48  氛围：光芒 rays",
      "at": {
       "dt": 0
      }
@@ -2131,7 +2131,7 @@
     },
     {
      "type": "label",
-     "text": "13 / 45  氛围：闪粉 sparkle",
+     "text": "13 / 48  氛围：闪粉 sparkle",
      "at": {
       "dt": 0
      }
@@ -2277,7 +2277,7 @@
     },
     {
      "type": "label",
-     "text": "14 / 45  氛围：纸屑彩带（喷起）confetti",
+     "text": "14 / 48  氛围：纸屑彩带（喷起）confetti",
      "at": {
       "dt": 0
      }
@@ -2425,7 +2425,7 @@
     },
     {
      "type": "label",
-     "text": "15 / 45  氛围：纸屑彩带（飘落）confetti",
+     "text": "15 / 48  氛围：纸屑彩带（飘落）confetti",
      "at": {
       "dt": 0
      }
@@ -2584,7 +2584,7 @@
     },
     {
      "type": "label",
-     "text": "16 / 45  氛围：灰尘（float 飘 / puff 扬起） dust",
+     "text": "16 / 48  氛围：灰尘（float 飘 / puff 扬起） dust",
      "at": {
       "dt": 0
      }
@@ -2730,7 +2730,7 @@
     },
     {
      "type": "label",
-     "text": "17 / 45  氛围：雨 rain",
+     "text": "17 / 48  氛围：雨 rain",
      "at": {
       "dt": 0
      }
@@ -2911,7 +2911,7 @@
     },
     {
      "type": "label",
-     "text": "18 / 45  氛围：水花 splash",
+     "text": "18 / 48  氛围：水花 splash",
      "at": {
       "dt": 0
      }
@@ -3077,7 +3077,7 @@
     },
     {
      "type": "label",
-     "text": "19 / 45  氛围：纸剪火焰（放在画面两边，不挡人） flame",
+     "text": "19 / 48  氛围：纸剪火焰（放在画面两边，不挡人） flame",
      "at": {
       "dt": 0
      }
@@ -3216,7 +3216,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "20 / 45  调色：回忆 grade: memory（旧纸黄 + 颗粒 + 暗角）",
+     "text": "20 / 48  调色：回忆 grade: memory（旧纸黄 + 颗粒 + 暗角）",
      "at": {
       "dt": 0
      }
@@ -3356,7 +3356,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "21 / 45  调色：紧张 grade: tense（稍暗 + 暗角）",
+     "text": "21 / 48  调色：紧张 grade: tense（稍暗 + 暗角）",
      "at": {
       "dt": 0
      }
@@ -3506,7 +3506,7 @@
     },
     {
      "type": "label",
-     "text": "22 / 45  颜色分段：金色（得意）→ 蓝色夜晚（密谋） tone",
+     "text": "22 / 48  颜色分段：金色（得意）→ 蓝色夜晚（密谋） tone",
      "at": {
       "dt": 0
      }
@@ -3664,7 +3664,7 @@
     },
     {
      "type": "label",
-     "text": "23 / 45  柔和闪白（≤60%，3 帧） flash",
+     "text": "23 / 48  柔和闪白（≤60%，3 帧） flash",
      "at": {
       "dt": 0
      }
@@ -3804,7 +3804,7 @@
     },
     {
      "type": "label",
-     "text": "24 / 45  考你：「考你！」按钮 + 倒计时圈 + 「看答案！」 kaoni",
+     "text": "24 / 48  考你：「考你！」按钮 + 倒计时圈 + 「看答案！」 kaoni",
      "at": {
       "dt": 0
      }
@@ -3963,7 +3963,7 @@
     },
     {
      "type": "label",
-     "text": "25 / 45  进度物：水位刻度（变化时弹一下） progress",
+     "text": "25 / 48  进度物：水位刻度（变化时弹一下） progress",
      "at": {
       "dt": 0
      }
@@ -4106,7 +4106,7 @@
     },
     {
      "type": "label",
-     "text": "26 / 45  人物卡（片尾收藏卡） person_card",
+     "text": "26 / 48  人物卡（片尾收藏卡） person_card",
      "at": {
       "dt": 0
      }
@@ -4258,7 +4258,7 @@
     },
     {
      "type": "label",
-     "text": "27 / 45  人名牌：竖排大字 + 身份，家族颜色 name_plate",
+     "text": "27 / 48  人名牌：竖排大字 + 身份，家族颜色 name_plate",
      "at": {
       "dt": 0
      }
@@ -4397,7 +4397,7 @@
     },
     {
      "type": "label",
-     "text": "28 / 45  游戏卡片：任务 card_quest",
+     "text": "28 / 48  游戏卡片：任务 card_quest",
      "at": {
       "dt": 0
      }
@@ -4536,7 +4536,7 @@
     },
     {
      "type": "label",
-     "text": "29 / 45  游戏卡片：任务失败 card_fail",
+     "text": "29 / 48  游戏卡片：任务失败 card_fail",
      "at": {
       "dt": 0
      }
@@ -4675,7 +4675,7 @@
     },
     {
      "type": "label",
-     "text": "30 / 45  游戏卡片：获得称号 card_title",
+     "text": "30 / 48  游戏卡片：获得称号 card_title",
      "at": {
       "dt": 0
      }
@@ -4814,7 +4814,7 @@
     },
     {
      "type": "label",
-     "text": "31 / 45  游戏卡片：本集 MVP card_mvp",
+     "text": "31 / 48  游戏卡片：本集 MVP card_mvp",
      "at": {
       "dt": 0
      }
@@ -4954,7 +4954,7 @@
     },
     {
      "type": "label",
-     "text": "32 / 45  大字标题：第 1 关：忍（光芒） big_title",
+     "text": "32 / 48  大字标题：第 1 关：忍（光芒） big_title",
      "at": {
       "dt": 0
      }
@@ -5094,7 +5094,7 @@
     },
     {
      "type": "label",
-     "text": "33 / 45  大字标题：水，倒过来了！（纸剪火焰） big_title",
+     "text": "33 / 48  大字标题：水，倒过来了！（纸剪火焰） big_title",
      "at": {
       "dt": 0
      }
@@ -5167,7 +5167,7 @@
     },
     {
      "type": "label",
-     "text": "34 / 45  解说台：书房 + 纸屏幕 + 按遥控器 screen / remote_click",
+     "text": "34 / 48  解说台：书房 + 纸屏幕 + 按遥控器 screen / remote_click",
      "at": {
       "dt": 0
      }
@@ -5333,7 +5333,7 @@
     },
     {
      "type": "label",
-     "text": "35 / 45  想象泡泡（尾巴指着司马光的头，自动夹进安全区） bubble",
+     "text": "35 / 48  想象泡泡（尾巴指着司马光的头，自动夹进安全区） bubble",
      "at": {
       "dt": 0
      }
@@ -5371,7 +5371,7 @@
     },
     {
      "type": "label",
-     "text": "36 / 45  书页边（考你时司马光从书页后探出来） page_edge",
+     "text": "36 / 48  书页边（考你时司马光从书页后探出来） page_edge",
      "at": {
       "dt": 0
      }
@@ -5409,7 +5409,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "37 / 45  转场：翻书页 page_turn",
+     "text": "37 / 48  转场：翻书页 page_turn",
      "at": {
       "dt": 0
      }
@@ -5566,7 +5566,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "38 / 45  转场：纸片擦过 paper_wipe",
+     "text": "38 / 48  转场：纸片擦过 paper_wipe",
      "at": {
       "dt": 0
      }
@@ -5607,7 +5607,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "39 / 45  转场：墨笔刷 ink_wipe",
+     "text": "39 / 48  转场：墨笔刷 ink_wipe",
      "at": {
       "dt": 0
      }
@@ -5764,7 +5764,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "40 / 45  转场：圆圈收拢 iris",
+     "text": "40 / 48  转场：圆圈收拢 iris",
      "at": {
       "dt": 0
      }
@@ -5910,7 +5910,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "41 / 45  转场：淡到纸色 fade_paper",
+     "text": "41 / 48  转场：淡到纸色 fade_paper",
      "at": {
       "dt": 0
      }
@@ -5963,7 +5963,7 @@
     },
     {
      "type": "label",
-     "text": "42 / 45  转场：甩镜 whip",
+     "text": "42 / 48  转场：甩镜 whip",
      "at": {
       "dt": 0
      }
@@ -6121,7 +6121,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "43 / 45  转场：解说台切进故事 tv_switch",
+     "text": "43 / 48  转场：解说台切进故事 tv_switch",
      "at": {
       "dt": 0
      }
@@ -6308,7 +6308,7 @@
     },
     {
      "type": "label",
-     "text": "44 / 45  贴纸：挂在人物身上 follow + 撕掉 exit tear",
+     "text": "44 / 48  贴纸：挂在人物身上 follow + 撕掉 exit tear",
      "at": {
       "dt": 0
      }
@@ -6486,7 +6486,7 @@
     },
     {
      "type": "label",
-     "text": "45 / 45  系列音效：蛙叫 frog_croak / 哼 hmph / 亮起来 light_up（分镜表 sfx 里按名字用）",
+     "text": "45 / 48  系列音效：蛙叫 frog_croak / 哼 hmph / 亮起来 light_up（分镜表 sfx 里按名字用）",
      "at": {
       "dt": 0
      }
@@ -6512,6 +6512,414 @@
      }
     }
    ]
+  },
+  {
+   "id": "R46",
+   "from": {
+    "line": 51
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1075
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1275
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgm",
+     "who": "司马光",
+     "img": "chars/sgm_finger.png",
+     "pos": [
+      300,
+      1620
+     ],
+     "h": 560
+    }
+   ],
+   "fx": [
+    {
+     "type": "danmaku",
+     "at": {
+      "dt": 0.2
+     },
+     "texts": [
+      "给！",
+      "不给！",
+      "给！",
+      "我选不给",
+      "不给！",
+      "给！"
+     ],
+     "dur": 3.0,
+     "density": 1.4
+    },
+    {
+     "type": "label",
+     "text": "46 / 48  弹幕：纸条从右往左飞过，避开人物的脸 danmaku",
+     "at": {
+      "dt": 0
+     }
+    }
+   ]
+  },
+  {
+   "id": "R47",
+   "from": {
+    "line": 52
+   },
+   "bg": [
+    {
+     "img": "sets/study/wall.png",
+     "depth": 0.1,
+     "pos": [
+      -100,
+      0
+     ],
+     "w": 1280
+    }
+   ],
+   "actors": [
+    {
+     "id": "sgmhi",
+     "who": "司马光",
+     "img": "chars/sgm_hi_remote.png",
+     "pos": [
+      300,
+      1500
+     ],
+     "h": 800
+    }
+   ],
+   "fx": [
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.4
+     },
+     "name": "sweat",
+     "follow": "sgmhi",
+     "offset": [
+      250,
+      -720
+     ],
+     "size": 190,
+     "sfx": null
+    },
+    {
+     "type": "remote_click",
+     "at": {
+      "dt": 1.1
+     },
+     "pos": [
+      480,
+      1150
+     ]
+    },
+    {
+     "type": "freeze",
+     "at": {
+      "dt": 1.2
+     },
+     "dur": 2.4
+    },
+    {
+     "type": "danmaku",
+     "at": {
+      "dt": 1.5
+     },
+     "texts": [
+      "给！",
+      "不给！",
+      "给！",
+      "不给！"
+     ],
+     "dur": 1.6,
+     "density": 0.9,
+     "area": [
+      0,
+      420,
+      1080,
+      1100
+     ]
+    },
+    {
+     "type": "label",
+     "text": "47 / 48  定格：司马光按遥控器，画面停住，叠上弹幕 freeze",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "fg": [
+    {
+     "img": "sets/study/desk.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1690
+     ],
+     "anchor": [
+      0.5,
+      1.0
+     ],
+     "w": 1160
+    }
+   ],
+   "camera": [
+    {
+     "move": "push",
+     "amount": 0.07
+    }
+   ]
+  },
+  {
+   "id": "R48",
+   "from": {
+    "line": 53
+   },
+   "bg": [
+    {
+     "img": "sets/jin_land/sky.png",
+     "depth": 0.05,
+     "pos": [
+      0,
+      0
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_far.png",
+     "depth": 0.15,
+     "pos": [
+      0,
+      430
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_mid.png",
+     "depth": 0.3,
+     "pos": [
+      0,
+      740
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.45,
+     "pos": [
+      0,
+      830
+     ],
+     "w": 1080
+    },
+    {
+     "img": "sets/jin_land/fore.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1075
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1275
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1300,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1423
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1500,
+     "repeat": "x",
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1594
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x",
+     "flip": false
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1786
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true
+    }
+   ],
+   "actors": [
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_hi_laugh.png",
+     "pos": [
+      540,
+      1620
+     ],
+     "h": 900
+    }
+   ],
+   "fx": [
+    {
+     "type": "label",
+     "text": "48 / 48  转场：翻日历（飞快往前倒翻，停在「战国」） calendar_flip",
+     "at": {
+      "dt": 0
+     }
+    }
+   ],
+   "transition": {
+    "type": "calendar_flip",
+    "stop_text": "两千四百多年前 · 战国"
+   }
   }
  ]
 }

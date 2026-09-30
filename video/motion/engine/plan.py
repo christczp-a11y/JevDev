@@ -242,7 +242,7 @@ def build_plan(sb_path, only=None, scale=1.0):
         for t, name, g in sc.sfx_events():
             sfx_events.append((t, name, g, sp.id))
         if sp.trans and sp.trans["plug"].sfx:
-            sfx_events.append((sp.t0, sp.trans["plug"].sfx, 0.0, sp.id))
+            sfx_events.append((sp.t0 + sp.trans["plug"].sfx_dt, sp.trans["plug"].sfx, 0.0, sp.id))     # 转场的音效默认在切点响；sfx_dt（秒，可以是负数）让它提前 / 推后
     if errors:
         raise PlanError(errors)
     plan.sfx_events = sfx_events
