@@ -568,7 +568,7 @@
      "who": "司马光",
      "img": "chars/sgm_hi_remote.png",
      "pos": [
-      250,
+      290,
       1740
      ],
      "h": 720,
@@ -619,7 +619,7 @@
       "dt": 0.3
      },
      "pos": [
-      473,
+      513,
       1351
      ]
     },
@@ -630,7 +630,7 @@
      },
      "img": "props/bubble_sweeper.png",
      "pos": [
-      230,
+      270,
       1000
      ],
      "w": 820
@@ -685,7 +685,7 @@
      "img": "chars/sgm_hi_point.png",
      "pos": [
       540,
-      1760
+      1650
      ],
      "h": 780,
      "acts": [
@@ -11376,8 +11376,8 @@
      "who": "司马光",
      "img": "chars/sgm_hi_read.png",
      "pos": [
-      270,
-      1760
+      290,
+      1680
      ],
      "h": 780,
      "note": "司马光低头看书，一根手指点在书页上，摸着胡子笑"
@@ -12695,7 +12695,7 @@
      "img": "chars/sgm_hi_point.png",
      "pos": [
       520,
-      1760
+      1650
      ],
      "h": 780,
      "acts": [
@@ -13373,7 +13373,7 @@
      "who": "司马光",
      "img": "chars/sgm_hi_remote.png",
      "pos": [
-      250,
+      290,
       1740
      ],
      "h": 720,
@@ -13412,7 +13412,7 @@
      },
      "img": "props/bubble_door.png",
      "pos": [
-      230,
+      270,
       1000
      ],
      "w": 820
@@ -13424,7 +13424,7 @@
       "word": "别自己"
      },
      "pos": [
-      473,
+      513,
       1351
      ]
     }
@@ -15242,6 +15242,20 @@
       "phase": 2.0
      },
      "blur": 5
+    },
+    {
+     "img": "props/boat_back.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1630
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 2400,
+     "note": "布景前层"
     }
    ],
    "actors": [
@@ -15251,7 +15265,7 @@
      "img": "chars/wq_hi_point_l.png",
      "pos": [
       560,
-      1940
+      1480
      ],
      "h": 990,
      "acts": [
@@ -15263,7 +15277,83 @@
        "do": "bounce"
       }
      ],
-     "note": "吴起皱着眉，一手伸食指指向远方，严肃"
+     "note": "吴起站在船上回过头，皱着眉，一手伸食指指向远方，严肃"
+    }
+   ],
+   "fg": [
+    {
+     "img": "props/boat_front.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1630
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 2400,
+     "note": "布景前层"
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1500
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.0
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1620
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.4
+     }
+    },
+    {
+     "img": "sets/jin_land/water.png",
+     "depth": 1.0,
+     "pos": [
+      540,
+      1740
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.8
+     }
     }
    ],
    "fx": [
