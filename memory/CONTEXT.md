@@ -96,3 +96,4 @@
 - 依赖：`requirements.txt` + `python -m playwright install chromium` + ffmpeg；字体从 Google Fonts 在线加载
 - 手机端（Remote Control）收文件上限 30 MiB；发视频前压成手机版（做法见 docs/workflow/7-成片检查.md「发给 Chris」）。
 - 上传到手机（Remote Control）还有 30 秒超时：网慢时 25 MB 也会失败，切成上下两段发（做法见第 7 步）。
+- 本机 git 没配身份：提交用 `git -c user.name=Chris -c user.email=christczp@gmail.com commit ...`（和之前的提交一致），不改全局配置。别的会话也会往同一个分支推，push 被拒就先 `git pull --rebase`，不强推。

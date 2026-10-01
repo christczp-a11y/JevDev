@@ -2,17 +2,13 @@
 
 > 最后更新：2026-09-30 晚（本地）
 
-## 当前阶段：tj01 第 9 步发布包已出（09-30），等 Chris 定时发布
-- 发布包 `video/stories/tj01/publish.md`：标题「要地给不给？2400年前的一道选择题」、封面字「本事满分 尊重0分」（Jev 组合胜率 0.889）、正文、话题、置顶评论、发布设置、72 小时复盘和前 2 周冷启动；封面 `video/out/tj01/publish/cover_3x4.png`（脚本 `video/stories/tj01/make_cover.py`）。
-- 建议北京时间 10/2（周五）20:00 定时发；发后 2 小时、24 小时、72 小时、7 天的数据记进 `status.md`。
-- xiaohongshu-mcp（localhost:18060）这次没连上，对标账号数据没抓；新号冷启动期也不建议用自动化工具登录这个号。
-
-## 上一阶段：tj01 G 版第 2 版已发 Chris，等他看（09-30）
-- Chris 看第 1 版给了合格分，提了 7 条（PITFALLS S28、S29、M6–M8、P19）→ 第 2 版已改并发出（b21e28d，手机版上下两段）。
-- 成片 `video/out/tj01/full/tj01_full.mp4`（208.0 秒）；剧本 `G_尊重.json`；配音 `video/out/tj01_voice_g/`；分镜表 81 镜。命令见 `video/stories/tj01/status.md`。
-- 引擎新能力：截段拼接（改 1 镜约 30 秒）、字幕底边贴 y 1615、出片空白检测；storyboard_check 查字幕区挡脸和特效盖住主角。
-- **下一步**：等 Chris。有意见：先记 PITFALLS，截段改；通过了就做第 9 步（Jev 挑标题、封面字，出发布包）。
-- 待补：PITFALLS 待补 14、15；`video/tests/registry/` 4 项旧失败。
+## 当前阶段：tj01 做完（第 3 版），Chris 准备 10-01 早上发小红书
+- 发布用 `video/out/tj01/full/三家分晋_第一集_v2_高清.mp4`（Chris 选的第 2 版）；`tj01_full.mp4` 和 `三家分晋_第一集_v3_高清.mp4` 是第 3 版（多修了 0:05 学霸泡泡停留，PITFALLS M9）。
+- **文案、标题、封面字由 Chris 的另一个会话做**；这个仓库的会话只做动画（第 9 步的发布材料不归这边）。
+- 复盘：`video/stories/tj01/复盘.md`（这一集踩过的坑 + 下一集照着做的 6 条）。
+- 引擎现状：截段拼接（改 1 镜约 30–60 秒）、字幕底边 y 1615、出片空白检测；storyboard_check 查字幕区挡脸、特效盖主角、交领不许 flip；出图规矩 `video/assets/prompt_rules.txt` 自动接。
+- **下一步**：等 Chris 定第 2 集（下集预告是魏文侯雨天打猎之约）；他可能先给剧本。
+- 待补：PITFALLS 待补 14（storyboard_jev 看不到泡泡里的画）、15（去掉镜头运动后的静止检查）、16（讲事画面停留 ≥ 2 秒）；`video/tests/registry/` 4 项旧失败；字幕挪进平台遮挡区的事 Chris 说先不做。
 
 ## 装机（09-29 检查通过）
 - `bash scripts/cloud_setup.sh` 全部通过：Python 依赖（含 OpenCV 5.0）、ffmpeg、字体（`video/vendor/fonts/` 全量 Noto Sans SC Bold + ZCOOL KuaiLe）、背景音乐 `video/assets/audio/bgm_main.mp3`、Jev key 和连通（实测调用成功）、Codex 已登录。
