@@ -125,7 +125,7 @@ ROLE = {"智伯": ("智家", "智家老大"), "段规": ("韩家", "韩家谋士
 def namecard(line, name, x, dt=0.2):
     """特效包的人名牌：name_plate，pos 是牌子挂点（顶部中点）。"""
     house, role = ROLE[name]
-    return {"type": "name_plate", "name": name, "role": role, "house": house, "pos": [x, 640], "at": L(line, dt)}
+    return {"type": "name_plate", "name": name, "role": role, "house": house, "pos": [x, 380], "at": L(line, dt)}
 
 
 CAMERAS = [None, [{"move": "pull", "amount": 0.05}], [{"move": "pan", "dx": -50}], None, [{"move": "push", "amount": 0.06}]]
@@ -174,7 +174,7 @@ def make_good():
     shots[2]["actors"][0]["acts"] = [{"at": {"line": 2, "word": "给"}, "do": "bounce"}]
     shots[3]["fx"].append(sticker(3, "咚"))
     shots[4].update(note="知识点：智伯的五样本事")
-    shots[4]["fx"] += [{"type": "checklist", "items": ["高大", "力气", "才艺", "口才", "果断"], "pos": [540, 620], "at": L(4, 0.4)}, sticker(4, "！", dt=1.4)]
+    shots[4]["fx"] += [{"type": "checklist", "items": ["高大", "力气", "才艺", "口才", "果断"], "pos": [540, 480], "at": L(4, 0.4)}, sticker(4, "！", dt=1.4)]
     shots[5]["fx"].append(sticker(5, "汗", dt=0.9))
     shots[8]["camera"] = [{"move": "punch", "at": {"line": 8, "word": "不给"}, "amount": 0.1}, {"move": "push", "amount": 0.05}]
     shots[13]["fx"].append({"type": "flash", "at": {"line": 13, "word": "灭国"}, "alpha": 0.5, "dur": 0.1})
@@ -185,6 +185,9 @@ def make_good():
     # 贴纸挂在人物身上（follow）压脸不算；闪粉没写 avoid = 特效包自动避开脸
     shots[11]["fx"].append({"type": "sticker", "text": "汗", "follow": "hkz", "attach": "head", "at": L(11, 0.6), "size": 180})
     shots[19]["fx"].append({"type": "sparkle", "at": L(19, 0.3)})
+    # 道具图标不许盖住主角（M8）：放在旁边的、只盖住一点（< 20%、碰不到脸）的都行
+    shots[13]["fg"] = [{"img": "props/cup_lacquer.png", "depth": 1.0, "pos": [860, 1300], "anchor": [0.5, 0.5], "w": 200}]
+    shots[18]["fg"] = [{"img": "props/cup_lacquer.png", "depth": 1.0, "pos": [470, 1340], "anchor": [0.5, 0.5], "w": 150}]
     # 集中线：写 clear，圈盖住主体（智伯）的脸
     shots[20]["fx"].append({"type": "lines_focus", "pos": [540, 1200], "clear": 320, "at": L(20, 0.4)})
     sb = {"episode": "tj01", "no": 1, "title": ["最强的智伯，", "为什么输了？"], "voice": "video/motion/tests/check_case/voice",
@@ -394,7 +397,7 @@ def _(sb):
 
 @case("bad_safe_slam", "smash（slam）")
 def _(sb):
-    sh(sb, "s10")["fx"].append({"type": "smash", "text": "不给", "size": 200, "pos": [540, 1550], "at": L(9, 0.5)})
+    sh(sb, "s10")["fx"].append({"type": "smash", "text": "不给", "size": 200, "pos": [540, 1700], "at": L(9, 0.5)})
 
 
 @case("bad_safe_prop", "关键道具")
@@ -497,6 +500,27 @@ def _(sb):
 @case("bad_plate_too_short", "只看得清")
 def _(sb):
     next(f for f in sh(sb, "s02")["fx"] if f["type"] == "name_plate")["dur"] = 1.2
+
+
+# ---- 字幕区挡脸（M6）、特效盖住主角（M8）
+@case("bad_subtitle_covers_face", "字幕区")
+def _(sb):
+    sh(sb, "s10")["actors"][0]["pos"] = [ALONE_X, 1800]            # 脸框 y 1354–1533：说话的时候字幕卡（底边 y 1615 往上长）盖在嘴上
+
+
+@case("bad_cover_icons_on_lead", "压在主角")
+def _(sb):
+    sh(sb, "s10")["fg"] = [{"img": "props/cup_lacquer.png", "depth": 1.0, "pos": [x, y], "anchor": [0.5, 0.5], "w": 230} for x in (420, 540, 660) for y in (1190, 1370)]
+
+
+@case("bad_cover_bubble_on_lead", "压在主角")
+def _(sb):
+    sh(sb, "s10")["fx"].append({"type": "bubble", "text": "哼", "pos": [540, 1350], "w": 600, "at": L(9, 0.5)})
+
+
+@case("bad_cover_speaker", "正在说话")
+def _(sb):
+    sh(sb, "s03")["fg"] = [{"img": "props/cup_lacquer.png", "depth": 1.0, "pos": [x, y], "anchor": [0.5, 0.5], "w": 180} for x in (250, 400) for y in (1200, 1290, 1380)]    # 第 2 句韩康子（左，比较小）说话，被图标盖住
 
 
 # ---- 格式

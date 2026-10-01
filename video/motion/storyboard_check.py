@@ -20,7 +20,8 @@
            「讲知识点的镜头」= 镜头 note 里有「知识」两个字，或者用了清单 / 属性卡 / 地图 / 进度物类特效
   [闪烁]   闪白（flash 特效、名字里有 flash 的转场）一集 ≤ 4 次、任何 1 秒内 ≤ 3 次；分镜表里给闪白写了参数的话再查：亮度 ≤ 60%、时长 ≤ 0.12 秒、不用红色、不反色（alpha / strength / intensity / dur / color）
            （特效包的 flash 自己固定 55% 亮度、几帧，不带参数，所以主要查次数）
-  [安全区] 脸（人物图上面 40%、中间 50% 宽）要在 y 360–1400、x 80–940（右边 140 是平台遮挡区）以内，按镜头运动算到画面里的位置；
+  [安全区] 脸（人物图上面 40%、中间 50% 宽）要在 y 360–1620、x 80–940（右边 140 是平台遮挡区，最下 300 是平台遮挡区）以内，按镜头运动算到画面里的位置；
+           脸框下沿在 1400–1620 之间（字幕区）只有说话的时候才算错，见 [字幕]；
            props/ 里的关键道具、砸字 / 大字标题 / 游戏卡片 / 清单 / 属性卡的中心点同样（人名牌和清单按估出来的方框查）；砸字估出来的宽度超出 x 80–940 只警告；贴纸进了遮挡区只警告
   [素材]   图片（背景 / 人物 / 换表情 / 前景 / 特效自带的）和音效在不在；登记表里：没登记 = 错，「停用」= 错，「试做集」范围用在新集 = 错，「宣传图」范围 = 错，「未定稿」= 警告
   [放大]   屏幕显示 ÷ 原图 ≤ 1.3，含镜头放大（远景层按视差系数折算；blur 的背景不查）
@@ -30,13 +31,22 @@
   [翻转]   交领人物不许翻转（PITFALLS M1，翻过来衣襟就成了左衽）：chars/ 下的图 flip: true 报错；例外：司马光（sgm_，圆领）、皮影（文件名含 shadow）、登记表备注里写了「可翻转」的图、道具 / 物件
   [压脸]   贴纸 / 砸字 / 水花 / 闪粉 / 纸屑的框和任何人物的脸框重叠（脸框面积的 5% 以上）报错（M4）；写了 follow 的贴纸（挂在人物身上）不算；
            闪粉 / 纸屑没写 avoid = 特效包自动避开脸，不查；写了 avoid: [] 关掉、或者写的框没盖住脸，而粒子的范围（闪粉 area，纸屑整个画面）碰到脸就报错
+  [字幕]   字幕区 y 1400–1620（字幕卡底边贴 y 1615 往上长；PITFALLS M6）：有台词的时段里，任何人物的脸框（含镜头运动）进了字幕区就报错；没有台词的时段不查
+  [遮挡]   特效 / 贴纸 / 道具图标不许盖住主角（M8）：这一镜的主体人物（面积最大的，和这个时刻正在说话的）——特效、贴纸、props/ 下的图（fg 图层、画在他后面的 actor）
+           合起来盖住他身体（人物图不透明的部分）的 20% 以上就报错；除了贴纸 / 砸字（[压脸] 管），别的盖住他脸框的 10% 以上也报错。
+           不算：follow 挂在人物身上的贴纸；props/ 的 bg 图层（在人物后面）；「布景前层」——挡住人腿的战车前栏、马、浪、栏杆这类场景的一部分，不是特效，三种办法认：
+             ① 登记表里这张图的备注写「布景前层」（或「属于」写布景）：这张图在所有集里都是布景（推荐：战车前栏、马、宴席这类固定的写在登记表里）；
+             ② 这一镜里这个图层 / actor 的 note 写「布景前层」（一次性的）；
+             ③ 什么都没写、但单张就超过他身体框 20%（图标不会这么大）：自动当布景（兜底）。
+           图层 / 图标按图的不透明部分算（云泡泡的空角、浪的透明处不算盖住）；特效按估的方框算（框的约定见下）；查的特效：sticker、smash、card_*、name_plate、stat_card、checklist、bubble
   [集中线] lines_focus 必须写 clear（不画线的留白圈：[x, y, r]，或者一个半径数、圆心取 center / pos / [540, 900]），而且这个圈要盖住这一镜主体（面积最大的人物）的脸框（M2）
 
 特效名字怎么分类：storyboard_check.py 里的 FX_KINDS（按名字里的子串；特效包 fx/ 里的 name_plate = 人名牌、smash = 砸字、big_title / card_* = 大字标题和游戏卡片、
 checklist / stat_card / map* / progress = 讲知识点的、flash = 闪白、lines_* / sparkle / rain 等 = 氛围）；特效包加了新名字，不对的话改这张表（一处）。
 名字既不在 fx/ 里登记、也不在 STUB_FX 里的特效 = 错（拼错）；在 STUB_FX 里但 fx/ 里还没登记的 = 警告（渲染会报错，等特效包）。
 安全区里的特效位置按特效包的约定算：sticker 的 pos 是图中心、depth 默认 1（跟着镜头），别的特效钉在屏幕上（depth 0）；name_plate 的 pos 是牌子的挂点（顶部中点），
-牌子高 ≈ (144 + 120 × 字数 + 44 × 有身份) × size（默认 1.15）；checklist 的 pos 是第一条的中心，每条往下 128 像素、宽 w（默认 780）；smash 宽 ≈ min(字号 × 0.95 × 字数, 920)。
+牌子高 ≈ (144 + 120 × 字数 + 44 × 有身份) × size（默认 1.15）；checklist 的 pos 是第一条的中心，每条往下 128 像素、宽 w（默认 780）；smash 宽 ≈ min(字号 × 0.95 × 字数, 920)；
+card_* 约 820×330、pos 是中心；stat_card 宽 w（默认 760）、高 ≈ w × 1.29 × (0.3 + 0.12 × 行数)；bubble 的 pos 是尾巴尖，宽按特效包的自动缩小算（夹进安全区）、高 = 宽 × 0.678。
 """
 import argparse
 import json
@@ -44,6 +54,8 @@ import math
 import re
 import sys
 import traceback
+
+import numpy as np
 from functools import lru_cache
 from pathlib import Path
 
@@ -104,6 +116,7 @@ FX_KINDS = [
     ("gauge", ("gauge", "progress", "进度")),
     ("focus", ("lines_focus", "focus_lines", "集中线")),
     ("splash", ("splash", "水花")),
+    ("bubble", ("bubble", "泡泡")),
     ("sparkle", ("sparkle", "闪粉")),
     ("confetti", ("confetti", "纸屑")),
     ("ambient", ("dust", "rain", "rays", "glow", "fire", "flame", "particle", "lines_", "speed", "radial", "tone", "氛围", "光芒", "速度线")),
@@ -117,9 +130,17 @@ OVERLAY_KINDS = {"sticker", "slam", "splash", "sparkle", "confetti"}       # 不
 OVERLAP_MIN = 0.05                                                         # 和脸框重叠超过脸框面积的这么多就算压脸
 PLATE_FALL, PLATE_MIN_CLEAR = 0.42, 1.5                                    # name_plate 落下来要 0.42 秒；看得清的时间至少 1.5 秒
 SPARKLE_AREA = (80.0, 360.0, 1000.0, 1400.0)
+SUB_Y0, SUB_Y1 = 1400.0, 1620.0                                            # 字幕区：字幕卡底边贴 y 1615 往上长（M6）
+COVER_MAX = 0.20                                                           # 特效 / 图标合起来盖住主体身体框的比例上限（M8）
+ICON_MAX_FRAC = 0.20                                                       # 一张 props/ 图单独就超过主体身体框这么多，是场景大件（战车、浪、地图卷），不是图标，不查
+FACE_TOUCH_COVER = 0.10                                                    # [遮挡]：特效 / 图标盖住脸的 10% 以上才算「碰到脸」
+COVER_KINDS = {"sticker", "slam", "gamecard", "namecard", "stat", "list", "bubble"}
+FACE_TOUCH_BY_OVERLAY = {"sticker", "slam"}                                # 这两类碰脸由 [压脸] 管，[遮挡] 不重复报
+BUB_AR, BUB_MIN_W = 920 / 1357, 460.0                                      # 泡泡图的高 / 宽
+COVER_CELL = 12.0                                                          # 算「合起来盖住多少」时的格子大小（像素）
 SUBJECT_LATER_WINS = 0.85                                                  # 主体：面积最大的人物；后画的（在上面的）面积 ≥ 最大的 85% 时取它
 STUB_FX = ("sticker", "flash", "name_plate", "smash", "big_title", "checklist", "stat_card", "map", "progress", "kaoni", "person_card",
-           "card_quest", "card_fail", "card_title", "card_mvp", "splash", "sparkle", "confetti", "lines_focus", "lines_radial", "lines_speed", "dust", "rays")           # --no-plugins 时认得的名字（和特效包 fx/ 里登记的一致）；有插件时以插件为准
+           "card_quest", "card_fail", "card_title", "card_mvp", "bubble", "splash", "sparkle", "confetti", "lines_focus", "lines_radial", "lines_speed", "dust", "rays")           # --no-plugins 时认得的名字（和特效包 fx/ 里登记的一致）；有插件时以插件为准
 STUB_TRANSITIONS = ("dissolve", "flash")
 NAME_HINT_SKIP = {"type", "sfx", "at", "note", "dur", "layer"}
 
@@ -441,6 +462,12 @@ def screen_xf(cam, t, t_abs, x, y, depth):
 
 def actor_frame(a, cam, t, t0):
     """人物在镜头内 t 秒时：(脸框, 整个人面积)（屏幕坐标，含镜头运动和补间）；这时人物不在画面里（出场以前 / 走出去以后）或者图找不到 = None。"""
+    b = actor_boxes(a, cam, t, t0)
+    return None if b is None else (b["face"], b["area"])
+
+
+def actor_boxes(a, cam, t, t0):
+    """同 actor_frame，返回 {"face": 脸框, "body": 身体框（整张图的框）, "area": 面积}。"""
     if a.get("window") and not (a["window"][0] - 1e-6 <= t <= a["window"][1] + 1e-6):
         return None
     r, h = a["ref"], float(a["spec"]["h"])
@@ -456,7 +483,8 @@ def actor_frame(a, cam, t, t0):
     X, Y, Z = screen_xf(cam, t, t0 + t, v["x"], v["y"], float(a["spec"].get("depth", 1.0)))
     w, hh = wd * Z, hd * Z
     left, top = X - 0.5 * w, Y - hh
-    return (left + FACE[0] * w, top + FACE[2] * hh, left + FACE[1] * w, top + FACE[3] * hh), w * hh
+    return {"face": (left + FACE[0] * w, top + FACE[2] * hh, left + FACE[1] * w, top + FACE[3] * hh), "body": (left, top, left + w, Y), "area": w * hh,
+            "file": r.file, "flip": bool(a["spec"].get("flip")) != (v["sx"] < 0)}
 
 
 def pick_subject(frames):
@@ -583,6 +611,215 @@ def check_focus_lines(sh, out, cam, rep):
                 break
 
 
+def check_subtitle_zone(sh, out, cam, tl, rep):
+    """M6：有台词的时段里，人物的脸框不许进字幕区 y 1400–1620（字幕卡底边贴 y 1615 往上长）。没有台词的时段不查。"""
+    t0 = sh.t0
+    done = set()
+    for i, ln in enumerate(tl.lines):
+        if not tl.is_speech(i):
+            continue
+        a0, a1 = max(float(ln["t0"]), sh.t0), min(float(ln["t1"]), sh.t1)
+        if a1 - a0 < 0.15:
+            continue
+        for t_abs in (a0 + 0.1, (a0 + a1) / 2, a1 - 0.1):
+            for a in out["actors"]:
+                if id(a) in done:
+                    continue
+                b = actor_boxes(a, cam, t_abs - t0, t0)
+                if b is None:
+                    continue
+                f = b["face"]
+                if f[3] > SUB_Y0 and f[1] < SUB_Y1:
+                    done.add(id(a))
+                    rep.err("字幕", f"第 {i} 句「{str(ln.get('text', ''))[:12]}」出字幕的时候（{t_abs:.1f} 秒），{a['who']} 的脸框（y {f[1]:.0f}–{f[3]:.0f}）进了字幕区 y {SUB_Y0:.0f}–{SUB_Y1:.0f}"
+                                  f"（M6：字幕卡底边贴 y 1615 往上长，会盖住嘴和脸）：人物往上放、缩小，或者换个脸在上半身的构图", sh.id)
+
+
+def speakers_at(tl, t_abs):
+    return {ln["who"] for i, ln in enumerate(tl.lines) if tl.is_speech(i) and float(ln["t0"]) <= t_abs <= float(ln["t1"])}
+
+
+def bubble_width(W, px, py, flip):
+    """同特效包 fx/desk.py：泡泡自动夹进安全区（尾巴尖不动）后的宽度。"""
+    ax, ay = (0.96 if flip else 0.04), 0.92
+    lim = [W, (py - SAFE[1]) / (ay * BUB_AR), (SAFE[3] - py) / ((1 - ay) * BUB_AR)]
+    lim += [(px - SAFE[0]) / ax, (SAFE[2] - px) / (1 - ax)] if flip else [(SAFE[2] - px) / (1 - ax), (px - SAFE[0]) / ax]
+    return max(min(lim), 0.0)
+
+
+def cover_box(kind, e, X, Y):
+    """会盖住主角的特效在屏幕上的方框：贴纸 / 砸字 / 人名牌 / 清单同 overlay_box、fx_box，再加游戏卡片、属性卡、泡泡；估不出来 = None。"""
+    if kind in ("sticker", "slam"):
+        return overlay_box(kind, e, X, Y)
+    if kind in ("namecard", "list"):
+        return fx_box(kind, e, X, Y)
+    if kind == "gamecard":
+        return X - 410, Y - 175, X + 410, Y + 175
+    if kind == "stat":
+        w = float(e.get("w", 760))
+        rows = e.get("rows")
+        n = len(rows) if isinstance(rows, list) and rows else 6
+        h = w * 1228 / 949 * min(1.0, 0.3 + 0.12 * n)
+        return X - w / 2, Y - h / 2, X + w / 2, Y + h / 2
+    if kind == "bubble":
+        flip = bool(e.get("flip", False))
+        w = bubble_width(float(e.get("w", 820)), X, Y, flip)
+        if w <= 0:
+            return None
+        h = w * BUB_AR
+        left, top = X - (0.96 if flip else 0.04) * w, Y - 0.92 * h
+        return left, top, left + w, top + h
+    return None
+
+
+@lru_cache(maxsize=512)
+def alpha_small(path, flip=False):
+    """图的不透明部分（缩到 192 像素以内的布尔数组）；读不了 = None（按整个方框算）。"""
+    try:
+        with Image.open(path) as im:
+            a = im.convert("RGBA").getchannel("A")
+        a.thumbnail((192, 192))
+        arr = np.asarray(a) > 40
+    except (OSError, ValueError):
+        return None
+    return arr[:, ::-1] if flip else arr
+
+
+def sample_mask(box, alpha, xs, ys):
+    """方框 box（带不透明部分 alpha，没有 = 整个框）在格子点 (xs, ys) 上盖住的地方：布尔数组 [len(ys), len(xs)]。"""
+    l, t, r, b = box
+    if r - l <= 0 or b - t <= 0:
+        return np.zeros((len(ys), len(xs)), bool)
+    m = np.outer((ys >= t) & (ys <= b), (xs >= l) & (xs <= r))
+    if alpha is not None and m.any():
+        h, w = alpha.shape
+        ui = np.clip(((xs - l) / (r - l) * w).astype(int), 0, w - 1)
+        vi = np.clip(((ys - t) / (b - t) * h).astype(int), 0, h - 1)
+        m &= alpha[np.ix_(vi, ui)]
+    return m
+
+
+def layer_cover_box(it, cam, t, t0):
+    """props/ 图层（fg）/ 道具图标 actor 在镜头内 t 秒时的屏幕方框；还没出场完 / 已经淡掉 = None。"""
+    if t < it["enter_end"] - 1e-6:
+        return None
+    v = it["tracks"].value(t)
+    if v["alpha"] < 0.3 or v["scale"] < 0.3:
+        return None
+    e, (sw, sh_) = it["spec"], it["ref"].size
+    if it["is_actor"]:
+        wd = sw * float(e["h"]) / sh_
+    elif "w" in e:
+        wd = float(e["w"])
+    elif "h" in e:
+        wd = sw * float(e["h"]) / sh_
+    else:
+        wd = sw * float(e.get("scale", 1.0))
+    hd = wd * sh_ / sw
+    ax, ay = e.get("anchor", (0.5, 1.0) if it["is_actor"] else (0.0, 0.0))
+    X, Y, Z = screen_xf(cam, t, t0 + t, v["x"], v["y"], float(e.get("depth", 1.0)))
+    w, h = wd * Z * v["scale"] * abs(v["sx"]), hd * Z * v["scale"] * abs(v["sy"])
+    return X - ax * w, Y - ay * h, X - ax * w + w, Y - ay * h + h
+
+
+def is_set_front(ic):
+    """布景前层（战车前栏、马、浪、栏杆……）：登记表备注 / 属于写了「布景前层」「布景」，或者这个图层的 note 写了「布景前层」。"""
+    row = ic["ref"].row or {}
+    return "布景前层" in str(ic["spec"].get("note", "")) or "布景前层" in row.get("note", "") or "布景" in row.get("owner", "")
+
+
+def check_cover(sh, out, cam, tl, rep):
+    """M8：特效 / 贴纸 / 道具图标不许盖住主角（面积最大的人物、这个时刻正在说话的人）：合起来盖住他身体的 20% 以上，或者盖住他脸框的 10% 以上。"""
+    persons = out["actors"]
+    if not persons:
+        return
+    t0, dur = sh.t0, sh.dur
+    items = []      # dict(name, kind, fn: t → 方框 / None, alpha, order：人物的 idx；特效和 fg 图层永远在人物上面 = 无穷大)
+    for ic in out["icons"] + [p for p in out["props"] if p["grp"] == "fg"]:
+        if ic["spec"].get("repeat") or float(ic["spec"].get("blur", 0) or 0) > 0 or is_set_front(ic):
+            continue
+        items.append(dict(name=Path(ic["ref"].rel).stem, kind="icon", fn=(lambda t, ic=ic: layer_cover_box(ic, cam, t, t0)),
+                          alpha=alpha_small(str(ic["ref"].file), bool(ic["spec"].get("flip"))), order=ic.get("idx", 10 ** 6) if ic["is_actor"] else 10 ** 6))
+    for kind, at, e in out["fx"]:
+        if kind not in COVER_KINDS or (kind == "sticker" and "follow" in e):
+            continue
+        pos = e.get("pos")
+        if not (isinstance(pos, list) and len(pos) == 2):
+            continue
+        rel_at = max(at - t0, 0.0)
+        end = min(dur, rel_at + float(e["dur"])) if isinstance(e.get("dur"), (int, float)) else dur
+
+        def fn(t, kind=kind, e=e, pos=pos, rel_at=rel_at, end=end):
+            if t < rel_at + 0.35 or t > end:
+                return None
+            try:
+                X, Y, _ = screen_xf(cam, t, t0 + t, float(pos[0]), float(pos[1]), float(e.get("depth", 1.0 if kind == "sticker" else 0.0)))
+                return cover_box(kind, e, X, Y)
+            except (TypeError, ValueError):
+                return None
+        alpha = None
+        if kind == "bubble":                                              # 云泡泡：按云的不透明部分算（空角不算盖住）
+            cloud = Path(out["assets_root"]) / "props" / "bubble_cloud.png"
+            alpha = alpha_small(str(cloud), bool(e.get("flip"))) if cloud.exists() else None
+        label = {"sticker": "贴纸", "slam": "砸字", "namecard": "人名牌", "list": "清单", "gamecard": "卡片", "stat": "属性卡", "bubble": "泡泡"}[kind]
+        items.append(dict(name=f"{label}「{e.get('name') or e.get('text') or e.get('type')}」", kind=kind, fn=fn, alpha=alpha, order=10 ** 6))
+    if not items:
+        return
+    done = set()
+    for t in [dur * (k + 1) / 8 - 0.02 for k in range(8)]:
+        frames = []
+        for a in persons:
+            b = actor_boxes(a, cam, t, t0)
+            if b:
+                frames.append((a, b))
+        if not frames:
+            continue
+        large = pick_subject([(a, b["face"], b["area"]) for a, b in frames])
+        subjects = [(large[0], "面积最大")] if large else []
+        talking = speakers_at(tl, t0 + t)
+        subjects += [(a, "正在说话") for a, b in frames if a["who"] in talking and (not large or a is not large[0])]
+        for a, why in subjects:
+            if id(a) in done:
+                continue
+            b = next(b for x, b in frames if x is a)
+            bl, bt, br, bb = b["body"]
+            if br - bl <= 0 or bb - bt <= 0:
+                continue
+            nx, ny = max(1, int(math.ceil((br - bl) / COVER_CELL))), max(1, int(math.ceil((bb - bt) / COVER_CELL)))
+            xs, ys = bl + (np.arange(nx) + 0.5) * (br - bl) / nx, bt + (np.arange(ny) + 0.5) * (bb - bt) / ny
+            body = sample_mask(b["body"], alpha_small(str(b["file"]), b["flip"]), xs, ys)
+            n_body = int(body.sum())
+            if n_body == 0:
+                continue
+            fl, ft, fr, fb = b["face"]
+            face = body & np.outer((ys >= ft) & (ys <= fb), (xs >= fl) & (xs <= fr))
+            n_face = int(face.sum())
+            union, touch, names = np.zeros_like(body), [], []
+            for it in items:
+                if it["order"] <= a.get("idx", 0):
+                    continue                                    # 画在人物后面的 actor，盖不到他
+                bx = it["fn"](t)
+                if not bx:
+                    continue
+                m = sample_mask(bx, it["alpha"], xs, ys) & body
+                if it["kind"] == "icon" and (bx[2] - bx[0]) * (bx[3] - bx[1]) > ICON_MAX_FRAC * (br - bl) * (bb - bt):
+                    continue                                    # 单张就这么大：场景大件（战车、浪、地图卷），不是图标
+                hit_face = n_face > 0 and (m & face).sum() / n_face > (OVERLAP_MIN if it["kind"] in FACE_TOUCH_BY_OVERLAY else FACE_TOUCH_COVER)
+                if it["kind"] in FACE_TOUCH_BY_OVERLAY and hit_face:
+                    continue                                    # 贴纸 / 砸字压到脸的，[压脸] 已经报了，这里不重复
+                union |= m
+                if m.any():
+                    names.append(it["name"])
+                if hit_face and it["kind"] not in FACE_TOUCH_BY_OVERLAY:
+                    touch.append(it["name"])
+            frac = float(union.sum()) / n_body
+            if frac > COVER_MAX or touch:
+                done.add(id(a))
+                why_bad = (f"合起来盖住了他身体的 {frac:.0%}（超过 {COVER_MAX:.0%}）" if frac > COVER_MAX else "") + ("，" if frac > COVER_MAX and touch else "") + \
+                          (f"{'、'.join(dict.fromkeys(touch))} 盖住了他的脸（脸框的 {FACE_TOUCH_COVER:.0%} 以上）" if touch else "")
+                rep.err("遮挡", f"{'、'.join(dict.fromkeys(names))} 压在主角 {a['who']}（{why}）身上：{why_bad}（{t:.1f} 秒时；M8：贴图特效不应该覆盖主角）：挪到旁边、堆在怀里露出脸，或者缩小", sh.id)
+
+
 def check_plate_time(sh, out, rep):
     """人名牌看得清的时间（不算落下的 0.42 秒；写了 dur 的话，dur 以后的淡出也不算）≥ 1.5 秒。"""
     for kind, at, e in out["fx"]:
@@ -630,7 +867,9 @@ def fx_box(kind, e, X, Y):
     return None
 
 
-def box_problems(l, t, r, b):
+def box_problems(l, t, r, b, bottom=None):
+    """bottom：下沿的上限（默认 1400 = 字幕区上沿；人物的脸传 1620：脸在字幕区里只有说话时才算错，由 [字幕] 查）。"""
+    lim = SAFE[3] if bottom is None else bottom
     out = []
     if l < SAFE[0]:
         out.append(f"左边 {l:.0f} < {SAFE[0]:.0f}")
@@ -638,8 +877,8 @@ def box_problems(l, t, r, b):
         out.append(f"右边 {r:.0f} > {OCC_X:.0f}（右侧平台遮挡区 140）")
     if t < SAFE[1]:
         out.append(f"上边 {t:.0f} < {SAFE[1]:.0f}（顶部标题条 / 安全区以外）")
-    if b > SAFE[3]:
-        out.append(f"下边 {b:.0f} > {SAFE[3]:.0f}（字幕和底部平台遮挡区）")
+    if b > lim:
+        out.append(f"下边 {b:.0f} > {lim:.0f}（{'字幕和底部平台遮挡区' if bottom is None else '底部平台遮挡区'}）")
     return out
 
 
@@ -759,7 +998,7 @@ def analyse_shot(sh, ctx, rep, spec, out):
         events.append((t0, t0, "切镜头"))
 
     # ---- 图层 / 人物：图、放大倍数、补间、出场
-    actors, props = [], []
+    actors, props, icons = [], [], []
     for grp in ("bg", "actors", "fg"):
         for j, e in enumerate(spec.get(grp, []) or []):
             kind = "actor" if grp == "actors" else grp
@@ -824,9 +1063,17 @@ def analyse_shot(sh, ctx, rep, spec, out):
                     window = presence_window(e, rel, dur)
                 except (KeyError, TypeError, ValueError, AnchorError):
                     window = None
-                actors.append(dict(spec=e, ref=ref, swaps=swaps, tracks=tracks, who=e.get("who", e.get("id")), id=e.get("id"), where=where, window=window))
+                row = ref.row or {}
+                icon = ref.rel is not None and (not ref.rel.startswith("chars/") or bool(re.search(r"道具|物件|课桌", row.get("owner", ""))))     # props/ 下的图当「道具图标」用的 actor
+                d = dict(spec=e, ref=ref, swaps=swaps, tracks=tracks, who=e.get("who", e.get("id")), id=e.get("id"), where=where, window=window, idx=j, is_actor=True,
+                         enter_end=window[0] if window else 0.0)
+                (icons if icon else actors).append(d)
             elif kind != "actor" and ref.rel and ref.rel.startswith("props/") and ref.file:
-                props.append(dict(spec=e, ref=ref, tracks=tracks, where=where))
+                try:
+                    enter_end = presence_window(e, rel, dur)[0]
+                except (KeyError, TypeError, ValueError, AnchorError):
+                    enter_end = 0.0
+                props.append(dict(spec=e, ref=ref, tracks=tracks, where=where, grp=grp, is_actor=False, enter_end=enter_end))
     out["new_things"] = new_things
 
     # ---- 特效（含 rituals 分到这个镜头的）
@@ -881,12 +1128,12 @@ def analyse_shot(sh, ctx, rep, spec, out):
                 X, Y, Z = screen_xf(cam, t, t0 + t, v["x"], v["y"], float(a["spec"].get("depth", 1.0)))
                 w, hh = wd * Z, hd * Z
                 left, top = X - 0.5 * w, Y - hh
-                pr = box_problems(left + FACE[0] * w, top + FACE[2] * hh, left + FACE[1] * w, top + FACE[3] * hh)
+                pr = box_problems(left + FACE[0] * w, top + FACE[2] * hh, left + FACE[1] * w, top + FACE[3] * hh, bottom=OCC_Y)
                 if pr:
                     probs.append((t, pr))
             if probs:
                 t, pr = probs[0]
-                rep.err("安全区", f"{a['where']} {a['who']} 的脸（{a['ref'].path} 上面 40%）在 {t:.1f} 秒时：{'；'.join(pr)}（脸要在 y 360–1400、x 80–{OCC_X:.0f} 以内）", sid)
+                rep.err("安全区", f"{a['where']} {a['who']} 的脸（{a['ref'].path} 上面 40%）在 {t:.1f} 秒时：{'；'.join(pr)}（脸要在 y 360–{OCC_Y:.0f}、x 80–{OCC_X:.0f} 以内；说话时脸不进 1400–1620 字幕区，见 [字幕]）", sid)
         for p in props:
             for t in samples(0.0, dur):
                 v = p["tracks"].value(t)
@@ -923,9 +1170,12 @@ def analyse_shot(sh, ctx, rep, spec, out):
                 if kind == "slam" and box and (box[0] < SAFE[0] or box[2] > OCC_X):
                     rep.warn("安全区", f"{e['type']} 砸字「{e.get('text')}」按字号估计宽 {box[2] - box[0]:.0f}，x 会到 {box[0]:.0f}–{box[2]:.0f}，超出 {SAFE[0]:.0f}–{OCC_X:.0f}", sid)
     out["actors"] = actors
+    out["icons"], out["props"], out["assets_root"] = icons, props, ctx.assets_root
     if cam is not None:
         check_overlays(sh, out, cam, rep)
         check_focus_lines(sh, out, cam, rep)
+        check_subtitle_zone(sh, out, cam, tl, rep)
+        check_cover(sh, out, cam, tl, rep)
     check_plate_time(sh, out, rep)
     out["events"] = events
     out["cover"] = cover

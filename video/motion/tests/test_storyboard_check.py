@@ -16,7 +16,7 @@ OUT = common.OUT / "check_case"
 GOOD = TESTS / "good_storyboard.json"
 EXPECT = json.loads((TESTS / "check_expect.json").read_text(encoding="utf-8"))
 BAD = sorted(TESTS.glob("bad_*.json"))
-TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌", "翻转", "压脸", "集中线"]
+TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌", "翻转", "压脸", "集中线", "字幕", "遮挡"]
 
 _spec = importlib.util.spec_from_file_location("make_case", CASE / "make_case.py")
 make_case = importlib.util.module_from_spec(_spec)
@@ -175,6 +175,111 @@ class TestNewRules(unittest.TestCase):
         p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
         rep, _ = check(p)
         self.assertTrue(any("只看得清" in e["msg"] for e in rep.errors), text(rep))
+
+
+class TestSubtitleAndCover(unittest.TestCase):
+    """M6、M8：没有台词的时段不查字幕区；盖得少 / 盖在后面的不算。"""
+
+    def _case(self, name, feet_y_in_line, extra_fg=None):
+        """三个镜头：第 0 句说话、第 1 句是动作（没有台词）、第 2 句说话；智伯站在 feet_y 的位置，只出现在 feet_y_in_line 指定的那一镜里。"""
+        vd = OUT / f"{name}_voice"
+        vd.mkdir(parents=True, exist_ok=True)
+        lines = [{"t0": 0.3, "t1": 2.8, "who": "旁白", "text": "智伯很生气！", "audio": None, "voiced_end": 2.0, "i": 0},
+                 {"t0": 3.1, "t1": 5.6, "who": "动作", "text": "", "audio": None, "i": 1},
+                 {"t0": 5.9, "t1": 8.4, "who": "旁白", "text": "智伯想了想。", "audio": None, "voiced_end": 2.0, "i": 2}]
+        (vd / "timeline.json").write_text(json.dumps({"duration": 8.7, "lines": lines}, ensure_ascii=False), encoding="utf-8")
+        bg = [{"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 1080}]
+
+        def shot(sid, line, low):
+            a = [{"id": "zb", "who": "智伯", "img": "chars/zb_angry.png", "pos": [540, 1800 if low else 1560], "h": 446}]
+            return {"id": sid, "from": {"line": line}, "bg": bg, "actors": a, "fx": [], **({"fg": extra_fg} if extra_fg and low else {})}
+        sb = {"episode": "tj01", "no": 1, "title": ["甲"], "voice": str(vd.relative_to(common.ROOT)).replace("\\", "/"),
+              "shots": [shot("a", 0, feet_y_in_line == 0), shot("b", 1, feet_y_in_line == 1), shot("c", 2, feet_y_in_line == 2)]}
+        p = OUT / f"{name}.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        return rep
+
+    def test_face_in_subtitle_zone_only_matters_while_a_line_is_spoken(self):
+        quiet = self._case("sub_quiet", 1)                                           # 脸低、但这一镜是动作（没有台词）
+        self.assertEqual([e for e in quiet.errors if e["tag"] in ("字幕", "安全区")], [], text(quiet))
+        loud = self._case("sub_loud", 2)                                             # 同一个位置，第 2 句在说话
+        self.assertTrue(any(e["tag"] == "字幕" and e["shot"] == "c" for e in loud.errors), text(loud))
+        self.assertFalse(any(e["tag"] == "字幕" and e["shot"] == "b" for e in loud.errors))
+
+    def test_face_below_1620_is_always_an_error(self):
+        sb = json.loads((TESTS / "bad_subtitle_covers_face.json").read_text(encoding="utf-8"))
+        next(s for s in sb["shots"] if s["id"] == "s10")["actors"][0]["pos"] = [540, 2000]       # 脸框下沿 > 1620：平台遮挡区
+        p = OUT / "face_below.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertTrue(any(e["tag"] == "安全区" and "1620" in e["msg"] for e in rep.errors), text(rep))
+
+    def test_small_icon_beside_or_behind_the_lead_is_fine(self):
+        rep, _ = check(GOOD)                                                          # good 里 s14、s19 各有一个 props 图标，没盖住主角
+        self.assertEqual([e for e in rep.errors if e["tag"] == "遮挡"], [])
+
+    def test_icons_each_small_but_together_over_20_percent(self):
+        rep, _ = check(TESTS / "bad_cover_icons_on_lead.json")
+        e = next(e for e in rep.errors if e["tag"] == "遮挡")
+        self.assertIn("超过 20%", e["msg"])
+        self.assertIn("面积最大", e["msg"])
+
+    def test_speaking_person_counts_as_the_lead_even_if_small(self):
+        rep, _ = check(TESTS / "bad_cover_speaker.json")
+        self.assertTrue(any(e["tag"] == "遮挡" and "正在说话" in e["msg"] and "韩康子" in e["msg"] for e in rep.errors), text(rep))
+
+    def test_big_foreground_prop_is_scenery_not_an_icon(self):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s10 = next(s for s in sb["shots"] if s["id"] == "s10")
+        s10["fg"] = [{"img": "props/map_silk.png", "depth": 1.0, "pos": [540, 1300], "anchor": [0.5, 0.5], "w": 900}]       # 单张就盖住身体一大半：战车、浪、地图卷这类场景大件
+        p = OUT / "cover_scenery.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertEqual([e for e in rep.errors if e["tag"] == "遮挡"], [], text(rep))
+
+    def test_set_front_marked_in_note_or_registry_is_not_an_effect(self):
+        sb = json.loads((TESTS / "bad_cover_icons_on_lead.json").read_text(encoding="utf-8"))
+        s10 = next(s for s in sb["shots"] if s["id"] == "s10")
+        for ic in s10["fg"]:
+            ic["note"] = "布景前层：战车前栏"                                          # ② 这一镜里写 note
+        p = OUT / "cover_note.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertEqual([e for e in rep.errors if e["tag"] == "遮挡"], [], text(rep))
+        # ① 登记表备注写「布景前层」：整集都认（图层上什么都不用写）
+        reg = (OUT / "REGISTRY.md").read_text(encoding="utf-8").replace("`props/cup_lacquer.png` | 道具 | 正面 | 513×257 | 无 | 定稿 | 测试图", "`props/cup_lacquer.png` | 道具 | 正面 | 513×257 | 无 | 定稿 | 布景前层（测试）", 1)
+        self.assertIn("布景前层（测试）", reg)
+        pr = OUT / "REGISTRY_setfront.md"
+        pr.write_text(reg, encoding="utf-8")
+        plain = TESTS / "bad_cover_icons_on_lead.json"
+        _, _, rp, _ = SC.run(str(plain), registry=pr, no_plugins=True, assets_root=OUT / "assets")
+        self.assertEqual([e for e in rp.errors if e["tag"] == "遮挡"], [], text(rp))
+
+    def test_transparent_part_of_an_icon_does_not_count(self):
+        from PIL import Image
+        f = OUT / "assets" / "props" / "sliver.png"                                   # 230×115，只有左上角一个 20×20 的小方块不透明
+        im = Image.new("RGBA", (230, 115), (0, 0, 0, 0))
+        im.paste((200, 100, 80, 255), (0, 0, 20, 20))
+        im.save(f)
+        sb = json.loads((TESTS / "bad_cover_icons_on_lead.json").read_text(encoding="utf-8"))
+        s10 = next(s for s in sb["shots"] if s["id"] == "s10")
+        for ic in s10["fg"]:
+            ic["img"] = "props/sliver.png"                                            # 同样的 6 个位置，同样的框，但几乎全是透明的
+        p = OUT / "cover_sliver.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertEqual([e for e in rep.errors if e["tag"] == "遮挡"], [], text(rep))
+
+    def test_follow_sticker_and_background_prop_do_not_count(self):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s10 = next(s for s in sb["shots"] if s["id"] == "s10")
+        s10["fx"].append({"type": "sticker", "text": "汗", "follow": "zb", "offset": [0, -300], "at": {"line": 9, "dt": 0.5}, "size": 600})     # 挂在人物身上：不算
+        s10["bg"] = s10["bg"] + [{"img": "props/cup_lacquer.png", "depth": 1.0, "pos": [540, 1300], "anchor": [0.5, 0.5], "w": 700}]       # bg 在人物后面：不算
+        p = OUT / "cover_exempt.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep, _ = check(p)
+        self.assertEqual([e for e in rep.errors if e["tag"] in ("遮挡", "压脸")], [], text(rep))
 
 
 class TestWarnings(unittest.TestCase):
