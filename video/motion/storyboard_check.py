@@ -20,8 +20,8 @@
            「讲知识点的镜头」= 镜头 note 里有「知识」两个字，或者用了清单 / 属性卡 / 地图 / 进度物类特效
   [闪烁]   闪白（flash 特效、名字里有 flash 的转场）一集 ≤ 4 次、任何 1 秒内 ≤ 3 次；分镜表里给闪白写了参数的话再查：亮度 ≤ 60%、时长 ≤ 0.12 秒、不用红色、不反色（alpha / strength / intensity / dur / color）
            （特效包的 flash 自己固定 55% 亮度、几帧，不带参数，所以主要查次数）
-  [安全区] 脸（人物图上面 40%、中间 50% 宽）要在 y 360–1620、x 80–940（右边 140 是平台遮挡区，最下 300 是平台遮挡区）以内，按镜头运动算到画面里的位置；
-           脸框下沿在 1400–1620 之间（字幕区）只有说话的时候才算错，见 [字幕]；
+  [安全区] 脸（每张人物图自己的脸框，见下面「脸框」）要在 y 360–1620、x 80–940（右边 140 是平台遮挡区，最下 300 是平台遮挡区）以内，按镜头运动算到画面里的位置；
+           脸框左 / 右出界：不到脸框宽的 10%（耳朵擦边）= 警告，≥ 10% = 错；上边 / 下边出界 = 错；脸框下沿在 1400–1620 之间（字幕区）只有说话的时候才算，见 [字幕]；
            props/ 里的关键道具、砸字 / 大字标题 / 游戏卡片 / 清单 / 属性卡的中心点同样（人名牌和清单按估出来的方框查）；砸字估出来的宽度超出 x 80–940 只警告；贴纸进了遮挡区只警告
   [素材]   图片（背景 / 人物 / 换表情 / 前景 / 特效自带的）和音效在不在；登记表里：没登记 = 错，「停用」= 错，「试做集」范围用在新集 = 错，「宣传图」范围 = 错，「未定稿」= 警告
   [放大]   屏幕显示 ÷ 原图 ≤ 1.3，含镜头放大（远景层按视差系数折算；blur 的背景不查）
@@ -37,7 +37,8 @@
   [翻转]   交领人物不许翻转（PITFALLS M1，翻过来衣襟就成了左衽）：chars/ 下的图 flip: true 报错；例外：司马光（sgm_，圆领）、皮影（文件名含 shadow）、登记表备注里写了「可翻转」的图、道具 / 物件
   [压脸]   贴纸 / 砸字 / 水花 / 闪粉 / 纸屑的框和任何人物的脸框重叠（脸框面积的 5% 以上）报错（M4）；写了 follow 的贴纸（挂在人物身上）不算；
            闪粉 / 纸屑没写 avoid = 特效包自动避开脸，不查；写了 avoid: [] 关掉、或者写的框没盖住脸，而粒子的范围（闪粉 area，纸屑整个画面）碰到脸就报错
-  [字幕]   字幕区 y 1400–1620（字幕卡底边贴 y 1615 往上长；PITFALLS M6）：有台词的时段里，任何人物的脸框（含镜头运动）进了字幕区就报错；没有台词的时段不查
+  [字幕]   字幕区 y 1400–1620（字幕卡底边贴 y 1615 往上长；PITFALLS M6）：有台词的时段里，任何人物的脸框（含镜头运动）进了字幕区：字幕区盖进脸框的高度 ≥ 脸框高的 30%（约到嘴）= 错，不到 30%（只是下巴 / 胡子尖）= 警告；
+           每个人物取各句各时刻里盖得最深的一次报一条；没有台词的时段不查
   [遮挡]   特效 / 贴纸 / 道具图标不许盖住主角（M8）：这一镜的主体人物（面积最大的，和这个时刻正在说话的）——特效、贴纸、props/ 下的图（fg 图层、画在他后面的 actor）
            合起来盖住他身体（人物图不透明的部分）的 20% 以上就报错；除了贴纸 / 砸字（[压脸] 管），别的盖住他脸框的 10% 以上也报错。
            不算：follow 挂在人物身上的贴纸；props/ 的 bg 图层（在人物后面）；「布景前层」——挡住人腿的战车前栏、马、浪、栏杆这类场景的一部分，不是特效，三种办法认：
@@ -50,6 +51,11 @@
            线画在人物前面（layer front，不写 layer 就是这个）、区域盖住任何一个人物（不只是主体）脸框的 5% 以上 = 错；脸没碰到、只盖住他身体（人物图不透明部分）的 20% 以上 = 警告；
            线画在人物后面（写了 "layer": "back"）、或区域避开了人物的不报。线条钉在屏幕上不跟镜头动，人物的脸框 / 身体框按镜头运动、补间算到屏幕上（同 [压脸]、[遮挡]）；
            在线出现的这段时间里取 3 个时刻查（出现后 0.25 秒、中间、结束）
+
+脸框（[安全区] [字幕] [压脸] [遮挡] [速度线] [集中线] 共用；PITFALLS M6 再犯、待补 18）：不再是每张图都当「脸在最上面 40%、中间 50% 宽」（斗笠 / 官帽的人脸在 18%–55%、有胡子的下巴到 57%，旧框会低估）。
+每张人物图自己的脸框 = 额头到下巴 / 胡子底（戴帽的从帽檐下面算），比例坐标 [x0, x1, y0, y1]，写在 video/assets/faces.json（路径相对 video/assets/，量过看过的）；没写的图自动估（video/motion/faces.py：
+取肤色像素最上面那团，往下多留下巴 / 胡子，估得不合理 = 放弃），都不行才退回旧的上 40%。人物翻身（flip）脸框跟着左右镜像；换表情的图各有各的框。结果的 info 里有一行「脸框：N 张人物图，faces.json / 自动估 / 旧默认各几张」，
+没写进 faces.json 的列名字。新人物图出来后：python video/motion/faces.py sheet --glob "chars/xxx_*.png" --grid 把框画在图上看一眼（存到 video/out/faces_check/），不对就在 faces.json 加一行。
 
 特效名字怎么分类：storyboard_check.py 里的 FX_KINDS（按名字里的子串；特效包 fx/ 里的 name_plate = 人名牌、smash = 砸字、big_title / card_* = 大字标题和游戏卡片、
 checklist / stat_card / map* / progress = 讲知识点的、flash = 闪白、lines_* / sparkle / rain 等 = 氛围）；特效包加了新名字，不对的话改这张表（一处）。
@@ -78,6 +84,7 @@ sys.stderr.reconfigure(encoding="utf-8")
 
 from PIL import Image  # noqa: E402
 
+import faces as facelib  # noqa: E402
 import fx as fxreg  # noqa: E402
 import registry_check as RC  # noqa: E402
 from engine import consts as C  # noqa: E402
@@ -107,7 +114,7 @@ FLASH_MAX_STRENGTH, FLASH_MAX_DUR = 0.6, 0.12
 KNOW_MAX_NEW, GENERAL_FX_WARN = 3, 5
 SAFE = (80.0, 360.0, 1000.0, 1400.0)      # 主体安全区：x0, y0, x1, y1
 OCC_X, OCC_Y = C.W - 140.0, C.H - 300.0   # 平台遮挡区：右边 140、最下面 300
-FACE = (0.25, 0.75, 0.0, 0.40)            # 脸在人物图里的位置：x0, x1, y0, y1（占图宽 / 图高的比例）
+FACE = facelib.DEFAULT                    # 脸在人物图里的位置（x0, x1, y0, y1，占图宽 / 图高的比例）的旧默认：上面 40%、中间 50% 宽；每张图自己的脸框见 faces.py（faces.json + 自动估），这个只在两样都没有时用
 UPSCALE_MAX, UPSCALE_TOL = C.MAX_UPSCALE, 0.005
 SERIES_HOST = {"司马光", "sgm"}           # 系列讲解人：不要求人名牌
 AT_EARLY_WARN, AT_LATE_TOL = 0.25, 0.05
@@ -142,6 +149,8 @@ OVERLAP_MIN = 0.05                                                         # 和
 PLATE_FALL, PLATE_MIN_CLEAR = 0.42, 1.5                                    # name_plate 落下来要 0.42 秒；看得清的时间至少 1.5 秒
 SPARKLE_AREA = (80.0, 360.0, 1000.0, 1400.0)
 SUB_Y0, SUB_Y1 = 1400.0, 1620.0                                            # 字幕区：字幕卡底边贴 y 1615 往上长（M6）
+SUB_FACE_ERR = 0.30                                                        # [字幕]：字幕区盖进脸框的高度 ≥ 脸框高的这么多（约到嘴）= 错，不到 = 警告（下巴 / 胡子尖）
+FACE_SIDE_ERR = 0.10                                                       # [安全区]：脸框左 / 右出界 ≥ 脸框宽的这么多 = 错，不到 = 警告（耳朵擦边）
 COVER_MAX = 0.20                                                           # 特效 / 图标合起来盖住主体身体框的比例上限（M8）
 ICON_MAX_FRAC = 0.20                                                       # 一张 props/ 图单独就超过主体身体框这么多，是场景大件（战车、浪、地图卷），不是图标，不查
 FACE_TOUCH_COVER = 0.10                                                    # [遮挡]：特效 / 图标盖住脸的 10% 以上才算「碰到脸」
@@ -513,8 +522,14 @@ def actor_boxes(a, cam, t, t0):
     X, Y, Z = screen_xf(cam, t, t0 + t, v["x"], v["y"], float(a["spec"].get("depth", 1.0)))
     w, hh = wd * Z, hd * Z
     left, top = X - 0.5 * w, Y - hh
-    return {"face": (left + FACE[0] * w, top + FACE[2] * hh, left + FACE[1] * w, top + FACE[3] * hh), "body": (left, top, left + w, Y), "area": w * hh,
+    return {"face": face_on_screen(r, bool(a["spec"].get("flip")), left, top, w, hh), "body": (left, top, left + w, Y), "area": w * hh,
             "file": r.file, "flip": bool(a["spec"].get("flip")) != (v["sx"] < 0)}
+
+
+def face_on_screen(ref, flip, left, top, w, hh):
+    """人物图 ref 画在屏幕上 (left, top, 宽 w, 高 hh) 时的脸框；flip（引擎把图左右翻了）= 脸框也左右镜像。"""
+    x0, x1, y0, y1 = facelib.mirrored(ref.face) if flip else ref.face
+    return left + x0 * w, top + y0 * hh, left + x1 * w, top + y1 * hh
 
 
 def pick_subject(frames):
@@ -712,9 +727,10 @@ def check_line_fx(sh, out, cam, rep, fx_table):
 
 
 def check_subtitle_zone(sh, out, cam, tl, rep):
-    """M6：有台词的时段里，人物的脸框不许进字幕区 y 1400–1620（字幕卡底边贴 y 1615 往上长）。没有台词的时段不查。"""
+    """M6：有台词的时段里，人物的脸框和字幕区 y 1400–1620（字幕卡底边贴 y 1615 往上长）的重叠：字幕区盖进脸框的高度 ≥ 脸框高的 30%（约到嘴）= 错；
+    不到 30%（只是下巴 / 胡子尖）= 警告。没有台词的时段不查。每个人物取各句、各时刻里盖得最深的那一次报一条。"""
     t0 = sh.t0
-    done = set()
+    worst = {}                                     # id(人物) → (盖进的比例, 句号, 台词, 秒, 脸框, 人物)
     for i, ln in enumerate(tl.lines):
         if not tl.is_speech(i):
             continue
@@ -723,16 +739,22 @@ def check_subtitle_zone(sh, out, cam, tl, rep):
             continue
         for t_abs in (a0 + 0.1, (a0 + a1) / 2, a1 - 0.1):
             for a in out["actors"]:
-                if id(a) in done:
-                    continue
                 b = actor_boxes(a, cam, t_abs - t0, t0)
                 if b is None:
                     continue
                 f = b["face"]
-                if f[3] > SUB_Y0 and f[1] < SUB_Y1:
-                    done.add(id(a))
-                    rep.err("字幕", f"第 {i} 句「{str(ln.get('text', ''))[:12]}」出字幕的时候（{t_abs:.1f} 秒），{a['who']} 的脸框（y {f[1]:.0f}–{f[3]:.0f}）进了字幕区 y {SUB_Y0:.0f}–{SUB_Y1:.0f}"
-                                  f"（M6：字幕卡底边贴 y 1615 往上长，会盖住嘴和脸）：人物往上放、缩小，或者换个脸在上半身的构图", sh.id)
+                if f[3] > SUB_Y0 and f[1] < SUB_Y1 and f[3] > f[1]:
+                    frac = (min(f[3], SUB_Y1) - max(f[1], SUB_Y0)) / (f[3] - f[1])
+                    if id(a) not in worst or frac > worst[id(a)][0]:
+                        worst[id(a)] = (frac, i, str(ln.get("text", ""))[:12], t_abs, f, a)
+    for frac, i, text, t_abs, f, a in worst.values():
+        deep = min(f[3], SUB_Y1) - max(f[1], SUB_Y0)
+        what = (f"第 {i} 句「{text}」出字幕的时候（{t_abs:.1f} 秒），{a['who']} 的脸框（y {f[1]:.0f}–{f[3]:.0f}）进了字幕区 y {SUB_Y0:.0f}–{SUB_Y1:.0f} {deep:.0f} 像素，"
+                f"占脸框高的 {frac:.0%}")
+        if frac >= SUB_FACE_ERR:
+            rep.err("字幕", what + f"（≥ {SUB_FACE_ERR:.0%}，字幕卡盖到了嘴；M6：字幕卡底边贴 y 1615 往上长，会盖住嘴和脸）：人物往上放、缩小，或者换个脸在上半身的构图", sh.id)
+        else:
+            rep.warn("字幕", what + f"（不到 {SUB_FACE_ERR:.0%}：只是下巴 / 胡子尖，字幕卡会盖住一点）：能往上放一点就放", sh.id)
 
 
 def speakers_at(tl, t_abs):
@@ -1080,11 +1102,27 @@ def box_problems(l, t, r, b, bottom=None):
     return out
 
 
+def face_problems(box):
+    """人物的脸框（l, t, r, b）和主体安全区：→ (错, 警告) 两个说明列表。上边 / 下边出界 = 错；左 / 右出界不到脸框宽的 10%（耳朵擦边）= 警告，≥ 10% = 错。"""
+    l, t, r, b = box
+    errs, warns = [], []
+    for over, msg in ((SAFE[0] - l, f"左边 {l:.0f} < {SAFE[0]:.0f}"), (r - OCC_X, f"右边 {r:.0f} > {OCC_X:.0f}（右侧平台遮挡区 140）")):
+        if over > 0:
+            ratio = over / max(r - l, 1e-6)
+            if ratio >= FACE_SIDE_ERR:
+                errs.append(f"{msg}，出界 {over:.0f} 像素（脸框宽的 {ratio:.0%}）")
+            else:
+                warns.append(f"{msg}，出界 {over:.0f} 像素（脸框宽的 {ratio:.0%}，不到 {FACE_SIDE_ERR:.0%}：擦边）")
+    errs += box_problems(SAFE[0], t, OCC_X, b, bottom=OCC_Y)                      # 左右已经在上面按比例分了错 / 警告，这里只要上边 / 下边
+    return errs, warns
+
+
 class ImgRef:
     """一张要用的图：分镜表里写的路径、找到的文件、登记行。同一张图的问题只报一次，后面列出用到它的镜头（ctx.asset_msgs → flush_asset_msgs）。"""
 
     def __init__(self, ctx, rep, sid, path, where):
         self.path, self.file, self.row, self.rel = path, None, None, None
+        self.faces = getattr(ctx, "faces", None)
         try:
             self.file = ctx.store.resolve(path)
         except AssetError:
@@ -1122,6 +1160,11 @@ class ImgRef:
     @property
     def size(self):
         return img_size(self.file) if self.file else None
+
+    @property
+    def face(self):
+        """这张图的脸框 (x0, x1, y0, y1)，占图宽 / 图高的比例，图的原方向：faces.json → 自动估 → 旧默认 FACE。"""
+        return self.faces.box(self.file, self.rel) if self.faces is not None and self.file else FACE
 
 
 def effective_upscale(spec, kind, ref, cam, dur, t_abs0):
@@ -1326,12 +1369,15 @@ def analyse_shot(sh, ctx, rep, spec, out):
                 X, Y, Z = screen_xf(cam, t, t0 + t, v["x"], v["y"], float(a["spec"].get("depth", 1.0)))
                 w, hh = wd * Z, hd * Z
                 left, top = X - 0.5 * w, Y - hh
-                pr = box_problems(left + FACE[0] * w, top + FACE[2] * hh, left + FACE[1] * w, top + FACE[3] * hh, bottom=OCC_Y)
-                if pr:
-                    probs.append((t, pr))
-            if probs:
-                t, pr = probs[0]
-                rep.err("安全区", f"{a['where']} {a['who']} 的脸（{a['ref'].path} 上面 40%）在 {t:.1f} 秒时：{'；'.join(pr)}（脸要在 y 360–{OCC_Y:.0f}、x 80–{OCC_X:.0f} 以内；说话时脸不进 1400–1620 字幕区，见 [字幕]）", sid)
+                pr, pw = face_problems(face_on_screen(r, bool(a["spec"].get("flip")), left, top, w, hh))
+                if pr or pw:
+                    probs.append((t, pr, pw))
+            bad = [x for x in probs if x[1]]
+            if bad or probs:
+                t, pr, pw = bad[0] if bad else probs[0]
+                msg = (f"{a['where']} {a['who']} 的脸（{a['ref'].path} 的脸框）在 {t:.1f} 秒时：{'；'.join(pr + pw)}"
+                       f"（脸要在 y 360–{OCC_Y:.0f}、x 80–{OCC_X:.0f} 以内，左右出界 ≥ 脸框宽的 {FACE_SIDE_ERR:.0%} 才算错；说话时脸不进 1400–1620 字幕区，见 [字幕]）")
+                (rep.err if bad else rep.warn)("安全区", msg, sid)
         for p in props:
             for t in samples(0.0, dur):
                 v = p["tracks"].value(t)
@@ -1505,6 +1551,22 @@ def is_person(a):
     return True
 
 
+def face_sources_info(ctx, outs, rep):
+    """info：用到的人物图的脸框都是哪来的。faces.json 里没写的（自动估 / 旧默认）列出来：新人物图出来后用 faces.py sheet 画框看一眼，不对就写进 faces.json（M6 再犯）。"""
+    seen = {}
+    for o in outs.values():
+        for a in o.get("actors", []):
+            for r in [a["ref"]] + [x[1] for x in a["swaps"]]:
+                if r.file and r.path not in seen:
+                    seen[r.path] = ctx.faces.lookup(r.file, r.rel)[1]
+    if not seen:
+        return
+    n = {k: sum(1 for v in seen.values() if v == k) for k in ("json", "auto", "default")}
+    rep.info.append(f"脸框：{len(seen)} 张人物图，faces.json {n['json']}、自动估 {n['auto']}、旧默认 {n['default']}"
+                    + (f"；没写进 faces.json 的：{'、'.join(Path(k).stem for k, v in seen.items() if v != 'json')[:200]}"
+                       "（faces.py sheet 画框看一眼，不对就写进 faces.json）" if n["auto"] + n["default"] else ""))
+
+
 def check_namecards(shots, outs, rep):
     known = set()                                      # 整集所有人物的名字 / id / 前缀：用来判断一张人名牌写的是谁
     for sh in shots:
@@ -1604,6 +1666,10 @@ def run(sb_arg, registry=REGISTRY, no_plugins=False, assets_root=None):
     ctx.tl, ctx.base, ctx.episode = tl, base, str(sb.get("episode", ""))
     ctx.registry = load_registry(registry)
     ctx.assets_root = Path(assets_root) if assets_root else C.ASSETS
+    try:
+        ctx.faces = facelib.FaceTable(ctx.assets_root)
+    except facelib.FaceError as e:
+        raise Fatal(str(e))
     ctx.store = AssetStore(1.0, [base])
     ctx.store.roots = [ctx.assets_root, base]
     ctx.sfx_dirs = [C.SFX_DIR] + [d for d in (base / "sfx",) if d.is_dir()]
@@ -1661,6 +1727,7 @@ def run(sb_arg, registry=REGISTRY, no_plugins=False, assets_root=None):
         stats["flashes"] = len(flashes)
         check_namecards(shots, outs, rep)
         flush_asset_msgs(ctx, rep)
+        face_sources_info(ctx, outs, rep)
         # 时间线里说话的人 vs 人物的 who
         speakers = {w for i, ln in enumerate(tl.lines) if tl.is_speech(i) for w in str(ln["who"]).split("+")}
         known_names = {owner_name(r["owner"])[0] for r in ctx.registry.values()}

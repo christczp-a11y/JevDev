@@ -3,11 +3,14 @@
 所以真实素材怎么增减、特效包做到哪一步，这些测试都不受影响。"""
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 import unittest
+from types import SimpleNamespace as NS
 
 import common
+import faces as facelib
 import storyboard_check as SC
 
 TESTS = common.TESTS
@@ -353,6 +356,132 @@ class TestLineFx(unittest.TestCase):
         self.assertEqual(self._hits(rep), ([], []), text(rep))
         rep, _ = check(GOOD)                                                           # good 里的 lines_focus（有 clear）不归 [速度线] 管
         self.assertEqual(self._hits(rep), ([], []))
+
+
+class TestFaceBoxes(unittest.TestCase):
+    """M6 再犯、待补 18：脸框按图定（faces.json → 自动估 → 旧默认 40%）。用 s10（智伯一个人，说话）当试验场：把他放低，脸的上 40% 还在字幕区上面，但额头到下巴的整张脸进了字幕区。
+    阈值：字幕区盖进脸框的高度 ≥ 脸框高的 30% = 错，不到 = 警告；[安全区] 脸框左 / 右出界 ≥ 脸框宽的 10% = 错，不到 = 警告。"""
+    BOX = [0.2, 0.8, 0.2, 0.6]                         # 戴斗笠那种：脸在图高的 20%–60%（脸框高约 187 像素）
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = OUT / "assets_faces"                # 带 faces.json 的素材目录：从公共的测试素材复制一份，不弄脏别的测试
+        if cls.root.exists():
+            shutil.rmtree(cls.root)
+        shutil.copytree(OUT / "assets", cls.root)
+
+    def _run(self, faces_json=None, x=540, y=1620, flip=False):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s10 = next(s for s in sb["shots"] if s["id"] == "s10")
+        s10["actors"][0]["pos"] = [x, y]
+        s10.pop("camera", None)
+        if flip:
+            s10["actors"][0]["flip"] = True
+        p = OUT / "face_case.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        fj = self.root / "faces.json"
+        if faces_json is None:
+            if fj.exists():
+                fj.unlink()
+        else:
+            fj.write_text(json.dumps(faces_json), encoding="utf-8")
+        _, _, rep, _ = SC.run(str(p), registry=OUT / "REGISTRY.md", no_plugins=True, assets_root=self.root)
+        return rep
+
+    @staticmethod
+    def _s10(rep, tag, kind="errors"):
+        return [f for f in getattr(rep, kind) if f["tag"] == tag and f["shot"] == "s10"]
+
+    def test_chin_in_the_subtitle_zone_is_caught_only_with_the_real_face_box(self):
+        rep = self._run(None, y=1640)                                                  # 旧默认：脸框在字幕区只进去 19% 以内（下巴），不到 30%
+        self.assertEqual(self._s10(rep, "字幕"), [], text(rep))
+        rep = self._run({"chars/zb_angry.png": self.BOX}, y=1640)                      # 这张图的脸到 60%：字幕区盖进脸框高的 46%，到嘴了
+        errs = self._s10(rep, "字幕")
+        self.assertEqual(len(errs), 1, text(rep))
+        self.assertIn("智伯", errs[0]["msg"])
+        self.assertIn("46%", errs[0]["msg"])
+        self.assertEqual([e for e in rep.errors if e["tag"] not in ("字幕",)], [], text(rep))
+        self.assertTrue(any("faces.json 1" in i for i in rep.info), rep.info)
+
+    def test_subtitle_zone_threshold_is_30_percent_of_the_face_height(self):
+        rep = self._run({"chars/zb_angry.png": self.BOX}, y=1600)                      # 盖进 24%：只是下巴 / 胡子尖
+        self.assertEqual(self._s10(rep, "字幕"), [], text(rep))
+        warns = self._s10(rep, "字幕", "warnings")
+        self.assertEqual(len(warns), 1, [SC.fmt(w) for w in rep.warnings])
+        self.assertIn("24%", warns[0]["msg"])
+        self.assertIn("不到 30%", warns[0]["msg"])
+        rep = self._run({"chars/zb_angry.png": self.BOX}, y=1620)                      # 盖进 35%：到嘴了
+        self.assertEqual(len(self._s10(rep, "字幕")), 1, text(rep))
+        self.assertEqual(self._s10(rep, "字幕", "warnings"), [])                       # 错了就不再重复报警告
+        rep = self._run(None, y=1500)                                                  # 完全不进字幕区：什么都不报
+        self.assertEqual((self._s10(rep, "字幕"), self._s10(rep, "字幕", "warnings")), ([], []))
+
+    def test_safe_zone_side_overshoot_under_10_percent_of_the_face_width_is_a_warning(self):
+        rep = self._run(None, x=175, y=1500)                                           # 脸框左边 69 < 80：出界 11 像素 = 脸框宽的 6%，耳朵擦边
+        self.assertEqual(self._s10(rep, "安全区"), [], text(rep))
+        warns = self._s10(rep, "安全区", "warnings")
+        self.assertEqual(len(warns), 1, [SC.fmt(w) for w in rep.warnings])
+        self.assertIn("不到 10%", warns[0]["msg"])
+        rep = self._run(None, x=160, y=1500)                                           # 出界 ≥ 10%
+        self.assertEqual(len(self._s10(rep, "安全区")), 1, text(rep))
+        self.assertEqual(self._s10(rep, "安全区", "warnings"), [])
+        rep = self._run(None, x=880, y=1500)                                           # 右边也一样
+        errs = self._s10(rep, "安全区")
+        self.assertEqual(len(errs), 1, text(rep))
+        self.assertIn("右边", errs[0]["msg"])
+        rep = self._run(None, x=300, y=1500)
+        self.assertEqual((self._s10(rep, "安全区"), self._s10(rep, "安全区", "warnings")), ([], []))
+
+    def test_without_faces_json_and_without_skin_the_old_default_applies(self):
+        rep = self._run(None)
+        self.assertEqual(rep.errors, [], text(rep))
+        self.assertTrue(any("旧默认" in i for i in rep.info), rep.info)
+
+    def test_lookup_order_json_then_auto_then_default(self):
+        from PIL import Image, ImageDraw
+        root = OUT / "faces_lookup"
+        (root / "chars").mkdir(parents=True, exist_ok=True)
+        im = Image.new("RGBA", (200, 400), (0, 0, 0, 0))
+        d = ImageDraw.Draw(im)
+        d.rectangle([60, 160, 140, 400], fill=(40, 60, 90, 255))                      # 深蓝的袍子
+        d.ellipse([50, 30, 150, 130], fill=(255, 200, 160, 255))                      # 头：肤色
+        d.ellipse([20, 270, 80, 330], fill=(255, 200, 160, 255))                      # 手：肤色，在下面、而且不小
+        im.save(root / "chars" / "head.png")
+        Image.new("RGBA", (200, 400), (40, 60, 90, 255)).save(root / "chars" / "blue.png")
+        (root / "faces.json").write_text(json.dumps({"chars/head.png": [0.1, 0.9, 0.0, 0.5]}), encoding="utf-8")
+        t = facelib.FaceTable(root)
+        self.assertEqual(t.lookup(root / "chars" / "head.png", "chars/head.png"), ((0.1, 0.9, 0.0, 0.5), "json"))
+        (root / "faces.json").unlink()
+        box, src = facelib.FaceTable(root).lookup(root / "chars" / "head.png", "chars/head.png")
+        self.assertEqual(src, "auto")
+        self.assertTrue(0.15 <= box[0] <= 0.30 and 0.70 <= box[1] <= 0.85, box)       # 头在 x 0.25–0.75
+        self.assertTrue(box[2] < 0.12 and 0.30 <= box[3] <= 0.45, box)                # 取最上面那团（头），不是手；往下多留一点给下巴
+        self.assertEqual(facelib.FaceTable(root).lookup(root / "chars" / "blue.png", "chars/blue.png"), (facelib.DEFAULT, "default"))
+
+    def test_flipped_person_gets_a_mirrored_face_box(self):
+        ref = NS(face=(0.1, 0.5, 0.2, 0.6))
+        self.assertEqual(SC.face_on_screen(ref, False, 0.0, 0.0, 1000.0, 1000.0), (100.0, 200.0, 500.0, 600.0))
+        self.assertEqual(SC.face_on_screen(ref, True, 0.0, 0.0, 1000.0, 1000.0), (500.0, 200.0, 900.0, 600.0))
+        self.assertEqual(facelib.mirrored(facelib.DEFAULT), facelib.DEFAULT)           # 旧默认左右对称，翻不翻一样
+
+    def test_face_box_must_be_inside_the_picture(self):
+        for bad in ([0.5, 0.2, 0.0, 0.4], [0.1, 0.9, 0.5, 0.4], [0.1, 0.9, 0.0, 1.2], [0.1, 0.9, 0.0], "x"):
+            with self.subTest(bad):
+                (self.root / "faces.json").write_text(json.dumps({"chars/zb_angry.png": bad}), encoding="utf-8")
+                with self.assertRaises(facelib.FaceError):
+                    facelib.load(self.root / "faces.json")
+        (self.root / "faces.json").write_text(json.dumps({"chars/zb_angry.png": [0.5, 0.2, 0.0, 0.4]}), encoding="utf-8")
+        rc, out = cli(GOOD, "--assets-root", self.root, "--registry", OUT / "REGISTRY.md", "--no-plugins")
+        self.assertEqual(rc, 2, out)                                                   # 写坏了不当作通过
+        (self.root / "faces.json").unlink()
+
+    def test_real_faces_json_parses_and_has_the_hand_measured_hooded_faces(self):
+        """真实的 video/assets/faces.json：格式对；戴斗笠的虞人、戴官帽的司马光这几张（M6 再犯的原因）脸框要比旧的 40% 低。图在不在由 `faces.py check` 管（测试不依赖素材增减）。"""
+        data = facelib.load(facelib.ASSETS / facelib.FACES_JSON)
+        self.assertGreaterEqual(len(data), 90)
+        for k in ("chars/yr_hi_cry_l.png", "chars/yr_hi_laugh_l.png", "chars/yr_hi_sigh_l.png", "chars/wwh_hi_rain_firm.png", "chars/sgm_hi_point.png"):
+            self.assertGreater(data[k][3], 0.5, k)                                      # 下巴 / 胡子底在图高的 50% 以下
+            self.assertGreater(data[k][2], 0.1, k)                                      # 脸从帽檐下面算起，不是从图顶
 
 
 class TestDwell(unittest.TestCase):
