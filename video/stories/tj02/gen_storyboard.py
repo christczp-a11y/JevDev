@@ -281,7 +281,7 @@ shot("s01", A(0, dt=-0.3), "wide",
      bg=road_bg() + [back], actors=[wwh_car], fg=front + [fore()],
      fx=[rain(D(0.0)), plate("魏文侯", "魏国的国君", [820, 380], D(0.15), size=0.7, house="魏家"),
          fx("splash", D(0.5), pos=[400, 1500], size=1.1), fx("splash", D(1.3), pos=[880, 1500], size=0.9),
-         fx("lines_speed", D(0.0), dir="left", y0=420, y1=1320)],
+         fx("lines_speed", D(0.0), dir="left", y0=400, y1=800)],
      sfx=[sfx("whoosh", D(0.0)), sfx("step", D(0.25)), sfx("step", D(0.55)), sfx("step", D(0.85))],
      camera=cam(pan(dx=60), shake(D(0.5), 0.3, 10)))
 
@@ -291,7 +291,6 @@ shot("s02", A(0, dt=1.8), "close",
      actors=[P("wwh", WWH, HI_RAIN, [380, 1940], 1100, "魏文侯戴斗笠披蓑衣，目光直直望着前方，泥点糊在鼻尖上，眨眨眼顾不上擦",
                acts=[act(D(0.25), swap="chars/wwh_hi_rain_mud.png")])],
      fx=[rain(D(0.0)), st("pa", [760, 640], D(0.25), 120), fx("dust", D(0.25), mode="puff", pos=[470, 1060], size=110),
-         fx("lines_speed", D(0.0), dir="left", y0=420, y1=1320, dur=0.5),
          fx("freeze", A(1, dt=0.0), dur=1.8),
          fx("page_edge", A(1, dt=0.05), y=1300, w=1900, peek="chars/sgm_hi_remote.png", peek_h=640, peek_x=870),
          fx("remote_click", A(1, dt=0.5), pos=[990, 1080])],
@@ -493,18 +492,18 @@ shot("s20", A(11), "wide",
      bg=bq_bg() + [L("chars/wdc_c_urge.png", [800, 1500], 1.0, [0.5, 1], h=520, enter={"type": "slide_right", "at": D(0.3), "dur": 0.4}, note="大臣丙在后面着急地摆手劝"),
                    L("chars/wdc_b_urge.png", [660, 1500], 1.0, [0.5, 1], h=530, enter={"type": "slide_right", "at": D(0.15), "dur": 0.4}, note="大臣乙在后面着急地摆手劝")],
      actors=[P("wwh", WWH, "chars/wwh_stand.png", [200, 1500], 525, "魏文侯站着听大臣们劝"),
-             P("dca", DC, "chars/wdc_a_urge.png", [480, 1500], 545, "大臣甲着急地摆手劝：主公！跟您约好的是管山林的老伯伯", enter={"type": "slide_right", "dur": 0.4})],
+             P("dca", DC, "chars/wdc_a_urge.png", [540, 1500], 545, "大臣甲着急地摆手劝：主公！跟您约好的是管山林的老伯伯", enter={"type": "slide_right", "dur": 0.4})],
      fg=bq_fg(2300, 1580),
      fx=[rain(), fx("big_title", A(11, dt=0.05), text="第二关：约好的事，\n鸽还是不鸽？", pos=[540, 560], size=110, deco="rays"),
          st_text("叽叽喳喳", [760, 860], D(0.9), 70)],
      camera=cam(push(0.03)))
 
 shot("s21", A(11, word="老伯伯"), "medium",
-     "知识：「跟您约好的是管山林的老伯伯」：深山雨林里，虞人（慈祥的老伯伯，旧斗笠旧蓑衣）站着笑眯眯；旁边弹出他的属性卡：身份 看林人、工作 护林巡山",
+     "知识：「跟您约好的是管山林的老伯伯」：深山雨林里，虞人（慈祥的老伯伯，旧斗笠旧蓑衣）站着笑眯眯；旁边弹出他的属性卡（名字条写「虞人」）：工作 护林巡山（弓箭图标：管山林、也管打猎）",
      bg=[L("props/teaser_rain.png", [-100, 0], 0.3, w=1280, blur=4)],
      actors=[P("yr", YR, "chars/yr_stand.png", [270, 1560], 640, "虞人：慈祥的老伯伯，戴旧斗笠披旧蓑衣，两手拢在身前眯眼笑")],
      fx=[plate("虞人", "管山林的人", [150, 400], D(0.1), size=0.6, color=YR_COLOR),
-         fx("stat_card", D(0.05), name="虞人", rows=[{"label": "身份", "value": "看林人"}, {"label": "工作", "value": "护林巡山"}],
+         fx("stat_card", D(0.05), name="虞人", rows=[{"label": "工作", "value": "护林巡山", "icon": "props/icon_bow.png"}],
             pos=[700, 840], w=520, gap=0.5)],
      camera=cam(push(0.03)))
 
@@ -514,7 +513,7 @@ shot("s22", A(11, word="肯定"), "medium",
                            anim=[{"at": A(11, word="受这份罪"), "dur": 0.2, "rot": -5}, {"at": A(11, word="受这份罪", dt=0.2), "dur": 0.2, "rot": 0}])],
      actors=[P("wwh", WWH, "chars/wwh_stand.png", [230, 1520], 525, "魏文侯低头看了看腰间的小竹片",
                acts=[act(A(11, word="何必"), "nod")]),
-             P("dcb", DC, "chars/wdc_b_urge.png", [560, 1520], 560, "大臣乙摊着手笑眯眯地劝：他也肯定能理解", acts=[act(A(11, word="理解"), "bounce")])],
+             P("dcb", DC, "chars/wdc_b_urge.png", [620, 1520], 560, "大臣乙摊着手笑眯眯地劝：他也肯定能理解", acts=[act(A(11, word="理解"), "bounce")])],
      fg=[fore()],
      fx=[rain(), fx("sparkle", A(11, word="何必"), area=[180, 1240, 320, 1360], count=6)],
      sfx=[sfx("light_up", A(11, word="何必"))],
@@ -575,7 +574,7 @@ shot("s27", A(14), "close",
      bg=bq_bg(blur=6),
      actors=[P("wwh", WWH, "chars/wwh_hi_firm.png", [560, 1940], 1100, "魏文侯严肃坚定，眉头微皱，摇摇头",
                acts=[act(D(0.15), "shake"), act(A(14, word="深山"), "nod")])],
-     fg=[L("props/douli.png", [880, 1330], 1.0, [0.5, 0.5], w=260,
+     fg=[L("props/douli.png", [880, 1330], 1.0, [0.5, 0.5], w=260, enter={"type": "pop", "at": A(14, word="等着", dt=-0.35)},
            anim=[{"at": A(14, word="等着"), "dur": 0.5, "ease": "out", "pos": [900, 420], "rot": 360}])],
      fx=[rain(), st("sou", [760, 620], A(14, word="等着"), 100)],
      sfx=[sfx("whoosh", A(14, word="等着"))],
@@ -622,7 +621,7 @@ shot("s31", A(16), "wide",
      actors=[P("wwh", WWH, "chars/wwh_cape.png", [200, 1520], 520, "魏文侯戴斗笠披蓑衣，大步走进雨里",
                enter={"type": "slide_left", "dur": 0.3}, anim=[{"at": D(0.3), "dur": 0.7, "dpos": [180, 0]}])],
      fg=[fore()],
-     fx=[rain(), fx("lines_speed", D(0.0), dir="left", y0=420, y1=1320)],
+     fx=[rain(), fx("lines_speed", D(0.0), dir="left", y0=400, y1=930)],
      sfx=[sfx("whoosh", D(0.0))],
      camera=cam(pan(dx=60)))
 
@@ -631,7 +630,8 @@ shot("s32", A(16, word="大门"), "close",
      bg=road_bg(blur=6),
      actors=[P("wwh", WWH, HI_RAIN, [560, 1940], 1100, "魏文侯戴斗笠披蓑衣，顶着大雨，眼神坚定往前冲",
                acts=[act(D(0.1), "bounce")])],
-     fx=[rain(dim=0.16), fx("lines_speed", D(0.0), dir="left", y0=420, y1=1320)],
+     fx=[rain(dim=0.16)],
+     sfx=[sfx("whoosh", D(0.0))],
      camera=cam(push(0.04), punch(D(0.1), 0.08)))
 
 back, wwh_car, front = chariot(640, 1520, 900)
@@ -641,7 +641,7 @@ shot("s33", A(16, word="暴雨"), "wide",
      bg=road_bg() + [L("chars/wdc_run.png", [230, 1480], 0.85, [0.5, 1], h=300, anim=[{"at": D(0.0), "dur": 2.2, "dpos": [60, 0]}]), back],
      actors=[wwh_car], fg=front + [fore()],
      fx=[rain(), fx("splash", D(0.3), pos=[300, 1570], size=0.8), fx("splash", D(1.1), pos=[960, 1560], size=0.8),
-         fx("lines_speed", D(0.0), dir="left", y0=420, y1=1320), st_text("啪嗒啪嗒", [230, 1010], D(0.6), 60)],
+         fx("lines_speed", D(0.0), dir="left", y0=400, y1=900), st_text("啪嗒啪嗒", [230, 1010], D(0.6), 60)],
      sfx=[sfx("step", D(0.2)), sfx("step", D(0.45)), sfx("step", D(0.7))],
      camera=cam(pan(dx=80), shake(D(0.3), 0.3, 9)))
 
@@ -815,7 +815,8 @@ shot("s49", A(26), "medium",
      actors=[P("sgm", SGM, "chars/sgm_hi_read.png", [270, 1760], 780, "司马光低头看书，一根手指点在书页上，摸着胡子笑")],
      fg=[desk()],
      fx=[fx("stat_card", D(0.05), name="魏文侯",
-            rows=[{"label": "武力", "value": "80分"}, {"label": "兵力", "value": "70分"}, {"label": "守信等级", "value": "100分", "vcolor": "gold"}],
+            rows=[{"label": "武力", "value": "80分", "icon": "props/icon_resolve.png"}, {"label": "兵力", "value": "70分", "icon": "props/icon_bow.png"},
+                  {"label": "守信等级", "value": "100分", "vcolor": "gold", "icon": "props/icon_heart.png"}],
             pos=[690, 790], w=520, gap=0.45),
          st_text("满分！", [880, 1080], D(1.9), 90, color="red")],
      camera=cam(push(0.03)))
@@ -848,7 +849,7 @@ shot("s52", A(30), "medium",
                  {"at": A(30, word="怎么能"), "dur": 0.35, "ease": "back", "dpos": [-170, 0]}]),
          L("props/wwh_slip.png", [820, 1000], 1.0, [0.5, 0.5], h=360,
            anim=[{"at": A(30, word="怎么能", dt=-0.1), "dur": 0.15, "ease": "out", "scale": 1.2}, {"at": A(30, word="怎么能", dt=0.05), "dur": 0.25, "scale": 1.0}])],
-     fx=[st_text("喝酒再开心", [520, 1200], A(30, word="开心", dt=-0.3), 56, color="brown"), st_text("约好的事", [820, 1250], A(30, word="约好"), 56, color="red"),
+     fx=[st_text("喝酒再开心", [590, 1150], A(30, word="开心", dt=-0.3), 56, color="brown"), st_text("约好的事", [820, 1250], A(30, word="约好"), 56, color="red"),
          st_text("啵", [700, 820], A(30, word="怎么能"), 90)],
      camera=cam(push(0.03)))
 
@@ -1009,7 +1010,7 @@ shot("s67", A(40, word="带孩子"), "medium",
      notes={"jev_allow": ["subject"], "why": "旁白对家长的行动呼吁（PITFALLS S25，剧本原话），台词里没有故事人物；画面是「一诺千金」字卡和天平，呼应前面 s45「比黄金还重」"})
 
 # ======================================================== 下集预告
-river = [sky(False)] + ridges(470, 640, near=800) + water(1180, 6, 0.7, 140)
+river = [sky(False)] + ridges(470, 640, near=870) + water(1180, 6, 0.7, 140)
 
 
 def boat(cx, by, w, drift=None):
@@ -1041,7 +1042,7 @@ drift = {"at": D(0.0), "dur": 3.2, "ease": "linear", "dpos": [50, 0]}
 bb, bf = boat(540, 1530, 1500, drift)
 shot("s70", A(42, word="如何"), "medium",
      "「如何在顺着大河往下走的大木船上」：大木船上，吴起站在船头（右），年轻的魏武侯（左，在他后面；魏家橙黄衣服、小冠，是侯不是王）指着前方两岸的大山得意地笑",
-     bg=[sky(False)] + ridges(470, 640, near=800, blur=3) + water(1180, 6, 0.7, 140) + [bb],
+     bg=[sky(False)] + ridges(470, 640, near=870, blur=3) + water(1180, 6, 0.7, 140) + [bb],
      actors=[P("wq", "吴起", "chars/wq_stand.png", [760, 1400], 560, "吴起站在船头，双臂抱胸望着前方", anim=[dict(drift)]),
              P("wuh", "魏武侯", "chars/wuh_point.png", [330, 1400], 600, "魏武侯（魏文侯的儿子）一手指着远处的大山，仰头得意地笑",
                anim=[dict(drift)], acts=[act(A(42, word="大木船"), "bounce")])],
@@ -1051,7 +1052,7 @@ shot("s70", A(42, word="如何"), "medium",
 
 shot("s71", A(42, word="给得意"), "close",
      "「给得意忘形的魏武侯」：魏武侯指着大山仰头哈哈大笑，得意极了",
-     bg=[sky(False, blur=4)] + ridges(470, 640, near=800, blur=4) + water(1180, 6, 0.7, 140, blur=4),
+     bg=[sky(False, blur=4)] + ridges(470, 640, near=870, blur=4) + water(1180, 6, 0.7, 140, blur=4),
      actors=[P("wuh", "魏武侯", "chars/wuh_point.png", [540, 2200], 1380, "魏武侯指着远处的大山，仰头得意地哈哈大笑",
                acts=[act(A(42, word="得意"), "bounce")])],
      fx=[st_text("哈哈哈", [860, 560], A(42, word="得意", dt=0.1), 90)],
@@ -1059,7 +1060,7 @@ shot("s71", A(42, word="给得意"), "close",
 
 shot("s72", A(42, word="上一堂"), "close",
      "「上一堂震撼的大课？」：吴起回头皱着眉，伸手指向远方；一个大问号「啪」地弹出来（下集揭晓）",
-     bg=[sky(False, blur=5)] + ridges(470, 640, near=800, blur=5) + water(1180, 6, 0.7, 140, blur=5),
+     bg=[sky(False, blur=5)] + ridges(470, 640, near=870, blur=5) + water(1180, 6, 0.7, 140, blur=5),
      actors=[P("wq", "吴起", "chars/wq_hi_point_l.png", [560, 1940], 990, "吴起皱着眉，一手伸食指指向远方，严肃",
                acts=[act(A(42, word="震撼"), "bounce")])],
      fx=[st("question", [230, 640], A(42, word="大课"), 180)],
