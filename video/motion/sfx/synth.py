@@ -645,6 +645,12 @@ def calendar_flip():
     return _finish(y, 0.46, 0.004, 0.1)
 
 
+def step():
+    """小步子落地「嗒」：干脆的一声木头敲击 + 一点点木琴的音头，很短很轻（分镜表里每落一步放一个，成对用就是「嗒嗒」）。"""
+    y = mix(0.14, [(0.0, thud(560, 250, 0.07, 75, 1.0, seed=271), 0.8), (0.0, xylo(N["D5"], 0.09), 0.4)])
+    return _finish(y, 0.4, 0.002, 0.03)
+
+
 def freeze():
     """定格「咔哒」：两下干脆的机械快门——「咔」（高一点）、0.07 秒后「哒」（低一点），再加一声很轻的下滑「嗡」（画面停住、纸框合上）。"""
     y = mix(0.6, [(0.0, thud(900, 380, 0.05, 90, 1.0, seed=701), 0.9), (0.0, xylo(N["E6"], 0.12), 0.25), (0.07, thud(520, 210, 0.07, 60, 0.9, seed=702), 1.0),
@@ -658,7 +664,7 @@ SOUNDS = {"pop": pop, "whoosh": whoosh, "burst": burst, "focus": focus, "paper_u
           "card_mvp": card_mvp, "title_boom": title_boom, "gauge_pop": gauge_pop, "screen_on": screen_on, "click": click, "bubble_pop": bubble_pop,
           "page_slide": page_slide, "page_flip": page_flip, "paper_swipe": paper_swipe, "brush": brush, "iris": iris, "fade_soft": fade_soft, "whip": whip,
           "tv_click": tv_click,
-          "danmaku_whoosh": danmaku_whoosh, "calendar_flip": calendar_flip, "freeze": freeze, "star_ding": star_ding, "light_up": light_up, "frog_croak": frog_croak, "hmph": hmph, "tear": tear}
+          "danmaku_whoosh": danmaku_whoosh, "step": step, "calendar_flip": calendar_flip, "freeze": freeze, "star_ding": star_ding, "light_up": light_up, "frog_croak": frog_croak, "hmph": hmph, "tear": tear}
 for _k in range(1, TM.SLAM_MAX + 1):
     SOUNDS[f"slam_{_k}"] = (lambda k=_k: slam(k))
 for _k in range(1, TM.LIST_MAX + 1):

@@ -8,6 +8,8 @@
   {"type": "remote_click", "pos": [700, 900], "at": {...}}                                                  按遥控器：按钮处一圈涟漪 + 几道短线 + 「叮」的一声；pos 是按钮的屏幕位置；color（默认朱红）
   {"type": "bubble", "img": "props/bubble_nickname.png", "pos": [330, 1040], "at": {...}}                    想象泡泡（props/bubble_cloud.png）：**pos 是尾巴尖，要点在说话人的头顶旁边**，泡泡从那里往上、往另一边「鼓」出来；
         泡泡会自动缩小、夹进安全区（y 360–1400、x 80–1000，尾巴尖不动）；放不下（宽 < 460）出片前报错；
+        crop [x0,y0,x1,y1]（泡泡里那张画的像素）：只框这一块放进云里（放大看一部分）；crop_to + crop_t（泡泡出来后几秒开始）+ crop_dur（摇多久）：框从 crop 慢慢摇到 crop_to（泡泡里的镜头摇）；
+        labels [{"text": "才能", "xy": [ix, iy], "size": 56, "color": "red", "dt": 0.4}]：贴在泡泡里那张画上的字（xy 是画的像素坐标、size 是画的像素字号，跟着泡泡 / 框一起动；字里写 \n 分行）——比如写在画里空白铭牌上；
         img 泡泡里的画（相对 video/assets；缩放到放进云里）；text 不放画、放几个大字（≤ 8 个字）；flip 尾巴放到右下；w 显示宽度的上限（默认 820，原图 1357）；inner_sway 里面的画和泡泡的晃动幅度（默认 1；0 = 不动。泡泡本身轻轻呼吸，里面的画上下浮动 + 轻轻鼓动，不许冻住）；dur
   {"type": "page_edge", "at": {...}}                                                                        书页边（props/page_edge.png）：从画面下面滑上来，盖住司马光的下半截，像他躲在书页后面；
         y 书页上沿的位置（默认 1240）；w 显示宽度（默认 1180，原图 1510）；dur 停留几秒（之后滑下去）；
@@ -177,7 +179,67 @@ def _bassets(p):
     return [CLOUD, CLOUD_LAY] + ([p["img"]] if p.get("img") else [])
 
 
-@fx("bubble", params=['img', 'text', 'pos', 'w', 'flip', 'inner_sway'], layer="front", sfx="bubble_pop", assets=_bassets, check=_bcheck)
+_NP = {}
+
+
+def _load_np(canvas, path):
+    f = canvas.assets.resolve(path)
+    k = (str(f), f.stat().st_mtime_ns)
+    if k not in _NP:
+        from engine.sprites import load_bgra
+        _NP[k] = load_bgra(f)
+    return _NP[k]
+
+
+def _crop_rect(params, u):
+    c0 = params.get("crop")
+    if not c0:
+        return None
+    c1 = params.get("crop_to")
+    if not c1:
+        return [float(v) for v in c0]
+    e = anim.smooth(anim.clamp((u - float(params.get("crop_t", 0.0))) / max(float(params.get("crop_dur", 1.0)), 1e-3)))
+    return [float(a) + (float(b) - float(a)) * e for a, b in zip(c0, c1)]
+
+
+def _crop_inner(canvas, params, rect, cw, ch):
+    """框住的那一块缩放到刚好放进云的内容框：返回 (Sprite, 缩放比 s（画的像素 → 设计像素）, 框中心 (cx, cy)（画的像素）)。"""
+    src = _load_np(canvas, params["img"])
+    H0, W0 = src.shape[:2]
+    x0, y0 = max(int(round(rect[0])), 0), max(int(round(rect[1])), 0)
+    x1, y1 = min(int(round(rect[2])), W0), min(int(round(rect[3])), H0)
+    rw, rh = max(x1 - x0, 1), max(y1 - y0, 1)
+    s = min(cw * 0.96 / rw, ch * 0.96 / rh)
+    tw, th = max(1, round(rw * s)), max(1, round(rh * s))
+    from engine.sprites import sprite_from_bgra
+    px = cv2.resize(src[y0:y1, x0:x1], (tw, th), interpolation=cv2.INTER_AREA)
+    return sprite_from_bgra(px, tw, th, canvas.S), s, ((x0 + x1) / 2.0, (y0 + y1) / 2.0)
+
+
+def _bubble_check(p):
+    errs = _bcheck(p)
+    for k in ("crop", "crop_to"):
+        v = p.get(k)
+        if v is not None and not (isinstance(v, (list, tuple)) and len(v) == 4 and all(isinstance(x, (int, float)) for x in v) and v[2] > v[0] and v[3] > v[1]):
+            errs.append(f"bubble 的 {k} 要写 [x0, y0, x1, y1]（泡泡里那张画的像素，x1 > x0、y1 > y0）")
+    if p.get("crop_to") is not None and not p.get("crop"):
+        errs.append("写了 crop_to 就要写 crop（起点）")
+    if (p.get("crop") or p.get("labels")) and not p.get("img"):
+        errs.append("crop / labels 要配 img（泡泡里的画）")
+    for lb in p.get("labels") or []:
+        if not (isinstance(lb, dict) and isinstance(lb.get("text"), str) and lb["text"].strip() and isinstance(lb.get("xy"), (list, tuple)) and len(lb["xy"]) == 2):
+            errs.append("bubble 的 labels 每项要写 {\"text\": ..., \"at\": [x, y], \"size\": 画的像素字号}")
+            break
+        bad = set(lb) - {"text", "xy", "size", "color", "dt"}
+        if bad:
+            errs.append(f"labels 里不认识的字段 {sorted(bad)}")
+        errs += P.glyph_errors(lb["text"].replace("\n", ""))
+        if P.bad_color(lb.get("color")):
+            errs.append(P.bad_color(lb.get("color")))
+    return errs
+
+
+@fx("bubble", params=['img', 'text', 'pos', 'w', 'flip', 'inner_sway', 'crop', 'crop_to', 'crop_t', 'crop_dur', 'labels'], layer="front", sfx="bubble_pop", assets=_bassets, check=_bubble_check)
 def bubble(canvas, t, params, at):
     u = t - at
     dur = params.get("dur")
@@ -205,7 +267,8 @@ def bubble(canvas, t, params, at):
             return P.text_image(params["text"], "title", int(min(ch * 0.7, cw / len(params["text"]) * 0.9)), P.INK)
         return None
     cloud = P.sprite(canvas, ("bubble_cloud", W, flip), build_cloud)
-    inner_im = build_inner() if (params.get("img") or params.get("text")) else None
+    rect = _crop_rect(params, u)
+    inner_im = None if rect is not None else (build_inner() if (params.get("img") or params.get("text")) else None)
     s, sx, sy = P.pop_xy(u, 2.0, 6.0, 0.08)
     ax = 0.96 if flip else 0.04                                                # 从尾巴那一头鼓出来
     sway = float(params.get("inner_sway", 1.0))                                # 0 = 不动；1 = 默认；泡泡本身轻轻呼吸，里面的画上下浮动 + 轻轻鼓动（不许冻住）
@@ -213,18 +276,41 @@ def bubble(canvas, t, params, at):
     rot = (-2.0 if not flip else 2.0) * math.exp(-4 * u) * math.cos(2 * math.pi * 2.2 * u) + 0.8 * sway * math.sin(2 * math.pi * u / 3.4 + 1.0)
     al = min(1.0, u / 0.06) * fo
     canvas.blit(cloud, px, py, scale=max(s, 0.0) * breath, sx=sx, sy=sy, rot=rot, alpha=al, anchor=(ax, 0.92), depth=0)
-    if inner_im is not None:
+    if inner_im is None and rect is None:
+        return
+    pad = 22.0
+    cx_in = (x0 + x1) / 2 * k
+    if flip:
+        cx_in = W - cx_in
+    off = (pad + cx_in - ax * cloud.wd, pad + (y0 + y1) / 2 * k - 0.92 * cloud.hd)          # 画的中心离尾巴尖（云的支点）多远，设计像素
+    bob = 8.0 * sway * math.sin(2 * math.pi * u / 2.2 + 0.8)
+    pulse = 1.0 + 0.022 * sway * math.sin(2 * math.pi * u / 1.9)
+    rin = 1.6 * sway * math.sin(2 * math.pi * u / 2.6)
+    g = P.Group(px, py, max(s, 0.0) * breath, rot)
+    gx, gy = g.pt(off[0] * sx, (off[1] + bob) * sy)
+    if rect is not None:
+        sp_in, sfit, (rcx, rcy) = _crop_inner(canvas, params, rect, cw, ch)
+    else:
         sp_in = P.sprite(canvas, ("bubble_inner", params.get("img"), params.get("text"), W), lambda: inner_im)
-        pad = 22.0
-        cx_in = (x0 + x1) / 2 * k
-        if flip:
-            cx_in = W - cx_in
-        off = (pad + cx_in - ax * cloud.wd, pad + (y0 + y1) / 2 * k - 0.92 * cloud.hd)          # 画的中心离尾巴尖（云的支点）多远，设计像素
-        bob = 8.0 * sway * math.sin(2 * math.pi * u / 2.2 + 0.8)
-        pulse = 1.0 + 0.022 * sway * math.sin(2 * math.pi * u / 1.9)
-        g = P.Group(px, py, max(s, 0.0) * breath, rot)
-        gx, gy = g.pt(off[0] * sx, (off[1] + bob) * sy)
-        canvas.blit(sp_in, gx, gy, scale=max(s, 0.0) * breath * pulse, rot=rot + 1.6 * sway * math.sin(2 * math.pi * u / 2.6), alpha=al, depth=0)
+        sfit, rcx, rcy = 1.0, 0.0, 0.0
+    canvas.blit(sp_in, gx, gy, scale=max(s, 0.0) * breath * pulse, rot=rot + rin, alpha=al, depth=0)
+    # 贴在画上的字（铭牌上的字）：位置按画的像素坐标算，跟着泡泡 / 框 / 里面的画一起动
+    for lb in params.get("labels") or []:
+        d0 = float(lb.get("dt", 0.0))
+        if rect is None or u < d0:
+            continue
+        pop = anim.back_out(anim.clamp((u - d0) / 0.25))
+        size = float(lb.get("size", 56)) * sfit
+        col = P.rgb(lb.get("color"), P.RED)
+        lines = lb["text"].split("\n")
+        for li, line in enumerate(lines):
+            spl = P.sprite(canvas, ("bubble_label", line, round(size), col), lambda line=line: P.chunky_text(line, max(8, round(size)), col))
+            lx = (float(lb["xy"][0]) - rcx) * sfit
+            ly = (float(lb["xy"][1]) - rcy) * sfit + (li - (len(lines) - 1) / 2.0) * size * 1.02
+            a_ = math.radians(rin)
+            rx, ry = lx * math.cos(a_) - ly * math.sin(a_), lx * math.sin(a_) + ly * math.cos(a_)
+            lx_, ly_ = g.pt((off[0] + rx * pulse) * sx, (off[1] + bob + ry * pulse) * sy)
+            canvas.blit(spl, lx_, ly_, scale=max(s, 0.0) * breath * pulse * max(pop, 0.0), rot=rot + rin, alpha=al, depth=0)
 
 
 # ============================== 书页边 ==============================

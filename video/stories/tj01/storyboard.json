@@ -610,7 +610,7 @@
    "id": "s05",
    "from": {
     "line": 2,
-    "dt": 0.5
+    "dt": 1.0
    },
    "size": "wide",
    "transition": {
@@ -671,7 +671,7 @@
      "depth": 0.5,
      "pos": [
       620,
-      1250
+      1275
      ],
      "anchor": [
       0.5,
@@ -684,7 +684,7 @@
      "depth": 0.5,
      "pos": [
       620,
-      1250
+      1275
      ],
      "anchor": [
       0.5,
@@ -771,7 +771,7 @@
    "camera": [
     {
      "move": "pan",
-     "dx": 140,
+     "dx": 60,
      "dy": 0
     }
    ],
@@ -814,7 +814,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      470
+      520
      ],
      "anchor": [
       0.5,
@@ -827,7 +827,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      640
+      680
      ],
      "anchor": [
       0.5,
@@ -836,11 +836,51 @@
      "w": 1100
     },
     {
+     "img": "sets/jin_land/ridge_near.png",
+     "depth": 0.4,
+     "pos": [
+      540,
+      820
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1100
+    },
+    {
+     "img": "sets/jinyang/gate.png",
+     "depth": 0.5,
+     "pos": [
+      620,
+      1275
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 760
+    },
+    {
+     "img": "sets/jinyang/wall.png",
+     "depth": 0.5,
+     "pos": [
+      620,
+      1275
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1528,
+     "repeat": "x"
+    },
+    {
      "img": "sets/jin_land/ground.png",
      "depth": 0.9,
      "pos": [
       540,
-      1250
+      1240
      ],
      "anchor": [
       0.5,
@@ -854,7 +894,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1398
+      1388
      ],
      "anchor": [
       0.5,
@@ -869,7 +909,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1570
+      1560
      ],
      "anchor": [
       0.5,
@@ -883,7 +923,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1764
+      1754
      ],
      "anchor": [
       0.5,
@@ -1069,8 +1109,12 @@
    ],
    "camera": [
     {
+     "move": "frame",
+     "dx": 60
+    },
+    {
      "move": "push",
-     "amount": 0.05
+     "amount": 0.04
     }
    ],
    "note": "诸侯争霸的战国：晋国的智、赵、韩、魏四家的旗子一面接一面从地上弹出来，迎风飘"
@@ -1096,27 +1140,7 @@
      "w": 1280
     }
    ],
-   "actors": [
-    {
-     "id": "zb",
-     "who": "智伯",
-     "img": "chars/zb_b_cheer.png",
-     "pos": [
-      540,
-      1470
-     ],
-     "h": 620,
-     "enter": {
-      "type": "pop",
-      "at": {
-       "line": 4,
-       "word": "第一案",
-       "dt": 0.35
-      }
-     },
-     "note": "第一案的主角智伯（名牌红袍）从书页里弹出来，张开双臂大笑"
-    }
-   ],
+   "actors": [],
    "fx": [
     {
      "type": "smash",
@@ -1144,6 +1168,17 @@
      ],
      "size": 170,
      "color": "red"
+    },
+    {
+     "type": "page_edge",
+     "at": {
+      "dt": 0.0
+     },
+     "y": 1250,
+     "w": 1900,
+     "peek": "chars/zb_b_cheer.png",
+     "peek_h": 640,
+     "peek_x": 540
     }
    ],
    "camera": [
@@ -1152,7 +1187,7 @@
      "amount": 0.03
     }
    ],
-   "note": "一本书翻开：书页上砸下「资治通鉴」「第一案」（《资治通鉴》开篇讲的第一个故事），这个故事的主角智伯像立体书一样从书页里「噗」地弹出来"
+   "note": "一本书翻开：书页上砸下「资治通鉴」「第一案」，智伯像立体书一样从书页后面「噗」地弹起来"
   },
   {
    "id": "s08",
@@ -1913,10 +1948,10 @@
      "who": "智伯",
      "img": "chars/zb_b_cheer.png",
      "pos": [
-      540,
-      1420
+      350,
+      1430
      ],
-     "h": 860,
+     "h": 700,
      "acts": [
       {
        "at": {
@@ -1976,10 +2011,10 @@
      },
      "text": "作死",
      "pos": [
-      540,
-      1225
+      775,
+      1010
      ],
-     "size": 230,
+     "size": 170,
      "color": "red"
     }
    ],
@@ -3241,38 +3276,11 @@
    ],
    "actors": [
     {
-     "id": "zb",
-     "who": "智伯",
-     "img": "chars/zb_b_point_l.png",
-     "pos": [
-      760,
-      1470
-     ],
-     "h": 520,
-     "acts": [
-      {
-       "at": {
-        "line": 9
-       },
-       "do": "bounce"
-      },
-      {
-       "at": {
-        "line": 9,
-        "word": "瞧你"
-       },
-       "do": "wobble",
-       "dur": 0.4
-      }
-     ],
-     "note": "智伯跪坐着，朝左伸食指指着韩康子和段规，张大嘴哈哈嘲笑"
-    },
-    {
      "id": "hkz",
      "who": "韩康子",
      "img": "chars/hkz_low.png",
      "pos": [
-      250,
+      270,
       1470
      ],
      "h": 480,
@@ -3294,11 +3302,38 @@
      "who": "段规",
      "img": "chars/dg_kneel.png",
      "pos": [
-      470,
+      425,
       1470
      ],
      "h": 460,
      "note": "段规低着头、牙关咬紧，一声不吭"
+    },
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_b_point_l.png",
+     "pos": [
+      795,
+      1470
+     ],
+     "h": 500,
+     "acts": [
+      {
+       "at": {
+        "line": 9
+       },
+       "do": "bounce"
+      },
+      {
+       "at": {
+        "line": 9,
+        "word": "瞧你"
+       },
+       "do": "wobble",
+       "dur": 0.4
+      }
+     ],
+     "note": "智伯跪坐着，朝左伸食指指着韩康子和段规，张大嘴哈哈嘲笑"
     }
    ],
    "fg": [
@@ -3339,8 +3374,8 @@
      },
      "text": "哈哈",
      "pos": [
-      890,
-      820
+      830,
+      780
      ],
      "size": 100
     }
@@ -3348,7 +3383,7 @@
    "camera": [
     {
      "move": "pan",
-     "dx": -40,
+     "dx": 40,
      "dy": 0
     }
    ],
@@ -4965,22 +5000,11 @@
    ],
    "actors": [
     {
-     "id": "zb",
-     "who": "智伯",
-     "img": "chars/zb_b_point_l.png",
-     "pos": [
-      760,
-      1470
-     ],
-     "h": 520,
-     "note": "智伯定格在指着人嘲笑的样子"
-    },
-    {
      "id": "hkz",
      "who": "韩康子",
      "img": "chars/hkz_low.png",
      "pos": [
-      250,
+      270,
       1470
      ],
      "h": 480,
@@ -4991,11 +5015,22 @@
      "who": "段规",
      "img": "chars/dg_kneel.png",
      "pos": [
-      470,
+      425,
       1470
      ],
      "h": 460,
      "note": "段规定格在咬牙不吭声的样子"
+    },
+    {
+     "id": "zb",
+     "who": "智伯",
+     "img": "chars/zb_b_point_l.png",
+     "pos": [
+      795,
+      1470
+     ],
+     "h": 500,
+     "note": "智伯定格在指着人嘲笑的样子"
     }
    ],
    "fg": [
@@ -5043,8 +5078,8 @@
      "y": 1250,
      "w": 1900,
      "peek": "chars/sgm_hi_remote.png",
-     "peek_h": 740,
-     "peek_x": 820
+     "peek_h": 380,
+     "peek_x": 70
     },
     {
      "type": "remote_click",
@@ -5052,8 +5087,8 @@
       "dt": 0.55
      },
      "pos": [
-      1000,
-      990
+      195,
+      1190
      ]
     }
    ],
@@ -6118,7 +6153,7 @@
      "who": "韩康子",
      "img": "chars/hkz_hug.png",
      "pos": [
-      250,
+      400,
       1470
      ],
      "h": 500,
@@ -6130,7 +6165,7 @@
      "img": "props/map_silk.png",
      "depth": 1.0,
      "pos": [
-      560,
+      650,
       1350
      ],
      "anchor": [
@@ -6143,7 +6178,7 @@
      "img": "props/hand_reach_b.png",
      "depth": 1.0,
      "pos": [
-      840,
+      900,
       1150
      ],
      "anchor": [
@@ -6196,8 +6231,8 @@
      "y": 1250,
      "w": 1900,
      "peek": "chars/sgm_hi_remote.png",
-     "peek_h": 660,
-     "peek_x": 800
+     "peek_h": 380,
+     "peek_x": 70
     },
     {
      "type": "remote_click",
@@ -6205,8 +6240,8 @@
       "dt": 0.5
      },
      "pos": [
-      980,
-      1030
+      195,
+      1190
      ]
     }
    ],
@@ -6479,7 +6514,7 @@
      "depth": 1.0,
      "pos": [
       560,
-      1440
+      1385
      ],
      "anchor": [
       0.5,
@@ -6489,7 +6524,7 @@
      "anim": [
       {
        "at": {
-        "dt": 0.5
+        "dt": 0.45
        },
        "dur": 0.4,
        "ease": "out",
@@ -6505,7 +6540,7 @@
      "depth": 1.0,
      "pos": [
       900,
-      1440
+      1385
      ],
      "anchor": [
       0.5,
@@ -6516,7 +6551,7 @@
      "anim": [
       {
        "at": {
-        "dt": 0.5
+        "dt": 0.45
        },
        "dur": 0.4,
        "ease": "out",
@@ -6543,7 +6578,7 @@
      "type": "danmaku",
      "at": {
       "line": 16,
-      "word": "弹幕"
+      "dt": 0.1
      },
      "texts": [
       "给！",
@@ -6555,8 +6590,8 @@
       "给！",
       "不给！"
      ],
-     "dur": 1.6,
-     "density": 1.0,
+     "dur": 1.3,
+     "density": 1.3,
      "area": [
       0,
       380,
@@ -6567,12 +6602,12 @@
     {
      "type": "sticker",
      "at": {
-      "dt": 0.9
+      "dt": 0.85
      },
      "name": "dong",
      "pos": [
-      760,
-      1300
+      730,
+      1290
      ],
      "size": 110
     }
@@ -8739,62 +8774,6 @@
    ],
    "fg": [
     {
-     "img": "props/city_han.png",
-     "depth": 1.0,
-     "pos": [
-      640,
-      1330
-     ],
-     "anchor": [
-      0.5,
-      0.5
-     ],
-     "w": 220
-    },
-    {
-     "img": "props/city_wei.png",
-     "depth": 1.0,
-     "pos": [
-      610,
-      1180
-     ],
-     "anchor": [
-      0.5,
-      0.5
-     ],
-     "w": 220,
-     "anim": [
-      {
-       "at": {
-        "dt": 0.3
-       },
-       "dur": 0.5,
-       "rot": -6
-      },
-      {
-       "at": {
-        "dt": 0.8
-       },
-       "dur": 0.5,
-       "rot": 6
-      },
-      {
-       "at": {
-        "dt": 1.3
-       },
-       "dur": 0.5,
-       "rot": -5
-      },
-      {
-       "at": {
-        "dt": 1.8
-       },
-       "dur": 0.5,
-       "rot": 4
-      }
-     ]
-    },
-    {
      "img": "sets/lantai/banquet_row.png",
      "depth": 1.0,
      "pos": [
@@ -8806,6 +8785,276 @@
       0.5
      ],
      "w": 2400
+    },
+    {
+     "img": "props/city_han.png",
+     "depth": 1.0,
+     "pos": [
+      640,
+      1330
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 230,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "dt": 0.1
+      },
+      "dur": 0.3,
+      "sfx": "city_pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.5
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        14,
+        0
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.0
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        -28,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/city_wei.png",
+     "depth": 1.0,
+     "pos": [
+      590,
+      1180
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 230,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "dt": 0.45
+      },
+      "dur": 0.3,
+      "sfx": "city_pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 0.8500000000000001
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        -14,
+        0
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.35
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        28,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/city_han.png",
+     "depth": 1.0,
+     "pos": [
+      660,
+      1030
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 230,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "dt": 0.85
+      },
+      "dur": 0.3,
+      "sfx": "city_pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 1.25
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        14,
+        0
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.75
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        -28,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/city_wei.png",
+     "depth": 1.0,
+     "pos": [
+      600,
+      880
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 230,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "dt": 1.3
+      },
+      "dur": 0.3,
+      "sfx": "city_pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 1.7000000000000002
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        -14,
+        0
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.2
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        28,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/city_han.png",
+     "depth": 1.0,
+     "pos": [
+      650,
+      740
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 230,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "dt": 1.8
+      },
+      "dur": 0.3,
+      "sfx": "city_pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 2.2
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        14,
+        0
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.7
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        -28,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "props/city_wei.png",
+     "depth": 1.0,
+     "pos": [
+      610,
+      620
+     ],
+     "anchor": [
+      0.5,
+      0.5
+     ],
+     "w": 230,
+     "enter": {
+      "type": "pop",
+      "at": {
+       "dt": 2.3
+      },
+      "dur": 0.3,
+      "sfx": "city_pop"
+     },
+     "anim": [
+      {
+       "at": {
+        "dt": 2.6999999999999997
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        -14,
+        0
+       ]
+      },
+      {
+       "at": {
+        "dt": 3.1999999999999997
+       },
+       "dur": 0.5,
+       "ease": "smooth",
+       "dpos": [
+        28,
+        0
+       ]
+      }
+     ]
     }
    ],
    "fx": [
@@ -9917,72 +10166,47 @@
      ]
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.7999999999999999,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1530
+      1440
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
-     "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 0.8
-     },
-     "anim": [
-      {
-       "at": {
-        "line": 26,
-        "word": "河水"
-       },
-       "dur": 1.6,
-       "ease": "smooth",
-       "dpos": [
-        0,
-        -90
-       ]
-      }
-     ]
+     "w": 1500,
+     "repeat": "x"
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.85,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1670
+      1611
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1700,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 1.2
-     },
-     "anim": [
-      {
-       "at": {
-        "line": 26,
-        "word": "河水"
-       },
-       "dur": 1.6,
-       "ease": "smooth",
-       "dpos": [
-        0,
-        -90
-       ]
-      }
-     ]
+     "flip": true
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1805
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x"
     }
    ],
    "actors": [
@@ -10004,7 +10228,7 @@
        "do": "bounce"
       }
      ],
-     "note": "智伯站在岸边张开双臂大笑，看着大水冲向晋阳"
+     "note": "智伯站在岸上高处张开双臂大笑，看着大水冲向晋阳"
     }
    ],
    "fg": [
@@ -10940,7 +11164,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      520
+      600
      ],
      "anchor": [
       0.5,
@@ -10953,7 +11177,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      700
+      790
      ],
      "anchor": [
       0.5,
@@ -11082,14 +11306,14 @@
      "img": "props/chariot_back.png",
      "depth": 1.0,
      "pos": [
-      600,
+      550,
       1500
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 1100
+     "w": 1300
     }
    ],
    "actors": [
@@ -11098,32 +11322,32 @@
      "who": "韩康子",
      "img": "chars/hkz_lookup.png",
      "pos": [
-      195,
-      1330
+      200,
+      1235
      ],
-     "h": 480,
-     "note": "韩康子站在车后头，腰板挺直"
+     "h": 430,
+     "note": "韩康子站在车厢里（车厢板盖住下半身），腰板挺直"
     },
     {
      "id": "wgh",
      "who": "魏桓子",
      "img": "chars/wgh_reins.png",
      "pos": [
-      380,
-      1330
+      370,
+      1235
      ],
-     "h": 480,
-     "note": "魏桓子在中间握着缰绳驾车"
+     "h": 450,
+     "note": "魏桓子在车厢中间握着缰绳驾车"
     },
     {
      "id": "zb",
      "who": "智伯",
      "img": "chars/zb_b_cheer.png",
      "pos": [
-      640,
-      1330
+      690,
+      1235
      ],
-     "h": 500,
+     "h": 480,
      "acts": [
       {
        "at": {
@@ -11139,7 +11363,7 @@
        "do": "jump"
       }
      ],
-     "note": "智伯站在车头，张开双臂仰头大笑，看着一片大水"
+     "note": "智伯站在车头，张开双臂仰头大笑，看着一片大水（手伸向车外，不碰人脸）"
     }
    ],
    "fg": [
@@ -11147,27 +11371,27 @@
      "img": "props/chariot_front.png",
      "depth": 1.0,
      "pos": [
-      600,
+      550,
       1500
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 1100
+     "w": 1300
     },
     {
      "img": "props/horse.png",
      "depth": 1.0,
      "pos": [
-      900,
+      895,
       1500
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 360
+     "w": 340
     }
    ],
    "fx": [
@@ -11179,8 +11403,8 @@
      },
      "text": "哈哈！",
      "pos": [
-      900,
-      820
+      905,
+      690
      ],
      "size": 110
     }
@@ -11208,14 +11432,15 @@
       0,
       0
      ],
-     "w": 1080
+     "w": 1080,
+     "blur": 4
     },
     {
      "img": "sets/jin_land/ridge_far.png",
      "depth": 0.2,
      "pos": [
       540,
-      520
+      600
      ],
      "anchor": [
       0.5,
@@ -11229,7 +11454,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      700
+      790
      ],
      "anchor": [
       0.5,
@@ -11302,8 +11527,22 @@
      "blur": 4
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.75,
+     "img": "sets/camp/dike.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1440
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
       1600
@@ -11312,57 +11551,50 @@
       0.5,
       0
      ],
-     "w": 1528,
-     "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 1.2
-     },
-     "blur": 4
+     "w": 1700,
+     "repeat": "x"
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.8,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1740
+      1745
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1900,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 1.6
-     },
-     "blur": 4
+     "flip": true
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.85,
+     "img": "sets/jin_land/fore.png",
+     "depth": 1.0,
      "pos": [
       540,
-      1880
+      1925
      ],
      "anchor": [
       0.5,
-      0
+      1
      ],
-     "w": 1528,
-     "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 2.0
-     },
-     "blur": 4
+     "w": 1850,
+     "repeat": "x"
+    },
+    {
+     "img": "props/chariot_back.png",
+     "depth": 1.0,
+     "pos": [
+      700,
+      1652
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "w": 1700
     }
    ],
    "actors": [
@@ -11372,9 +11604,9 @@
      "img": "chars/zb_b_cheer.png",
      "pos": [
       540,
-      1720
+      1300
      ],
-     "h": 1150,
+     "h": 780,
      "acts": [
       {
        "at": {
@@ -11384,7 +11616,7 @@
        "do": "bounce"
       }
      ],
-     "note": "智伯张开双臂，仰头哈哈大笑"
+     "note": "智伯站在车厢里张开双臂，仰头哈哈大笑（车厢前板盖住腿）"
     }
    ],
    "fg": [
@@ -11410,13 +11642,13 @@
       "word": "国家"
      },
      "center": [
-      540,
-      790
+      520,
+      700
      ],
      "clear": [
-      540,
-      790,
-      450
+      520,
+      700,
+      430
      ]
     }
    ],
@@ -11449,7 +11681,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      520
+      600
      ],
      "anchor": [
       0.5,
@@ -11462,7 +11694,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      700
+      790
      ],
      "anchor": [
       0.5,
@@ -11591,14 +11823,14 @@
      "img": "props/chariot_back.png",
      "depth": 1.0,
      "pos": [
-      600,
+      550,
       1500
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 1100
+     "w": 1300
     }
    ],
    "actors": [
@@ -11607,16 +11839,22 @@
      "who": "韩康子",
      "img": "chars/hkz_lookup.png",
      "pos": [
-      195,
-      1330
+      200,
+      1235
      ],
-     "h": 480,
+     "h": 430,
      "acts": [
       {
        "at": {
         "dt": 0.45
        },
        "swap": "chars/hkz_step.png"
+      },
+      {
+       "at": {
+        "dt": 0.45
+       },
+       "do": "bounce"
       },
       {
        "at": {
@@ -11632,16 +11870,22 @@
      "who": "魏桓子",
      "img": "chars/wgh_reins.png",
      "pos": [
-      380,
-      1330
+      370,
+      1235
      ],
-     "h": 480,
+     "h": 450,
      "acts": [
       {
        "at": {
         "dt": 0.1
        },
        "swap": "chars/wgh_elbow.png"
+      },
+      {
+       "at": {
+        "dt": 0.55
+       },
+       "do": "jump"
       },
       {
        "at": {
@@ -11657,17 +11901,17 @@
      "who": "智伯",
      "img": "chars/zb_b_cheer.png",
      "pos": [
-      640,
-      1330
+      690,
+      1235
      ],
-     "h": 500,
+     "h": 480,
      "acts": [
       {
        "at": {
         "dt": 0.9
        },
        "swap": "chars/zb_b_glance.png",
-       "h": 520
+       "h": 500
       }
      ],
      "note": "智伯回过头，斜着眼一脸怀疑地看着车上那两个人"
@@ -11678,27 +11922,27 @@
      "img": "props/chariot_front.png",
      "depth": 1.0,
      "pos": [
-      600,
+      550,
       1500
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 1100
+     "w": 1300
     },
     {
      "img": "props/horse.png",
      "depth": 1.0,
      "pos": [
-      900,
+      895,
       1500
      ],
      "anchor": [
       0.5,
       1
      ],
-     "w": 360
+     "w": 340
     }
    ],
    "fx": [
@@ -11719,21 +11963,34 @@
     {
      "type": "sticker",
      "at": {
-      "dt": 0.47
+      "dt": 0.5
      },
-     "name": "exclaim",
+     "text": "踩！",
      "pos": [
-      0,
-      0
+      290,
+      1050
      ],
-     "size": 90,
-     "follow": "hkz",
-     "attach": "head"
+     "size": 100,
+     "color": "red"
     },
     {
      "type": "sticker",
      "at": {
-      "dt": 1.2
+      "dt": 0.62
+     },
+     "text": "哎哟！",
+     "follow": "wgh",
+     "offset": [
+      60,
+      -520
+     ],
+     "size": 100,
+     "color": "red"
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 1.25
      },
      "name": "sweat",
      "pos": [
@@ -11775,7 +12032,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      520
+      600
      ],
      "anchor": [
       0.5,
@@ -11789,7 +12046,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      700
+      790
      ],
      "anchor": [
       0.5,
@@ -11841,66 +12098,65 @@
      "blur": 5
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.7,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1460
+      1400
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1300,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 0.8
-     },
      "blur": 5
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.75,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1600
+      1548
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1500,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 0.8
-     },
+     "flip": true,
      "blur": 5
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.8,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1740
+      1720
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1700,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 1.2
-     },
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1914
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true,
      "blur": 5
     }
    ],
@@ -11914,7 +12170,7 @@
       1500
      ],
      "h": 640,
-     "note": "魏桓子站着握着缰绳，眼睛发直，心里偷偷发慌"
+     "note": "魏桓子站在岸边握着缰绳，眼睛发直，心里偷偷发慌"
     }
    ],
    "fx": [
@@ -11976,7 +12232,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      520
+      600
      ],
      "anchor": [
       0.5,
@@ -11990,7 +12246,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      700
+      790
      ],
      "anchor": [
       0.5,
@@ -12042,66 +12298,65 @@
      "blur": 5
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.7,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1460
+      1400
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1300,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 0.8
-     },
      "blur": 5
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.75,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1600
+      1548
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1500,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 0.8
-     },
+     "flip": true,
      "blur": 5
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.8,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1740
+      1720
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1700,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 1.2
-     },
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1914
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true,
      "blur": 5
     }
    ],
@@ -12179,7 +12434,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      520
+      600
      ],
      "anchor": [
       0.5,
@@ -12193,7 +12448,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      700
+      790
      ],
      "anchor": [
       0.5,
@@ -12245,66 +12500,65 @@
      "blur": 5
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.7,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1460
+      1400
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1300,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 0.8
-     },
      "blur": 5
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.75,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1600
+      1548
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1500,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 0.8
-     },
+     "flip": true,
      "blur": 5
     },
     {
-     "img": "sets/jin_land/water.png",
-     "depth": 0.8,
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
      "pos": [
       540,
-      1740
+      1720
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1528,
+     "w": 1700,
      "repeat": "x",
-     "sway": {
-      "x": 26,
-      "y": 6,
-      "period": 3.4,
-      "phase": 1.2
-     },
+     "blur": 5
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1914
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1900,
+     "repeat": "x",
+     "flip": true,
      "blur": 5
     }
    ],
@@ -12318,7 +12572,7 @@
       1500
      ],
      "h": 600,
-     "note": "魏桓子朝右，偷偷看向韩康子"
+     "note": "魏桓子站在岸边朝右，偷偷看向韩康子"
     },
     {
      "id": "hkz",
@@ -12971,7 +13225,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      560
+      940
      ],
      "anchor": [
       0.5,
@@ -12984,7 +13238,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      700
+      1090
      ],
      "anchor": [
       0.5,
@@ -13011,7 +13265,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1548
+      1521
      ],
      "anchor": [
       0.5,
@@ -13026,7 +13280,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1720
+      1660
      ],
      "anchor": [
       0.5,
@@ -13040,7 +13294,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1914
+      1817
      ],
      "anchor": [
       0.5,
@@ -13482,7 +13736,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      560
+      940
      ],
      "anchor": [
       0.5,
@@ -13495,7 +13749,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      700
+      1090
      ],
      "anchor": [
       0.5,
@@ -13522,7 +13776,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1548
+      1521
      ],
      "anchor": [
       0.5,
@@ -13537,7 +13791,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1720
+      1660
      ],
      "anchor": [
       0.5,
@@ -13551,7 +13805,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1914
+      1817
      ],
      "anchor": [
       0.5,
@@ -13639,24 +13893,17 @@
       {
        "at": {
         "line": 36,
-        "word": "反击"
-       },
-       "do": "bounce"
-      },
-      {
-       "at": {
-        "line": 36,
         "word": "联手"
        },
-       "do": "bounce"
+       "do": "bounce",
+       "amp": 30
       },
       {
        "at": {
         "line": 36,
         "word": "反击"
        },
-       "do": "bounce",
-       "amp": 14
+       "do": "jump"
       }
      ],
      "note": "张孟谈抱拳，恳切又坚定"
@@ -13664,37 +13911,30 @@
     {
      "id": "wgh",
      "who": "魏桓子",
-     "img": "chars/wgh_nod.png",
+     "img": "chars/wgh_stand_hi.png",
      "pos": [
       500,
       1520
      ],
-     "h": 540,
+     "h": 560,
      "acts": [
-      {
-       "at": {
-        "line": 36,
-        "word": "反击"
-       },
-       "do": "bounce"
-      },
       {
        "at": {
         "line": 36,
         "word": "联手"
        },
-       "do": "bounce"
+       "do": "bounce",
+       "amp": 30
       },
       {
        "at": {
         "line": 36,
         "word": "反击"
        },
-       "do": "bounce",
-       "amp": 14
+       "do": "jump"
       }
      ],
-     "note": "魏桓子认真点头，手按胸口"
+     "note": "魏桓子睁大眼睛、握着缰绳，下定决心"
     },
     {
      "id": "hkz",
@@ -13709,24 +13949,17 @@
       {
        "at": {
         "line": 36,
-        "word": "反击"
-       },
-       "do": "bounce"
-      },
-      {
-       "at": {
-        "line": 36,
         "word": "联手"
        },
-       "do": "bounce"
+       "do": "bounce",
+       "amp": 30
       },
       {
        "at": {
         "line": 36,
         "word": "反击"
        },
-       "do": "bounce",
-       "amp": 14
+       "do": "jump"
       }
      ],
      "note": "韩康子（朝左）咬着牙，下定决心"
@@ -13849,40 +14082,51 @@
      "w": 1300
     },
     {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
+     "img": "sets/jin_land/water.png",
+     "depth": 0.75,
      "pos": [
       540,
-      1420
+      1160
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1300,
-     "repeat": "x"
-    },
-    {
-     "img": "sets/jin_land/ground.png",
-     "depth": 0.9,
-     "pos": [
-      540,
-      1568
-     ],
-     "anchor": [
-      0.5,
-      0
-     ],
-     "w": 1500,
+     "w": 1528,
      "repeat": "x",
-     "flip": true
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.0
+     }
     },
     {
-     "img": "sets/jin_land/ground.png",
+     "img": "sets/jin_land/water.png",
+     "depth": 0.8,
+     "pos": [
+      540,
+      1300
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1528,
+     "repeat": "x",
+     "sway": {
+      "x": 26,
+      "y": 6,
+      "period": 3.4,
+      "phase": 0.5
+     }
+    },
+    {
+     "img": "sets/camp/dike.png",
      "depth": 0.9,
      "pos": [
       540,
-      1740
+      1440
      ],
      "anchor": [
       0.5,
@@ -13896,7 +14140,21 @@
      "depth": 0.9,
      "pos": [
       540,
-      1934
+      1600
+     ],
+     "anchor": [
+      0.5,
+      0
+     ],
+     "w": 1700,
+     "repeat": "x"
+    },
+    {
+     "img": "sets/jin_land/ground.png",
+     "depth": 0.9,
+     "pos": [
+      540,
+      1758
      ],
      "anchor": [
       0.5,
@@ -14348,58 +14606,6 @@
      ]
     },
     {
-     "img": "chars/sold_run1.png",
-     "depth": 0.9,
-     "pos": [
-      420,
-      1400
-     ],
-     "anchor": [
-      0.5,
-      1
-     ],
-     "h": 420,
-     "anim": [
-      {
-       "at": {
-        "dt": 0.0
-       },
-       "dur": 1.2,
-       "ease": "linear",
-       "dpos": [
-        420,
-        0
-       ]
-      }
-     ]
-    },
-    {
-     "img": "chars/sold_run2.png",
-     "depth": 0.9,
-     "pos": [
-      200,
-      1420
-     ],
-     "anchor": [
-      0.5,
-      1
-     ],
-     "h": 420,
-     "anim": [
-      {
-       "at": {
-        "dt": 0.0
-       },
-       "dur": 1.2,
-       "ease": "linear",
-       "dpos": [
-        380,
-        0
-       ]
-      }
-     ]
-    },
-    {
      "img": "sets/jin_land/water.png",
      "depth": 0.8,
      "pos": [
@@ -14478,14 +14684,12 @@
       "period": 3.4,
       "phase": 1.2
      }
-    }
-   ],
-   "fg": [
+    },
     {
      "img": "props/wave_dragon.png",
-     "depth": 1.0,
+     "depth": 0.9,
      "pos": [
-      300,
+      100,
       1500
      ],
      "anchor": [
@@ -14508,26 +14712,67 @@
        "dur": 0.8,
        "ease": "out",
        "dpos": [
-        500,
-        -40
+        200,
+        -30
+       ]
+      }
+     ]
+    },
+    {
+     "img": "chars/sold_run1.png",
+     "depth": 0.9,
+     "pos": [
+      420,
+      1400
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 420,
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 1.2,
+       "ease": "linear",
+       "dpos": [
+        800,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "img": "chars/sold_run2.png",
+     "depth": 0.9,
+     "pos": [
+      200,
+      1420
+     ],
+     "anchor": [
+      0.5,
+      1
+     ],
+     "h": 420,
+     "anim": [
+      {
+       "at": {
+        "dt": 0.0
+       },
+       "dur": 1.2,
+       "ease": "linear",
+       "dpos": [
+        800,
+        0
        ]
       }
      ]
     }
    ],
-   "fx": [
-    {
-     "type": "splash",
-     "at": {
-      "dt": 0.4
-     },
-     "pos": [
-      760,
-      1220
-     ],
-     "size": 1.0
-    }
-   ],
+   "fg": [],
+   "fx": [],
    "grade": "cool",
    "camera": [
     {
@@ -14543,12 +14788,12 @@
      "amp": 12
     }
    ],
-   "note": "燃点：大水冲垮智伯的营帐，帐篷东倒西歪，智伯的兵丢了兵器四散跑开（不画人被淹）",
+   "note": "燃点：大水冲垮智伯的营帐，帐篷东倒西歪，智伯的兵丢了兵器四散跑开（浪停在兵的身后，兵跑出画面；不画人被淹）",
    "sfx": [
     {
-     "name": "whoosh",
+     "name": "splash",
      "at": {
-      "dt": 0.0
+      "dt": 0.4
      }
     }
    ]
@@ -15237,22 +15482,23 @@
      "rows": [
       {
        "label": "聪明度",
-       "stars": 5,
+       "value": "100",
        "icon": "props/icon_speech.png"
       },
       {
        "label": "勇敢度",
-       "stars": 5,
+       "value": "100",
        "icon": "props/icon_resolve.png"
       },
       {
        "label": "才能",
-       "stars": 5,
+       "value": "100",
        "icon": "props/icon_qin.png"
       },
       {
-       "label": "尊重",
-       "stars": 0,
+       "label": "尊重他人",
+       "value": "0 分",
+       "vcolor": "red",
        "icon": "props/icon_heart.png"
       }
      ],
@@ -15262,19 +15508,6 @@
      ],
      "w": 520,
      "gap": 0.45
-    },
-    {
-     "type": "sticker",
-     "at": {
-      "dt": 2.3
-     },
-     "text": "0 分！",
-     "pos": [
-      870,
-      1030
-     ],
-     "size": 110,
-     "color": "red"
     }
    ],
    "camera": [
@@ -15409,13 +15642,178 @@
      "anim": [
       {
        "at": {
-        "dt": 0.8
+        "dt": 0.7
        },
-       "dur": 4.0,
-       "ease": "linear",
+       "dur": 0.2,
+       "ease": "out",
        "dpos": [
-        160,
-        0
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 0.9
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.2
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.4
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.7
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.9
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.2
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.4
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.7
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.9
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 3.2
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 3.4
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 3.7
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 3.9
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 4.2
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 4.4
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
        ]
       }
      ]
@@ -15435,13 +15833,178 @@
      "anim": [
       {
        "at": {
-        "dt": 1.0
+        "dt": 0.9
        },
-       "dur": 4.0,
-       "ease": "linear",
+       "dur": 0.2,
+       "ease": "out",
        "dpos": [
-        160,
-        0
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.1
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.4
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.6
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 1.9
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.1
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.4
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.6
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 2.9
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 3.1
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 3.4
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 3.6
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 3.9
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 4.1
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
+       ]
+      },
+      {
+       "at": {
+        "dt": 4.4
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        14,
+        -46
+       ]
+      },
+      {
+       "at": {
+        "dt": 4.6
+       },
+       "dur": 0.2,
+       "ease": "in",
+       "dpos": [
+        14,
+        46
        ]
       }
      ]
@@ -15475,7 +16038,121 @@
     ],
     "why": "系列固定的点题：司马光念一句原文，下一句马上用白话（赛车和司机）再说一遍"
    },
-   "note": "知识（点题）：书页上浮出司马光的原话；「德」字走在前面领路，「才」字跟在后面（德者，才之帅也：好品德领着本事走）"
+   "note": "知识（点题）：书页上浮出司马光的原话；「德」字走在前面领路，「才」字跟在后面（德者，才之帅也：好品德领着本事走）",
+   "sfx": [
+    {
+     "name": "step",
+     "at": {
+      "dt": 1.1
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 1.6
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 2.1
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 2.6
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 3.1
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 3.6
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 4.1
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 4.6
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 1.3
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 1.8
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 2.3
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 2.8
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 3.3
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 3.8
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 4.3
+     },
+     "gain": -5
+    },
+    {
+     "name": "step",
+     "at": {
+      "dt": 4.8
+     },
+     "gain": -5
+    }
+   ]
   },
   {
    "id": "s68",
@@ -15710,7 +16387,7 @@
    "id": "s70",
    "from": {
     "line": 44,
-    "word": "就像"
+    "word": "跑得"
    },
    "size": "medium",
    "bg": [
@@ -15735,7 +16412,7 @@
       1650
      ],
      "h": 700,
-     "note": "司马光举着遥控器，笑呵呵地看着泡泡"
+     "note": "司马光举着遥控器，笑呵呵地看着泡泡（泡泡里只框红车和直道，车身铭牌上写着「才能」）"
     }
    ],
    "fg": [
@@ -15761,34 +16438,42 @@
      },
      "img": "props/bubble_race_track.png",
      "pos": [
-      370,
-      1000
+      213,
+      1010
      ],
-     "w": 820
+     "w": 820,
+     "inner_sway": 0.3,
+     "crop": [
+      230,
+      225,
+      1280,
+      841
+     ],
+     "labels": [
+      {
+       "text": "才能",
+       "xy": [
+        650,
+        591
+       ],
+       "size": 50,
+       "color": "red",
+       "dt": 0.9
+      }
+     ]
     },
     {
      "type": "sticker",
      "at": {
       "line": 44,
-      "word": "赛车"
-     },
-     "text": "才能",
-     "pos": [
-      610,
-      760
-     ],
-     "size": 80,
-     "color": "red"
-    },
-    {
-     "type": "lines_speed",
-     "at": {
-      "line": 44,
       "word": "飞快"
      },
-     "dir": "right",
-     "y0": 700,
-     "y1": 980
+     "name": "sou",
+     "pos": [
+      900,
+      1150
+     ],
+     "size": 140
     }
    ],
    "camera": [
@@ -15862,24 +16547,29 @@
      },
      "img": "props/bubble_race_driver.png",
      "pos": [
-      380,
+      213,
       1060
      ],
-     "w": 820
-    },
-    {
-     "type": "sticker",
-     "at": {
-      "line": 45,
-      "word": "人品"
-     },
-     "text": "人品和尊重",
-     "pos": [
-      680,
-      1010
+     "w": 820,
+     "inner_sway": 0.3,
+     "crop": [
+      7,
+      120,
+      1521,
+      1008
      ],
-     "size": 60,
-     "color": "red"
+     "labels": [
+      {
+       "text": "人品\n和尊重",
+       "xy": [
+        775,
+        782
+       ],
+       "size": 64,
+       "color": "red",
+       "dt": 0.45
+      }
+     ]
     }
    ],
    "camera": [
@@ -16101,10 +16791,37 @@
      },
      "img": "props/bubble_race_track.png",
      "pos": [
-      370,
+      213,
       1000
      ],
-     "w": 820
+     "w": 820,
+     "inner_sway": 0.3,
+     "crop": [
+      230,
+      225,
+      1280,
+      841
+     ],
+     "crop_to": [
+      724,
+      200,
+      1774,
+      816
+     ],
+     "crop_t": 0.45,
+     "crop_dur": 0.9,
+     "labels": [
+      {
+       "text": "？",
+       "xy": [
+        1545,
+        470
+       ],
+       "size": 110,
+       "color": "red",
+       "dt": 1.4
+      }
+     ]
     },
     {
      "type": "sticker",
@@ -16112,12 +16829,12 @@
       "line": 47,
       "word": "冲出"
      },
-     "name": "question",
+     "name": "sou",
      "pos": [
-      880,
-      740
+      900,
+      1150
      ],
-     "size": 90
+     "size": 140
     }
    ],
    "camera": [
@@ -16126,7 +16843,17 @@
      "amount": 0.04
     }
    ],
-   "note": "泡泡里：旁边一辆没握稳方向盘的蓝色小赛车「滋——」地滑出跑道，停在草地上，车顶冒出一个问号（没撞、没翻；笑点）"
+   "note": "泡泡里：旁边一辆没握稳方向盘的蓝色小赛车「滋——」地滑出跑道，停在草地上，车顶冒出一个问号（没撞、没翻；笑点）",
+   "sfx": [
+    {
+     "name": "whoosh",
+     "at": {
+      "line": 47,
+      "word": "冲出",
+      "dt": -0.1
+     }
+    }
+   ]
   },
   {
    "id": "s75",
@@ -16317,27 +17044,58 @@
      "img": "props/frog_jump.png",
      "depth": 1.0,
      "pos": [
-      920,
-      1350
+      900,
+      1385
      ],
      "anchor": [
       0.5,
-      0.5
+      1
      ],
-     "w": 180,
+     "w": 170,
      "flip": true,
      "anim": [
       {
        "at": {
-        "line": 49,
-        "word": "收藏",
-        "dt": 0.3
+        "dt": 0.0
        },
-       "dur": 0.45,
+       "dur": 0.2,
        "ease": "out",
        "dpos": [
-        -230,
-        -380
+        -110,
+        -200
+       ]
+      },
+      {
+       "at": {
+        "dt": 0.2
+       },
+       "dur": 0.24,
+       "ease": "in",
+       "pos": [
+        640,
+        930
+       ]
+      },
+      {
+       "at": {
+        "dt": 0.62
+       },
+       "dur": 0.2,
+       "ease": "out",
+       "dpos": [
+        120,
+        -140
+       ]
+      },
+      {
+       "at": {
+        "dt": 0.82
+       },
+       "dur": 0.22,
+       "ease": "in",
+       "pos": [
+        880,
+        930
        ]
       }
      ]
@@ -16352,10 +17110,25 @@
      },
      "name": "heart",
      "pos": [
-      680,
-      640
+      640,
+      1020
      ],
-     "size": 220
+     "size": 190,
+     "sfx": null
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 49,
+      "word": "点赞"
+     },
+     "text": "点赞",
+     "pos": [
+      640,
+      1180
+     ],
+     "size": 80,
+     "color": "red"
     },
     {
      "type": "sticker",
@@ -16365,10 +17138,51 @@
      },
      "name": "star",
      "pos": [
-      860,
-      860
+      880,
+      1020
      ],
-     "size": 200
+     "size": 190,
+     "sfx": null
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "line": 49,
+      "word": "收藏"
+     },
+     "text": "收藏",
+     "pos": [
+      880,
+      1180
+     ],
+     "size": 80,
+     "color": "gold"
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 0.44
+     },
+     "name": "heart",
+     "pos": [
+      640,
+      1020
+     ],
+     "size": 190,
+     "sfx": null
+    },
+    {
+     "type": "sticker",
+     "at": {
+      "dt": 1.04
+     },
+     "name": "star",
+     "pos": [
+      880,
+      1020
+     ],
+     "size": 190,
+     "sfx": null
     }
    ],
    "camera": [
@@ -16377,14 +17191,28 @@
      "amount": 0.04
     }
    ],
-   "note": "「点赞并收藏」：一颗大红心（点赞）和一颗金星星（收藏）按钮贴纸弹出来，一只青蛙跳上去按了一下（笑点）；司马光竖起大拇指",
+   "note": "「点赞并收藏」：红心「点赞」、金星「收藏」两个按钮弹出来，一只青蛙跳上去按一下红心、再跳上去按一下金星（按钮弹一下，咔哒）；司马光竖起大拇指",
    "notes": {
     "jev_allow": [
      "subject",
      "kid"
     ],
     "why": "旁白对家长的行动呼吁（PITFALLS S25，Chris 定稿原话），台词里没有故事人物；由系列讲解人司马光在书房里出镜串场；「德不配位」紧接着在 s77 用属性卡（本事满星、尊重 0 星）和字卡解释"
-   }
+   },
+   "sfx": [
+    {
+     "name": "click",
+     "at": {
+      "dt": 0.44
+     }
+    },
+    {
+     "name": "click",
+     "at": {
+      "dt": 1.04
+     }
+    }
+   ]
   },
   {
    "id": "s77",
@@ -16428,30 +17256,31 @@
      "rows": [
       {
        "label": "聪明度",
-       "stars": 5,
+       "value": "100",
        "icon": "props/icon_speech.png"
       },
       {
        "label": "勇敢度",
-       "stars": 5,
+       "value": "100",
        "icon": "props/icon_resolve.png"
       },
       {
        "label": "才能",
-       "stars": 5,
+       "value": "100",
        "icon": "props/icon_qin.png"
       },
       {
-       "label": "尊重",
-       "stars": 0,
+       "label": "尊重他人",
+       "value": "0 分",
+       "vcolor": "red",
        "icon": "props/icon_heart.png"
       }
      ],
      "pos": [
-      730,
-      880
+      665,
+      900
      ],
-     "w": 480,
+     "w": 520,
      "gap": 0.3
     },
     {
@@ -16472,15 +17301,14 @@
      "type": "sticker",
      "at": {
       "line": 49,
-      "word": "德不配位",
-      "dt": 0.6
+      "word": "什么叫"
      },
      "text": "本事大，尊重跟不上",
      "pos": [
-      700,
-      1260
+      680,
+      1290
      ],
-     "size": 54,
+     "size": 62,
      "color": "red"
     }
    ],
@@ -16616,7 +17444,7 @@
      "depth": 0.2,
      "pos": [
       540,
-      560
+      880
      ],
      "anchor": [
       0.5,
@@ -16629,7 +17457,7 @@
      "depth": 0.3,
      "pos": [
       540,
-      700
+      1020
      ],
      "anchor": [
       0.5,
@@ -16656,7 +17484,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1478
+      1451
      ],
      "anchor": [
       0.5,
@@ -16671,7 +17499,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1650
+      1590
      ],
      "anchor": [
       0.5,
@@ -16685,7 +17513,7 @@
      "depth": 0.9,
      "pos": [
       540,
-      1844
+      1747
      ],
      "anchor": [
       0.5,
@@ -16905,8 +17733,8 @@
      "img": "props/douli.png",
      "depth": 1.0,
      "pos": [
-      720,
-      1150
+      830,
+      1330
      ],
      "anchor": [
       0.5,

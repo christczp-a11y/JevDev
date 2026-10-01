@@ -7,7 +7,8 @@
 
 属性卡（游戏属性面板：名字、6 格图标、「本事 ★★★★★」逐条亮起来；底板 props/card_attr.png）：
   {"type": "stat_card", "name": "智伯", "rows": [{"label": "本事", "stars": 5, "icon": "props/icon_look.png"}, {"label": "好心", "stars": 1}], "at": {...}}
-  rows 1–6 行，按「先左后右、一行一行」填格子，**有几条画几格**（卡片高度跟着行数裁短，奇数行最后一格空的那一个抹掉）；label ≤ 3 个字；stars 0–5（亮几颗）；icon 可选（格子里的圆形图标，相对 video/assets）；
+  rows 1–6 行，按「先左后右、一行一行」填格子，**有几条画几格**（卡片高度跟着行数裁短，奇数行最后一格空的那一个抹掉）；label ≤ 4 个字（放不下自动缩字号）；stars 0–5（亮几颗）；icon 可选（格子里的圆形图标，相对 video/assets）；
+  value 可选（≤ 5 个字，比如 "100"、"0 分"）：写了就在星星的位置显示这个数字（大字，弹出来），这一行不画星星；vcolor 数字的颜色（gold 默认 / red / 其它颜色名）。「聪明度 100」「尊重他人 0 分」这样的打分用；
   pos 卡片正中心（默认 [540, 900]）；w 显示宽度（默认 760，原图 949）；dur 停留几秒；gap 行与行亮起的间隔秒数（默认 0.75，允许 0.15–2.0；行数多、镜头短就写小，比如 6 行写 0.3 只要 2.3 秒）。
   音效：sfx 默认 `stat_open`（卡片滑进来），每行亮起时一声 `stat_row_N`（按行序，调一行比一行高）、每颗星一声 `star_ding`——后两种出片前按 gap 排进镜头的音效表，所以改 gap 音效跟着走。
   每亮一颗星响一声 `star_ding`（一颗一声，出片前自动排进镜头的音效表；写 "star_ding": false 关掉）。
@@ -147,8 +148,15 @@ def _scheck(p, shot=None):
         errs.append(f"stat_card 的 rows 要写 1–{T.STAT_MAX} 行，每行 {{\"label\": \"本事\", \"stars\": 5}}")
         return errs
     for i, r in enumerate(rows):
-        if not r.get("label") or len(r["label"]) > 3:
-            errs.append(f"rows[{i}].label 要写 1–3 个字")
+        if not r.get("label") or len(r["label"]) > 4:
+            errs.append(f"rows[{i}].label 要写 1–4 个字")
+        if r.get("value") is not None:
+            if not (isinstance(r["value"], str) and 1 <= len(r["value"]) <= 5):
+                errs.append(f"rows[{i}].value 要写 1–5 个字的字符串，比如 \"100\"、\"0 分\"")
+            else:
+                errs += P.glyph_errors(r["value"].replace(" ", ""))
+            if P.bad_color(r.get("vcolor")):
+                errs.append(P.bad_color(r.get("vcolor")))
         if not isinstance(r.get("stars", 0), int) or not 0 <= r.get("stars", 0) <= int(p.get("max", 5)):
             errs.append(f"rows[{i}].stars 要写 0–{int(p.get('max', 5))} 的整数")
     if p.get("name"):
@@ -222,12 +230,23 @@ def stat_card(canvas, t, params, at):
             ps, psx, psy = P.pop_xy(a, 2.2, 7.0, 0.1)
             lx, ly = loc(ccx, ccy)
             P.draw_group(canvas, isp, g, lx, ly, sc=ps, sx=psx, sy=psy, alpha=fo)
-        lsp = P.sprite(canvas, ("stat_label", r["label"], W), lambda r=r: P.text_image(r["label"], "title", int(58 * k * 1.3), P.INK, 0))
+        lfs = int(58 * k * 1.3)
+        lsp = P.sprite(canvas, ("stat_label", r["label"], W), lambda r=r: P.text_image(r["label"], "title", lfs if len(r["label"]) <= 3 else int(lfs * 3.2 / len(r["label"])), P.INK, 0))
         la = anim.smooth((a - 0.08) / 0.2)
         lx, ly = loc((bx0 + bx1) / 2, (by0 + by1) / 2)
         P.draw_group(canvas, lsp, g, lx, ly + 10 * (1 - la), alpha=la * fo)
         stars = int(r.get("stars", 0))
         step = (bx1 - bx0) / n
+        if r.get("value") is not None:                         # 打分：星星的位置改成一个大数字
+            col = P.rgb(r.get("vcolor"), P.GOLD)
+            vsz = int(66 * k * 1.65)
+            vsp = P.sprite(canvas, ("stat_value", r["value"], W, col), lambda r=r, col=col: P.edged(P.text_image(r["value"], "title", vsz, col, 2, (120, 70, 20)), 3, False))
+            b = a - 0.22
+            if b >= 0:
+                ps, psx, psy = P.pop_xy(b, 3.0, 9.0, 0.12)
+                lx, ly = loc((bx0 + bx1) / 2, by1 + 30)
+                P.draw_group(canvas, vsp, g, lx, ly, sc=ps * (1 + 0.5 * math.exp(-b * 14)), sx=psx, sy=psy, alpha=min(1.0, b / 0.04) * fo)
+            continue
         for j in range(n):
             lx, ly = loc(bx0 + step * (j + 0.5), by1 + 36)
             P.draw_group(canvas, esp, g, lx, ly, alpha=min(1.0, a / 0.15) * fo)

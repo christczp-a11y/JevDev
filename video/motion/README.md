@@ -218,7 +218,7 @@ def dissolve(a, b, p, params, canvas):
 加新音效：在 `synth.py` 里写一个函数（单声道 44.1 kHz，峰值约 0.5）、登记进 `SOUNDS`，跑一遍脚本。`tests/test_fx.py` 会查每个文件：单声道 44.1 kHz、峰值、头尾没有咔嗒声、10 kHz 以上没有能量。
 现有：`pop` `whoosh` `burst` `focus` `slam_1..6` `list_1..6` `stat_open` `stat_row_1..6` `paper_unfold` `city_pop` `draw` `shine` `twinkle` `party` `dust_puff` `rain` `splash` `whoomp` `tone_shift` `flash` `kaoni` `plate_drop` `person_card`
 `card_quest` `card_fail` `card_title` `card_mvp` `title_boom` `gauge_pop` `screen_on` `click` `bubble_pop` `page_slide` `danmaku_whoosh` `freeze`；
-分镜表 `sfx` 里按名字用的：`frog_croak`（蛙叫「呱呱」）、`hmph`（「哼」，短促下滑的低音管音色，不用人声）、`tear`（撕纸）、`light_up`（一样东西亮起来）、`star_ding`（属性卡亮一颗星「叮」，stat_card 自动一颗一声）；转场：`calendar_flip`（翻日历）`page_flip` `paper_swipe` `brush` `iris` `fade_soft` `whip` `tv_click`。
+分镜表 `sfx` 里按名字用的：`frog_croak`（蛙叫「呱呱」）、`hmph`（「哼」，短促下滑的低音管音色，不用人声）、`tear`（撕纸）、`light_up`（一样东西亮起来）、`star_ding`（属性卡亮一颗星「叮」，stat_card 自动一颗一声）、`step`（小步子落地「嗒」，一蹦一蹦走路时每落一步放一个）；转场：`calendar_flip`（翻日历）`page_flip` `paper_swipe` `brush` `iris` `fade_soft` `whip` `tv_click`。
 
 ### 本集专用 / 测试用的插件
 
@@ -247,7 +247,7 @@ def dissolve(a, b, p, params, canvas):
 | 贴纸 | `sticker` | `name`（图片贴纸）或 `text`（文字贴纸）、`pos`、`size`、`rot`、`flip`、`color`、`depth`；**`follow`: 人物 id + `offset: [dx, dy]`（离脚底中点，人物原大小时）或 `attach: "head"`：贴纸挂在人物身上，跟着出场 / 跳 / 呼吸 / 视差动，人物翻身（flip / sx 变负）位置跟着镜像；`exit: "tear"`（要写 `dur`）：到 dur 那一刻从中间撕成毛边的两半，翻着落下，音效 `tear` 自动排进镜头** | `pop` | 反应和笑点，见下面的贴纸表 |
 | 砸字 | `smash` | `text` 1–6 个字、`pos`、`size`（300）、`color` / `house`、`shake`（震屏像素，默认 9，≤ 16） | `slam_1`…`slam_6` | 关键词、数字、结论；第 k 个字在 `at`+0.14+0.17k 落地 |
 | 清单 | `checklist` | `items` 1–6 条、`pos`（第一条中心，每条下移 128）、`mark`（check / star / none）、`w` | `list_1`…`list_6` | 本事、理由、功绩 |
-| 属性卡 | `stat_card` | `name`、`rows` 1–6 行 `{label, stars 0–5, icon}`（**有几行画几格**：卡片按行数裁短，奇数行最后一个空格抹掉）、`pos`、`w`（760）、**`gap`（行与行亮起的间隔秒数，默认 0.75，0.15–2.0；6 行写 0.3 只要 2.3 秒）**、`star_ding`（false = 星星不出声）；底板 `props/card_attr.png` | `stat_open`（+ 每行 `stat_row_N`、每颗星 `star_ding`，自动排） | 讲人物，「本事 ★★★★★ / 好心 ★」逐行亮起 |
+| 属性卡 | `stat_card` | `name`、`rows` 1–6 行 `{label, stars 0–5, icon, value, vcolor}`（`label` ≤ 4 字，4 字自动缩字号；`value` ≤ 5 字，写了就在星星的位置显示这个数字、不画星星，比如 `"100"` `"0 分"`，`vcolor` 默认金色）（**有几行画几格**：卡片按行数裁短，奇数行最后一个空格抹掉）、`pos`、`w`（760）、**`gap`（行与行亮起的间隔秒数，默认 0.75，0.15–2.0；6 行写 0.3 只要 2.3 秒）**、`star_ding`（false = 星星不出声）；底板 `props/card_attr.png` | `stat_open`（+ 每行 `stat_row_N`、每颗星 `star_ding`，自动排） | 讲人物，「本事 ★★★★★ / 好心 ★」逐行亮起 |
 | 地图 | `map` | `pos`、`w`（940）、`dim` 背景压暗；底板 `props/map_paper.png` | `paper_unfold` | 讲地理、行军 |
 | | `map_city` | `pos`、`name`、`house` / `color`、`icon`（现成圆形城图标）、`size` | `city_pop` | 城标落在地图上 |
 | | `map_arrow` | `pts` 路径点（≥ 2）、`house` / `color`、`width` | `draw` | 虚线箭头 0.8 秒画出，画完箭头弹一下 |
@@ -270,7 +270,7 @@ def dissolve(a, b, p, params, canvas):
 | 大字标题 | `big_title` | `text`（1–2 行，长了自动分行）、`pos`、`deco`（rays / flame / none）、`color`、`size`（220）、`shake` | `title_boom` | 「第 1 关：忍」「水，倒过来了！」 |
 | 解说台 | `screen` 纸屏幕 | `img`（屏幕里的画）、`pos`、`w`；框 `props/screen_frame.png`；再写一条同位置的 = 换画 | `screen_on` | 司马光的书房 = 后墙 `sets/study/wall.png` + 书桌 `sets/study/desk.png`（`fg`）+ 高清半身 `chars/sgm_hi_remote.png` + 屏幕 |
 | | `remote_click` | `pos`（按钮位置）、`color` | `click` | 「按一下」，再接转场 `tv_switch` |
-| | `bubble` 想象泡泡 | `img` 或 `text`、`pos`（**尾巴尖，点在说话人的头顶旁边**）、`w`（宽度上限 820，放不下自动缩小，夹进安全区 y 360–1400、x 80–1000，尾巴尖不动；宽 < 460 放不下就报错）、`flip`、`inner_sway`（默认 1：泡泡轻轻呼吸，里面的画上下浮动 + 轻轻鼓动，0 = 不动，不许冻住）；底板 `props/bubble_cloud.png` | `bubble_pop` | 古今对照的想象画 |
+| | `bubble` 想象泡泡 | `img` 或 `text`、`pos`（**尾巴尖，点在说话人的头顶旁边**）、`w`（宽度上限 820，放不下自动缩小，夹进安全区 y 360–1400、x 80–1000，尾巴尖不动；宽 < 460 放不下就报错）、`flip`、`inner_sway`（默认 1：泡泡轻轻呼吸，里面的画上下浮动 + 轻轻鼓动，0 = 不动，不许冻住）、`crop` `[x0,y0,x1,y1]`（只框泡泡里那张画的一块放进云里，像素坐标）、`crop_to` + `crop_t` + `crop_dur`（框从 crop 慢慢摇到 crop_to：泡泡里的镜头摇）、`labels` `[{text, xy, size, color, dt}]`（贴在泡泡里那张画上的字，`xy` 是画的像素坐标，跟着框和泡泡一起动，用来把字写在画里的空白铭牌上；`\n` 分行）；底板 `props/bubble_cloud.png` | `bubble_pop` | 古今对照的想象画 |
 | | `danmaku` 弹幕 | `texts` 1–16 条（每条 ≤ 10 字，循环用）、`dur`（陆续放出来用多久，默认 3.0）、`density`（默认 1.0 ≈ 10 条，0.3 ≈ 3，2.4 ≈ 24）、`area`（[x0,y0,x1,y1]，默认 [0,360,1080,1380]；**y 必须在 340–1400 之内**，不压标题条和字幕卡，出片前报错）、`avoid`（自动避开人物的脸框，同氛围粒子）；手撕边小纸条（米白 / 鹅黄 / 天蓝 / 薄荷 / 粉，白纸边、纸影），大小、速度、行错开，飞的时候上下飘、微微晃 | `danmaku_whoosh`（每条飞出来一声，很轻，出片前按每条的出场时刻排进镜头） | 「把你的选择打在弹幕上」；特效总共持续 `dur` + 约 3 秒 |
 | | `freeze` 定格 | `dur`（默认 2.0，0.3–8）、`corner`（tl 默认 / bl / br）、`pos`、`desat`（降饱和，默认 0.24）；画面（背景、人物、镜头、定格以前开始的特效）停在 at 那一帧，降一点饱和度，四周套一圈纸框（0.2 秒合上、0.25 秒打开），角上一个红色「⏸」贴纸；**定格开始以后才开始的特效（弹幕、按钮）照常走**；dur 到了接上「现在」的时间（锚点不错位） | `freeze`（「咔哒」） | 司马光按遥控器，画面定格（引擎：`scene.py` 里认 type 是 freeze 的特效，定格这段时间场景用 at 那一刻的时间画） |
 | | `page_edge` 书页边 | `y`（书页上沿，1240）、`w`、`peek`（探出来的人物半身图）、`peek_h`、`peek_x`；`props/page_edge.png` | `page_slide` | 「考你」时司马光从书页后面探出来：写 `peek`，书页升起来以后人才升起来、落下去以前人先缩回去，半身像的平切下沿一直藏在书页后面 |
@@ -288,7 +288,7 @@ def dissolve(a, b, p, params, canvas):
 | `iris` 圆圈收拢 | 0.7 | 纸圈收成一点，再从一点放开（圈外是纸色，带白纸边）；缓动按圈里画面的**面积**走，画面亮度逐帧平滑变化 | `pos` 圆心、`color` 纸色 | `iris` |
 | `fade_paper` 淡到纸色 | 0.7 | 淡到一整张纸，再淡入下一镜 | | `fade_soft` |
 | `whip` 甩镜 | 0.28 | 整幅画面横着甩出去，带运动模糊 | `dir`（left right up down） | `whip` |
-| `calendar_flip` 翻日历 | 1.2 | 一本纸日历（皇历）从上面落下来，旧画面压暗；7 张纸页飞快地往前倒翻（干支年一个接一个往回退、日子往回数，先快后慢，约 0.3 秒翻完），停在 `stop_text` 那一页（「 · 」分两行：前半小字、后半朱红大字），停约 0.55 秒能看清，然后日历放大淡出；切点在日历遮着的时候悄悄换成新画面 | `stop_text`（默认「两千四百多年前 · 战国」，每行 ≤ 10 字）、`pos`（日历中心，默认 [540, 880]，高约 1000 在安全区内） | `calendar_flip`（「刷刷刷」翻页声，翻页一开始就响：登记 `sfx_dt`，比切点早约 0.54 秒；按 dur 1.2 做，改 dur 声音不跟着变） |
+| `calendar_flip` 翻日历 | 2.5 | 一本纸日历（皇历）从上面落下来，旧画面压暗；7 张纸页往回倒翻（干支年一个接一个往回退：庚午 → 己巳 → 戊辰 → ……、日子往回数，是「时光倒流」，先快后慢，约 0.53 秒翻完），停在 `stop_text` 那一页（「 · 」分两行：前半小字、后半朱红大字），**停页时间 = dur − 0.83 秒（默认约 1.67 秒，字看得清；不到 1.5 秒出片前报错）**，最后 0.3 秒日历放大淡出；切点在日历遮着的时候悄悄换成新画面 | `stop_text`（默认「两千四百多年前 · 战国」，每行 ≤ 10 字）、`pos`（日历中心，默认 [540, 880]，高约 1000 在安全区内） | `calendar_flip`（「刷刷刷」翻页声，翻页一开始就响：登记 `sfx_dt = 0.06 − dur/2`，比切点早约 1.2 秒；按默认 dur 做，时间按秒排，所以改 dur 只是停页更久，声音不变；前后两个镜头各要装得下 dur/2 = 1.25 秒） |
 | `tv_switch` 解说台切进故事 | 0.8 | **前一镜要先放好纸屏幕（`screen`）**：屏幕里的画先叠化成故事的画，再从纸面大小放大到盖满整个画面 | `pos` 纸面中心、`w` 纸面宽（默认 408 = 木框宽 540 时的纸面；pos = 框中心 + (−0.0057, −0.0688)×框宽；纸面比例读 layout.json） | `tv_click` |
 | `dissolve` 交叉淡化 | 0.4 | 接口示例 | | |
 

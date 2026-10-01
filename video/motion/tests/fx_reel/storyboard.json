@@ -6910,7 +6910,7 @@
    "fx": [
     {
      "type": "label",
-     "text": "48 / 48  转场：翻日历（飞快往前倒翻，停在「战国」） calendar_flip",
+     "text": "48 / 48  转场：翻日历（往回倒翻，停在「战国」） calendar_flip",
      "at": {
       "dt": 0
      }

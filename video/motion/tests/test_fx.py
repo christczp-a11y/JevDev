@@ -644,6 +644,33 @@ class TestNewFxParams(unittest.TestCase):
         a0, b0 = frame(sc0, cv0, 1.5), frame(sc0, cv0, 2.4)
         self.assertLess(int((a0 != b0).any(axis=2).sum()), int((a != b).any(axis=2).sum()) // 2)   # inner_sway=0 基本不动
 
+    def test_bubble_crop_pans_and_labels_follow_the_picture(self):
+        e = {"type": "bubble", "img": "props/bubble_race_track.png", "pos": [213, 1010], "w": 820, "inner_sway": 0.3,
+             "crop": [230, 225, 1280, 841], "crop_to": [724, 200, 1774, 816], "crop_t": 0.5, "crop_dur": 1.0,
+             "labels": [{"text": "才能", "xy": [650, 591], "size": 52, "dt": 0.3}]}
+        self.assertEqual(fxreg.FX["bubble"].check(e), [])
+        sc, cv, _ = self.scene_with(e)
+        sc0, cv0, _ = self.scene_with(dict(e, labels=[]))
+        a, b = frame(sc, cv, 0.8), frame(sc, cv, 2.0)
+        self.assertGreater(int((a != b).any(axis=2).sum()), 20000)                              # 框在摇：里面的画换了一大块
+        l0, l1 = frame(sc, cv, 1.0), frame(sc0, cv0, 1.0)
+        self.assertGreater(int((l0 != l1).any(axis=2).sum()), 300)                              # 铭牌上的字画出来了
+        early, early0 = frame(sc, cv, 0.2), frame(sc0, cv0, 0.2)
+        self.assertTrue((early == early0).all())                                                # dt 没到不画
+        self.assertTrue(fxreg.FX["bubble"].check(dict(e, crop=[10, 10, 5, 5])))                  # 坏框
+        self.assertTrue(fxreg.FX["bubble"].check(dict(e, crop=None, crop_to=[0, 0, 10, 10])))   # 有 crop_to 没 crop
+        self.assertTrue(fxreg.FX["bubble"].check(dict(e, labels=[{"text": "A", "xy": [1]}])))   # 坏 labels
+
+    def test_stat_card_value_rows(self):
+        e = {"type": "stat_card", "name": "智伯", "rows": [{"label": "聪明度", "value": "100"}, {"label": "尊重他人", "value": "0 分", "vcolor": "red"}]}
+        self.assertEqual(fxreg.FX["stat_card"].check(e), [])
+        sc, cv, spec = self.scene_with(e, at=0.2)
+        self.assertEqual([x for x in spec.get("sfx", []) if x["name"] == "star_ding"], [])      # 打分行没有星星声
+        sc0, cv0, _ = self.scene_with(dict(e, rows=[{"label": "聪明度", "stars": 0}, {"label": "尊重他人", "stars": 0}]), at=0.2)
+        self.assertGreater(int((frame(sc, cv, 2.0) != frame(sc0, cv0, 2.0)).any(axis=2).sum()), 300)   # 数字画出来了
+        self.assertTrue(fxreg.FX["stat_card"].check(dict(e, rows=[{"label": "聪明度", "value": "一二三四五六"}])))
+        self.assertTrue(fxreg.FX["stat_card"].check(dict(e, rows=[{"label": "一二三四五", "stars": 1}])))
+
     def test_title_kicker_uses_episode_name(self):
         self.assertEqual(C.KICKER_FMT.format(no=1, name="三家分晋").rstrip(" ·"), "第 1 集 · 三家分晋")
         self.assertEqual(C.KICKER_FMT.format(no=1, name="").rstrip(" ·"), "第 1 集")
@@ -751,23 +778,38 @@ class TestDanmakuFreezeCalendar(unittest.TestCase):
         store = AssetStore(0.5, [])
         cv = Canvas(store, 0.5, C.FPS, 1.0)
         plug = fxreg.TRANSITIONS["calendar_flip"]
-        self.assertAlmostEqual(plug.dur, 1.2)
+        self.assertAlmostEqual(plug.dur, 2.5)
         prm = {"type": "calendar_flip", "stop_text": "两千四百多年前 · 战国"}
         n = round(plug.dur * C.FPS)
         outs = [plug.fn(a, b, (i + 0.5) / n, prm, cv) for i in range(n)]
-        fl = [float(np.abs(outs[i + 1].astype(int) - outs[i]).mean()) for i in range(2, 13)]     # 翻页阶段：飞快在翻，每一帧都和上一帧不一样
+        fl = [float(np.abs(outs[i + 1].astype(int) - outs[i]).mean()) for i in range(2, 13)]     # 翻页阶段（0.06–0.53 秒）：飞快在翻，每一帧都和上一帧不一样
         self.assertGreater(sum(1 for v in fl if v > 1.0), 7)
-        still = [float(np.abs(outs[i + 1].astype(int) - outs[i]).mean()) for i in range(19, 25)]  # 停住以后日历不动（背景在 0.44–0.56 之间换，日历遮着）
-        self.assertLess(max(still), 4.0)
+        # 停页：翻完以后（第 20 帧起）到收尾前（最后 0.3 秒）日历一直不动，至少 1.5 秒，页面正中心的像素一帧都不许变（背景在 0.44–0.56 之间换，日历遮着）
+        mid = (slice(int(0.5 * 700), int(0.5 * 1060)), slice(int(0.5 * 200), int(0.5 * 880)))
+        for i in range(20, n - 9):
+            self.assertLess(float(np.abs(outs[i][mid].astype(int) - outs[20][mid]).max()), 2, i)
+        self.assertGreaterEqual((n - 9 - 20) / C.FPS, 1.5)
         blank = plug.fn(a, b, 0.6, dict(prm, stop_text="战国"), cv)                                # 停住的那一页上真有字
-        self.assertGreater(float(np.abs(outs[20].astype(int) - blank).mean()), 0.5)
-        diff = (np.abs(outs[20].astype(int) - (b * 0.74).astype(int)).max(axis=2) > 12)          # 日历在主体安全区里（背景被压暗 26%）
+        k = int(0.6 * n)
+        self.assertGreater(float(np.abs(outs[k].astype(int) - blank).mean()), 0.5)
+        diff = (np.abs(outs[k].astype(int) - (b * 0.74).astype(int)).max(axis=2) > 12)           # 日历在主体安全区里（背景被压暗 26%）
         rows = np.nonzero(diff.any(axis=1))[0]
         self.assertGreaterEqual(rows.min() / 0.5, 360 - 40)
         self.assertLessEqual(rows.max() / 0.5, 1400 + 40)
         self.assertTrue(plug.check({"stop_text": "一二三四五六七八九十一 · 战国"}))
         self.assertTrue(plug.check({"stop_text": "  "}))
+        self.assertTrue(plug.check({"dur": 1.2}))                                                  # 停页不到 1.5 秒：报错
+        self.assertEqual(plug.check({"dur": 2.5}), [])
         self.assertEqual(plug.check({}), [])
+
+    def test_calendar_flip_years_run_backwards(self):
+        from fx import calendar as CAL
+        g = CAL.GANZHI
+        for i in range(len(g) - 1):                                                                # 干支年一页比一页早一年（往回倒）：下一页的干支在 60 甲子里排在上一页前面
+            stems, branches = "甲乙丙丁戊己庚辛壬癸", "子丑寅卯辰巳午未申酉戌亥"
+            sixty = [stems[k % 10] + branches[k % 12] for k in range(60)]
+            pos = lambda x: sixty.index(x)
+            self.assertEqual((pos(g[i]) - pos(g[i + 1])) % 60, 1, (g[i], g[i + 1]))
 
     def test_calendar_flip_sound_starts_with_the_first_flip(self):
         from engine.plan import build_plan

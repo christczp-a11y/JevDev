@@ -148,7 +148,7 @@ shot("定格：司马光按遥控器，画面停住，叠上弹幕 freeze", 5.0,
      camera=[{"move": "push", "amount": 0.07}], fx=[
     F("sticker", 0.4, name="sweat", follow="sgmhi", offset=[250, -720], size=190, sfx=None), F("remote_click", 1.1, pos=[480, 1150]),
     F("freeze", 1.2, dur=2.4), F("danmaku", 1.5, texts=["给！", "不给！", "给！", "不给！"], dur=1.6, density=0.9, area=[0, 420, 1080, 1100])])
-shot("转场：翻日历（飞快往前倒翻，停在「战国」） calendar_flip", 3.0, actors=[dict(ZB, pos=[540, 1620], h=900)], transition={"type": "calendar_flip", "stop_text": "两千四百多年前 · 战国"})
+shot("转场：翻日历（往回倒翻，停在「战国」） calendar_flip", 3.0, actors=[dict(ZB, pos=[540, 1620], h=900)], transition={"type": "calendar_flip", "stop_text": "两千四百多年前 · 战国"})
 
 
 # ---------------------------------------------------------------- 生成
