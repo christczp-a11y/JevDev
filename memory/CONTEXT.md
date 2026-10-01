@@ -95,3 +95,4 @@
 - 素材：Codex CLI `codex exec -m gpt-6-astra -c 'model_reasoning_effort="low"' -s workspace-write -C <目录> -i <参考图> -`（只在本地可用）；绿幕素材用 `video/split_sheet.py` 切，透明底用 `video/split_alpha.py` 切
 - 依赖：`requirements.txt` + `python -m playwright install chromium` + ffmpeg；字体从 Google Fonts 在线加载
 - 手机端（Remote Control）收文件上限 30 MiB；发视频前压成手机版（做法见 docs/workflow/7-成片检查.md「发给 Chris」）。
+- 上传到手机（Remote Control）还有 30 秒超时：网慢时 25 MB 也会失败，切成上下两段发（做法见第 7 步）。
