@@ -7,7 +7,7 @@
 - **文案、标题、封面字由 Chris 的另一个会话做**；这个仓库的会话只做动画（第 9 步的发布材料不归这边）。
 - 复盘：`video/stories/tj01/复盘.md`（这一集踩过的坑 + 下一集照着做的 6 条）。
 - 引擎现状：截段拼接（改 1 镜约 30–60 秒）、字幕底边 y 1615、出片空白检测；storyboard_check 查字幕区挡脸、特效盖主角、交领不许 flip；出图规矩 `video/assets/prompt_rules.txt` 自动接。
-- **下一步**：等 Chris 定第 2 集（下集预告是魏文侯雨天打猎之约）；他可能先给剧本。
+- **下一步**：第 2 集 tj02「魏文侯之约」。剧本 Gemini 已写好：`geminiscripts/episodes/ep02_魏文侯之约/script_ep02.md`（史料 `source_ep02.md`）。照新的第 2 步对接：先列红线改法给 Chris 定，再写 JSON，接着第 3–7 步。Chris 建议开新会话做（新会话才加载 Sonnet 版 reviewer）。`geminiscripts/` 是 Gemini 的工作区，只读不改不提交。
 - 待补：PITFALLS 待补 14（storyboard_jev 看不到泡泡里的画）、15（去掉镜头运动后的静止检查）、16（讲事画面停留 ≥ 2 秒）；`video/tests/registry/` 4 项旧失败；字幕挪进平台遮挡区的事 Chris 说先不做。
 
 ## 装机（09-29 检查通过）
