@@ -200,7 +200,7 @@ def main(argv=None):
         if not c["ok"]:
             if k == "blank":
                 for e in blanks[:30]:
-                    print(f"  ✗ 空白：镜头 {e['shot']}，{int(e['t'] // 60)}:{e['t'] % 60:04.1f}，{'大块' if e['kind'] == 'block' else '白缝'}，位置 {e['bbox']}，占画面 {e['area']:.1%}")
+                    print(f"  ✗ 空白：镜头 {e['shot']}，{int(e['t'] // 60)}:{e['t'] % 60:04.1f}，{ {'block': '大块', 'seam': '白缝', 'strip': '直边平条'}[e['kind']] }，位置 {e['bbox']}，占画面 {e['area']:.1%}")
                 if len(blanks) > 30:
                     print(f"  ……还有 {len(blanks) - 30} 处，见报告")
             else:
