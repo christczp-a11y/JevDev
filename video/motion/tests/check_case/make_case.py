@@ -497,6 +497,11 @@ def _(sb):
     sh(sb, "s21")["fx"][-1].update(pos=[540, 300], clear=200)
 
 
+@case("bad_speed_lines_on_face", "盖住了 智伯 的脸")
+def _(sb):
+    sh(sb, "s10")["fx"].append({"type": "lines_speed", "dir": "left", "at": L(9, 0.2)})          # 默认 y 380–1330 整个宽度、画在人物前面：横穿智伯的脸和身体（M2 再犯）
+
+
 @case("bad_plate_too_short", "只看得清")
 def _(sb):
     next(f for f in sh(sb, "s02")["fx"] if f["type"] == "name_plate")["dur"] = 1.2

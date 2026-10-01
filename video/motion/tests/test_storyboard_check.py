@@ -16,7 +16,7 @@ OUT = common.OUT / "check_case"
 GOOD = TESTS / "good_storyboard.json"
 EXPECT = json.loads((TESTS / "check_expect.json").read_text(encoding="utf-8"))
 BAD = sorted(TESTS.glob("bad_*.json"))
-TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌", "翻转", "压脸", "集中线", "字幕", "遮挡", "停留"]
+TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌", "翻转", "压脸", "集中线", "速度线", "字幕", "遮挡", "停留"]
 
 _spec = importlib.util.spec_from_file_location("make_case", CASE / "make_case.py")
 make_case = importlib.util.module_from_spec(_spec)
@@ -280,6 +280,79 @@ class TestSubtitleAndCover(unittest.TestCase):
         p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
         rep, _ = check(p)
         self.assertEqual([e for e in rep.errors if e["tag"] in ("遮挡", "压脸")], [], text(rep))
+
+
+class TestLineFx(unittest.TestCase):
+    """M2 再犯：lines_speed / lines_radial 整屏线条画在人物前面、区域盖住脸 = 错，只盖身体 = 警告；画在人物后面、区域避开的不报。
+    用 s10（智伯一个人，脚在 y 1560，脸框约 y 1116–1295，推镜头后约 1123–1312，第 9 句「智伯很生气！」）当试验场。"""
+    AT = {"line": 9, "dt": 0.2}
+
+    def _run(self, name, *fxs, shot="s10"):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        next(s for s in sb["shots"] if s["id"] == shot)["fx"] += list(fxs)
+        p = OUT / f"{name}.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        return check(p)[0]
+
+    @staticmethod
+    def _hits(rep):
+        return [e for e in rep.errors if e["tag"] == "速度线"], [w for w in rep.warnings if w["tag"] == "速度线"]
+
+    def test_speed_lines_across_the_face_is_an_error(self):
+        rep, _ = check(TESTS / "bad_speed_lines_on_face.json")
+        errs, warns = self._hits(rep)
+        self.assertEqual([e["shot"] for e in errs], ["s10"], text(rep))
+        self.assertIn("智伯", errs[0]["msg"])
+        self.assertIn("lines_speed", errs[0]["msg"])
+        self.assertIn("layer", errs[0]["msg"])
+        self.assertEqual(warns, [])                                                    # 脸错了就不再重复报身体
+        self.assertEqual([e for e in rep.errors if e["tag"] != "速度线"], [], text(rep))
+
+    def test_area_that_stays_clear_of_the_people_is_not_reported(self):
+        for name, fx in [("speed_above", {"type": "lines_speed", "dir": "left", "y0": 380, "y1": 1000, "at": self.AT}),             # 横带在头顶以上
+                         ("speed_below", {"type": "lines_speed", "dir": "left", "y0": 1700, "y1": 1800, "at": self.AT})]:                      # 横带在脚底以下
+            with self.subTest(name):
+                rep = self._run(name, fx)
+                self.assertEqual(self._hits(rep), ([], []), text(rep))
+                self.assertEqual(rep.errors, [], text(rep))
+
+    def test_lines_drawn_behind_the_people_are_not_reported(self):
+        rep = self._run("speed_back", {"type": "lines_speed", "dir": "left", "layer": "back", "at": self.AT})      # 同 bad_speed_lines_on_face，只多写 layer back
+        self.assertEqual(self._hits(rep), ([], []), text(rep))
+        self.assertEqual(rep.errors, [], text(rep))
+        rep = self._run("speed_front_explicit", {"type": "lines_speed", "dir": "left", "layer": "front", "at": self.AT})   # 写 front 和不写一样
+        self.assertEqual(len(self._hits(rep)[0]), 1, text(rep))
+
+    def test_only_the_body_covered_is_a_warning(self):
+        rep = self._run("speed_legs", {"type": "lines_speed", "dir": "right", "y0": 1340, "y1": 1500, "at": self.AT})        # 横带在脸框下沿以下、盖住腿
+        errs, warns = self._hits(rep)
+        self.assertEqual(errs, [], text(rep))
+        self.assertEqual(len(warns), 1)
+        self.assertIn("身体", warns[0]["msg"])
+        self.assertEqual(rep.errors, [], text(rep))
+
+    def test_radial_lines_centred_on_the_face_only_cross_the_body(self):
+        rep = self._run("radial_on_face", {"type": "lines_radial", "pos": [540, 1205], "at": self.AT})                       # 脸整个在圆心 210 像素以内
+        errs, warns = self._hits(rep)
+        self.assertEqual(errs, [], text(rep))
+        self.assertEqual(len(warns), 1)
+        self.assertIn("lines_radial", warns[0]["msg"])
+        rep = self._run("radial_off_face", {"type": "lines_radial", "pos": [540, 300], "at": self.AT})                       # 圆心在头顶上很远的地方：脸在圆外
+        errs, _ = self._hits(rep)
+        self.assertEqual(len(errs), 1, text(rep))
+        self.assertIn("放射速度线", errs[0]["msg"])
+
+    def test_every_person_counts_not_only_the_subject(self):
+        rep = self._run("radial_two_people", {"type": "lines_radial", "pos": [760, 1205], "at": {"line": 8, "dt": 0.2}}, shot="s09")    # 圆心在智伯（右，主体）的脸上；赵襄子（左）的脸在圆外
+        errs, _ = self._hits(rep)
+        self.assertEqual(len(errs), 1, text(rep))
+        self.assertIn("赵襄子", errs[0]["msg"])
+
+    def test_focus_lines_keep_their_own_check_and_bad_params_do_not_crash(self):
+        rep = self._run("focus_and_bad_params", {"type": "lines_speed", "y0": "高", "at": self.AT}, {"type": "lines_radial", "pos": [540], "at": self.AT})
+        self.assertEqual(self._hits(rep), ([], []), text(rep))
+        rep, _ = check(GOOD)                                                           # good 里的 lines_focus（有 clear）不归 [速度线] 管
+        self.assertEqual(self._hits(rep), ([], []))
 
 
 class TestDwell(unittest.TestCase):

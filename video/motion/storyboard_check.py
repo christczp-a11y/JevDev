@@ -46,6 +46,10 @@
              ③ 什么都没写、但单张就超过他身体框 20%（图标不会这么大）：自动当布景（兜底）。
            图层 / 图标按图的不透明部分算（云泡泡的空角、浪的透明处不算盖住）；特效按估的方框算（框的约定见下）；查的特效：sticker、smash、card_*、name_plate、stat_card、checklist、bubble
   [集中线] lines_focus 必须写 clear（不画线的留白圈：[x, y, r]，或者一个半径数、圆心取 center / pos / [540, 900]），而且这个圈要盖住这一镜主体（面积最大的人物）的脸框（M2）
+  [速度线] 另外两种整屏线条特效 lines_speed（横向速度线，画在 y0–y1 这条横带里，默认 380–1330，整个宽度）、lines_radial（放射速度线，从 pos 往外飞，圆心 210 像素以内不画）（M2 再犯）：
+           线画在人物前面（layer front，不写 layer 就是这个）、区域盖住任何一个人物（不只是主体）脸框的 5% 以上 = 错；脸没碰到、只盖住他身体（人物图不透明部分）的 20% 以上 = 警告；
+           线画在人物后面（写了 "layer": "back"）、或区域避开了人物的不报。线条钉在屏幕上不跟镜头动，人物的脸框 / 身体框按镜头运动、补间算到屏幕上（同 [压脸]、[遮挡]）；
+           在线出现的这段时间里取 3 个时刻查（出现后 0.25 秒、中间、结束）
 
 特效名字怎么分类：storyboard_check.py 里的 FX_KINDS（按名字里的子串；特效包 fx/ 里的 name_plate = 人名牌、smash = 砸字、big_title / card_* = 大字标题和游戏卡片、
 checklist / stat_card / map* / progress = 讲知识点的、flash = 闪白、lines_* / sparkle / rain 等 = 氛围）；特效包加了新名字，不对的话改这张表（一处）。
@@ -143,6 +147,9 @@ ICON_MAX_FRAC = 0.20                                                       # 一
 FACE_TOUCH_COVER = 0.10                                                    # [遮挡]：特效 / 图标盖住脸的 10% 以上才算「碰到脸」
 COVER_KINDS = {"sticker", "slam", "gamecard", "namecard", "stat", "list", "bubble"}
 FACE_TOUCH_BY_OVERLAY = {"sticker", "slam"}                                # 这两类碰脸由 [压脸] 管，[遮挡] 不重复报
+LINE_FX = ("lines_speed", "lines_radial")                                  # [速度线] 查的整屏线条特效（fx/lines.py；lines_focus 有自己的 [集中线]）
+SPEED_PAD = 10.0                                                           # lines_speed：线最粗 20 像素，y0–y1 上下各多出 10
+RADIAL_CLEAR = 210.0                                                       # lines_radial：圆心 210 像素以内不画线（fx/lines.py 的 r0）
 BUB_AR, BUB_MIN_W = 920 / 1357, 460.0                                      # 泡泡图的高 / 宽
 COVER_CELL = 12.0                                                          # 算「合起来盖住多少」时的格子大小（像素）
 SUBJECT_LATER_WINS = 0.85                                                  # 主体：面积最大的人物；后画的（在上面的）面积 ≥ 最大的 85% 时取它
@@ -632,6 +639,76 @@ def check_focus_lines(sh, out, cam, rep):
                 rep.err("集中线", f"{e.get('type')} 的 clear 圈（圆心 ({cx:.0f}, {cy:.0f})，半径 {kr:.0f}）没盖住主体 {a['who']} 的脸框"
                                   f"（{t:.1f} 秒时脸框最远的角离圆心 {far:.0f}）：圆心对准脸，clear 至少 {far:.0f}（M2）", sh.id)
                 break
+
+
+def line_fx_area(typ, e):
+    """整屏线条特效（lines_speed / lines_radial）画线的区域，屏幕坐标（线条钉在屏幕上、不跟镜头动）：
+    返回 (说明, 区域函数 (xs, ys) → 布尔数组 [len(ys), len(xs)], 脸被盖住的改法, 身体被盖住的改法)；不是这两种、或参数写坏了（特效自己的 check 去报）= None。数字按 fx/lines.py 写的，那边改了要跟着改这里。"""
+    try:
+        if typ == "lines_speed":
+            y0, y1 = float(e.get("y0", 380)), float(e.get("y1", 1330))
+            lo, hi = min(y0, y1) - SPEED_PAD, max(y0, y1) + SPEED_PAD
+
+            def inside(xs, ys):
+                return np.outer((ys >= lo) & (ys <= hi) & (ys >= 0) & (ys <= C.H), (xs >= 0) & (xs <= C.W))
+            return f"横向速度线 {typ}（y {y0:.0f}–{y1:.0f}）", inside, "y0 / y1 让开脸框（线只出现在脸的上面或下面）", "y0 / y1 让开他的身体"
+        if typ == "lines_radial":
+            px, py = (float(v) for v in e.get("pos", [C.W / 2, 900]))
+
+            def ring(xs, ys):
+                return (np.hypot(xs[None, :] - px, ys[:, None] - py) >= RADIAL_CLEAR) & np.outer((ys >= 0) & (ys <= C.H), (xs >= 0) & (xs <= C.W))
+            return f"放射速度线 {typ}（圆心 ({px:.0f}, {py:.0f})，中间 {RADIAL_CLEAR:.0f} 像素内不画线）", ring, f"pos 对准他的脸（脸框最远的角离圆心 ≤ {RADIAL_CLEAR:.0f}）", "pos 挪远一点"
+    except (TypeError, ValueError):
+        return None
+    return None
+
+
+def covered_fraction(box, alpha, area):
+    """方框 box（带不透明部分 alpha，没有 = 整个框）有多大一部分落在区域 area（line_fx_area 的区域函数）里：0–1。"""
+    l, t, r, b = box
+    if r - l <= 0 or b - t <= 0:
+        return 0.0
+    nx, ny = max(1, int(math.ceil((r - l) / COVER_CELL))), max(1, int(math.ceil((b - t) / COVER_CELL)))
+    xs, ys = l + (np.arange(nx) + 0.5) * (r - l) / nx, t + (np.arange(ny) + 0.5) * (b - t) / ny
+    m = sample_mask(box, alpha, xs, ys)
+    n = int(m.sum())
+    return float((m & area(xs, ys)).sum()) / n if n else 0.0
+
+
+def check_line_fx(sh, out, cam, rep, fx_table):
+    """M2（再犯）：整屏线条特效 lines_speed（横向速度线）/ lines_radial（放射速度线）画在人物前面（layer front，默认），而且区域盖住任何人物的脸框 = 错
+    （脸框盖住的比例 > 5%，同 [压脸]）；只盖住身体（人物图不透明部分的 20% 以上，同 [遮挡]）= 警告。画在人物后面（layer back）的不查。lines_focus 有自己的 [集中线]。"""
+    t0, dur = sh.t0, sh.dur
+    for kind, at, e in out["fx"]:
+        typ = e.get("type")
+        if typ not in LINE_FX or e.get("layer", getattr(fx_table.get(typ), "layer", "front")) != "front":
+            continue
+        area = line_fx_area(typ, e)
+        if area is None:
+            continue
+        label, inside, fix_face, fix_body = area
+        rel_at = max(at - t0, 0.0)
+        end = min(dur, rel_at + float(e["dur"])) if isinstance(e.get("dur"), (int, float)) else dur
+        worst = {}                                   # 每个人物：(脸框被盖的比例, 秒, 脸框)、(身体被盖的比例, 秒)，取线在画面上的这段时间里最糟的那一刻
+        for t in samples(min(rel_at + 0.25, end), end):
+            for a in out["actors"]:
+                b = actor_boxes(a, cam, t, t0)
+                if b is None:
+                    continue
+                w = worst.setdefault(id(a), [a, (0.0, t, b["face"]), (0.0, t)])
+                f = covered_fraction(b["face"], None, inside)
+                if f > w[1][0]:
+                    w[1] = (f, t, b["face"])
+                body = covered_fraction(b["body"], alpha_small(str(b["file"]), b["flip"]), inside)
+                if body > w[2][0]:
+                    w[2] = (body, t)
+        for a, (f, tf, face), (body, tb) in worst.values():
+            if f > OVERLAP_MIN:
+                rep.err("速度线", f"{label} 画在人物前面，盖住了 {a['who']} 的脸：区域盖住脸框（y {face[1]:.0f}–{face[3]:.0f}）的 {f:.0%}（{tf:.1f} 秒时；M2 再犯：线横穿脸和身体，像画面被划花）："
+                                f"{fix_face}，或者写 \"layer\": \"back\" 让线画在人物后面", sh.id)
+            elif body > COVER_MAX:
+                rep.warn("速度线", f"{label} 画在人物前面，盖住了 {a['who']} 身体的 {body:.0%}（超过 {COVER_MAX:.0%}；{tb:.1f} 秒时，没碰到脸）：线从人身上划过（M2）；"
+                                   f"{fix_body}，或者写 \"layer\": \"back\" 让线画在人物后面", sh.id)
 
 
 def check_subtitle_zone(sh, out, cam, tl, rep):
@@ -1295,6 +1372,7 @@ def analyse_shot(sh, ctx, rep, spec, out):
     if cam is not None:
         check_overlays(sh, out, cam, rep)
         check_focus_lines(sh, out, cam, rep)
+        check_line_fx(sh, out, cam, rep, ctx.fx_table)
         check_subtitle_zone(sh, out, cam, tl, rep)
         check_cover(sh, out, cam, tl, rep)
     check_plate_time(sh, out, rep)

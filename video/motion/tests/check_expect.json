@@ -41,6 +41,7 @@
  "bad_focus_no_clear.json": "没写 clear",
  "bad_focus_clear_short.json": "没盖住主体",
  "bad_focus_off_center.json": "没盖住主体",
+ "bad_speed_lines_on_face.json": "盖住了 智伯 的脸",
  "bad_plate_too_short.json": "只看得清",
  "bad_subtitle_covers_face.json": "字幕区",
  "bad_cover_icons_on_lead.json": "压在主角",
