@@ -1,8 +1,13 @@
 # PROGRESS — 当前进度
 
-> 最后更新：2026-09-29 晚（本地）
+> 最后更新：2026-09-30 晚（本地）
 
-## 当前阶段：tj01 G 版第 2 版已发 Chris，等他看（09-30）
+## 当前阶段：tj01 第 9 步发布包已出（09-30），等 Chris 定时发布
+- 发布包 `video/stories/tj01/publish.md`：标题「要地给不给？2400年前的一道选择题」、封面字「本事满分 尊重0分」（Jev 组合胜率 0.889）、正文、话题、置顶评论、发布设置、72 小时复盘和前 2 周冷启动；封面 `video/out/tj01/publish/cover_3x4.png`（脚本 `video/stories/tj01/make_cover.py`）。
+- 建议北京时间 10/2（周五）20:00 定时发；发后 2 小时、24 小时、72 小时、7 天的数据记进 `status.md`。
+- xiaohongshu-mcp（localhost:18060）这次没连上，对标账号数据没抓；新号冷启动期也不建议用自动化工具登录这个号。
+
+## 上一阶段：tj01 G 版第 2 版已发 Chris，等他看（09-30）
 - Chris 看第 1 版给了合格分，提了 7 条（PITFALLS S28、S29、M6–M8、P19）→ 第 2 版已改并发出（b21e28d，手机版上下两段）。
 - 成片 `video/out/tj01/full/tj01_full.mp4`（208.0 秒）；剧本 `G_尊重.json`；配音 `video/out/tj01_voice_g/`；分镜表 81 镜。命令见 `video/stories/tj01/status.md`。
 - 引擎新能力：截段拼接（改 1 镜约 30 秒）、字幕底边贴 y 1615、出片空白检测；storyboard_check 查字幕区挡脸和特效盖住主角。

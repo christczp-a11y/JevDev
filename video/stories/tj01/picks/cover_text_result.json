@@ -1,0 +1,258 @@
+{
+ "category": "cover_text",
+ "rubric": "pick_v2",
+ "model": "jev-1.13.0",
+ "context": "小红书视频笔记，账号「光爷爷的资治通鉴大冒险」第 1 集（约 3 分 28 秒竖屏纸艺动画，给 6–12 岁孩子和陪看的家长）。讲《资治通鉴》卷一：两千四百多年前（前 453 年），晋国最强的智伯样样本事都强，却不尊重人：宴会上当众取笑韩康子和他的谋士段规，又挨家要地。韩、魏先给（段规的计策：让他越来越骄傲），赵襄子说「不给」，智伯就带着韩、魏用河水灌赵家的晋阳城。韩、魏想到自己的城也会被淹，三家联手挖开堤，大水反冲智伯大营，智家彻底出局。结尾司马光爷爷点题：才能像跑得飞快的赛车，人品和尊重才是握方向盘的司机。封面画面是智伯的夸张大特写（被大浪浇成落汤鸡，冠歪了、头顶蹲着一只青蛙），左上角写「第1集」；候选是压在画面上的大字，信息流里只扫一眼。",
+ "control_last": true,
+ "ranking": [
+  {
+   "rank": 1,
+   "id": "c2",
+   "text": "本事满分 尊重0分",
+   "flags": [],
+   "scores": {
+    "t_kid": 3.7,
+    "t_parent": 3.21
+   },
+   "score": 0.864,
+   "winrate": 0.847,
+   "winrate_by_q": {
+    "p_kid": 0.723,
+    "p_parent": 0.971
+   },
+   "combined": 0.855
+  },
+  {
+   "rank": 2,
+   "id": "c6",
+   "text": "智伯为什么输光？",
+   "flags": [],
+   "scores": {
+    "t_kid": 3.23,
+    "t_parent": 2.72
+   },
+   "score": 0.744,
+   "winrate": 0.702,
+   "winrate_by_q": {
+    "p_kid": 0.622,
+    "p_parent": 0.782
+   },
+   "combined": 0.723
+  },
+  {
+   "rank": 3,
+   "id": "c4",
+   "text": "要地？不给！",
+   "flags": [],
+   "scores": {
+    "t_kid": 3.21,
+    "t_parent": 2.23
+   },
+   "score": 0.68,
+   "winrate": 0.573,
+   "winrate_by_q": {
+    "p_kid": 0.564,
+    "p_parent": 0.581
+   },
+   "combined": 0.626
+  },
+  {
+   "rank": 4,
+   "id": "c3",
+   "text": "满级大佬 一夜输光",
+   "flags": [],
+   "scores": {
+    "t_kid": 3.57,
+    "t_parent": 0.93
+   },
+   "score": 0.562,
+   "winrate": 0.584,
+   "winrate_by_q": {
+    "p_kid": 0.621,
+    "p_parent": 0.546
+   },
+   "combined": 0.573
+  },
+  {
+   "rank": 5,
+   "id": "c7",
+   "text": "大王变落汤鸡",
+   "flags": [],
+   "scores": {
+    "t_kid": 3.52,
+    "t_parent": 0.73
+   },
+   "score": 0.531,
+   "winrate": 0.595,
+   "winrate_by_q": {
+    "p_kid": 0.78,
+    "p_parent": 0.41
+   },
+   "combined": 0.563
+  },
+  {
+   "rank": 6,
+   "id": "c5",
+   "text": "学霸被全班推翻了？",
+   "flags": [],
+   "scores": {
+    "t_kid": 2.95,
+    "t_parent": 0.62
+   },
+   "score": 0.446,
+   "winrate": 0.38,
+   "winrate_by_q": {
+    "p_kid": 0.4,
+    "p_parent": 0.359
+   },
+   "combined": 0.413
+  },
+  {
+   "rank": 7,
+   "id": "c1",
+   "text": "一夜输光！",
+   "flags": [],
+   "scores": {
+    "t_kid": 2.81,
+    "t_parent": 0.47
+   },
+   "score": 0.41,
+   "winrate": 0.253,
+   "winrate_by_q": {
+    "p_kid": 0.282,
+    "p_parent": 0.224
+   },
+   "combined": 0.332
+  }
+ ],
+ "control": {
+  "id": "_ctrl",
+  "text": "第一集　资治通鉴卷一　内容简介",
+  "rank_in_pool": 8,
+  "pool_size": 8,
+  "score": 0.25,
+  "winrate": 0.066,
+  "combined": 0.158,
+  "last": true
+ },
+ "pairs": {
+  "c1|c2": {
+   "p_kid": 0.155,
+   "p_parent": 0.015
+  },
+  "c1|c3": {
+   "p_kid": 0.075,
+   "p_parent": 0.095
+  },
+  "c1|c4": {
+   "p_kid": 0.17,
+   "p_parent": 0.135
+  },
+  "c1|c5": {
+   "p_kid": 0.325,
+   "p_parent": 0.305
+  },
+  "c1|c6": {
+   "p_kid": 0.215,
+   "p_parent": 0.055
+  },
+  "c1|c7": {
+   "p_kid": 0.06,
+   "p_parent": 0.255
+  },
+  "c1|_ctrl": {
+   "p_kid": 0.975,
+   "p_parent": 0.71
+  },
+  "c2|c3": {
+   "p_kid": 0.795,
+   "p_parent": 0.98
+  },
+  "c2|c4": {
+   "p_kid": 0.645,
+   "p_parent": 0.97
+  },
+  "c2|c5": {
+   "p_kid": 0.77,
+   "p_parent": 0.975
+  },
+  "c2|c6": {
+   "p_kid": 0.675,
+   "p_parent": 0.925
+  },
+  "c2|c7": {
+   "p_kid": 0.33,
+   "p_parent": 0.97
+  },
+  "c2|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 0.995
+  },
+  "c3|c4": {
+   "p_kid": 0.62,
+   "p_parent": 0.44
+  },
+  "c3|c5": {
+   "p_kid": 0.775,
+   "p_parent": 0.765
+  },
+  "c3|c6": {
+   "p_kid": 0.59,
+   "p_parent": 0.255
+  },
+  "c3|c7": {
+   "p_kid": 0.24,
+   "p_parent": 0.56
+  },
+  "c3|_ctrl": {
+   "p_kid": 0.995,
+   "p_parent": 0.875
+  },
+  "c4|c5": {
+   "p_kid": 0.705,
+   "p_parent": 0.785
+  },
+  "c4|c6": {
+   "p_kid": 0.37,
+   "p_parent": 0.115
+  },
+  "c4|c7": {
+   "p_kid": 0.31,
+   "p_parent": 0.76
+  },
+  "c4|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 0.955
+  },
+  "c5|c6": {
+   "p_kid": 0.25,
+   "p_parent": 0.09
+  },
+  "c5|c7": {
+   "p_kid": 0.14,
+   "p_parent": 0.445
+  },
+  "c5|_ctrl": {
+   "p_kid": 0.985,
+   "p_parent": 0.81
+  },
+  "c6|c7": {
+   "p_kid": 0.455,
+   "p_parent": 0.93
+  },
+  "c6|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 0.985
+  },
+  "c7|_ctrl": {
+   "p_kid": 0.995,
+   "p_parent": 0.79
+  }
+ },
+ "calls": {
+  "requests": 64,
+  "cached": 0,
+  "input_tokens": 65875,
+  "output_tokens": 3736
+ }
+}

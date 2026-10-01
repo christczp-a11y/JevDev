@@ -1,0 +1,417 @@
+{
+ "category": "title",
+ "rubric": "pick_v2",
+ "model": "jev-1.13.0",
+ "context": "小红书视频笔记，账号「光爷爷的资治通鉴大冒险」第 1 集（约 3 分 28 秒竖屏纸艺动画，给 6–12 岁孩子和陪看的家长）。讲《资治通鉴》卷一：两千四百多年前（前 453 年），晋国最强的智伯样样本事都强，却不尊重人：宴会上当众取笑韩康子和他的谋士段规，又挨家要地。韩、魏先给（段规的计策：让他越来越骄傲），赵襄子说「不给」，智伯就带着韩、魏用河水灌赵家的晋阳城。韩、魏想到自己的城也会被淹，赵襄子派张孟谈说「唇亡齿寒」，三家联手挖开堤，大水反冲智伯大营，智家彻底出局。结尾写书的司马光爷爷点题：「才者，德之资也；德者，才之帅也」——才能像跑得飞快的赛车，人品和尊重才是握方向盘的司机。片中有一道互动题：如果你是韩康子，地给不给？开场是智伯被大浪浇成落汤鸡。标题写在小红书笔记的标题栏，家长和孩子在信息流里和封面一起看到。",
+ "control_last": true,
+ "ranking": [
+  {
+   "rank": 1,
+   "id": "t9",
+   "text": "有本事却输光，智伯差在哪？",
+   "flags": [],
+   "scores": {
+    "t_kid": 3.37,
+    "t_parent": 3.04
+   },
+   "score": 0.801,
+   "winrate": 0.644,
+   "winrate_by_q": {
+    "p_kid": 0.572,
+    "p_parent": 0.717
+   },
+   "combined": 0.723
+  },
+  {
+   "rank": 2,
+   "id": "t3",
+   "text": "本事满分、尊重0分，智伯输光了",
+   "flags": [],
+   "scores": {
+    "t_kid": 3.37,
+    "t_parent": 2.87
+   },
+   "score": 0.78,
+   "winrate": 0.657,
+   "winrate_by_q": {
+    "p_kid": 0.581,
+    "p_parent": 0.733
+   },
+   "combined": 0.718
+  },
+  {
+   "rank": 3,
+   "id": "t6",
+   "text": "要地给不给？2400年前的一道选择题",
+   "flags": [],
+   "scores": {
+    "t_kid": 2.89,
+    "t_parent": 2.98
+   },
+   "score": 0.734,
+   "winrate": 0.7,
+   "winrate_by_q": {
+    "p_kid": 0.746,
+    "p_parent": 0.653
+   },
+   "combined": 0.717
+  },
+  {
+   "rank": 4,
+   "id": "t1",
+   "text": "满级大佬智伯，为什么一夜输光？",
+   "flags": [],
+   "scores": {
+    "t_kid": 3.52,
+    "t_parent": 2.33
+   },
+   "score": 0.731,
+   "winrate": 0.648,
+   "winrate_by_q": {
+    "p_kid": 0.796,
+    "p_parent": 0.5
+   },
+   "combined": 0.69
+  },
+  {
+   "rank": 5,
+   "id": "t7",
+   "text": "韩、魏给了，赵不给，谁做对了？",
+   "flags": [],
+   "scores": {
+    "t_kid": 2.57,
+    "t_parent": 2.61
+   },
+   "score": 0.647,
+   "winrate": 0.602,
+   "winrate_by_q": {
+    "p_kid": 0.69,
+    "p_parent": 0.514
+   },
+   "combined": 0.625
+  },
+  {
+   "rank": 6,
+   "id": "t2",
+   "text": "《资治通鉴》第一案：智伯为啥一夜输光",
+   "flags": [],
+   "scores": {
+    "t_kid": 3.01,
+    "t_parent": 2.85
+   },
+   "score": 0.732,
+   "winrate": 0.507,
+   "winrate_by_q": {
+    "p_kid": 0.425,
+    "p_parent": 0.589
+   },
+   "combined": 0.62
+  },
+  {
+   "rank": 7,
+   "id": "t10",
+   "text": "孩子有点骄傲？给他讲讲智伯",
+   "flags": [],
+   "scores": {
+    "t_kid": 2.14,
+    "t_parent": 2.87
+   },
+   "score": 0.626,
+   "winrate": 0.549,
+   "winrate_by_q": {
+    "p_kid": 0.304,
+    "p_parent": 0.794
+   },
+   "combined": 0.588
+  },
+  {
+   "rank": 8,
+   "id": "t5",
+   "text": "砸缸的司马光，给孩子讲资治通鉴",
+   "flags": [],
+   "scores": {
+    "t_kid": 2.18,
+    "t_parent": 2.49
+   },
+   "score": 0.584,
+   "winrate": 0.559,
+   "winrate_by_q": {
+    "p_kid": 0.51,
+    "p_parent": 0.608
+   },
+   "combined": 0.571
+  },
+  {
+   "rank": 9,
+   "id": "t8",
+   "text": "当智伯遇到一个说「不给」的人",
+   "flags": [],
+   "scores": {
+    "t_kid": 2.73,
+    "t_parent": 2.25
+   },
+   "score": 0.623,
+   "winrate": 0.277,
+   "winrate_by_q": {
+    "p_kid": 0.31,
+    "p_parent": 0.244
+   },
+   "combined": 0.45
+  },
+  {
+   "rank": 10,
+   "id": "t4",
+   "text": "智伯：我是大象，谁敢咬我？",
+   "flags": [],
+   "scores": {
+    "t_kid": 2.96,
+    "t_parent": 0.68
+   },
+   "score": 0.455,
+   "winrate": 0.348,
+   "winrate_by_q": {
+    "p_kid": 0.565,
+    "p_parent": 0.131
+   },
+   "combined": 0.401
+  }
+ ],
+ "control": {
+  "id": "_ctrl",
+  "text": "《资治通鉴》卷一周纪一威烈王二十三年史事综述",
+  "rank_in_pool": 11,
+  "pool_size": 11,
+  "score": 0.155,
+  "winrate": 0.009,
+  "combined": 0.082,
+  "last": true
+ },
+ "pairs": {
+  "t1|t2": {
+   "p_kid": 0.965,
+   "p_parent": 0.375
+  },
+  "t1|t3": {
+   "p_kid": 0.735,
+   "p_parent": 0.225
+  },
+  "t1|t4": {
+   "p_kid": 0.735,
+   "p_parent": 0.975
+  },
+  "t1|t5": {
+   "p_kid": 0.715,
+   "p_parent": 0.325
+  },
+  "t1|t6": {
+   "p_kid": 0.485,
+   "p_parent": 0.33
+  },
+  "t1|t7": {
+   "p_kid": 0.61,
+   "p_parent": 0.51
+  },
+  "t1|t8": {
+   "p_kid": 0.94,
+   "p_parent": 0.88
+  },
+  "t1|t9": {
+   "p_kid": 0.865,
+   "p_parent": 0.195
+  },
+  "t1|t10": {
+   "p_kid": 0.915,
+   "p_parent": 0.2
+  },
+  "t1|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 0.99
+  },
+  "t2|t3": {
+   "p_kid": 0.225,
+   "p_parent": 0.31
+  },
+  "t2|t4": {
+   "p_kid": 0.39,
+   "p_parent": 0.97
+  },
+  "t2|t5": {
+   "p_kid": 0.525,
+   "p_parent": 0.49
+  },
+  "t2|t6": {
+   "p_kid": 0.18,
+   "p_parent": 0.38
+  },
+  "t2|t7": {
+   "p_kid": 0.26,
+   "p_parent": 0.605
+  },
+  "t2|t8": {
+   "p_kid": 0.75,
+   "p_parent": 0.92
+  },
+  "t2|t9": {
+   "p_kid": 0.155,
+   "p_parent": 0.34
+  },
+  "t2|t10": {
+   "p_kid": 0.735,
+   "p_parent": 0.245
+  },
+  "t2|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 1.0
+  },
+  "t3|t4": {
+   "p_kid": 0.43,
+   "p_parent": 0.99
+  },
+  "t3|t5": {
+   "p_kid": 0.535,
+   "p_parent": 0.56
+  },
+  "t3|t6": {
+   "p_kid": 0.235,
+   "p_parent": 0.585
+  },
+  "t3|t7": {
+   "p_kid": 0.365,
+   "p_parent": 0.76
+  },
+  "t3|t8": {
+   "p_kid": 0.825,
+   "p_parent": 0.965
+  },
+  "t3|t9": {
+   "p_kid": 0.61,
+   "p_parent": 0.595
+  },
+  "t3|t10": {
+   "p_kid": 0.765,
+   "p_parent": 0.41
+  },
+  "t3|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 0.995
+  },
+  "t4|t5": {
+   "p_kid": 0.51,
+   "p_parent": 0.045
+  },
+  "t4|t6": {
+   "p_kid": 0.37,
+   "p_parent": 0.02
+  },
+  "t4|t7": {
+   "p_kid": 0.385,
+   "p_parent": 0.07
+  },
+  "t4|t8": {
+   "p_kid": 0.685,
+   "p_parent": 0.195
+  },
+  "t4|t9": {
+   "p_kid": 0.5,
+   "p_parent": 0.01
+  },
+  "t4|t10": {
+   "p_kid": 0.755,
+   "p_parent": 0.035
+  },
+  "t4|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 0.865
+  },
+  "t5|t6": {
+   "p_kid": 0.32,
+   "p_parent": 0.4
+  },
+  "t5|t7": {
+   "p_kid": 0.335,
+   "p_parent": 0.59
+  },
+  "t5|t8": {
+   "p_kid": 0.65,
+   "p_parent": 0.845
+  },
+  "t5|t9": {
+   "p_kid": 0.425,
+   "p_parent": 0.415
+  },
+  "t5|t10": {
+   "p_kid": 0.66,
+   "p_parent": 0.245
+  },
+  "t5|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 1.0
+  },
+  "t6|t7": {
+   "p_kid": 0.495,
+   "p_parent": 0.625
+  },
+  "t6|t8": {
+   "p_kid": 0.915,
+   "p_parent": 0.94
+  },
+  "t6|t9": {
+   "p_kid": 0.75,
+   "p_parent": 0.39
+  },
+  "t6|t10": {
+   "p_kid": 0.895,
+   "p_parent": 0.29
+  },
+  "t6|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 1.0
+  },
+  "t7|t8": {
+   "p_kid": 0.87,
+   "p_parent": 0.865
+  },
+  "t7|t9": {
+   "p_kid": 0.61,
+   "p_parent": 0.19
+  },
+  "t7|t10": {
+   "p_kid": 0.865,
+   "p_parent": 0.255
+  },
+  "t7|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 0.99
+  },
+  "t8|t9": {
+   "p_kid": 0.19,
+   "p_parent": 0.03
+  },
+  "t8|t10": {
+   "p_kid": 0.55,
+   "p_parent": 0.045
+  },
+  "t8|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 0.975
+  },
+  "t9|t10": {
+   "p_kid": 0.82,
+   "p_parent": 0.335
+  },
+  "t9|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 1.0
+  },
+  "t10|_ctrl": {
+   "p_kid": 1.0,
+   "p_parent": 1.0
+  }
+ },
+ "calls": {
+  "requests": 121,
+  "cached": 0,
+  "input_tokens": 126631,
+  "output_tokens": 7183
+ }
+}
