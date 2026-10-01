@@ -30,7 +30,9 @@ class ShotPlan:
         self.f0 = self.f1 = 0
         self.pre = self.post = 0
         self.trans = None          # 进入本镜的转场：{"type", "dur", "params", "a", "b"}（a = 切点前多渲的帧，b = 切点后）
-        self.key = None
+        self.key = None            # 场景哈希（镜头内容）
+        self.skey = None           # 片段哈希（场景 + 相邻转场 + 编码模式）
+        self.chunks = []           # [(起帧, 止帧, 块哈希)]：片段再切成几块，各自编码缓存
         self.scene = None
 
     @property
@@ -93,7 +95,8 @@ def parse_shot_ids(arg):
     return [s.strip() for s in arg.split(",") if s.strip()] if arg else None
 
 
-def build_plan(sb_path, only=None, scale=1.0):
+def build_plan(sb_path, only=None, scale=1.0, mode=None):
+    mode = mode or ("preview" if scale < 1 else "normal")        # 编码模式：preview / normal / final（片段缓存按模式分开）
     sb_path = Path(sb_path).resolve()
     base = sb_path.parent
     errors, warnings = [], []
@@ -302,7 +305,22 @@ def build_plan(sb_path, only=None, scale=1.0):
         sp.key = hashlib.sha1(json.dumps(payload, sort_keys=True, ensure_ascii=False, default=str).encode("utf-8")).hexdigest()[:20]
     plan.warnings = warnings
     plan.engine_hash = eh
+    plan.mode = mode
     plan.ui = UI(store, tl, sb)
+    # 片段的哈希：本镜场景 + 进场转场要用的前一镜场景 + 下一镜的进场转场要用的下一镜场景 + 编码模式；片段再按 CHUNK_FRAMES 帧切成几块，
+    # 每块的哈希 = 片段哈希 + 帧范围 + 这块画面里的界面（字幕、标题）。
+    # 改一个镜头：它自己的各块变；它有进场转场时前一镜的各块变（尾部混着它的开头）；下一镜有进场转场时下一镜的各块变（开头混着它的收尾）；改一句字幕只有出现这句字幕的块变。
+    for i, sp in enumerate(shots):
+        prev = shots[i - 1] if sp.trans else None
+        nxt = shots[i + 1] if i + 1 < len(shots) and shots[i + 1].trans else None
+        payload = {"engine": eh, "mode": mode, "own": sp.key, "prev": prev.key if prev else None, "next": nxt.key if nxt else None}
+        sp.skey = hashlib.sha1(json.dumps(payload, sort_keys=True, ensure_ascii=False, default=str).encode("utf-8")).hexdigest()[:20]
+        n = max(1, round((sp.f1 - sp.f0) / C.CHUNK_FRAMES))
+        edges = [sp.f0 + round(k * (sp.f1 - sp.f0) / n) for k in range(n + 1)]
+        sp.chunks = []
+        for c0, c1 in zip(edges, edges[1:]):
+            ck = hashlib.sha1(json.dumps({"seg": sp.skey, "range": [c0, c1], "ui": plan.ui.fingerprint(c0, c1)}, sort_keys=True, ensure_ascii=False, default=str).encode("utf-8")).hexdigest()[:20]
+            sp.chunks.append((c0, c1, ck))
     return plan
 
 

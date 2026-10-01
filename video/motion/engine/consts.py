@@ -1,5 +1,6 @@
 """合成器的系列常量。全系列统一：改这里就是改整个系列的样子，要 Chris 同意（镜头参数照《节奏和特效》第三节，版式照《版式和画风》）。
 所有坐标都是设计坐标：1080×1920 的竖屏，预览时引擎自己按比例缩小，分镜表和特效函数永远用设计坐标。"""
+import os
 from pathlib import Path
 
 MOTION = Path(__file__).resolve().parents[1]          # video/motion
@@ -12,7 +13,7 @@ FONT_TITLE = FONT_DIR / "ZCOOLKuaiLe-Regular.ttf"     # 标题、砸字、贴纸
 FONT_BODY = FONT_DIR / "NotoSansSC-Bold.ttf"          # 字幕、正文字
 BGM = ASSETS / "audio" / "bgm_main.mp3"
 SERIES_STYLE = VIDEO / "series_style.json"
-OUT_ROOT = VIDEO / "out" / "motion"                   # 默认输出和缓存（video/out 不进 git）
+OUT_ROOT = Path(os.environ.get("MOTION_OUT_ROOT") or VIDEO / "out" / "motion")   # 默认输出和缓存（video/out 不进 git）；环境变量 MOTION_OUT_ROOT 可以改
 
 ENGINE_VERSION = 1    # 画面算法有改动、但代码哈希看不出来时手动加一（缓存整体作废）
 
@@ -48,7 +49,7 @@ BOUNCE_DUR, BOUNCE_AMP = 0.32, 18.0
 
 # ---------- 版式（版式和画风）----------
 TITLE_Y0, TITLE_Y1 = 90, 330           # 顶部问句标题条
-SUB_CENTER_Y = 1480                    # 字幕卡中心
+SUB_BOTTOM_Y = 1615                   # 字幕卡底边：贴着平台遮挡区上沿（最下面 300 → y 1620），一行、两行都从底边往上长（M6，09-30 Chris：原来中心 1480 经常挡人）
 SUB_CENTER_X = 520                     # 比画面中线偏左 20：15 字一行时卡片右边不压平台遮挡区（右边 140）
 SUB_FONT, SUB_LINE_CHARS, SUB_MAX_LINES = 50, 15, 2
 SUB_FADE = 0.10
@@ -79,11 +80,29 @@ STATIC_EPS = 0.03                      # 相邻两帧（1/8 分辨率灰度）�
 VOICE_MIN_DB = -55.0                   # 一句台词的时段里，配音轨道的 RMS 至少要有这么响
 
 # ---------- 编码 ----------
-CACHE_ENC = ["-c:v", "libx264", "-preset", "ultrafast", "-crf", "10", "-pix_fmt", "yuv420p", "-threads", "2"]
-ENC = {   # 成片：预览 / 默认整集 / 发布版
-    "preview": ["-c:v", "libx264", "-preset", "veryfast", "-crf", "24", "-pix_fmt", "yuv420p", "-b:a", "128k"],
-    "normal": ["-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-b:a", "192k"],
-    "final": ["-c:v", "libx264", "-preset", "slow", "-crf", "14", "-pix_fmt", "yuv420p", "-b:a", "256k"],
+# 每个镜头（含它的转场和界面）单独编码成一个片段，片段之间用 concat 拷贝流拼接：所有片段必须同一套编码参数（SPS / PPS 一样），每段从 IDR 开始、闭合 GOP（x264 默认），
+# 才能无缝拼接。所以参数只在这里写一份；预览 / 默认整集 / 发布版各一套，缓存按模式分开。
+VENC = {
+    "preview": ["-c:v", "libx264", "-preset", "veryfast", "-crf", "24", "-pix_fmt", "yuv420p"],
+    "normal": ["-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p"],
+    "final": ["-c:v", "libx264", "-preset", "slow", "-crf", "14", "-pix_fmt", "yuv420p"],
 }
+ABITRATE = {"preview": "128k", "normal": "192k", "final": "256k"}   # 音频整条单独混好，最后一次编码成 aac
+CHUNK_FRAMES = 50                      # 一个镜头的片段再按这么多帧切成几段并行渲染、各自缓存（每段从 IDR 开始，拼接照样无缝）：改一个长镜头不用一个进程从头渲到尾
+SEG_THREADS = 2                        # 每个片段的 x264 线程数（多个片段并行编码）
 COLOR_TAGS = ["-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv"]
 RGB2YUV = "scale=out_color_matrix=bt709:out_range=tv"   # BGR → YUV 用 bt709，和上面的标签一致
+
+# ---------- 空白检测（M7：画面中间一大块淡色空白、分层之间露出白缝）----------
+# 每个镜头抽几帧（只画背景 / 人物 / 前景，不含特效、调色、字幕和标题条），在 y 340–1400 里找「淡色 + 平涂」的大块或横贯画面的细缝。阈值用 tj01 成片（G 版）标定：
+# 0:19–0:31（s08–s11）、1:47–1:52（s42–s43）远山和地面之间那条淡色空白，1:58–2:18（s46–s53）山和水之间的空白 / 白缝都要报出来；
+# 天空（饱和度 55–90）、云（只占 0.5–0.9%）、淡色雪山（平均饱和度 28）不许误报。
+BLANK_Y0, BLANK_Y1 = 340, 1400         # 标题条以下、字幕区以上
+BLANK_SAMPLES = (0.15, 0.40, 0.65, 0.90)   # 每个镜头在这几个位置抽帧（避开转场混合的那几帧）
+BLANK_SAT_MAX, BLANK_VAL_MIN = 20, 150     # 淡色：饱和度 < 20/255（≈ 8%）、亮度 > 150（天空 55–90、淡色雪山 ≈ 28，空白带 5–12）
+BLANK_STD_MAX = 2.5                    # 平涂：1/4 分辨率灰度 5×5 的标准差 < 2.5（空白带 0.6–1.7；纸纹的天空 2.2–2.6，但饱和度已经把它挡掉了）
+BLANK_BLOCK_AREA = 0.012               # 大块：占整幅画面面积 ≥ 1.2%（云只有 0.5–0.9%）、碰到左 / 右画面边缘、高 ≥ 60 像素、宽 ≥ 画面 40%
+BLANK_BLOCK_H, BLANK_BLOCK_W = 60, 0.40
+BLANK_SEAM_AREA = 0.003                # 细缝：横贯画面（碰到左右两边）、高 8–120 像素、上沿笔直（≥ 90% 的列上沿在同一行 ±8 像素）、面积 ≥ 0.3%
+BLANK_SEAM_H = (8, 120)
+BLANK_SEAM_STRAIGHT = 0.90

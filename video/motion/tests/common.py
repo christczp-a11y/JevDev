@@ -9,7 +9,7 @@ from pathlib import Path
 TESTS = Path(__file__).resolve().parent
 MOTION = TESTS.parent
 ROOT = MOTION.parents[1]
-OUT = ROOT / "video" / "out" / "tests" / "motion"
+OUT = Path(os.environ.get("MOTION_TEST_OUT") or ROOT / "video" / "out" / "tests" / "motion")
 PROTO = TESTS / "proto17"
 FEATURE = TESTS / "feature_case"
 sys.path.insert(0, str(MOTION))

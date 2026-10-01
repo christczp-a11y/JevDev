@@ -218,6 +218,11 @@ class AssetStore:
         self.roots = [ASSETS] + [Path(r) for r in (roots or [])]
         self._cache = {}
 
+    def trim(self, max_bytes):
+        """缓存的图占的内存超过 max_bytes 就整个清掉（一个进程连着渲很多镜头时，别越攒越大）。"""
+        if sum(sp.arr.nbytes for sp in self._cache.values() if hasattr(sp, "arr")) > max_bytes:
+            self._cache.clear()
+
     def resolve(self, p):
         p = Path(p)
         if p.is_absolute():

@@ -8,18 +8,37 @@ from . import consts as C
 
 
 class FrameMetrics:
-    """逐帧收集：平均亮度、和上一帧的平均差。"""
+    """逐帧收集：平均亮度、和上一帧的平均差；另外留下第一帧和最后一帧的小图（片段之间的接缝处算差用）。"""
 
     def __init__(self):
         self.luma, self.diff = [], []
-        self._prev = None
+        self.first = self.last = None
 
     def push(self, bgr):
         small = cv2.resize(bgr, (bgr.shape[1] // 8, bgr.shape[0] // 8), interpolation=cv2.INTER_AREA)
-        g = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY).astype(np.float32)
+        g8 = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY)
+        g = g8.astype(np.float32)
         self.luma.append(float(g.mean()) / 255.0)
-        self.diff.append(0.0 if self._prev is None else float(np.abs(g - self._prev).mean()))
-        self._prev = g
+        self.diff.append(0.0 if self.last is None else float(np.abs(g - self.last.astype(np.float32)).mean()))
+        if self.first is None:
+            self.first = g8
+        self.last = g8
+
+    def save(self, path):
+        np.savez(path, luma=np.array(self.luma, np.float64), diff=np.array(self.diff, np.float64), first=self.first, last=self.last)
+
+
+def merge_metrics(parts):
+    """按顺序把每个片段的 (luma, diff, first, last) 接成整条；片段第一帧的差 = 和前一个片段最后一帧的差。"""
+    luma, diff, last = [], [], None
+    for p in parts:
+        d = list(p["diff"])
+        if last is not None:
+            d[0] = float(np.abs(p["first"].astype(np.float32) - last.astype(np.float32)).mean())
+        luma += list(p["luma"])
+        diff += d
+        last = p["last"]
+    return luma, diff
 
 
 def flicker(luma, fps=C.FPS, delta=C.FLASH_DELTA, max_per_sec=C.FLASH_MAX_PER_SEC):

@@ -54,23 +54,59 @@ def make_long():
     return d
 
 
+_LONG = None
+
+
+def long_dir():
+    """这一轮测试用的 3 分钟分镜表目录：第一次要用时按现在的小样重新生成（不复用上一轮留下的，小样改了就不对了）。"""
+    global _LONG
+    if _LONG is None:
+        common.ensure_proto_assets()
+        _LONG = make_long()
+    return _LONG
+
+
 @unittest.skipUnless(os.environ.get("SLOW") == "1", "慢测试：SLOW=1 才跑")
 class TestLong(unittest.TestCase):
     def test_three_minutes_hd_within_15_minutes(self):
-        common.ensure_proto_assets()
-        d = make_long()
+        d = long_dir()
         code, log, rep = common.render(d / "storyboard.json", d / "out", d / "cache")
         print("\n整集高清：", rep["frames"], "帧，", rep["duration"], "秒；用时", rep["timing"])
         self.assertEqual(code, 0, log)
         self.assertGreaterEqual(rep["duration"], 170)
         self.assertLessEqual(rep["timing"]["total_sec"], 15 * 60, rep["timing"])
         self.assertTrue(rep["checks"]["loudness"]["ok"], rep["checks"]["loudness"])     # 背景音乐（180 秒）循环也稳在 −16 LUFS
+        self.edit_and_rerender(d, "", 120)
+
+    def edit_and_rerender(self, d, mode, limit):
+        """截段：整集渲完以后改 1 个镜头、再改 2 个镜头，只有这几个片段重编码，总耗时 ≤ limit 秒（不含第一次）。"""
+        sb_path = d / "storyboard.json"
+        sb0 = json.loads(sb_path.read_text(encoding="utf-8"))
+        args = [mode] if mode else []
+        out, cache = d / ("out" + mode.replace("--", "_")), d / ("cache" + mode.replace("--", "_"))
+        for idx_list in ([30], [12, 45]):
+            sb = json.loads(json.dumps(sb0))
+            for i in idx_list:
+                sb["shots"][i]["grade"] = "gold" if sb["shots"][i].get("grade") != "gold" else "cool"
+            sb_path.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+            code, log, rep = common.render(sb_path, out, cache, *args)
+            print(f"\n改 {len(idx_list)} 个镜头（{mode or '默认'}）：", rep["timing"])
+            self.assertEqual(code, 0, log)
+            self.assertEqual(rep["timing"]["rendered_shots"], len(idx_list), rep["timing"])
+            self.assertLessEqual(rep["timing"]["total_sec"], limit, rep["timing"])
+        sb_path.write_text(json.dumps(sb0, ensure_ascii=False), encoding="utf-8")
+
+    def test_final_edit_one_shot_is_not_a_full_reencode(self):
+        """--final 发布版也走截段：第一次整集（慢编码）渲好以后，改 1–2 个镜头重出发布版不再整片重编码。"""
+        d = long_dir()
+        code, log, rep = common.render(d / "storyboard.json", d / "out_final", d / "cache_final", "--final")
+        print("\n整集发布版：", rep["duration"], "秒；用时", rep["timing"])
+        self.assertEqual(code, 0, log)
+        self.assertLessEqual(rep["timing"]["total_sec"], 15 * 60, rep["timing"])
+        self.edit_and_rerender(d, "--final", 150)
 
     def test_preview_speed_over_30_seconds(self):
-        d = common.OUT / "long"
-        if not (d / "storyboard.json").exists():
-            common.ensure_proto_assets()
-            d = make_long()
+        d = long_dir()
         code, log, rep = common.render(d / "storyboard.json", d / "out_prev", d / "cache_prev", "--preview")
         print("\n预览：", rep["duration"], "秒；用时", rep["timing"])
         self.assertEqual(code, 0, log)

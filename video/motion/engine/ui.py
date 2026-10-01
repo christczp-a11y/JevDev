@@ -1,5 +1,5 @@
 """每一帧最上面的固定界面：顶部标题条、水印、字幕 + 说话人标签。由合成器按时间线自动加，分镜表里不写。
-位置照《版式和画风》：标题条 y 90–330，字幕中心 y≈1480，水印右上角。字体只有两种：ZCOOL KuaiLe（标题）、Noto Sans SC Bold（字幕、标签、水印）。
+位置照《版式和画风》：标题条 y 90–330，字幕卡底边贴着平台遮挡区上沿 y 1615（一行、两行都从底边往上长，说话人标签跟着卡片走），水印右上角。字体只有两种：ZCOOL KuaiLe（标题）、Noto Sans SC Bold（字幕、标签、水印）。
 界面画在转场之后，转场（翻页、擦过）不会把标题条和字幕一起带走。
 """
 import json
@@ -65,9 +65,10 @@ class UI:
         self.houses = {}
         if C.SERIES_STYLE.exists():
             self.houses = json.loads(C.SERIES_STYLE.read_text(encoding="utf-8")).get("houses", {})
+        self.title_key = [sb.get("title"), sb.get("no"), sb.get("name")]
         self.title = self._title(sb)
         self.wm = sprite_from_pil(self._watermark(), self.S)
-        self._subs = {}       # 句号 → [(帧起, 帧止, Sprite, 正文中心比例, 是否首页, 是否末页)]
+        self._subs = {}       # 句号 → [(帧起, 帧止, Sprite, 是否首页, 是否末页)]
 
     # ---------- 标题条和水印 ----------
     def _title(self, sb):
@@ -139,11 +140,19 @@ class UI:
             out = []
             for fa, fb, lines, first, last in self.events(i):
                 who = str(ln["who"])
-                im, cy = subtitle_image(who.replace("+", "、"), lines, self._color(who.split("+")[0]), C.SUB_FONT)   # 齐声：标签写「甲、乙、丙」，用第一个人的颜色
-                sp = sprite_from_pil(im, self.S)
-                out.append((fa, fb, sp, cy / im.height, first, last))
+                im, _ = subtitle_image(who.replace("+", "、"), lines, self._color(who.split("+")[0]), C.SUB_FONT)   # 齐声：标签写「甲、乙、丙」，用第一个人的颜色
+                out.append((fa, fb, sprite_from_pil(im, self.S), first, last))
             self._subs[i] = out
         return self._subs[i]
+
+    def fingerprint(self, f0, f1):
+        """[f0, f1) 这段画面里界面（标题条、字幕）的内容：镜头缓存的哈希要用，改了台词、字幕分页、标题、说话人颜色就重编码这个片段。"""
+        subs = []
+        for i in self.speech_indices():
+            ln = self.tl.lines[i]
+            if round(ln["t1"] * C.FPS) >= f0 and round(ln["t0"] * C.FPS) < f1:
+                subs.append([str(ln["who"]), list(self._color(str(ln["who"]).split("+")[0])), self.events(i)])
+        return {"title": self.title_key, "subs": subs}
 
     def speech_indices(self):
         return [i for i in range(len(self.tl.lines)) if self.tl.is_speech(i)]
@@ -162,11 +171,11 @@ class UI:
             cv.blit(self.title, 60 - 8, C.TITLE_Y0 - 8, anchor=(0, 0))
         cv.blit(self.wm, C.W - 36, 28, anchor=(1.0, 0.0), alpha=0.9)
         fade = max(1, round(C.SUB_FADE * C.FPS))
-        for fa, fb, sp, cyr, first, last in self._active:
+        for fa, fb, sp, first, last in self._active:
             if fa <= f < fb:
                 al = 1.0
                 if first:
                     al = min(al, (f - fa + 1) / fade)
                 if last:
                     al = min(al, (fb - f) / fade)
-                cv.blit(sp, C.SUB_CENTER_X, C.SUB_CENTER_Y, alpha=al, anchor=(0.5, cyr))
+                cv.blit(sp, C.SUB_CENTER_X, C.SUB_BOTTOM_Y, alpha=al, anchor=(0.5, 1.0))     # 底边贴 y 1615，往上长

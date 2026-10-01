@@ -347,7 +347,8 @@ class Scene:
         return ev
 
     # ---------- 画一帧 ----------
-    def draw(self, cv: Canvas, t, t_abs):
+    def draw(self, cv: Canvas, t, t_abs, bare=False):
+        """画一帧。bare=True：只画背景 / 人物 / 前景三层，不画特效、不调色、不做甩镜模糊（空白检测用：特效的光芒、气泡本来就是淡色平涂，调色会把天空洗成灰白）。"""
         tt = max(t, 0.0)
         fa = next((a for a, d in self.freezes if a <= tt < a + d), None)          # 定格中：场景用 fa 那一刻的时间
         te = tt if fa is None else fa
@@ -357,11 +358,14 @@ class Scene:
         cv.zoom, cv.px, cv.py = zoom, px, py
         for e in self.bg:
             e.draw(cv, te, ta)
-        self._fx(cv, tt, te, fa, "back")
+        if not bare:
+            self._fx(cv, tt, te, fa, "back")
         for e in self.actors:
             e.draw(cv, te, ta)
         for e in self.fg:
             e.draw(cv, te, ta)
+        if bare:
+            return
         self._fx(cv, tt, te, fa, "front")
         self._grade(cv, ta)
         if bx > 1.5 or by > 1.5:                       # 甩镜的运动模糊
