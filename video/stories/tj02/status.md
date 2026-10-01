@@ -3,7 +3,7 @@
 > 主会话维护。流程见 `docs/自动化工作流-每集生成.md`；照 `video/stories/tj01/复盘.md`「下一集照着做」执行。只做动画，不做文案。
 > 最后更新：2026-10-01
 
-## 当前：第 7 步 reviewer 第 1 轮不通过 → 第 8 步导演改分镜表，改完 builder 截段重出（不用重查）
+## 当前：第 8 步已重出第 2 版成片（10-01）→ 等主会话 / reviewer 看 `check_v2/` 里 builder 记的遗留问题，再决定发 Chris 还是再改一轮
 
 ## 每一步的状态
 | 步 | 内容 | 状态 | 产出 | 备注 |
@@ -17,6 +17,7 @@
 | 5 | 画面素材 | **通过**（10-01，9bd4e10） | 素材清单 T1–T3、C1–C13（含新角色魏武侯 `wuh_`）、P1–P17、F1–F3、B1–B5 + 两张拼图；REGISTRY +44 行，25 张 tj01 复用素材范围改成「系列」；registry_check 0 | 主会话看过总览 `video/out/tj02/assets_new.png`。待补：青蛙荷叶是手工改绿的，Codex 额度 12:22 PDT 恢复后可重画 `frogs.txt`；魏文侯腰间小竹片上的弓在小图里有点像伞（特写用的 `props/wwh_slip` 没问题） |
 | 6 | 合成 | **完成**（10-01，builder；等第 7 步 reviewer） | `video/out/tj02/full/tj02_full.mp4`（1080×1920、30 帧、194.47 秒、5834 帧、157 MB）/ `.wav` / `.report.json`；预览 `video/out/tj02/full/preview/tj02_preview.mp4`；联系表 25 张 + 动作条 72 张 + `dwell.md`（72 镜 ⚠ 0）都在 `video/out/tj02/full/` | 合成器自动检查退出码 0：响度 −16.0 LUFS、真峰值 −1.8 dB、闪烁 0 处、静止 > 1.5 秒 0 处、33 句台词没有人声 0 句、空白 0 处（出片时 + `blank_scan.py` 对成片再扫，抽 389 帧）、合成器警告 0 条；storyboard_check 0 错（3 条朝向警告同第 4 步，有意）。冷启动 5.7 分钟（117 块）。出片时顺手修了 2 处引擎问题（见下「引擎改动」）；自检发现的、要导演改分镜表的问题见 builder 回复，我没动 `storyboard.json` |
 | 7 | 成片检查 | 第 1 轮**不通过**（10-01，Sonnet reviewer，第一版成片 139c3a3） | 复述没有看不懂的地方；停留时间 72 镜全过；自动检查全过 | 挡住交付：s35、s38 字幕板盖住虞人的嘴（M6 再犯，`[字幕]` 没拦住）；加上主会话和 builder 自检的 7 条（属性卡空圈、斗笠悬空、贴纸压帽檐、大臣手挡脸、s68–s72 山水露缝 M7、速度线压脸 M2 再犯）。小问题这一轮一起改：s42、s51 脸被字幕 / 名牌压；s51、s52 大块空白；s55 遥控器挡眼；s20、s54 放射光盖人；s01 水花贴车轮；s16 大臣被切。不改：环卫工老爷爷、武力 / 兵力数值（Chris 认可的剧本）、字幕淡入 1–2 帧重影、s65 字幕 0.3 秒空档 |
+| 8 | 按改好的分镜表截段重出（第 2 版成片） | **完成**（10-01，builder；等 reviewer 复查，不做重查的话主会话直接看） | `video/out/tj02/full/tj02_full.mp4`（1080×1920、30 帧、194.47 秒、5834 帧、160.1 MB）/ `.wav` / `.report.json`；第 1 版留 `tj02_full_v1.mp4 / .wav / .report.json`、`dwell_v1.md`；手机版 `video/out/tj02/full/魏文侯之约_第二集_v2_手机.mp4`（720×1280、27.4 MB、194.47 秒、−16.1 LUFS、峰值 −1.6 dB）；抽帧核 21 镜 × 3 张在 `check_v2/` | 合成器自动检查退出码 0：响度 −16.0 LUFS、真峰值 −1.8 dB、闪烁 0、静止 > 1.5 秒 0、台词没有人声 0 句、空白 0 处、合成器警告 0 条；`blank_scan.py` 对成片再扫 389 帧 0 处；dwell.md 72 镜 ⚠ 0；storyboard_check（工作区，按图脸框）0 错 37 警告（多是下巴 / 胡子尖进字幕区、擦边出界、3 条朝向有意）。**重渲**：第一轮 43 镜（29 镜缓存，240 秒渲染 / 总 258.7 秒）→ 导演又改了 s03、s04、s49、s58、s64、s72 后第二轮 9 镜（63 镜缓存，总 105.6 秒）；两轮都没改引擎；整步约 1 小时（渲染共 6 分钟，其余是抽帧看图）。抽帧核的结论见 builder 回复（需要导演看的：s68 山缝里一小条浅灰平条、s20 大臣甲手入场时盖脸颊、s01 水花还有几滴压轮子、s55 遥控器贴嘴边） |
 
 **第 6 步引擎改动（10-01，只影响 tj02；tj01 的分页 / 属性卡逐一对比过，一帧不变）**：① `fx/lists.py` 属性卡 `value` 太宽（「护林巡山」4 个汉字）时按格子宽度缩小，不再伸出卡片边；② `engine/ui.py` 字幕：连在一起的标点（「？！」）并进上一个分句，不再单独成 0 帧的页（第 14 句末尾的「！」原来根本没出现）；满行的下一个字是标点时让标点挂在上一行末尾，不放行首（原来第 14 句第二行以「，」开头）；`tests/test_units.py` 加 2 个测试。motion 全套测试 238 项过（3 项跳过）。
 
@@ -40,3 +41,10 @@
   抽帧（每秒 1 帧联系表 25 张 + 每镜头前 2 秒每秒 10 帧动作条 72 张 + 每镜停留时间表 `dwell.md`）：`.venv/Scripts/python video/motion/review_frames.py video/out/tj02/full/tj02_full.mp4 tj02 --out video/out/tj02/full`
   空白再扫成片（约 4 分钟，放后台）：`.venv/Scripts/python video/motion/blank_scan.py video/out/tj02/full/tj02_full.mp4 tj02`
   整集自动检查（2026-10-01）：响度 −16.0 LUFS、真峰值 −1.8 dB、闪烁 0 处、静止 > 1.5 秒 0 处、台词没有人声 0 句、空白 0 处（出片时检测 + `blank_scan.py` 对成片再扫 389 帧）、合成器警告 0 条，退出码 0；dwell.md 72 镜 ⚠ 0；motion 全套测试 `bash video/motion/tests/run_all.sh` 238 项过（约 5.5 分钟）
+- 第 8 步重出（第 2 版成片；分镜表改完后照这个顺序）：Git Bash、仓库根目录、`export PYTHONIOENCODING=utf-8`：
+  ① 分镜检查 `.venv/Scripts/python video/motion/storyboard_check.py video/stories/tj02/storyboard.json`（0 错）；
+  ② 旧成片改名留底：`cd video/out/tj02/full && mv tj02_full.mp4 tj02_full_v1.mp4 && mv tj02_full.wav tj02_full_v1.wav && mv tj02_full.report.json tj02_full_v1.report.json && mv dwell.md dwell_v1.md`；
+  ③ 整集（后台，缓存命中的镜头不重渲，第一轮 43 镜约 4.3 分钟，第二轮 9 镜约 1.8 分钟）：`nohup bash -c '.venv/Scripts/python video/motion/render.py tj02 --out video/out/tj02/full/build > video/out/tj02/full/build_log.txt 2>&1; echo EXIT=$? >> video/out/tj02/full/build_log.txt' &`，出来后 `cp build/tj02.mp4 / .wav / .report.json` 成 `tj02_full.*`；
+  ④ `.venv/Scripts/python video/motion/review_frames.py video/out/tj02/full/tj02_full.mp4 tj02 --out video/out/tj02/full`（联系表 + 动作条 + dwell.md）；`.venv/Scripts/python video/motion/blank_scan.py video/out/tj02/full/tj02_full.mp4 tj02`（后台，约 1.5 分钟）；
+  ⑤ 抽帧核：dwell.md 里查镜头起止，`ffmpeg -ss <开头 +0.12 / 中间 / 结尾 −0.07 秒> -i tj02_full.mp4 -frames:v 1 check_v2/<镜头号>_<1_start|2_mid|3_end>.png`（最后一镜结尾要取 194.30 秒以前）；
+  ⑥ 手机版（720×1280，两遍编码；码率 990k 出 27.4 MB，1020k 出 28.1 MB 超了）：`ffmpeg -y -i tj02_full.mp4 -vf scale=720:1280:flags=lanczos -c:v libx264 -preset slow -b:v 990k -pass 1 -an -f mp4 NUL`，再 `ffmpeg -y -i tj02_full.mp4 -vf scale=720:1280:flags=lanczos -c:v libx264 -preset slow -b:v 990k -pass 2 -maxrate 1485k -bufsize 2970k -pix_fmt yuv420p -r 30 -c:a aac -b:a 128k -movflags +faststart 魏文侯之约_第二集_v2_手机.mp4`。
