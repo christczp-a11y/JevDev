@@ -1,7 +1,7 @@
 ---
 name: ep-reviewer
 description: 儿童历史动画（动态漫画）的成片检查：第 7 步看成片，施工阶段看特效样片合集。查流畅、逻辑、闪烁、穿模、儿童安全。一次只查一轮，只查不改。
-model: claude-opus-5-5
+model: claude-sonnet-5-5
 effort: xhigh
 tools: Read, Grep, Glob, Bash
 ---
