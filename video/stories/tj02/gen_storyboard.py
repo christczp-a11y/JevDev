@@ -286,15 +286,15 @@ shot("s01", A(0, dt=-0.3), "wide",
      camera=cam(pan(dx=60), shake(D(0.5), 0.3, 10)))
 
 shot("s02", A(0, dt=1.8), "close",
-     "特写：魏文侯戴着斗笠在雨里往前冲，一团泥点「啪」地糊在他鼻尖上，他眨眨眼、憋着嘴顾不上擦（笑点）；司马光一开口，画面「咔」地定格，司马光从右下角的书页后面探出来，举着遥控器",
+     "特写：魏文侯戴着斗笠在雨里往前冲，一团泥点「啪」地糊在他鼻尖上，他眨眨眼、憋着嘴顾不上擦（笑点）；司马光一开口，画面「咔」地定格，司马光从右下角的书页后面探出来，举着遥控器（魏文侯在左边，脸朝画面里）",
      bg=road_bg(blur=6),
-     actors=[P("wwh", WWH, HI_RAIN, [700, 1940], 1100, "魏文侯戴斗笠披蓑衣，目光直直望着前方，泥点糊在鼻尖上，眨眨眼顾不上擦",
+     actors=[P("wwh", WWH, HI_RAIN, [380, 1940], 1100, "魏文侯戴斗笠披蓑衣，目光直直望着前方，泥点糊在鼻尖上，眨眨眼顾不上擦",
                acts=[act(D(0.25), swap="chars/wwh_hi_rain_mud.png")])],
-     fx=[rain(D(0.0)), st("pa", [890, 640], D(0.25), 120), fx("dust", D(0.25), mode="puff", pos=[740, 1060], size=110),
+     fx=[rain(D(0.0)), st("pa", [760, 640], D(0.25), 120), fx("dust", D(0.25), mode="puff", pos=[470, 1060], size=110),
          fx("lines_speed", D(0.0), dir="left", y0=420, y1=1320, dur=0.5),
          fx("freeze", A(1, dt=0.0), dur=1.8),
-         fx("page_edge", A(1, dt=0.05), y=1300, w=1900, peek="chars/sgm_hi_remote.png", peek_h=640, peek_x=260),
-         fx("remote_click", A(1, dt=0.5), pos=[440, 1060])],
+         fx("page_edge", A(1, dt=0.05), y=1300, w=1900, peek="chars/sgm_hi_remote.png", peek_h=640, peek_x=870),
+         fx("remote_click", A(1, dt=0.5), pos=[990, 1080])],
      camera=cam(push(0.03), punch(D(0.25), 0.08)))
 
 shot("s03", A(1, word="在暴风雨"), "medium",
@@ -853,13 +853,15 @@ shot("s52", A(30), "medium",
      camera=cam(push(0.03)))
 
 shot("s53", A(31), "medium",
-     "小竹片「叮」地一闪，变成一块巨大的红色马蹄形磁铁「咚」地砸进画面，上面写着「信用」",
+     "小竹片「叮」一闪，变成一块巨大的红色马蹄形磁铁「咚」地砸进画面，上面写着「信用」；司马光吓了一跳，扶着帽子瞪大眼睛",
      bg=study_bg(),
+     actors=[P("sgm", SGM, "chars/sgm_hi_shock.png", [305, 1760], 800, "司马光看着竹片变成大磁铁，吓了一跳，眼睛圆睁、一手扶着帽子",
+               acts=[act(D(0.85), "jump")])],
      fg=[desk(),
-         L("props/wwh_slip.png", [540, 960], 1.0, [0.5, 0.5], h=420, anim=[{"at": D(0.45), "dur": 0.1, "alpha": 0.0}]),
-         L("props/magnet.png", [540, 960], 1.0, [0.5, 0.5], w=520, enter={"type": "drop", "at": D(0.45), "dur": 0.4})],
-     fx=[fx("sparkle", D(0.0), area=[400, 700, 700, 1200], count=10), fx("dust", D(0.85), mode="puff", pos=[540, 1220], size=170),
-         st_text("信用", [540, 900], D(0.95), 100, color="white")],
+         L("props/wwh_slip.png", [700, 880], 1.0, [0.5, 0.5], h=400, anim=[{"at": D(0.45), "dur": 0.1, "alpha": 0.0}]),
+         L("props/magnet.png", [720, 880], 1.0, [0.5, 0.5], w=430, enter={"type": "drop", "at": D(0.45), "dur": 0.4})],
+     fx=[fx("sparkle", D(0.0), area=[560, 640, 860, 1120], count=10), fx("dust", D(0.85), mode="puff", pos=[710, 1110], size=150),
+         st_text("信用", [710, 830], D(0.95), 90, color="white")],
      sfx=[sfx("light_up", D(0.05)), sfx("slam_1", D(0.85))],
      camera=cam(push(0.04), shake(D(0.85), 0.3, 10)))
 
@@ -1038,13 +1040,13 @@ shot("s69", A(42), "wide",
 drift = {"at": D(0.0), "dur": 3.2, "ease": "linear", "dpos": [50, 0]}
 bb, bf = boat(540, 1530, 1500, drift)
 shot("s70", A(42, word="如何"), "medium",
-     "「如何在顺着大河往下走的大木船上」：船上，吴起（左）站着，年轻的魏武侯（右，魏家橙黄衣服、小冠，是侯不是王）指着两岸的大山得意地笑",
+     "「如何在顺着大河往下走的大木船上」：大木船上，吴起站在船头（右），年轻的魏武侯（左，在他后面；魏家橙黄衣服、小冠，是侯不是王）指着前方两岸的大山得意地笑",
      bg=[sky(False)] + ridges(470, 640, near=800, blur=3) + water(1180, 6, 0.7, 140) + [bb],
-     actors=[P("wq", "吴起", "chars/wq_stand.png", [300, 1400], 560, "吴起站着，看着魏武侯", anim=[dict(drift)]),
-             P("wuh", "魏武侯", "chars/wuh_point.png", [720, 1400], 600, "魏武侯（魏文侯的儿子）一手指着远处的大山，仰头得意地笑",
+     actors=[P("wq", "吴起", "chars/wq_stand.png", [760, 1400], 560, "吴起站在船头，双臂抱胸望着前方", anim=[dict(drift)]),
+             P("wuh", "魏武侯", "chars/wuh_point.png", [330, 1400], 600, "魏武侯（魏文侯的儿子）一手指着远处的大山，仰头得意地笑",
                anim=[dict(drift)], acts=[act(A(42, word="大木船"), "bounce")])],
      fg=[bf] + water(1520, 3, 1.0, 120),
-     fx=[plate("魏武侯", "魏文侯的儿子", [880, 380], D(0.1), size=0.55, house="魏家")],
+     fx=[plate("魏武侯", "魏文侯的儿子", [150, 380], D(0.1), size=0.55, house="魏家")],
      camera=cam(push(0.03)))
 
 shot("s71", A(42, word="给得意"), "close",
