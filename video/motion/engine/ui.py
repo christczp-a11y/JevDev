@@ -17,7 +17,14 @@ _STOPS = "，。！？；：、…—"
 def split_pages(text, per_line=C.SUB_LINE_CHARS, max_lines=C.SUB_MAX_LINES):
     """一句台词 → 若干页字幕，每页最多 max_lines 行、每行最多 per_line 个字；优先在标点处分页。"""
     limit = per_line * max_lines
-    clauses = [c for c in re.split(r"(?<=[，。！？；：、…—])", text) if c]
+    clauses = []
+    for c in re.split(r"(?<=[，。！？；：、…—])", text):
+        if not c:
+            continue
+        if clauses and not core(c):                   # 「？！」「……！」这种连着的标点归上一个分句，别单独成页（单独成页 = 0 帧，字幕上这个字就没了）
+            clauses[-1] += c
+        else:
+            clauses.append(c)
     pages, cur = [], ""
     for c in clauses:
         while len(c) > limit:                     # 一个分句就超长：硬切
@@ -47,6 +54,11 @@ def wrap_lines(page, per_line=C.SUB_LINE_CHARS):
         score = abs(i - len(page) / 2) - (2.0 if page[i - 1] in _STOPS else 0.0)
         if best is None or score < best[0]:
             best = (score, i)
+    if best is None:                                  # 满行的下一个字正好是标点：让标点挂在上一行末尾（那一行多一格），不放到下一行行首
+        for i in range(per_line + 1, per_line + 3):
+            if i < len(page) and page[i - 1] in _CLOSERS and page[i] not in _CLOSERS and len(page) - i <= per_line:
+                best = (0, i)
+                break
     if best is None:
         best = (0, per_line)
     return [page[:best[1]], page[best[1]:]]

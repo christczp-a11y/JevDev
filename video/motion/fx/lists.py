@@ -141,6 +141,14 @@ def _rows(p):
     return [r for r in p.get("rows", []) if isinstance(r, dict)]
 
 
+def _fit_value(text, size, col, max_w):
+    """打分数字的字图：默认字号放不下（比文字格还宽）就按比例缩小。"""
+    im = P.text_image(text, "title", size, col, 2, (120, 70, 20))
+    if im.width > max_w:
+        im = P.text_image(text, "title", max(8, int(size * max_w / im.width)), col, 2, (120, 70, 20))
+    return im
+
+
 def _scheck(p, shot=None):
     errs = []
     rows = _rows(p)
@@ -240,7 +248,8 @@ def stat_card(canvas, t, params, at):
         if r.get("value") is not None:                         # 打分：星星的位置改成一个大数字
             col = P.rgb(r.get("vcolor"), P.GOLD)
             vsz = int(66 * k * 1.65)
-            vsp = P.sprite(canvas, ("stat_value", r["value"], W, col), lambda r=r, col=col: P.edged(P.text_image(r["value"], "title", vsz, col, 2, (120, 70, 20)), 3, False))
+            vmax = (bx1 - bx0 + 36) * k                         # 字太宽（「护林巡山」这样的 4–5 个汉字）就缩到格子里放得下，不伸出卡片边
+            vsp = P.sprite(canvas, ("stat_value", r["value"], W, col), lambda r=r, col=col: P.edged(_fit_value(r["value"], vsz, col, vmax), 3, False))
             b = a - 0.22
             if b >= 0:
                 ps, psx, psy = P.pop_xy(b, 3.0, 9.0, 0.12)

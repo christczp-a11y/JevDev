@@ -1,4 +1,5 @@
 """不渲染、不花时间的单元测试：锚点、字幕分页、自动检查、混音、特效登记。"""
+import re
 import unittest
 
 import numpy as np
@@ -88,6 +89,19 @@ class TestSubtitles(unittest.TestCase):
     def test_short_line_is_one_page_one_line(self):
         self.assertEqual(split_pages("考考你！"), ["考考你！"])
         self.assertEqual(wrap_lines("要地，给不给？"), ["要地，给不给？"])
+
+    def test_wrap_hangs_punctuation_instead_of_line_head(self):
+        # tj02 第 14 句：30 个字的一页，第 16 个字是逗号；折在第 15 个字之后逗号会跑到第二行行首 → 让逗号挂在第一行末尾
+        page = "虽然喝酒很开心，但约定就是约定，怎么能贪图舒服就让别人苦等？"
+        self.assertEqual(len(page), 30)
+        self.assertEqual(wrap_lines(page), ["虽然喝酒很开心，但约定就是约定，", "怎么能贪图舒服就让别人苦等？"])
+
+    def test_trailing_punctuation_never_a_page_of_its_own(self):
+        text = "虽然喝酒很开心，但约定就是约定，怎么能贪图舒服就让别人苦等？！"
+        pages = split_pages(text)
+        self.assertEqual("".join(pages), text)
+        for p in pages:
+            self.assertTrue(re.search(r"\w", p), f"没有字的页：{p!r}")
 
     def test_wrap_prefers_punctuation(self):
         self.assertEqual(wrap_lines("宴会上，智伯当众取笑韩康子，羞辱替韩康子出主意的段规！"), ["宴会上，智伯当众取笑韩康子，", "羞辱替韩康子出主意的段规！"])
