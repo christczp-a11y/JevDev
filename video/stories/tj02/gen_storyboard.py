@@ -89,6 +89,18 @@ def water(y0=1180, n=4, depth=0.7, dy=140, amp=26, blur=0):
     return out
 
 
+def river_ridges(blur=0):
+    """大河的三层山（宽 1250，倍数 1.23）。量过的轮廓（原图 1016 宽）：最深的山谷 远 241/462、中 166/337、近 162/350；
+    顶到图边的平顶山尖 远 309–322 列、中 71–95 列、近 90–115 列。
+    远山 y 300–868：平顶山尖在 x≈295–311、y 300，藏在标题条（y 90–330）后面；
+    中山 y 640–1055：最深山谷 844，盖住远山底边 868；平顶山尖在画面左边外面（x < 0）；
+    近山 y 830–1261：最深山谷 1029，盖住中山底边 1055；底边 1261 藏在水面（1180 起，1230 以下不透明）后面。"""
+    out = [L("sets/jin_land/ridge_far.png", [540, 300], 0.2, [0.5, 0], w=1250),
+           L("sets/jin_land/ridge_mid.png", [490, 640], 0.3, [0.5, 0], w=1250),
+           L("sets/jin_land/ridge_near.png", [470, 830], 0.4, [0.5, 0], w=1250)]
+    return blurred(out, blur)
+
+
 def fore(y=1930):
     return L("sets/jin_land/fore.png", [540, y], 1.0, [0.5, 1], w=1850, repeat="x")
 
@@ -489,10 +501,10 @@ shot("s19", A(10, word="约好"), "medium",
 # ======================================================== 第 2 关：劝
 shot("s20", A(11), "wide",
      "第二关（大字）：大臣们急忙围上来七嘴八舌地劝（右），魏文侯（左）站着听",
-     bg=bq_bg() + [L("chars/wdc_c_urge.png", [800, 1500], 1.0, [0.5, 1], h=520, enter={"type": "slide_right", "at": D(0.3), "dur": 0.4}, note="大臣丙在后面着急地摆手劝"),
-                   L("chars/wdc_b_urge.png", [660, 1500], 1.0, [0.5, 1], h=530, enter={"type": "slide_right", "at": D(0.15), "dur": 0.4}, note="大臣乙在后面着急地摆手劝")],
+     bg=bq_bg() + [L("chars/wdc_c_urge.png", [960, 1500], 1.0, [0.5, 1], h=520, enter={"type": "slide_right", "at": D(0.3), "dur": 0.4}, note="大臣丙在后面着急地摆手劝"),
+                   L("chars/wdc_b_urge.png", [820, 1500], 1.0, [0.5, 1], h=530, enter={"type": "slide_right", "at": D(0.15), "dur": 0.4}, note="大臣乙在后面着急地摆手劝")],
      actors=[P("wwh", WWH, "chars/wwh_stand.png", [200, 1500], 525, "魏文侯站着听大臣们劝"),
-             P("dca", DC, "chars/wdc_a_urge.png", [540, 1500], 545, "大臣甲着急地摆手劝：主公！跟您约好的是管山林的老伯伯", enter={"type": "slide_right", "dur": 0.4})],
+             P("dca", DC, "chars/wdc_a_urge.png", [680, 1500], 545, "大臣甲着急地摆手劝：主公！跟您约好的是管山林的老伯伯", enter={"type": "slide_right", "dur": 0.4})],
      fg=bq_fg(2300, 1580),
      fx=[rain(), fx("rays", A(11, dt=0.05), pos=[540, 560]), fx("big_title", A(11, dt=0.05), text="第二关：约好的事，\n鸽还是不鸽？", pos=[540, 560], size=110, deco="none"),
          st_text("叽叽喳喳", [760, 860], D(0.9), 70)],
@@ -887,7 +899,7 @@ shot("s55", A(33), "medium",
      bg=study_bg(),
      actors=[P("sgm", SGM, "chars/sgm_hi_shock.png", [300, 1760], 800, "司马光吓了一跳，眼睛圆睁、一手扶着帽子，遥控器被吸走了")],
      fg=[desk(), L("props/magnet.png", [780, 1040], 1.0, [0.5, 0.5], w=400)] + papermen +
-        [L("props/remote.png", [540, 1390], 1.0, [0.5, 0.5], w=110, anim=[{"at": D(0.9), "dur": 0.35, "ease": "in", "pos": [660, 1180], "rot": 200}])],
+        [L("props/remote.png", [660, 1380], 1.0, [0.5, 0.5], w=110, anim=[{"at": D(0.9), "dur": 0.35, "ease": "in", "pos": [690, 1200], "rot": 200}])],
      fx=[st_text("嗡", [780, 760], D(0.05), 90), st("sou", [600, 1240], D(0.9), 80)],
      sfx=[sfx("pop", D(0.4 + 0.2 * k)) for k in range(4)] + [sfx("whoosh", D(0.9))],
      camera=cam(push(0.04)))
@@ -1013,7 +1025,7 @@ shot("s67", A(40, word="带孩子"), "medium",
      notes={"jev_allow": ["subject"], "why": "旁白对家长的行动呼吁（PITFALLS S25，剧本原话），台词里没有故事人物；画面是「一诺千金」字卡和天平，呼应前面 s45「比黄金还重」"})
 
 # ======================================================== 下集预告
-river = [sky(False)] + ridges(470, 640, near=870) + water(1180, 6, 0.7, 140)
+river = [sky(False)] + river_ridges() + water(1180, 6, 0.7, 140)
 
 
 def boat(cx, by, w, drift=None):
@@ -1045,7 +1057,7 @@ drift = {"at": D(0.0), "dur": 3.2, "ease": "linear", "dpos": [50, 0]}
 bb, bf = boat(540, 1530, 1500, drift)
 shot("s70", A(42, word="如何"), "medium",
      "「如何在顺着大河往下走的大木船上」：大木船上，吴起站在船头（右），年轻的魏武侯（左，在他后面；魏家橙黄衣服、小冠，是侯不是王）指着前方两岸的大山得意地笑",
-     bg=[sky(False)] + ridges(470, 640, near=870, blur=3) + water(1180, 6, 0.7, 140) + [bb],
+     bg=[sky(False)] + river_ridges(blur=3) + water(1180, 6, 0.7, 140) + [bb],
      actors=[P("wq", "吴起", "chars/wq_stand.png", [760, 1400], 560, "吴起站在船头，双臂抱胸望着前方", anim=[dict(drift)]),
              P("wuh", "魏武侯", "chars/wuh_point.png", [330, 1400], 600, "魏武侯（魏文侯的儿子）一手指着远处的大山，仰头得意地笑",
                anim=[dict(drift)], acts=[act(A(42, word="大木船"), "bounce")])],
@@ -1055,7 +1067,7 @@ shot("s70", A(42, word="如何"), "medium",
 
 shot("s71", A(42, word="给得意"), "close",
      "「给得意忘形的魏武侯」：魏武侯指着大山仰头哈哈大笑，得意极了",
-     bg=[sky(False, blur=4)] + ridges(470, 640, near=870, blur=4) + water(1180, 6, 0.7, 140, blur=4),
+     bg=[sky(False, blur=4)] + river_ridges(blur=4) + water(1180, 6, 0.7, 140, blur=4),
      actors=[P("wuh", "魏武侯", "chars/wuh_point.png", [540, 2200], 1380, "魏武侯指着远处的大山，仰头得意地哈哈大笑",
                acts=[act(A(42, word="得意"), "bounce")])],
      fx=[st_text("哈哈哈", [860, 560], A(42, word="得意", dt=0.1), 90)],
@@ -1063,7 +1075,7 @@ shot("s71", A(42, word="给得意"), "close",
 
 shot("s72", A(42, word="上一堂"), "close",
      "「上一堂震撼的大课？」：吴起回头皱着眉，伸手指向远方；一个大问号「啪」地弹出来（下集揭晓）",
-     bg=[sky(False, blur=5)] + ridges(470, 640, near=870, blur=5) + water(1180, 6, 0.7, 140, blur=5) + [boat(540, 1630, 2400)[0]],
+     bg=[sky(False, blur=5)] + river_ridges(blur=5) + water(1180, 6, 0.7, 140, blur=5) + [boat(540, 1630, 2400)[0]],
      actors=[P("wq", "吴起", "chars/wq_hi_point_l.png", [560, 1480], 990, "吴起站在船上回过头，皱着眉，一手伸食指指向远方，严肃",
                acts=[act(A(42, word="震撼"), "bounce")])],
      fg=[boat(540, 1630, 2400)[1]] + water(1500, 3, 1.0, 120),

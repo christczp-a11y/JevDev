@@ -4564,7 +4564,7 @@
      "img": "chars/wdc_c_urge.png",
      "depth": 1.0,
      "pos": [
-      800,
+      960,
       1500
      ],
      "anchor": [
@@ -4585,7 +4585,7 @@
      "img": "chars/wdc_b_urge.png",
      "depth": 1.0,
      "pos": [
-      660,
+      820,
       1500
      ],
      "anchor": [
@@ -4620,7 +4620,7 @@
      "who": "大臣",
      "img": "chars/wdc_a_urge.png",
      "pos": [
-      540,
+      680,
       1500
      ],
      "h": 545,
@@ -12306,8 +12306,8 @@
      "img": "props/remote.png",
      "depth": 1.0,
      "pos": [
-      540,
-      1390
+      660,
+      1380
      ],
      "anchor": [
       0.5,
@@ -12322,8 +12322,8 @@
        "dur": 0.35,
        "ease": "in",
        "pos": [
-        660,
-        1180
+        690,
+        1200
        ],
        "rot": 200
       }
@@ -13868,39 +13868,39 @@
      "depth": 0.2,
      "pos": [
       540,
-      470
+      300
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100
+     "w": 1250
     },
     {
      "img": "sets/jin_land/ridge_mid.png",
      "depth": 0.3,
      "pos": [
-      540,
+      490,
       640
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100
+     "w": 1250
     },
     {
      "img": "sets/jin_land/ridge_near.png",
      "depth": 0.4,
      "pos": [
-      540,
-      870
+      470,
+      830
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100
+     "w": 1250
     },
     {
      "img": "sets/jin_land/water.png",
@@ -14144,39 +14144,39 @@
      "depth": 0.2,
      "pos": [
       540,
-      470
+      300
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100
+     "w": 1250
     },
     {
      "img": "sets/jin_land/ridge_mid.png",
      "depth": 0.3,
      "pos": [
-      540,
+      490,
       640
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100
+     "w": 1250
     },
     {
      "img": "sets/jin_land/ridge_near.png",
      "depth": 0.4,
      "pos": [
-      540,
-      870
+      470,
+      830
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100
+     "w": 1250
     },
     {
      "img": "sets/jin_land/water.png",
@@ -14467,41 +14467,41 @@
      "depth": 0.2,
      "pos": [
       540,
-      470
+      300
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100,
+     "w": 1250,
      "blur": 3
     },
     {
      "img": "sets/jin_land/ridge_mid.png",
      "depth": 0.3,
      "pos": [
-      540,
+      490,
       640
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100,
+     "w": 1250,
      "blur": 3
     },
     {
      "img": "sets/jin_land/ridge_near.png",
      "depth": 0.4,
      "pos": [
-      540,
-      870
+      470,
+      830
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100,
+     "w": 1250,
      "blur": 3
     },
     {
@@ -14847,41 +14847,41 @@
      "depth": 0.2,
      "pos": [
       540,
-      470
+      300
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100,
+     "w": 1250,
      "blur": 4
     },
     {
      "img": "sets/jin_land/ridge_mid.png",
      "depth": 0.3,
      "pos": [
-      540,
+      490,
       640
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100,
+     "w": 1250,
      "blur": 4
     },
     {
      "img": "sets/jin_land/ridge_near.png",
      "depth": 0.4,
      "pos": [
-      540,
-      870
+      470,
+      830
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100,
+     "w": 1250,
      "blur": 4
     },
     {
@@ -15080,41 +15080,41 @@
      "depth": 0.2,
      "pos": [
       540,
-      470
+      300
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100,
+     "w": 1250,
      "blur": 5
     },
     {
      "img": "sets/jin_land/ridge_mid.png",
      "depth": 0.3,
      "pos": [
-      540,
+      490,
       640
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100,
+     "w": 1250,
      "blur": 5
     },
     {
      "img": "sets/jin_land/ridge_near.png",
      "depth": 0.4,
      "pos": [
-      540,
-      870
+      470,
+      830
      ],
      "anchor": [
       0.5,
       0
      ],
-     "w": 1100,
+     "w": 1250,
      "blur": 5
     },
     {
