@@ -46,6 +46,7 @@
  "bad_cover_icons_on_lead.json": "压在主角",
  "bad_cover_bubble_on_lead.json": "压在主角",
  "bad_cover_speaker.json": "正在说话",
+ "bad_dwell_bubble.json": "只看得见",
  "bad_typo_key.json": "不认识的字段",
  "bad_unknown_fx.json": "没有叫 'sparkel' 的特效"
 }

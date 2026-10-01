@@ -28,6 +28,12 @@
   [朝向]   按登记表的原图朝向（左 / 右 / 正面）算，flip 反过来：不是正面的人物要面向说话的人（有人在这一镜说话）；旁白的镜头面向同镜头里的别人；一个人站着背对全场警告
   [人名牌] 每个人物（不含司马光；按 who，没写按 id）第一次出场的那个镜头里，要有一个人名牌特效（name_plate；参数里带人名就按人名对，没带就按数量对）；
            人名牌看得清的时间 < 1.5 秒报错（按分镜表的时间算：落下的 0.42 秒不算，写了 dur 的话 dur 以后的淡出也不算）
+  [停留]   每一镜停得够（PITFALLS M9、M10，Chris：「不要一下就跳走了导致信息展示不够」）：
+           ① 讲事的特效（泡泡、属性卡、任务卡 / 人物卡、地图 / 城 / 箭头、砸字、大字章、清单、进度物、屏幕；类型列在 DWELL_KINDS / DWELL_EXTRA_TYPES）从「东西全部出完」（入场动画结束，
+              各类型要多久见 fx_enter：属性卡等最后一行亮、清单等最后一条到位、砸字等最后一个字落地；水位涨、箭头画是「演过程」的，从弹出 / 开始画算起）到镜头结束、
+              或它自己的 dur 结束（淡出不算）看得见 < 2 秒 = 错；
+           ② 镜头 < 1.5 秒、又不在快切连段里（连续 ≥ 2 个 0.8–1.2 秒的镜头）= 警告（< 0.8 秒是 [长度] 的错，不重复报）
+           review_frames.py 用同一套算法出「每镜停留时间表」dwell.md（第 7 步 reviewer 逐镜对着看）
   [翻转]   交领人物不许翻转（PITFALLS M1，翻过来衣襟就成了左衽）：chars/ 下的图 flip: true 报错；例外：司马光（sgm_，圆领）、皮影（文件名含 shadow）、登记表备注里写了「可翻转」的图、道具 / 物件
   [压脸]   贴纸 / 砸字 / 水花 / 闪粉 / 纸屑的框和任何人物的脸框重叠（脸框面积的 5% 以上）报错（M4）；写了 follow 的贴纸（挂在人物身上）不算；
            闪粉 / 纸屑没写 avoid = 特效包自动避开脸，不查；写了 avoid: [] 关掉、或者写的框没盖住脸，而粒子的范围（闪粉 area，纸屑整个画面）碰到脸就报错
@@ -77,6 +83,7 @@ from engine.plan import TOP_KEYS  # noqa: E402
 from engine.scene import ACTOR_KEYS, ACTS, LAYER_KEYS, SHOT_KEYS, Scene, SceneError  # noqa: E402
 from engine.sprites import AssetError, AssetStore  # noqa: E402
 from engine.timeline import AnchorError, Timeline  # noqa: E402
+from sfx import timing as T  # noqa: E402   特效的时间常数（砸字落地间隔、清单每条间隔、箭头画多久……），和特效包共用
 
 FPS = C.FPS
 REGISTRY = C.ASSETS / "REGISTRY.md"
@@ -142,6 +149,21 @@ SUBJECT_LATER_WINS = 0.85                                                  # 主
 STUB_FX = ("sticker", "flash", "name_plate", "smash", "big_title", "checklist", "stat_card", "map", "progress", "kaoni", "person_card",
            "card_quest", "card_fail", "card_title", "card_mvp", "bubble", "splash", "sparkle", "confetti", "lines_focus", "lines_radial", "lines_speed", "dust", "rays")           # --no-plugins 时认得的名字（和特效包 fx/ 里登记的一致）；有插件时以插件为准
 STUB_TRANSITIONS = ("dissolve", "flash")
+# [停留]（M9、M10）
+DWELL_MIN = 2.0                                     # 讲事的特效「出完以后」在镜头里至少看得见这么久
+DWELL_SHOT_MIN = 1.5                                # 镜头短于这个、又不在快切连段里 = 警告
+FAST_RUN_MIN = 2                                    # 快切连段：连续这么多个 0.8–1.2 秒的镜头
+DWELL_KINDS = {"bubble", "stat", "gamecard", "map", "slam", "title", "list", "gauge"}     # 讲事的特效类别（FX_KINDS 的类别：泡泡 / 属性卡 / 任务卡 / 地图 / 砸字 / 大字章 / 清单 / 进度物）
+DWELL_EXTRA_TYPES = {"screen", "person_card"}       # 类别对不上（FX_KINDS 里归 other / ritual）、但也是讲事的：屏幕（放一张图）、人物卡
+DWELL_ENTER_DEFAULT = 0.5                           # 不认识的新类型：当作 0.5 秒出完
+# 入场动画要多久（从 at 起，东西第一次完整出现在最终的大小上；不算落地后几下弹跳、也不算淡出）。按特效包 fx/ 里的动画写的，动画改了要跟着改这里：
+DWELL_ENTER_FIXED = {"bubble": 0.15,                # desk.py：弹簧弹出，0.125 秒就到了最终大小（0.25 秒冲到最大再回落）
+                     "screen": 0.4,                 # desk.py：图从中间往两边展开 0.4 秒
+                     "person_card": 0.6,            # cards.py：翻着飞进来 0.55 秒 + 落地一弹
+                     "map": 0.4,                    # maps.py：0.4 秒放大到位
+                     "map_city": 0.35,              # maps.py：0.16 秒落地 + 城名牌弹出
+                     "map_arrow": 0.2}              # maps.py：虚线画 T.DRAW_DUR（0.8）秒。箭头是「演过程」的：从开始画算起至少 2 秒（画 0.8 + 停 1.2），镜头在画完以前就切走会直接报错
+DWELL_ENTER_KIND = {"bubble": 0.25, "gamecard": 0.6, "map": 0.4}       # 按类别兜底（card_quest 这类还没在 fx/ 里登记的）；别的类别按个数算，见 fx_enter
 NAME_HINT_SKIP = {"type", "sfx", "at", "note", "dur", "layer"}
 
 
@@ -161,6 +183,7 @@ class Report:
     def __init__(self):
         self.errors, self.warnings, self.info = [], [], []
         self.times = {}
+        self.dwell = []                       # 每镜停留时间表的原料，见 dwell_rows
         self._seen = set()
 
     def _add(self, lst, level, tag, shot, msg):
@@ -834,6 +857,104 @@ def check_plate_time(sh, out, rep):
                               f"{'、dur 以后的淡出' if 'dur' in e else ''}），要至少 {PLATE_MIN_CLEAR:g} 秒：at 往前挪、去掉 dur，或者把镜头留长一点", sh.id)
 
 
+def fx_enter(typ, kind, e):
+    """讲事的特效从 at 起到「东西全部出完」要几秒（见 DWELL_ENTER_FIXED 的说明）：一件一件出来的，等最后一件出完。"""
+    if typ in DWELL_ENTER_FIXED:
+        return DWELL_ENTER_FIXED[typ]
+    if kind == "slam":                                           # 砸字：每个字下落 SLAM_FALL，第 k 个字晚 SLAM_STAG × k 落地；等最后一个字落地
+        return T.SLAM_FALL + T.SLAM_STAG * (max(len(str(e.get("text", ""))), 1) - 1)
+    if kind == "title":                                          # 大字章：0.16 秒落地，每多一行晚 0.06 秒；等最后一行落地
+        return 0.16 + 0.06 * (max(len(str(e.get("text", "")).split("\n")), 1) - 1)
+    if kind == "list":                                           # 清单：每条晚 LIST_GAP 弹出（0.28 秒滑到位）；等最后一条到位
+        items = e.get("items")
+        return T.LIST_GAP * (max(len(items) if isinstance(items, list) else 1, 1) - 1) + 0.28
+    if kind == "stat":                                           # 属性卡：卡 0.45 秒滑入，之后每一行晚 gap 亮；最后一行的数字 / 星星再出 0.22 秒起（星星每颗晚 0.11 秒）
+        rows = e.get("rows") if isinstance(e.get("rows"), list) and e.get("rows") else [{}]
+        last = rows[-1] if isinstance(rows[-1], dict) else {}
+        stars = 0 if last.get("value") is not None else max(int(last.get("stars", 0)) - 1, 0)
+        return 0.45 + float(e.get("gap", T.STAT_GAP)) * (len(rows) - 1) + 0.22 + 0.11 * stars
+    if kind == "gauge":                                          # 进度物：弹出 0.25 秒（pop_in 默认有）。水位涨的过程就是在讲事（看着水涨），和箭头一样从弹出算起，不等涨到头
+        return 0.25 if e.get("pop_in", True) else 0.0
+    return DWELL_ENTER_KIND.get(kind, DWELL_ENTER_DEFAULT)
+
+
+def dwell_label(e):
+    for k in ("text", "name"):
+        if isinstance(e.get(k), str) and e[k]:
+            return e[k].replace("\n", " ")
+    items = e.get("items")
+    return "、".join(str(x) for x in items) if isinstance(items, list) else ""
+
+
+def dwell_items(sh, fxs):
+    """这一镜里每个讲事的特效看得见多久：[{type, label, rel_at, enter, visible, need_len}]。
+    看得见 = 从「出完」（at + 入场时间；at 在镜头开始之前的话从镜头开头算）到镜头结束、或 at + dur（淡出不算）。"""
+    items = []
+    for kind, at, e in fxs:
+        typ = str(e.get("type"))
+        if kind not in DWELL_KINDS and typ not in DWELL_EXTRA_TYPES:
+            continue
+        if at > sh.t1 + AT_LATE_TOL:
+            continue                                      # 在镜头结束之后才出现：[锚点] 已经报了
+        try:
+            enter = float(fx_enter(typ, kind, e))
+        except (TypeError, ValueError, AttributeError, IndexError):
+            enter = DWELL_ENTER_DEFAULT                   # 参数写坏了：特效自己的 check 去报
+        d = e.get("dur")
+        end = min(sh.t1, at + float(d)) if isinstance(d, (int, float)) and not isinstance(d, bool) else sh.t1
+        rel_at = max(at - sh.t0, 0.0)
+        items.append(dict(type=typ, label=dwell_label(e), rel_at=rel_at, enter=enter, has_dur="dur" in e,
+                          visible=max(end - max(at + enter, sh.t0), 0.0), need_len=rel_at + enter + DWELL_MIN))
+    return items
+
+
+def dwell_ok(it):
+    return it["visible"] >= DWELL_MIN - 1.5 / FPS
+
+
+def check_dwell(sh, out, rep):
+    """M9、M10：讲事的特效出完以后要看得见 ≥ 2 秒。"""
+    for it in out["dwell"]:
+        if dwell_ok(it):
+            continue
+        name = f"{it['type']}「{it['label']}」" if it["label"] else it["type"]
+        rep.err("停留", f"{name} 从 {it['rel_at']:.1f} 秒起，入场 {it['enter']:.2f} 秒后，在这个镜头里只看得见 {it['visible']:.1f} 秒"
+                        f"{'（写了 dur）' if it['has_dur'] else ''}，讲事的画面要至少 {DWELL_MIN:g} 秒（M9、M10）：at 挪到镜头开头 / 这句一开口，"
+                        f"{'dur 写长一点（或去掉）、' if it['has_dur'] else ''}镜头留到至少 {it['need_len']:.1f} 秒（现在 {sh.dur:.1f}），或者少出几样", sh.id)
+
+
+def fast_run_ids(shots):
+    """快切连段里的镜头 id：连续 ≥ FAST_RUN_MIN 个 0.8–1.2 秒的镜头（同 [长度] 的快切范围）。"""
+    ids, run = set(), []
+    for sh in list(shots) + [None]:
+        if sh is not None and SHOT_MIN - 1.5 / FPS <= sh.dur <= FAST_MAX + 1.5 / FPS:
+            run.append(sh)
+            continue
+        if len(run) >= FAST_RUN_MIN:
+            ids |= {s.id for s in run}
+        run = []
+    return ids
+
+
+def is_short_alone(sh, fast_ids):
+    """镜头 < 1.5 秒、又不在快切连段里（< 0.8 秒是 [长度] 的错，这里不算）。"""
+    return SHOT_MIN - 1.5 / FPS <= sh.dur < DWELL_SHOT_MIN - 1e-6 and sh.id not in fast_ids
+
+
+def check_short_shots(shots, rep):
+    fast = fast_run_ids(shots)
+    for sh in shots:
+        if is_short_alone(sh, fast):
+            rep.warn("停留", f"只有 {sh.dur:.2f} 秒，短于 {DWELL_SHOT_MIN:g} 秒、又不在快切连段里（连续 {FAST_RUN_MIN} 个以上 0.8–1.2 秒的镜头）：一般镜头至少 {DWELL_SHOT_MIN:g} 秒，"
+                            "短的只许在高潮快切里（M10）；留长、并到相邻镜头，或者和前后的镜头一起做成快切", sh.id)
+
+
+def dwell_rows(shots, outs):
+    """每镜停留时间表的原料（review_frames.py 的 dwell.md 用）：[{id, t0, t1, dur, fast, short, fx: dwell_items}]。"""
+    fast = fast_run_ids(shots)
+    return [dict(id=sh.id, t0=sh.t0, t1=sh.t1, dur=sh.dur, fast=sh.id in fast, short=is_short_alone(sh, fast), fx=(outs.get(sh.id) or {}).get("dwell", [])) for sh in shots]
+
+
 def check_flip(rep, sid, where, ref, who):
     """M1：交领人物不许翻转。"""
     if not ref or not ref.rel or not ref.rel.startswith("chars/") or not ref.file:
@@ -1177,6 +1298,8 @@ def analyse_shot(sh, ctx, rep, spec, out):
         check_subtitle_zone(sh, out, cam, tl, rep)
         check_cover(sh, out, cam, tl, rep)
     check_plate_time(sh, out, rep)
+    out["dwell"] = dwell_items(sh, fxs)
+    check_dwell(sh, out, rep)
     out["events"] = events
     out["cover"] = cover
     out["moving"] = moving
@@ -1453,6 +1576,8 @@ def run(sb_arg, registry=REGISTRY, no_plugins=False, assets_root=None):
             check_facing(sh, o, tl, rep)
             flashes += [(t, sh.id, e) for k, t, e in o["fx"] if k == "flash"]
         check_lengths_and_rate(shots, tl, rep, stats)
+        check_short_shots(shots, rep)
+        rep.dwell = dwell_rows(shots, outs)
         check_changes(shots, outs, rep, stats)
         check_flashes(flashes, rep)
         stats["flashes"] = len(flashes)

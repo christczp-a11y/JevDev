@@ -16,7 +16,7 @@ OUT = common.OUT / "check_case"
 GOOD = TESTS / "good_storyboard.json"
 EXPECT = json.loads((TESTS / "check_expect.json").read_text(encoding="utf-8"))
 BAD = sorted(TESTS.glob("bad_*.json"))
-TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌", "翻转", "压脸", "集中线", "字幕", "遮挡"]
+TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌", "翻转", "压脸", "集中线", "字幕", "遮挡", "停留"]
 
 _spec = importlib.util.spec_from_file_location("make_case", CASE / "make_case.py")
 make_case = importlib.util.module_from_spec(_spec)
@@ -280,6 +280,123 @@ class TestSubtitleAndCover(unittest.TestCase):
         p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
         rep, _ = check(p)
         self.assertEqual([e for e in rep.errors if e["tag"] in ("遮挡", "压脸")], [], text(rep))
+
+
+class TestDwell(unittest.TestCase):
+    """M9、M10：讲事的特效出完以后要看得见 ≥ 2 秒；镜头 < 1.5 秒又不在快切连段里 = 警告。用 s13（智伯一个人，3.7 秒，没有特效）当试验场。"""
+
+    def _run(self, name, sb):
+        p = OUT / f"{name}.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        return check(p)[0]
+
+    def _s13_dur(self):
+        rep, _ = check(GOOD)
+        t0, t1 = rep.times["s13"]
+        return t1 - t0
+
+    def _with_bubble(self, visible, **extra):
+        """s13 里放一个泡泡（出完要 0.15 秒），让它出完以后刚好看得见 visible 秒（再长的话镜头就是 3.7 秒）。"""
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s13 = next(s for s in sb["shots"] if s["id"] == "s13")
+        s13["fx"].append({"type": "bubble", "text": "哼", "pos": [700, 1000], "w": 600, "at": make_case.L(12, round(self._s13_dur() - 0.15 - visible, 3)), **extra})
+        return self._run(f"dwell_bubble_{visible}", sb)
+
+    @staticmethod
+    def _dwell(rep):
+        return [e for e in rep.errors if e["tag"] == "停留"]
+
+    def test_bubble_cut_away_after_1_2_seconds_is_an_error(self):
+        rep = self._with_bubble(1.2)
+        errs = self._dwell(rep)
+        self.assertEqual([e["shot"] for e in errs], ["s13"], text(rep))
+        self.assertIn("bubble", errs[0]["msg"])
+        self.assertIn("只看得见 1.2 秒", errs[0]["msg"])
+        self.assertEqual([e for e in rep.errors if e["tag"] != "停留"], [], text(rep))
+
+    def test_bubble_that_stays_2_5_seconds_is_fine(self):
+        rep = self._with_bubble(2.5)
+        self.assertEqual(rep.errors, [], text(rep))
+        self.assertEqual([w for w in rep.warnings if w["tag"] == "停留"], [])
+
+    def test_boundary_is_two_seconds(self):
+        self.assertTrue(self._dwell(self._with_bubble(1.8)), "1.8 秒应该报")
+        self.assertEqual(self._dwell(self._with_bubble(2.0)), [], "2.0 秒刚好够")
+
+    def test_dur_ends_the_visible_time_and_the_fade_does_not_count(self):
+        short = self._with_bubble(3.0, dur=1.5)                       # 镜头里还能再看 3 秒，但自己写了 dur 1.5 秒（弹出 0.15 秒）：只看得见 1.35 秒
+        errs = self._dwell(short)
+        self.assertEqual(len(errs), 1, text(short))
+        self.assertIn("只看得见 1.4 秒", errs[0]["msg"])
+        self.assertIn("写了 dur", errs[0]["msg"])
+        self.assertEqual(self._dwell(self._with_bubble(3.0, dur=2.2)), [])      # 2.2 − 0.15 = 2.05：够（淡出的 0.3 秒不算也不扣）
+
+    def test_a_slam_waits_for_its_last_letter_to_land(self):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s13 = next(s for s in sb["shots"] if s["id"] == "s13")
+        s13["fx"].append({"type": "smash", "text": "不给不给", "size": 150, "pos": [540, 700], "at": make_case.L(12, 0.0)})
+        rep = self._run("dwell_slam", sb)
+        row = next(r for r in rep.dwell if r["id"] == "s13")
+        self.assertAlmostEqual(row["fx"][0]["enter"], 0.14 + 0.17 * 3, places=3)             # 4 个字：最后一个字比第一个晚 3 × 0.17 秒落地
+        self.assertAlmostEqual(row["fx"][0]["visible"], self._s13_dur() - 0.65, places=2)
+        self.assertEqual(self._dwell(rep), [])                                               # 3.7 − 0.65 = 3.05 秒，够
+
+    def test_stickers_and_other_non_storytelling_fx_are_not_checked_here(self):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s13 = next(s for s in sb["shots"] if s["id"] == "s13")
+        s13["fx"].append({"type": "sticker", "text": "！", "pos": [840, 700], "size": 180, "at": make_case.L(12, 3.2)})      # 贴纸 0.5 秒就切走：是反应，不是讲事
+        rep = self._run("dwell_sticker", sb)
+        self.assertEqual(rep.errors, [], text(rep))
+
+    def _split(self, name, line, cuts):
+        """cuts = [(要切的镜头号, 切在这句台词开始后几秒)]：切出来的后半段叫「原镜头号 + b」。"""
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        for sid, dt in cuts:
+            make_case.split_shot(sb, sid, line, dt)
+        return self._run(name, sb)
+
+    def test_isolated_short_shot_is_a_warning_not_an_error(self):
+        dur = self._s13_dur()
+        rep = self._split("dwell_short", 12, [("s13", round(dur - 1.3, 3))])               # s13 = 2.4 + 1.3 秒
+        self.assertEqual(rep.errors, [], text(rep))
+        warns = [w for w in rep.warnings if w["tag"] == "停留"]
+        self.assertEqual([w["shot"] for w in warns], ["s13b"], warns)
+        self.assertIn("短于 1.5 秒", warns[0]["msg"])
+
+    def test_short_shots_inside_a_fast_run_are_fine(self):
+        rep = self._split("dwell_fast_run", 7, [("s08", 0.9), ("s08b", 1.8)])                        # s08 = 0.9 + 0.9 + 0.9 秒：连续 3 个快切镜头
+        self.assertEqual([w for w in rep.warnings if w["tag"] == "停留"], [], rep.warnings)
+        self.assertEqual([e for e in rep.errors if e["tag"] == "停留"], [])
+        rows = {r["id"]: r for r in rep.dwell}
+        self.assertTrue(all(rows[k]["fast"] and not rows[k]["short"] for k in ("s08", "s08b", "s08bb")), rows.keys())
+
+    def test_a_single_fast_shot_is_not_a_run(self):
+        dur = self._s13_dur()
+        rep = self._split("dwell_lone_fast", 12, [("s13", round(dur - 0.9, 3))])           # 前一半 2.8 秒，后一半 0.9 秒：只有它一个快切镜头
+        self.assertEqual([w["shot"] for w in rep.warnings if w["tag"] == "停留"], ["s13b"])
+
+    def test_shot_under_0_8_seconds_is_left_to_the_length_check(self):
+        dur = self._s13_dur()
+        rep = self._split("dwell_too_short", 12, [("s13", round(dur - 0.6, 3))])
+        self.assertTrue(any(e["tag"] == "长度" for e in rep.errors))
+        self.assertEqual([w for w in rep.warnings if w["tag"] == "停留"], [], "短于 0.8 秒是 [长度] 的错，不再报警告")
+
+    def test_dwell_table_for_review_frames(self):
+        import review_frames as RF
+        rep = self._with_bubble(1.2)
+        ranges = [(sid, 0, round(t0 * 30), round(t1 * 30)) for sid, (t0, t1) in rep.times.items()]
+        md, n_bad = RF.dwell_markdown("tj01", ranges, {r["id"]: r for r in rep.dwell}, 30)
+        self.assertEqual(n_bad, 1, md)
+        self.assertIn("| s13 |", md)
+        row = next(l for l in md.splitlines() if l.startswith("| s13 |"))
+        self.assertIn("泡泡「哼」：看得见 1.2 秒 ⚠", row)
+        self.assertTrue(row.rstrip().endswith("⚠ |"))
+        self.assertEqual(sum(1 for l in md.splitlines() if l.startswith("| s") and l.rstrip().endswith("⚠ |")), 1)
+        good_rep, _ = check(GOOD)
+        ranges = [(sid, 0, round(t0 * 30), round(t1 * 30)) for sid, (t0, t1) in good_rep.times.items()]
+        md, n_bad = RF.dwell_markdown("tj01", ranges, {r["id"]: r for r in good_rep.dwell}, 30)
+        self.assertEqual(n_bad, 0, md)
+        self.assertIn("清单「高大、力气、才艺」", md)                                          # s05 的清单：3 条，等最后一条到位后还有 2 秒以上
 
 
 class TestWarnings(unittest.TestCase):

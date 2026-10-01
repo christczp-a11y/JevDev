@@ -174,7 +174,7 @@ def make_good():
     shots[2]["actors"][0]["acts"] = [{"at": {"line": 2, "word": "给"}, "do": "bounce"}]
     shots[3]["fx"].append(sticker(3, "咚"))
     shots[4].update(note="知识点：智伯的五样本事")
-    shots[4]["fx"] += [{"type": "checklist", "items": ["高大", "力气", "才艺", "口才", "果断"], "pos": [540, 480], "at": L(4, 0.4)}, sticker(4, "！", dt=1.4)]
+    shots[4]["fx"] += [{"type": "checklist", "items": ["高大", "力气", "才艺"], "pos": [540, 480], "at": L(4, 0.2)}, sticker(4, "！", dt=1.4)]
     shots[5]["fx"].append(sticker(5, "汗", dt=0.9))
     shots[8]["camera"] = [{"move": "punch", "at": {"line": 8, "word": "不给"}, "amount": 0.1}, {"move": "push", "amount": 0.05}]
     shots[13]["fx"].append({"type": "flash", "at": {"line": 13, "word": "灭国"}, "alpha": 0.5, "dur": 0.1})
@@ -397,7 +397,7 @@ def _(sb):
 
 @case("bad_safe_slam", "smash（slam）")
 def _(sb):
-    sh(sb, "s10")["fx"].append({"type": "smash", "text": "不给", "size": 200, "pos": [540, 1700], "at": L(9, 0.5)})
+    sh(sb, "s10")["fx"].append({"type": "smash", "text": "不给", "size": 200, "pos": [540, 1700], "at": L(9, 0.1)})
 
 
 @case("bad_safe_prop", "关键道具")
@@ -469,7 +469,7 @@ def _(sb):
 
 @case("bad_smash_on_face", "砸字「不给」")
 def _(sb):
-    sh(sb, "s10")["fx"].append({"type": "smash", "text": "不给", "size": 200, "pos": [540, 1200], "at": L(9, 0.5)})
+    sh(sb, "s10")["fx"].append({"type": "smash", "text": "不给", "size": 200, "pos": [540, 1200], "at": L(9, 0.1)})
 
 
 @case("bad_splash_on_face", "水花")
@@ -515,12 +515,18 @@ def _(sb):
 
 @case("bad_cover_bubble_on_lead", "压在主角")
 def _(sb):
-    sh(sb, "s10")["fx"].append({"type": "bubble", "text": "哼", "pos": [540, 1350], "w": 600, "at": L(9, 0.5)})
+    sh(sb, "s10")["fx"].append({"type": "bubble", "text": "哼", "pos": [540, 1350], "w": 600, "at": L(9, 0.2)})
 
 
 @case("bad_cover_speaker", "正在说话")
 def _(sb):
     sh(sb, "s03")["fg"] = [{"img": "props/cup_lacquer.png", "depth": 1.0, "pos": [x, y], "anchor": [0.5, 0.5], "w": 180} for x in (250, 400) for y in (1200, 1290, 1380)]    # 第 2 句韩康子（左，比较小）说话，被图标盖住
+
+
+# ---- 停留（M9、M10）
+@case("bad_dwell_bubble", "只看得见")
+def _(sb):
+    sh(sb, "s13")["fx"].append({"type": "bubble", "text": "哼", "pos": [700, 1000], "w": 600, "at": L(12, 2.35)})      # s13 共 3.7 秒：泡泡 2.35 秒才弹出，0.15 秒弹完，只剩 1.2 秒就切走
 
 
 # ---- 格式
