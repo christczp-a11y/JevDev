@@ -3,7 +3,7 @@
 > 主会话维护。流程见 `docs/自动化工作流-每集生成.md`；照 `video/stories/tj01/复盘.md`「下一集照着做」执行。只做动画，不做文案。
 > 最后更新：2026-10-01
 
-## 当前：第 1 步补 source.md（researcher）、第 2 步写剧本 JSON（director）、停留时间检查（builder，PITFALLS M10）同时做
+## 当前：第 1 步补 source.md（researcher）、第 2 步写剧本 JSON（director）、停留时间检查（builder，PITFALLS M10）、新角色定妆和姿势表（第 5 步提前，builder + Codex）同时做
 
 ## 每一步的状态
 | 步 | 内容 | 状态 | 产出 | 备注 |
