@@ -116,9 +116,15 @@ def desk():
     return L("sets/study/desk.png", [540, 1930], 1.0, [0.5, 1], w=1150)
 
 
-def bq_bg(rain=True, blur=0, brazier=None):
+def near_cover():
+    """宴会远景的近山（宽 1250，倍数 1.23；平顶山尖挪到画面左边外面）：顶 y 790、最深山谷 989，盖住中山底边 1005；底边 1221，
+    下面接亭台的土台（左右两边 y≈1063 起）和地面。"""
+    return L("sets/jin_land/ridge_near.png", [470, 790], 0.4, [0.5, 0], w=1250)
+
+
+def bq_bg(rain=True, blur=0, brazier=None, near=False):
     """宴会：夯土高台上的亭子（四面敞开，看得见外面的天和雨）。brazier = (x, y, w) 炭火盆。"""
-    out = [sky(rain)] + ridges(470, 640) + [
+    out = [sky(rain)] + ridges(470, 640) + ([near_cover()] if near else []) + [
         L("sets/lantai/terrace.png", [540, 1330], 0.6, [0.5, 1], w=1300),
         L("sets/lantai/hu.png", [150, 1300], 0.7, [0.5, 1], w=160),
         L("sets/lantai/ding.png", [930, 1300], 0.7, [0.5, 1], w=160)] + ground(1290)
@@ -388,7 +394,7 @@ shot("s09", A(5, word="如何"), "close",
 shot("s10", A(6), "wide",
      "第一关（大字）：晴天，夯土高台上四面敞开的亭子里开宴会：炭火盆烧得红通通，魏文侯（左）坐在主位，三位大臣（右）举着漆耳杯笑呵呵（不画醉倒）",
      transition={"type": "paper_wipe", "dur": 0.6},
-     bg=bq_bg(rain=False, brazier=(390, 1300, 200)),
+     bg=bq_bg(rain=False, brazier=(390, 1300, 200), near=True),
      actors=[P("wwh", WWH, "chars/wwh_kneel.png", [270, 1470], 500, "魏文侯跪坐在主位，端着漆耳杯笑逐颜开"),
              P("dca", DC, "chars/wdc_a_cup.png", [530, 1470], 410, "大臣甲（藕粉色）跪坐着举杯，笑眯眯"),
              P("dcb", DC, "chars/wdc_b_cup.png", [685, 1470], 400, "大臣乙（黛紫色，灰白山羊胡）跪坐着举杯，笑眯眯"),
@@ -400,7 +406,7 @@ shot("s10", A(6), "wide",
 
 shot("s11", A(6, word="喝得"), "medium",
      "「喝得正高兴」：魏文侯（左）端着漆耳杯哈哈笑，大臣甲、乙（右）举杯回敬，「叮」地碰了一下（杯里是饮料，不画醉倒）",
-     bg=bq_bg(rain=False, blur=4, brazier=(430, 1390, 230)),
+     bg=bq_bg(rain=False, blur=4, brazier=(430, 1390, 230), near=True),
      actors=[P("wwh", WWH, "chars/wwh_kneel.png", [260, 1480], 500, "魏文侯跪坐着端起漆耳杯，开心地笑",
                acts=[act(A(6, word="高兴"), "bounce")]),
              P("dca", DC, "chars/wdc_a_cup.png", [640, 1480], 520, "大臣甲举着漆耳杯笑眯眯", acts=[act(A(6, word="正"), "bounce")]),
@@ -411,7 +417,7 @@ shot("s11", A(6, word="喝得"), "medium",
 
 shot("s12", A(6, word="突然"), "wide",
      "「外面突然下起瓢泼大雨！」：天一下子暗了，亭子外哗哗下起大雨（只画雨，不画雷电）；亭子里的人都愣了一下",
-     bg=[sky(False), sky(True, alpha=0.0, anim=[{"at": A(6, word="下起"), "dur": 0.6, "alpha": 1.0}])] + ridges(470, 640) + [
+     bg=[sky(False), sky(True, alpha=0.0, anim=[{"at": A(6, word="下起"), "dur": 0.6, "alpha": 1.0}])] + ridges(470, 640) + [near_cover()] + [
          L("sets/lantai/terrace.png", [540, 1330], 0.6, [0.5, 1], w=1300),
          L("sets/lantai/hu.png", [150, 1300], 0.7, [0.5, 1], w=160),
          L("sets/lantai/ding.png", [930, 1300], 0.7, [0.5, 1], w=160)] + ground(1290) +
@@ -701,7 +707,7 @@ shot("s37", A(19), "medium",
 
 shot("s38", A(19, word="您怎么"), "close",
      "虞人眼里闪着泪花，双手直哆嗦，又惊又喜：「您怎么真来了啊？！」",
-     bg=hut_bg(hx=600, hy=1380, hw=1300, blur=6),
+     bg=hut_bg(hx=600, hy=1380, hw=1300, blur=6, mud_y=1200),
      actors=[P("yr", YR, "chars/yr_hi_cry_l.png", [540, 1940], 1340, "虞人眼眶里含着泪花，嘴张成 O，双手在胸前直哆嗦",
                acts=[act(D(0.2), "shake"), act(A(19, word="真来了"), "bounce")])],
      fx=[rain(), fx("sparkle", D(0.3), area=[120, 420, 960, 1300], count=12)],
@@ -762,7 +768,7 @@ birds = [L("props/bird_news.png", [470, 980], 1.0, [0.5, 0.5], w=110, flip=(dx <
          for k, (dx, dy) in enumerate(((-300, -330), (-120, -480), (190, -500), (430, -300), (-330, 60)))]
 shot("s44", A(23), "wide",
      "燃点：雨停了，阳光「唰」地穿透乌云照亮山川；茅草棚里的魏文侯和虞人笑着；一只只小纸鸟从草棚飞向四面八方——这件事传开了",
-     bg=hut_bg(sunny=A(23, dt=0.15)),
+     bg=hut_bg(sunny=A(23, dt=0.15), mud_y=1200),
      actors=[P("wwh", WWH, "chars/wwh_cape.png", [380, 1490], 400, "魏文侯戴斗笠站在草棚前，温和地笑，这件事从这里传开了"),
              P("yr", YR, "chars/yr_helped_l.png", [640, 1450], 270, "虞人站在棚下，笑着看魏文侯")],
      fg=birds + [fore()],
@@ -773,7 +779,7 @@ shot("s44", A(23), "wide",
 
 shot("s45", A(23, word="魏文侯说"), "medium",
      "「魏文侯说的话，比黄金还重！」：一架纸天平，一边是一块金饼，一边是写着「说话算话」的小纸条——纸条那边「咚」地沉下去；魏文侯在旁边点点头",
-     bg=[sky(False)] + ridges(470, 640, near=820, blur=4) + ground(1180, blur=4),
+     bg=[sky(False)] + ridges(470, 640, near=820, blur=4) + ground(1140, blur=4),
      actors=[P("wwh", WWH, "chars/wwh_cape.png", [210, 1520], 540, "魏文侯戴斗笠站着，点点头",
                acts=[act(A(23, word="说的话"), "nod")])],
      fg=[L("props/scale_a.png", [660, 1400], 1.0, [0.5, 1], w=620, anim=[{"at": A(23, word="比黄金"), "dur": 0.05, "alpha": 0.0}]),
