@@ -290,8 +290,10 @@ def _quest_img(text, sub):
     card = P.paper_card(w, h, P.CREAM, 30, seed=71, tex=0.05, torn=0.0, stitch=(196, 160, 120))
     im = P.edged(card, 11)
     m = (im.width - w) // 2
-    ban = P.edged(P.paper_card(300, 84, P.RED, 26, seed=72), 6)
+    for (tx, ty, ang) in ((m + 10, m + 6, -32), (m + w - 120, m + 4, 30)):          # 胶带先贴，红签压在上面（签上的字不被胶带盖住）
+        im.alpha_composite(_tape(110, 40, ang), (tx - 20, ty - 34))
     t = text_image(sub, "title", 52, (255, 255, 255))
+    ban = P.edged(P.paper_card(max(300, t.width + 70), 84, P.RED, 26, seed=72), 6)       # 签的宽度跟着字走（6 个字 312 像素，原来 300 会切掉头尾）
     ban.alpha_composite(t, ((ban.width - t.width) // 2, (ban.height - t.height) // 2 - 2))
     im.alpha_composite(ban, (m + 40, m - 30))
     size = 128 if len(text) <= 5 else int(660 / len(text) * 1.0)
@@ -300,8 +302,6 @@ def _quest_img(text, sub):
         size -= 6
         t = text_image(text, "title", size, P.INK)
     im.alpha_composite(t, ((im.width - t.width) // 2, m + 110))
-    for (tx, ty, ang) in ((m + 10, m + 6, -32), (m + w - 120, m + 4, 30)):
-        im.alpha_composite(_tape(110, 40, ang), (tx - 20, ty - 34))
     return im
 
 

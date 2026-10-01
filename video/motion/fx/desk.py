@@ -213,6 +213,12 @@ def _crop_inner(canvas, params, rect, cw, ch):
     tw, th = max(1, round(rw * s)), max(1, round(rh * s))
     from engine.sprites import sprite_from_bgra
     px = cv2.resize(src[y0:y1, x0:x1], (tw, th), interpolation=cv2.INTER_AREA)
+    # 方方正正的画四个角会戳出云的外面：用一个圆角（超椭圆）软边遮罩收掉四个角（本来就是椭圆的画不受影响）
+    yy, xx = np.mgrid[0:th, 0:tw].astype(np.float32)
+    r = (np.abs((xx + 0.5 - tw / 2) / (tw / 2)) ** 2.8 + np.abs((yy + 0.5 - th / 2) / (th / 2)) ** 2.8) ** (1 / 2.8)
+    edge = np.clip((1.0 - r) * (min(tw, th) / 2) / 3.0, 0.0, 1.0)
+    px = px.copy()
+    px[..., 3] = (px[..., 3].astype(np.float32) * edge).astype(np.uint8)
     return sprite_from_bgra(px, tw, th, canvas.S), s, ((x0 + x1) / 2.0, (y0 + y1) / 2.0)
 
 

@@ -1,7 +1,7 @@
 """空白检测（M7）：画面中间一大块淡色空白、分层之间露出白缝，出片时自动报出镜头号、秒数、位置，退出码 1；正常的天空、云、气泡、特效不许误报。
   · 合成图的正反例（天空、模糊天空、云、人物挡住一半的空白带、细缝、区域外的空白）；
   · 端到端：故意留一条淡色空白带的分镜表 → 退出码 1，报告里有镜头号、时间、位置；补上图层的 → 过；
-  · 对 tj01 现成片（G 版，本地才有）：0:28、1:50、2:17 三处都要报出来。"""
+  · 固定样本 blank_case/（进 git）：tj01 G 版旧分镜表里 Chris 点名的 0:28、1:50、2:17 三处（只画背景 / 人物 / 前景三层的一帧，缩到 270×480），旧的要报出来、修好的不许报。"""
 import json
 import unittest
 from pathlib import Path
@@ -162,28 +162,34 @@ class TestEndToEnd(unittest.TestCase):
         self.assertEqual(rep["checks"]["blank"]["events"], [])
 
 
-TJ01 = common.ROOT / "video" / "out" / "tj01" / "full" / "tj01_full.mp4"
+CASE = Path(__file__).resolve().parent / "blank_case"
 
 
-@unittest.skipUnless(TJ01.exists(), "没有 tj01 成片 video/out/tj01/full/tj01_full.mp4（不进 git，本地才有）")
 class TestTj01Calibration(unittest.TestCase):
-    """阈值是拿 tj01 的 G 版成片标定的：Chris 圈的 0:28、1:50、2:17 都要报出来。成片里有字幕、光芒、气泡，所以这里允许多报（特效的淡色平涂），出片时的检查画的是不含特效的场景。"""
+    """阈值是拿 tj01 的 G 版成片标定的：Chris 圈的 0:28（远山和地面之间一大块淡色空白）、1:50（同）、2:17（山和水之间一条白缝）都要报出来。
+    成片已经补好，所以用固定样本：blank_case/<时间>_<镜头>_old.png 是补之前的旧分镜表渲出来的一帧，_fixed.png 是补完以后同一镜头的一帧
+    （都是不含特效 / 字幕 / 调色的场景，缩到 270×480，正好是检测的工作分辨率）。"""
 
-    def test_known_blank_spots_are_found(self):
-        import blank_scan
-        import contextlib
-        import io
-        buf = io.StringIO()
-        with contextlib.redirect_stdout(buf):
-            code = blank_scan.main([str(TJ01)])
-        self.assertEqual(code, 1)
-        times = []
-        for line in buf.getvalue().splitlines():
-            if "bbox" in line:
-                m, s = line.split()[0].split(":")
-                times.append(int(m) * 60 + float(s))
-        for t in (28.0, 110.0, 137.0):
-            self.assertTrue(any(abs(x - t) <= 2.0 for x in times), f"{t} 秒附近没有报出来")
+    SPOTS = {"0m28_s11": ("block", 1000, 1330), "1m50_s43": ("block", 1000, 1340), "2m17_s53": ("seam", 1150, 1240)}
+
+    def load(self, name):
+        im = cv2.imread(str(CASE / f"{name}.png"))
+        self.assertIsNotNone(im, f"没有样本 {name}.png")
+        return im
+
+    def test_old_samples_are_flagged(self):
+        for key, (kind, y0, y1) in self.SPOTS.items():
+            ev = blank.detect(self.load(f"{key}_old"))
+            self.assertTrue(ev, f"{key}：旧帧没报出来")
+            e = ev[0]
+            self.assertEqual(e["kind"], kind, key)
+            self.assertLessEqual(abs(e["bbox"][1] - y0), 40, (key, e))
+            self.assertLessEqual(abs(e["bbox"][3] - y1), 40, (key, e))
+            self.assertEqual((e["bbox"][0], e["bbox"][2]), (0, W), key)          # 横贯整幅画面
+
+    def test_fixed_samples_are_clean(self):
+        for key in self.SPOTS:
+            self.assertEqual(blank.detect(self.load(f"{key}_fixed")), [], f"{key}：补完的帧不该报")
 
 
 if __name__ == "__main__":

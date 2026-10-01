@@ -49,6 +49,7 @@
   预览（540×960，约 3 分钟）：`.venv/Scripts/python video/motion/render.py tj01 --preview --out video/out/tj01/full/preview`
   整集正式版（1080×1920、30 帧，配音 + 音效 + 背景音乐；冷启动约 10 分钟，缓存命中时只重渲改过的镜头，最后的拼接编码约 5 分钟）：放后台跑 `nohup bash -c '.venv/Scripts/python video/motion/render.py tj01 --out video/out/tj01/full/build > video/out/tj01/full/build_log.txt 2>&1; echo EXIT=$? >> video/out/tj01/full/build_log.txt' &`，出 `build/tj01.mp4 / .wav / .report.json`，再复制成 `video/out/tj01/full/tj01_full.mp4 / .wav / .report.json`
   抽帧（每秒 1 帧联系表 26 张 + 每镜头前 2 秒每秒 10 帧动作条 80 张）：`.venv/Scripts/python video/motion/review_frames.py video/out/tj01/full/tj01_full.mp4 tj01 --out video/out/tj01/full`
+  整集自动检查（2026-09-30 第三轮，81 镜 / 208.0 秒，补空白 + 截段）：响度 −16.0 LUFS、真峰值 −2.0 dB、闪烁 0 处、静止 > 1.5 秒 0 处、台词没有人声 0 句、空白 0 处（出片时检测 + `blank_scan.py` 对成片再扫一遍），退出码 0；storyboard_check 0 错；storyboard_jev 退出码 0。冷启动 5.3 分钟（126 块），改 1–3 个镜头再出整集约 40 秒；整集命令不变（见上），出片后跑 `.venv/Scripts/python video/motion/blank_scan.py video/out/tj01/full/tj01_full.mp4 tj01`
   整集自动检查（2026-09-30 第二轮，按 reviewer 意见改完重出）：响度 −16.0 LUFS、真峰值 −1.9 dB、闪烁 0 处、静止 > 1.5 秒 0 处、台词没有人声 0 句、合成器警告 0 条，退出码 0；motion 测试 153 项（test_units / plan_errors / fx / storyboard_check）全过
   整集自动检查（2026-09-30 第一轮）：响度 −16.0 LUFS、真峰值 −2.0 dB、闪烁 0 处、静止 > 1.5 秒 0 处、台词没有人声 0 句、合成器警告 0 条，退出码 0；storyboard_check 0 错（2 条朝向警告：s48、s50 智伯坐战车车头面朝前进方向，是有意的）
   重画的素材（同名）进来以后只重渲用到它的镜头：直接再跑上面的整集命令，缓存按图的内容哈希自动判断
