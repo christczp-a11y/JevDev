@@ -404,8 +404,7 @@
     {
      "type": "bubble",
      "at": {
-      "line": 1,
-      "word": "学霸"
+      "dt": 0.5
      },
      "img": "props/bubble_xueba_a.png",
      "pos": [
