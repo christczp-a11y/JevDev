@@ -7,6 +7,7 @@
 #   test_plan_errors  故意写坏的分镜表都要报错（素材、字体、背景音乐、锚点、拼错字段……），所有错一次列完
 #   test_render       端到端：可复现（验收 ①）、字幕时间和位置（②、M6）、截段拼接逐帧对比整片一次编码、改一个镜头只重编码相关片段、--shots 裁剪、预览速度（④）、退出码
 #   test_blank        空白检测（M7）：合成图正反例、漏图层的分镜表退出码 1 并报镜头号 / 秒数 / 位置、有 tj01 成片时对 0:28 / 1:50 / 2:17；局部直边平条（待补 19）：合成图正反例、tj02 s68 的真实帧（strip_case/）、改前 / 改后的分层端到端、blank_scan.py
+#   test_water_edge   模糊布景图的边：水波上沿不被切成台阶（tj03 s10–s44、tj02 s71 左缘）、满铺的图（天空）照旧、横向重复的拼缝两边是真实相邻图
 #   test_fx           特效包：每个特效和转场登记了、音效文件干净、每个特效一个渲染冒烟测试、转场、样片合集（预览分辨率端到端）
 #   test_long         （SLOW=1）3 分钟整集高清速度（④）、整集渲完改 1–2 个镜头 ≤ 2 分钟（普通和 --final）
 #   test_storyboard_check  storyboard_check.py：good_storyboard.json 通过，每个 bad_*.json 报出该报的错（check_expect.json），输入 / 环境坏了退出码 2
@@ -17,7 +18,7 @@ export PYTHONIOENCODING=utf-8
 PY=.venv/Scripts/python
 [ -x "$PY" ] || PY=.venv/bin/python
 mods=("$@")
-[ ${#mods[@]} -eq 0 ] && mods=(test_units test_plan_errors test_render test_blank test_fx test_long test_storyboard_check test_storyboard_jev)
+[ ${#mods[@]} -eq 0 ] && mods=(test_units test_plan_errors test_render test_blank test_water_edge test_fx test_long test_storyboard_check test_storyboard_jev)
 "$PY" video/motion/tests/proto17/make_assets.py > /dev/null || exit 2      # proto17 的卡片和音效（不进 git，每次重新生成）
 cd video/motion/tests
 "../../../$PY" -m unittest -v "${mods[@]}"

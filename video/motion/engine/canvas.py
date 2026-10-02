@@ -50,7 +50,8 @@ class Canvas:
         a = math.radians(rot)
         c, s = math.cos(a), math.sin(a)
         ah, aw = sp.arr.shape[:2]
-        Ax, Ay = anchor[0] * aw, anchor[1] * ah
+        pl, pt, pr, pb = sp.pad                                  # 模糊晕出来的透明边：anchor 只算原图那一块
+        Ax, Ay = pl + anchor[0] * (aw - pl - pr), pt + anchor[1] * (ah - pt - pb)
         Dx, Dy = X * self.S, Y * self.S
         m00, m01, m10, m11 = c * fx, -s * fy, s * fx, c * fy
         tx, ty = Dx - (m00 * Ax + m01 * Ay), Dy - (m10 * Ax + m11 * Ay)

@@ -95,10 +95,12 @@ def text_image(text, kind, size, fill=(255, 255, 255), stroke=0, stroke_fill=(0,
 
 # ============================== Sprite ==============================
 class Sprite:
-    __slots__ = ("arr", "wd", "hd", "k", "opaque")
+    """pad = (左, 上, 右, 下) 各多出来多少个数组像素：模糊把图往外晕开的那一圈透明边。anchor 和 wd / hd 都只算「原图那一块」，不含这一圈（Canvas.blit 里处理）。"""
+    __slots__ = ("arr", "wd", "hd", "k", "opaque", "pad")
 
-    def __init__(self, arr, wd, hd, k):
+    def __init__(self, arr, wd, hd, k, pad=(0, 0, 0, 0)):
         self.arr, self.wd, self.hd, self.k = arr, float(wd), float(hd), float(k)
+        self.pad = tuple(int(p) for p in pad)
         self.opaque = bool(arr[..., 3].min() == 255)
 
 
@@ -138,6 +140,38 @@ def sprite_from_bgra(bgra, wd, hd, S):
     if abs(S - 1.0) > 1e-6:
         arr = cv2.resize(arr, (max(1, round(wd * S)), max(1, round(hd * S))), interpolation=cv2.INTER_AREA)
     return Sprite(np.ascontiguousarray(arr), wd, hd, arr.shape[1] / wd)
+
+
+EDGE_OPEN = 0.5          # 图的一条边上不透明的像素不到这个比例：画到这条边就结束了（画面外什么都没有）；够多 = 满铺的图（天空、地面），画面外还是同样的东西
+
+
+def blur_premult(arr, sigma):
+    """给预乘 alpha 的 BGRA 数组做高斯模糊，返回 (模糊后的数组, (左, 上, 右, 下) 多出来的透明边宽度)。
+    图的边怎么处理要看那条边是不是「画到这儿就结束了」：
+    · 结束的边（边上大半是透明的，比如水波、山峰的上沿，波峰刚好顶到图的上边）：往外垫一圈透明，模糊后图往外晕开、渐渐变透明；
+      以前统一用 BORDER_REFLECT_101，把波峰对着图边镜像出去，模糊后图边上的 alpha 很高、图边以外却什么都没有，画出来就是一刀切平的台阶（水波左缘的「台阶」）。
+    · 满铺的边（边上大半不透明，比如天空、地面下沿）：照旧镜像，图不往外长、边上也不会变透明。
+    横向重复的图必须先拼好再模糊（见 AssetStore.image），这样拼缝两边是真实的相邻图，不是镜像。"""
+    r = int(math.ceil(3.0 * sigma)) + 1
+    a = arr[..., 3]
+    open_ = ((a[:, 0] >= 250).mean() < EDGE_OPEN, (a[0] >= 250).mean() < EDGE_OPEN,
+             (a[:, -1] >= 250).mean() < EDGE_OPEN, (a[-1] >= 250).mean() < EDGE_OPEN)           # 左 上 右 下
+    if not any(open_):
+        return cv2.GaussianBlur(arr, (0, 0), sigma), (0, 0, 0, 0)
+    big = cv2.copyMakeBorder(arr, r, r, r, r, cv2.BORDER_REFLECT_101)
+    if open_[0]:
+        big[:, :r] = 0
+    if open_[1]:
+        big[:r] = 0
+    if open_[2]:
+        big[:, -r:] = 0
+    if open_[3]:
+        big[-r:] = 0
+    big = cv2.GaussianBlur(big, (0, 0), sigma)
+    pad = tuple(r if o else 0 for o in open_)
+    h, w = big.shape[:2]
+    # 镜像边裁回原来的大小，结束的边留着那一圈透明边
+    return np.ascontiguousarray(big[r - pad[1]:h - r + pad[3], r - pad[0]:w - r + pad[2]]), pad
 
 
 def paper_edge(im, width=10, shadow=True):
@@ -272,12 +306,13 @@ class AssetStore:
             arr = cv2.resize(arr, (tw, th), interpolation=cv2.INTER_AREA)
         if flip:
             arr = cv2.flip(arr, 1)
-        if blur > 0:
-            arr = cv2.GaussianBlur(arr, (0, 0), float(blur) * k)
-        if tile_x > 1:
+        if tile_x > 1:                                   # 先拼再模糊：拼缝两边是真实的相邻图（以前先模糊再拼，每一份在左右边上各自镜像，拼缝处波形对不上）
             arr = np.tile(arr, (1, int(tile_x), 1))
             wd *= tile_x
-        sp = Sprite(np.ascontiguousarray(arr), wd, hd, arr.shape[1] / wd)
+        pad = (0, 0, 0, 0)
+        if blur > 0:
+            arr, pad = blur_premult(arr, float(blur) * k)
+        sp = Sprite(np.ascontiguousarray(arr), wd, hd, (arr.shape[1] - pad[0] - pad[2]) / wd, pad)
         self._cache[key] = sp
         return sp
 
