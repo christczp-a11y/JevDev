@@ -1,0 +1,265 @@
+{
+ "channel": "小红书账号「光爷爷的资治通鉴大冒险」：按《资治通鉴》的顺序，把书里的历史故事一个一个做成 3 分钟左右的纸艺动画，写书的司马光爷爷当讲解人；给 6–12 岁的孩子和陪着看的家长，每集讲一个做人的道理（比如守信、尊重人）。",
+ "tiers": {
+  "大领域": [
+   {
+    "tag": "#亲子教育",
+    "control": false,
+    "fit": 0.93,
+    "demand": 0.73,
+    "precise": 0.75,
+    "winrate": 0.932,
+    "combined": 0.867
+   },
+   {
+    "tag": "#儿童教育",
+    "control": false,
+    "fit": 0.85,
+    "demand": 0.67,
+    "precise": 0.68,
+    "winrate": 0.722,
+    "combined": 0.726
+   },
+   {
+    "tag": "#育儿",
+    "control": false,
+    "fit": 0.81,
+    "demand": 0.68,
+    "precise": 0.67,
+    "winrate": 0.579,
+    "combined": 0.649
+   },
+   {
+    "tag": "#国学",
+    "control": false,
+    "fit": 0.91,
+    "demand": 0.61,
+    "precise": 0.46,
+    "winrate": 0.485,
+    "combined": 0.572
+   },
+   {
+    "tag": "#历史故事",
+    "control": false,
+    "fit": 0.88,
+    "demand": 0.58,
+    "precise": 0.42,
+    "winrate": 0.511,
+    "combined": 0.57
+   },
+   {
+    "tag": "#历史",
+    "control": false,
+    "fit": 0.81,
+    "demand": 0.55,
+    "precise": 0.35,
+    "winrate": 0.272,
+    "combined": 0.42
+   },
+   {
+    "tag": "#穿搭",
+    "control": true,
+    "fit": 0.01,
+    "demand": 0.17,
+    "precise": 0.03,
+    "winrate": 0.0,
+    "combined": 0.035
+   }
+  ],
+  "细分": [
+   {
+    "tag": "#亲子共读",
+    "control": false,
+    "fit": 0.92,
+    "demand": 0.68,
+    "precise": 0.79,
+    "winrate": 0.823,
+    "combined": 0.809
+   },
+   {
+    "tag": "#少儿历史",
+    "control": false,
+    "fit": 0.98,
+    "demand": 0.64,
+    "precise": 0.71,
+    "winrate": 0.748,
+    "combined": 0.762
+   },
+   {
+    "tag": "#国学启蒙",
+    "control": false,
+    "fit": 0.98,
+    "demand": 0.65,
+    "precise": 0.71,
+    "winrate": 0.679,
+    "combined": 0.731
+   },
+   {
+    "tag": "#历史启蒙",
+    "control": false,
+    "fit": 0.98,
+    "demand": 0.61,
+    "precise": 0.71,
+    "winrate": 0.685,
+    "combined": 0.727
+   },
+   {
+    "tag": "#儿童历史",
+    "control": false,
+    "fit": 0.97,
+    "demand": 0.63,
+    "precise": 0.7,
+    "winrate": 0.644,
+    "combined": 0.704
+   },
+   {
+    "tag": "#中国历史故事",
+    "control": false,
+    "fit": 0.91,
+    "demand": 0.61,
+    "precise": 0.47,
+    "winrate": 0.323,
+    "combined": 0.493
+   },
+   {
+    "tag": "#儿童动画",
+    "control": false,
+    "fit": 0.86,
+    "demand": 0.6,
+    "precise": 0.46,
+    "winrate": 0.295,
+    "combined": 0.468
+   },
+   {
+    "tag": "#资治通鉴",
+    "control": false,
+    "fit": 0.98,
+    "demand": 0.47,
+    "precise": 0.44,
+    "winrate": 0.303,
+    "combined": 0.467
+   },
+   {
+    "tag": "#减脂餐",
+    "control": true,
+    "fit": 0.0,
+    "demand": 0.26,
+    "precise": 0.04,
+    "winrate": 0.0,
+    "combined": 0.05
+   }
+  ],
+  "长尾": [
+   {
+    "tag": "#给孩子讲资治通鉴",
+    "control": false,
+    "fit": 1.0,
+    "demand": 0.65,
+    "precise": 0.85,
+    "winrate": 0.881,
+    "combined": 0.857
+   },
+   {
+    "tag": "#资治通鉴儿童版",
+    "control": false,
+    "fit": 1.0,
+    "demand": 0.55,
+    "precise": 0.77,
+    "winrate": 0.724,
+    "combined": 0.747
+   },
+   {
+    "tag": "#少儿资治通鉴",
+    "control": false,
+    "fit": 1.0,
+    "demand": 0.58,
+    "precise": 0.79,
+    "winrate": 0.703,
+    "combined": 0.746
+   },
+   {
+    "tag": "#小学生历史启蒙",
+    "control": false,
+    "fit": 0.98,
+    "demand": 0.62,
+    "precise": 0.8,
+    "winrate": 0.521,
+    "combined": 0.662
+   },
+   {
+    "tag": "#历史启蒙动画",
+    "control": false,
+    "fit": 0.99,
+    "demand": 0.6,
+    "precise": 0.69,
+    "winrate": 0.447,
+    "combined": 0.604
+   },
+   {
+    "tag": "#小学生必看的历史故事",
+    "control": false,
+    "fit": 0.97,
+    "demand": 0.65,
+    "precise": 0.8,
+    "winrate": 0.395,
+    "combined": 0.601
+   },
+   {
+    "tag": "#儿童历史动画",
+    "control": false,
+    "fit": 0.98,
+    "demand": 0.61,
+    "precise": 0.68,
+    "winrate": 0.329,
+    "combined": 0.543
+   },
+   {
+    "tag": "#小红书运营技巧",
+    "control": true,
+    "fit": 0.23,
+    "demand": 0.22,
+    "precise": 0.12,
+    "winrate": 0.0,
+    "combined": 0.094
+   }
+  ],
+  "专属": [
+   {
+    "tag": "#光爷爷的资治通鉴大冒险",
+    "control": false,
+    "fit": 0.99,
+    "demand": 0.55,
+    "precise": 0.7,
+    "winrate": 0.795,
+    "combined": 0.771
+   },
+   {
+    "tag": "#跟孩子读资治通鉴",
+    "control": false,
+    "fit": 0.99,
+    "demand": 0.61,
+    "precise": 0.84,
+    "winrate": 0.675,
+    "combined": 0.747
+   },
+   {
+    "tag": "#光爷爷讲资治通鉴",
+    "control": false,
+    "fit": 1.0,
+    "demand": 0.56,
+    "precise": 0.71,
+    "winrate": 0.53,
+    "combined": 0.643
+   },
+   {
+    "tag": "#我的日常",
+    "control": true,
+    "fit": 0.43,
+    "demand": 0.16,
+    "precise": 0.16,
+    "winrate": 0.0,
+    "combined": 0.125
+   }
+  ]
+ }
+}
