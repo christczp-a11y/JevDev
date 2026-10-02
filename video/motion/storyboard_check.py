@@ -21,7 +21,7 @@
   [闪烁]   闪白（flash 特效、名字里有 flash 的转场）一集 ≤ 4 次、任何 1 秒内 ≤ 3 次；分镜表里给闪白写了参数的话再查：亮度 ≤ 60%、时长 ≤ 0.12 秒、不用红色、不反色（alpha / strength / intensity / dur / color）
            （特效包的 flash 自己固定 55% 亮度、几帧，不带参数，所以主要查次数）
   [安全区] 脸（每张人物图自己的脸框，见下面「脸框」）要在 y 360–1620、x 80–940（右边 140 是平台遮挡区，最下 300 是平台遮挡区）以内，按镜头运动算到画面里的位置；
-           脸框左 / 右出界：不到脸框宽的 10%（耳朵擦边）= 警告，≥ 10% = 错；上边 / 下边出界 = 错；脸框下沿在 1400–1620 之间（字幕区）只有说话的时候才算，见 [字幕]；
+           脸框左 / 右出界：不到脸框宽的 10%（耳朵擦边）= 警告，≥ 10% = 错；上边 / 下边出界 = 错；脸框进了字幕卡 / 说话人标签（字幕区）只有说话的时候才算，见 [字幕]；
            props/ 里的关键道具、砸字 / 大字标题 / 游戏卡片 / 清单 / 属性卡的中心点同样（人名牌和清单按估出来的方框查）；砸字估出来的宽度超出 x 80–940 只警告；贴纸进了遮挡区只警告
   [素材]   图片（背景 / 人物 / 换表情 / 前景 / 特效自带的）和音效在不在；登记表里：没登记 = 错，「停用」= 错，「试做集」范围用在新集 = 错，「宣传图」范围 = 错，「未定稿」= 警告
   [放大]   屏幕显示 ÷ 原图 ≤ 1.3，含镜头放大（远景层按视差系数折算；blur 的背景不查）
@@ -37,8 +37,12 @@
   [翻转]   交领人物不许翻转（PITFALLS M1，翻过来衣襟就成了左衽）：chars/ 下的图 flip: true 报错；例外：司马光（sgm_，圆领）、皮影（文件名含 shadow）、登记表备注里写了「可翻转」的图、道具 / 物件
   [压脸]   贴纸 / 砸字 / 水花 / 闪粉 / 纸屑的框和任何人物的脸框重叠（脸框面积的 5% 以上）报错（M4）；写了 follow 的贴纸（挂在人物身上）不算；
            闪粉 / 纸屑没写 avoid = 特效包自动避开脸，不查；写了 avoid: [] 关掉、或者写的框没盖住脸，而粒子的范围（闪粉 area，纸屑整个画面）碰到脸就报错
-  [字幕]   字幕区 y 1400–1620（字幕卡底边贴 y 1615 往上长；PITFALLS M6）：有台词的时段里，任何人物的脸框（含镜头运动）进了字幕区：字幕区盖进脸框的高度 ≥ 脸框高的 30%（约到嘴）= 错，不到 30%（只是下巴 / 胡子尖）= 警告；
-           每个人物取各句各时刻里盖得最深的一次报一条；没有台词的时段不查
+  [字幕]   字幕卡实际占的地方（PITFALLS M6、待补 20）：字幕卡底边贴 y 1615 往上长，上面还压着一个说话人标签；位置和大小照合成器 engine/ui.py 按这一句每一页的字数算
+           （一行卡约 y 1478–1615、标签 1406–1492；两行卡约 y 1399–1615、标签 1327–1413；卡片宽按字数、居中 x 520，不是全宽；标签在卡片左上角、只有约 130–165 宽）。
+           有台词的时段里（逐页，分页时间同合成器），任何人物的脸框（含镜头运动）里「嘴那一竖条」（脸框中间一半宽、整个高：鼻子和嘴所在，只擦着脸颊 / 耳朵的不算）被这一页的卡片 + 标签盖住的面积
+           ≥ 竖条的 30%（卡片横向盖满竖条时就是盖进脸框高的 30%，约到嘴）= 错，不到 30%（只是下巴 / 胡子尖）= 警告；每个人物取各句各页各时刻里盖得最深的一次报一条；没有台词的时段不查。
+           司马光（图 sgm_ 开头）自己说话的那几页更严：脸框底边要在卡片 + 标签的上沿之上（竖条和卡片 / 标签横向有交），盖进去（哪怕不到 30%）就是错（他是解说人，嘴被挡最显眼）。
+           手里的道具（遥控器之类）还不查：它画在人物图里，分镜表上认不出来，见 PITFALLS 待补 20
   [遮挡]   特效 / 贴纸 / 道具图标不许盖住主角（M8）：这一镜的主体人物（面积最大的，和这个时刻正在说话的）——特效、贴纸、props/ 下的图（fg 图层、画在他后面的 actor）
            合起来盖住他身体（人物图不透明的部分）的 20% 以上就报错；除了贴纸 / 砸字（[压脸] 管），别的盖住他脸框的 10% 以上也报错。
            不算：follow 挂在人物身上的贴纸；props/ 的 bg 图层（在人物后面）；「布景前层」——挡住人腿的战车前栏、马、浪、栏杆这类场景的一部分，不是特效，三种办法认：
@@ -94,6 +98,7 @@ from engine.plan import TOP_KEYS  # noqa: E402
 from engine.scene import ACTOR_KEYS, ACTS, LAYER_KEYS, SHOT_KEYS, Scene, SceneError  # noqa: E402
 from engine.sprites import AssetError, AssetStore  # noqa: E402
 from engine.timeline import AnchorError, Timeline  # noqa: E402
+from engine.ui import line_pages, subtitle_rects  # noqa: E402   字幕分页和字幕卡、说话人标签的方框（和合成器画的是同一份）
 from sfx import timing as T  # noqa: E402   特效的时间常数（砸字落地间隔、清单每条间隔、箭头画多久……），和特效包共用
 
 FPS = C.FPS
@@ -148,8 +153,9 @@ OVERLAY_KINDS = {"sticker", "slam", "splash", "sparkle", "confetti"}       # 不
 OVERLAP_MIN = 0.05                                                         # 和脸框重叠超过脸框面积的这么多就算压脸
 PLATE_FALL, PLATE_MIN_CLEAR = 0.42, 1.5                                    # name_plate 落下来要 0.42 秒；看得清的时间至少 1.5 秒
 SPARKLE_AREA = (80.0, 360.0, 1000.0, 1400.0)
-SUB_Y0, SUB_Y1 = 1400.0, 1620.0                                            # 字幕区：字幕卡底边贴 y 1615 往上长（M6）
-SUB_FACE_ERR = 0.30                                                        # [字幕]：字幕区盖进脸框的高度 ≥ 脸框高的这么多（约到嘴）= 错，不到 = 警告（下巴 / 胡子尖）
+SUB_FACE_ERR = 0.30                                                        # [字幕]：字幕卡 / 说话人标签盖进脸框的高度 ≥ 脸框高的这么多（约到嘴）= 错，不到 = 警告（下巴 / 胡子尖）
+SUB_MOUTH_X = 0.50                                                         # [字幕]：只看脸框中间这么宽的一竖条（鼻子和嘴所在）；字幕卡不是全宽、标签更窄，只擦着脸颊 / 耳朵边的不算压脸
+SUB_HOST_PREFIX = "sgm_"                                                   # [字幕] 司马光（系列讲解人）的图：他说话时脸框底边要在字幕卡和标签的上沿之上，进去就是错（PITFALLS 待补 20）
 FACE_SIDE_ERR = 0.10                                                       # [安全区]：脸框左 / 右出界 ≥ 脸框宽的这么多 = 错，不到 = 警告（耳朵擦边）
 COVER_MAX = 0.20                                                           # 特效 / 图标合起来盖住主体身体框的比例上限（M8）
 ICON_MAX_FRAC = 0.20                                                       # 一张 props/ 图单独就超过主体身体框这么多，是场景大件（战车、浪、地图卷），不是图标，不查
@@ -726,35 +732,84 @@ def check_line_fx(sh, out, cam, rep, fx_table):
                                    f"{fix_body}，或者写 \"layer\": \"back\" 让线画在人物后面", sh.id)
 
 
+def sub_cover(face, rects):
+    """脸框 face 的「嘴那一竖条」（脸框中间 SUB_MOUTH_X 宽、整个高）被字幕卡 / 说话人标签盖住多少；rects = {名字: 方框}。
+    只看中间一竖条：卡片 / 标签只擦着耳朵、脸颊边的不算压脸（标签很窄，常常正好落在脸的一侧）。
+    → (被盖的面积占竖条的比例, 盖进的高度, [盖到的名字], 盖到的方框里最高的上沿)；没盖到 = (0, 0, [], None)。"""
+    l, t, r, b = face
+    fw, fh = r - l, b - t
+    if fw <= 0 or fh <= 0:
+        return 0.0, 0.0, [], None
+    bl, br = l + fw * (1 - SUB_MOUTH_X) / 2, r - fw * (1 - SUB_MOUTH_X) / 2
+
+    def inter(boxes):                                          # 竖条和 boxes 里每个方框的交集：(左, 上, 右, 下)，没有 = None
+        x0, y0, x1, y1 = max([bl] + [q[0] for q in boxes]), max([t] + [q[1] for q in boxes]), min([br] + [q[2] for q in boxes]), min([b] + [q[3] for q in boxes])
+        return (x0, y0, x1, y1) if x1 > x0 and y1 > y0 else None
+    hit = {n: inter([q]) for n, q in rects.items()}
+    hit = {n: h for n, h in hit.items() if h}
+    if not hit:
+        return 0.0, 0.0, [], None
+    area = sum((h[2] - h[0]) * (h[3] - h[1]) for h in hit.values())
+    names = list(hit)
+    for x in range(len(names)):                                # 卡片和标签有一小块叠在一起：减掉重复算的（只有两个方框，两两相交就够）
+        for y in range(x + 1, len(names)):
+            both = inter([rects[names[x]], rects[names[y]]])
+            if both:
+                area -= (both[2] - both[0]) * (both[3] - both[1])
+    ys = sorted((h[1], h[3]) for h in hit.values())
+    deep, end = 0.0, -1e9
+    for y0, y1 in ys:                                          # 纵向并集的长度（只用来写进说明）
+        deep += y1 - max(y0, end) if y1 > end else 0.0
+        end = max(end, y1)
+    return area / ((br - bl) * fh), deep, names, min(rects[n][1] for n in names)
+
+
 def check_subtitle_zone(sh, out, cam, tl, rep):
-    """M6：有台词的时段里，人物的脸框和字幕区 y 1400–1620（字幕卡底边贴 y 1615 往上长）的重叠：字幕区盖进脸框的高度 ≥ 脸框高的 30%（约到嘴）= 错；
-    不到 30%（只是下巴 / 胡子尖）= 警告。没有台词的时段不查。每个人物取各句、各时刻里盖得最深的那一次报一条。"""
+    """M6（再犯：待补 20）：有台词的时段里，人物的脸框和这一句每一页字幕实际占的地方（字幕卡 + 上面的说话人标签，位置和大小照合成器 engine/ui.py，一行 / 两行不一样高、卡片不是全宽、标签更窄）的重叠：
+    嘴那一竖条（脸框中间一半宽）被盖住的面积 ≥ 30%（卡片横向盖满时 = 盖进脸框高的 30%，约到嘴）= 错；不到 30%（只是下巴 / 胡子尖）= 警告。没有台词的时段不查。
+    司马光（图 sgm_ 开头）说话的时候更严：脸框底边要在卡片 + 标签的上沿之上，盖进去一点就是错（他是讲解人，嘴老被挡最显眼）。
+    每个人物取各句、各页、各时刻里盖得最深的那一次报一条（普通的和司马光严查的各算一次）。"""
     t0 = sh.t0
-    worst = {}                                     # id(人物) → (盖进的比例, 句号, 台词, 秒, 脸框, 人物)
+    worst = {}                                     # (id(人物), 严查?) → 盖得最深的那一次
     for i, ln in enumerate(tl.lines):
         if not tl.is_speech(i):
             continue
-        a0, a1 = max(float(ln["t0"]), sh.t0), min(float(ln["t1"]), sh.t1)
-        if a1 - a0 < 0.15:
-            continue
-        for t_abs in (a0 + 0.1, (a0 + a1) / 2, a1 - 0.1):
-            for a in out["actors"]:
-                b = actor_boxes(a, cam, t_abs - t0, t0)
-                if b is None:
-                    continue
-                f = b["face"]
-                if f[3] > SUB_Y0 and f[1] < SUB_Y1 and f[3] > f[1]:
-                    frac = (min(f[3], SUB_Y1) - max(f[1], SUB_Y0)) / (f[3] - f[1])
-                    if id(a) not in worst or frac > worst[id(a)][0]:
-                        worst[id(a)] = (frac, i, str(ln.get("text", ""))[:12], t_abs, f, a)
-    for frac, i, text, t_abs, f, a in worst.values():
-        deep = min(f[3], SUB_Y1) - max(f[1], SUB_Y0)
-        what = (f"第 {i} 句「{text}」出字幕的时候（{t_abs:.1f} 秒），{a['who']} 的脸框（y {f[1]:.0f}–{f[3]:.0f}）进了字幕区 y {SUB_Y0:.0f}–{SUB_Y1:.0f} {deep:.0f} 像素，"
-                f"占脸框高的 {frac:.0%}")
-        if frac >= SUB_FACE_ERR:
-            rep.err("字幕", what + f"（≥ {SUB_FACE_ERR:.0%}，字幕卡盖到了嘴；M6：字幕卡底边贴 y 1615 往上长，会盖住嘴和脸）：人物往上放、缩小，或者换个脸在上半身的构图", sh.id)
+        who = str(ln["who"])
+        speakers = who.split("+")
+        pages = line_pages(tl, i)
+        for k, (pa, pb, lines) in enumerate(pages):
+            a0, a1 = max(float(pa), sh.t0), min(float(pb), sh.t1)
+            if a1 - a0 < 0.15:
+                continue
+            rects = subtitle_rects(who, tuple(lines))
+            for t_abs in (a0 + 0.1, (a0 + a1) / 2, a1 - 0.1):
+                for a in out["actors"]:
+                    b = actor_boxes(a, cam, t_abs - t0, t0)
+                    if b is None:
+                        continue
+                    frac, deep, names, top = sub_cover(b["face"], rects)
+                    if not names:
+                        continue
+                    host = (Path(str(b["file"])).name.startswith(SUB_HOST_PREFIX)
+                            and (a["who"] in speakers or "司马光" in speakers))               # 司马光这一页自己在说话
+                    key = (id(a), host)
+                    if key not in worst or frac > worst[key]["frac"]:
+                        worst[key] = dict(frac=frac, deep=deep, names=names, top=top, rects=rects, face=b["face"], t=t_abs, who=a["who"],
+                                          line=i, text="".join(lines)[:12], page=(k + 1 if len(pages) > 1 else 0), rows=len(lines), host=host)
+    label = {"card": "字幕卡", "tag": "说话人标签"}
+    for w in worst.values():
+        f, rects = w["face"], w["rects"]
+        cover = "和".join(f"{label[n]}（x {rects[n][0]:.0f}–{rects[n][2]:.0f}、y {rects[n][1]:.0f}–{rects[n][3]:.0f}）" for n in w["names"])
+        pg = f"第 {w['page']} 页" if w["page"] else "这一页"
+        what = (f"第 {w['line']} 句「{w['text']}」{pg}（{w['rows']} 行字幕卡）出字幕的时候（{w['t']:.1f} 秒），"
+                f"{w['who']} 的脸框（x {f[0]:.0f}–{f[2]:.0f}、y {f[1]:.0f}–{f[3]:.0f}）被{cover}盖住了嘴那一竖条（脸框中间一半宽）的 {w['frac']:.0%}（最深 {w['deep']:.0f} 像素，脸框高 {f[3] - f[1]:.0f}）")
+        if w["host"]:
+            rep.err("字幕", what + f"：司马光说话时，脸框底边（y {f[3]:.0f}）要在字幕卡 + 标签的上沿（y {w['top']:.0f}）之上，不许盖进去（待补 20：Chris 10-01「对话框经常挡住司马光」）："
+                              "解说镜头人放画面中部、脸在 y 约 700–1250，别放左下角探头", sh.id)
+        elif w["frac"] >= SUB_FACE_ERR:
+            rep.err("字幕", what + f"（≥ {SUB_FACE_ERR:.0%}，盖到了嘴；M6）：人物往上放、缩小，或者换个脸在上半身的构图", sh.id)
         else:
-            rep.warn("字幕", what + f"（不到 {SUB_FACE_ERR:.0%}：只是下巴 / 胡子尖，字幕卡会盖住一点）：能往上放一点就放", sh.id)
+            rep.warn("字幕", what + f"（不到 {SUB_FACE_ERR:.0%}：只是下巴 / 胡子尖，字幕会盖住一点）：能往上放一点就放", sh.id)
 
 
 def speakers_at(tl, t_abs):
@@ -1088,7 +1143,7 @@ def fx_box(kind, e, X, Y):
 
 
 def box_problems(l, t, r, b, bottom=None):
-    """bottom：下沿的上限（默认 1400 = 字幕区上沿；人物的脸传 1620：脸在字幕区里只有说话时才算错，由 [字幕] 查）。"""
+    """bottom：下沿的上限（默认 1400 = 字幕区上沿；人物的脸传 1620：脸在字幕卡 / 标签下面只有说话时才算错，由 [字幕] 查）。"""
     lim = SAFE[3] if bottom is None else bottom
     out = []
     if l < SAFE[0]:
@@ -1376,7 +1431,7 @@ def analyse_shot(sh, ctx, rep, spec, out):
             if bad or probs:
                 t, pr, pw = bad[0] if bad else probs[0]
                 msg = (f"{a['where']} {a['who']} 的脸（{a['ref'].path} 的脸框）在 {t:.1f} 秒时：{'；'.join(pr + pw)}"
-                       f"（脸要在 y 360–{OCC_Y:.0f}、x 80–{OCC_X:.0f} 以内，左右出界 ≥ 脸框宽的 {FACE_SIDE_ERR:.0%} 才算错；说话时脸不进 1400–1620 字幕区，见 [字幕]）")
+                       f"（脸要在 y 360–{OCC_Y:.0f}、x 80–{OCC_X:.0f} 以内，左右出界 ≥ 脸框宽的 {FACE_SIDE_ERR:.0%} 才算错；说话时脸不被字幕卡 / 标签盖住，见 [字幕]）")
                 (rep.err if bad else rep.warn)("安全区", msg, sid)
         for p in props:
             for t in samples(0.0, dur):

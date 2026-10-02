@@ -12,6 +12,7 @@ from types import SimpleNamespace as NS
 import common
 import faces as facelib
 import storyboard_check as SC
+from engine import ui as engine_ui
 
 TESTS = common.TESTS
 CASE = TESTS / "check_case"
@@ -392,28 +393,30 @@ class TestFaceBoxes(unittest.TestCase):
     def _s10(rep, tag, kind="errors"):
         return [f for f in getattr(rep, kind) if f["tag"] == tag and f["shot"] == "s10"]
 
-    def test_chin_in_the_subtitle_zone_is_caught_only_with_the_real_face_box(self):
-        rep = self._run(None, y=1640)                                                  # 旧默认：脸框在字幕区只进去 19% 以内（下巴），不到 30%
+    def test_chin_under_the_subtitle_card_is_caught_only_with_the_real_face_box(self):
+        # s10 的字幕是一行卡（y 约 1478–1615），镜头默认缓推 5%。feet y 1700：旧默认脸框（上 40%）整个在卡片上面；这张图的脸到 60%（脸框 y 约 1350–1537）：卡片盖进脸框高的约 38%，到嘴了
+        rep = self._run(None, y=1700)
         self.assertEqual(self._s10(rep, "字幕"), [], text(rep))
-        rep = self._run({"chars/zb_angry.png": self.BOX}, y=1640)                      # 这张图的脸到 60%：字幕区盖进脸框高的 46%，到嘴了
+        rep = self._run({"chars/zb_angry.png": self.BOX}, y=1700)
         errs = self._s10(rep, "字幕")
         self.assertEqual(len(errs), 1, text(rep))
         self.assertIn("智伯", errs[0]["msg"])
-        self.assertIn("46%", errs[0]["msg"])
+        self.assertIn("字幕卡", errs[0]["msg"])
+        self.assertIn("最深", errs[0]["msg"])
         self.assertEqual([e for e in rep.errors if e["tag"] not in ("字幕",)], [], text(rep))
         self.assertTrue(any("faces.json 1" in i for i in rep.info), rep.info)
 
-    def test_subtitle_zone_threshold_is_30_percent_of_the_face_height(self):
-        rep = self._run({"chars/zb_angry.png": self.BOX}, y=1600)                      # 盖进 24%：只是下巴 / 胡子尖
+    def test_subtitle_card_threshold_is_30_percent_of_the_mouth_column(self):
+        rep = self._run({"chars/zb_angry.png": self.BOX}, y=1660)                      # 卡片盖进脸框高的约 16%：只是下巴 / 胡子尖
         self.assertEqual(self._s10(rep, "字幕"), [], text(rep))
         warns = self._s10(rep, "字幕", "warnings")
         self.assertEqual(len(warns), 1, [SC.fmt(w) for w in rep.warnings])
-        self.assertIn("24%", warns[0]["msg"])
+        self.assertRegex(warns[0]["msg"], r"的 1\d%")
         self.assertIn("不到 30%", warns[0]["msg"])
-        rep = self._run({"chars/zb_angry.png": self.BOX}, y=1620)                      # 盖进 35%：到嘴了
+        rep = self._run({"chars/zb_angry.png": self.BOX}, y=1700)                      # 约 38%：到嘴了
         self.assertEqual(len(self._s10(rep, "字幕")), 1, text(rep))
         self.assertEqual(self._s10(rep, "字幕", "warnings"), [])                       # 错了就不再重复报警告
-        rep = self._run(None, y=1500)                                                  # 完全不进字幕区：什么都不报
+        rep = self._run(None, y=1500)                                                  # 完全碰不到字幕卡：什么都不报
         self.assertEqual((self._s10(rep, "字幕"), self._s10(rep, "字幕", "warnings")), ([], []))
 
     def test_safe_zone_side_overshoot_under_10_percent_of_the_face_width_is_a_warning(self):
@@ -482,6 +485,125 @@ class TestFaceBoxes(unittest.TestCase):
         for k in ("chars/yr_hi_cry_l.png", "chars/yr_hi_laugh_l.png", "chars/yr_hi_sigh_l.png", "chars/wwh_hi_rain_firm.png", "chars/sgm_hi_point.png"):
             self.assertGreater(data[k][3], 0.5, k)                                      # 下巴 / 胡子底在图高的 50% 以下
             self.assertGreater(data[k][2], 0.1, k)                                      # 脸从帽檐下面算起，不是从图顶
+
+
+class TestSubtitleCards(unittest.TestCase):
+    """M6 第二次再犯、待补 20：[字幕] 按每句每一页字幕卡 + 说话人标签实际占的方框算（位置和大小照合成器 engine/ui.py，一行 / 两行不一样高、卡片不是全宽、标签更窄）；
+    司马光（sgm_ 图）自己说话时，脸框底边要在卡片 + 标签上沿之上。只有一个人物、一句台词的小分镜表，脸框用 faces.json 定死（脸 = 图高 20%–60%、宽 20%–80%，高 178 像素）。"""
+    BOX = [0.2, 0.8, 0.2, 0.6]
+    FACE_H = 0.4 * 446
+    TWO_LINES = "智伯很生气，他大声喊了起来：给我马上交出城池来！"                       # 一页两行
+    ONE_LINE = "智伯很生气！"                                                          # 一页一行
+    PAGES = "智伯一听就很生气，他大声喊了起来马上交出城池不然就带兵打过去谁也拦不住！"      # 两页：第 1 页一行（9 字）、第 2 页两行（27 字）
+
+    @classmethod
+    def setUpClass(cls):
+        cls.root = OUT / "assets_subcards"
+        if cls.root.exists():
+            shutil.rmtree(cls.root)
+        shutil.copytree(OUT / "assets", cls.root)
+        (cls.root / "faces.json").write_text(json.dumps({"chars/zb_angry.png": cls.BOX, "chars/sgm_finger.png": cls.BOX}), encoding="utf-8")
+        for f in OUT.glob("subcard_*"):
+            shutil.rmtree(f) if f.is_dir() else f.unlink()
+        cls.n = 0
+
+    @staticmethod
+    def rects(who, text, page=0):
+        return SC.subtitle_rects(who, tuple(engine_ui.wrap_lines(engine_ui.split_pages(text)[page])))
+
+    def _run(self, who, text, x, face_bottom, img="chars/zb_angry.png", actor_who=None):
+        """人物放在 x、脸框下沿（图高 60% 处）在 face_bottom 的位置；这一句 who 说 text，整个镜头就是这一句。"""
+        type(self).n += 1
+        name = f"subcard_{self.n}"
+        vd = OUT / f"{name}_voice"
+        vd.mkdir(parents=True, exist_ok=True)
+        lines = [{"t0": 0.3, "t1": 6.3, "who": who, "text": text, "audio": None, "voiced_end": 5.5, "i": 0}]
+        (vd / "timeline.json").write_text(json.dumps({"duration": 6.6, "lines": lines}, ensure_ascii=False), encoding="utf-8")
+        sb = {"episode": "tj01", "no": 1, "title": ["甲"], "voice": str(vd.relative_to(common.ROOT)).replace("\\", "/"),
+              "shots": [{"id": "a", "from": {"line": 0}, "bg": [{"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 1080}], "fx": [],
+                         "camera": [{"move": "push", "amount": 0.0}],
+                         "actors": [{"id": "p", "who": actor_who or who, "img": img, "pos": [x, face_bottom + 0.4 * 446], "h": 446}]}]}
+        p = OUT / f"{name}.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        _, _, rep, _ = SC.run(str(p), registry=OUT / "REGISTRY.md", no_plugins=True, assets_root=self.root)
+        return rep
+
+    @staticmethod
+    def subs(rep, kind="errors"):
+        return [f for f in getattr(rep, kind) if f["tag"] == "字幕"]
+
+    @staticmethod
+    def dump(rep):
+        return "\n".join(SC.fmt(f) for f in rep.errors + rep.warnings)
+
+    def test_card_geometry_matches_what_the_compositor_draws(self):
+        """方框和合成器真正画出来的图一致：字幕图的底边贴 y 1615、横向居中 x 520，两行卡比一行卡高，标签在卡片左上角、压着卡片上沿。"""
+        from engine import consts as C
+        from engine.sprites import subtitle_image
+        for who, lines in (("旁白", ["智伯很生气！"]), ("司马光", ["如果你答应了一位在暴风雨", "中辛苦工作的环卫工老爷爷，"])):
+            r = SC.subtitle_rects(who, tuple(lines))
+            im, _ = subtitle_image(who, lines, (200, 55, 45), C.SUB_FONT)
+            left = C.SUB_CENTER_X - im.width / 2
+            self.assertAlmostEqual(r["card"][3], C.SUB_BOTTOM_Y)
+            self.assertAlmostEqual(r["tag"][0], left + 30, delta=1)                                                       # 标签离字幕图左边 30 像素
+            self.assertAlmostEqual((r["card"][0] + r["card"][2]) / 2, C.SUB_CENTER_X, delta=1)
+            self.assertAlmostEqual(C.SUB_BOTTOM_Y - r["tag"][1], im.height, delta=1)                                     # 外框的高 = 字幕图的高
+            self.assertGreater(r["tag"][3], r["card"][1])                                                                # 标签压着卡片上沿
+            self.assertLess(r["tag"][2] - r["tag"][0], r["card"][2] - r["card"][0])                                      # 标签比卡片窄
+        one, two = self.rects("旁白", self.ONE_LINE), self.rects("旁白", self.TWO_LINES)
+        self.assertGreater(one["card"][1], two["card"][1] + 60)                                                          # 一行卡的上沿比两行卡低一大截
+        self.assertLess(one["card"][2] - one["card"][0], two["card"][2] - two["card"][0])                                # 短句的卡片不是全宽
+
+    def test_two_line_card_on_the_mouth_is_an_error(self):
+        r = self.rects("旁白", self.TWO_LINES)
+        rep = self._run("旁白", self.TWO_LINES, x=620, face_bottom=r["card"][1] + 0.35 * self.FACE_H, actor_who="智伯")   # 两行卡的上沿切进脸框高的 35%
+        errs = self.subs(rep)
+        self.assertEqual(len(errs), 1, self.dump(rep))
+        self.assertIn("2 行字幕卡", errs[0]["msg"])
+        self.assertIn("字幕卡（", errs[0]["msg"])
+
+    def test_same_place_with_a_one_line_card_is_fine(self):
+        r = self.rects("旁白", self.TWO_LINES)
+        rep = self._run("旁白", self.ONE_LINE, x=620, face_bottom=r["card"][1] + 0.35 * self.FACE_H, actor_who="智伯")   # 同一个位置：两行卡会盖到嘴，一行卡（上沿低 79 像素）碰不到
+        self.assertEqual((self.subs(rep), self.subs(rep, "warnings")), ([], []), self.dump(rep))
+
+    def test_tag_alone_on_the_mouth_is_an_error_but_a_tag_beside_the_face_is_not(self):
+        r = self.rects("旁白", self.TWO_LINES)
+        cx = (r["tag"][0] + r["tag"][2]) / 2
+        bottom = r["card"][1] - 8                                         # 脸框下沿在卡片上沿（比标签上沿低 72 像素）之上 8 像素：卡片碰不到，标签盖进脸框高的约 36%
+        self.assertLess(bottom, r["card"][1])
+        rep = self._run("旁白", self.TWO_LINES, x=cx, face_bottom=bottom, actor_who="智伯")
+        errs = self.subs(rep)
+        self.assertEqual(len(errs), 1, self.dump(rep))
+        self.assertIn("说话人标签", errs[0]["msg"])
+        self.assertNotIn("字幕卡（", errs[0]["msg"])
+        rep = self._run("旁白", self.TWO_LINES, x=cx + 330, face_bottom=bottom, actor_who="智伯")                         # 同样的高度，脸挪到标签右边：嘴那一竖条碰不到标签
+        self.assertEqual((self.subs(rep), self.subs(rep, "warnings")), ([], []), self.dump(rep))
+
+    def test_sgm_face_bottom_must_stay_above_the_card_and_tag(self):
+        r = self.rects("司马光", self.TWO_LINES)
+        cx = (r["tag"][0] + r["tag"][2]) / 2
+        rep = self._run("司马光", self.TWO_LINES, x=cx, face_bottom=r["tag"][1] + 8, img="chars/sgm_finger.png")           # 脸框下沿进了标签上沿 8 像素：盖住的不到 30%，对别的人只是警告
+        errs = self.subs(rep)
+        self.assertEqual(len(errs), 1, self.dump(rep))
+        self.assertIn("司马光说话时", errs[0]["msg"])
+        self.assertEqual(self.subs(rep, "warnings"), [])
+        rep = self._run("旁白", self.TWO_LINES, x=cx, face_bottom=r["tag"][1] + 8, img="chars/sgm_finger.png", actor_who="司马光")   # 同一个位置，这一句是旁白在说：只警告
+        self.assertEqual(self.subs(rep), [], self.dump(rep))
+        self.assertEqual(len(self.subs(rep, "warnings")), 1, self.dump(rep))
+        rep = self._run("司马光", self.TWO_LINES, x=cx, face_bottom=r["tag"][1] - 10, img="chars/sgm_finger.png")          # 脸框下沿在标签上沿之上（留 10 像素，说话时人物有 ±3 像素的起伏）：什么都不报
+        self.assertEqual((self.subs(rep), self.subs(rep, "warnings")), ([], []), self.dump(rep))
+
+    def test_each_page_uses_its_own_card_height(self):
+        """一句话分两页：第 1 页一行卡、第 2 页两行卡。脸只在第 2 页的两行卡里才被盖到：要报，并且说的是第 2 页。"""
+        one, two = self.rects("旁白", self.PAGES, 0), self.rects("旁白", self.PAGES, 1)
+        self.assertGreater(one["card"][1], two["card"][1] + 60)
+        bottom = two["card"][1] + 0.35 * self.FACE_H
+        self.assertLess(bottom, one["card"][1])
+        rep = self._run("旁白", self.PAGES, x=620, face_bottom=bottom, actor_who="智伯")
+        errs = self.subs(rep)
+        self.assertEqual(len(errs), 1, self.dump(rep))
+        self.assertIn("第 2 页", errs[0]["msg"])
 
 
 class TestDwell(unittest.TestCase):

@@ -4,9 +4,10 @@
 """
 import json
 import re
+from functools import lru_cache
 
 from . import consts as C
-from .sprites import rounded_rect, sprite_from_pil, subtitle_image, text_image
+from .sprites import rounded_rect, sprite_from_pil, subtitle_boxes, subtitle_image, text_image
 from .timeline import core
 from PIL import Image, ImageDraw
 
@@ -62,6 +63,30 @@ def wrap_lines(page, per_line=C.SUB_LINE_CHARS):
     if best is None:
         best = (0, per_line)
     return [page[:best[1]], page[best[1]:]]
+
+
+def line_pages(tl, i):
+    """第 i 句的字幕页：[(开始秒, 结束秒, [行])]。首页从这句的 t0 起，末页到 t1 止，页与页的分界按字数比例落在有声部分里。"""
+    ln = tl.lines[i]
+    pgs = split_pages(ln["text"])
+    s0, s1 = tl.speech_span(i)
+    total = sum(len(core(p)) for p in pgs) or 1
+    out, acc = [], 0
+    for k, p in enumerate(pgs):
+        a = ln["t0"] if k == 0 else s0 + (s1 - s0) * acc / total
+        acc += len(core(p))
+        b = ln["t1"] if k == len(pgs) - 1 else s0 + (s1 - s0) * acc / total
+        out.append((a, b, wrap_lines(p)))
+    return out
+
+
+@lru_cache(maxsize=None)
+def subtitle_rects(who, lines):
+    """一页字幕（说话人 who、行 lines 是元组）贴在画面上时，卡片和说话人标签各占的方框（设计坐标，含白纸边）：{"card": (l, t, r, b), "tag": (l, t, r, b)}。
+    和 UI.draw 一样：图的底边贴 SUB_BOTTOM_Y、横向以 SUB_CENTER_X 居中（不跟镜头动）。storyboard_check 的 [字幕] 用。"""
+    w, h, card, tag = subtitle_boxes(who.replace("+", "、"), list(lines), C.SUB_FONT)
+    ox, oy = C.SUB_CENTER_X - w / 2, C.SUB_BOTTOM_Y - h
+    return {"card": (ox + card[0], oy + card[1], ox + card[2], oy + card[3]), "tag": (ox + tag[0], oy + tag[1], ox + tag[2], oy + tag[3])}
 
 
 def hex_rgb(h):
@@ -127,19 +152,7 @@ class UI:
         return C.NARR
 
     def pages(self, i):
-        """第 i 句的字幕页：[(开始秒, 结束秒, [行])]。首页从这句的 t0 起，末页到 t1 止，页与页的分界按字数比例落在有声部分里。"""
-        ln = self.tl.lines[i]
-        text = ln["text"]
-        pgs = split_pages(text)
-        s0, s1 = self.tl.speech_span(i)
-        total = sum(len(core(p)) for p in pgs) or 1
-        out, acc = [], 0
-        for k, p in enumerate(pgs):
-            a = ln["t0"] if k == 0 else s0 + (s1 - s0) * acc / total
-            acc += len(core(p))
-            b = ln["t1"] if k == len(pgs) - 1 else s0 + (s1 - s0) * acc / total
-            out.append((a, b, wrap_lines(p)))
-        return out
+        return line_pages(self.tl, i)
 
     def events(self, i):
         """第 i 句的字幕事件 → [(帧起, 帧止, 行, 首页?, 末页?)]（帧号 = 绝对时间 × 30 取最近的整数）。"""

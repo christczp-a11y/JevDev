@@ -198,15 +198,31 @@ def card_image(lines, kind, size, fg, bg, border=None, padx=46, pady=26, r=30, g
     return e
 
 
-def subtitle_image(who, text_lines, tag_color, body_size, tag_size=34):
-    """字幕卡 + 上方的说话人标签。返回 (PIL 图, 卡片正文中心的 y)。"""
+SUB_TAG_X = 30                    # 说话人标签离字幕图左边多远
+
+
+def _subtitle_parts(who, text_lines, tag_color, body_size, tag_size):
     body = card_image(text_lines, "body", body_size, INK, CREAM, (90, 70, 55), padx=40, pady=24, gap=6)
     tag = card_image([who], "body", tag_size, (255, 255, 255), tag_color, None, padx=22, pady=10, r=18)
-    ov = tag.height - 14
-    im = Image.new("RGBA", (max(body.width, tag.width + 40), body.height + ov), (0, 0, 0, 0))
+    ov = tag.height - 14                                           # 标签压在卡片上沿 14 像素
+    return body, tag, ov, max(body.width, tag.width + 40), body.height + ov
+
+
+def subtitle_image(who, text_lines, tag_color, body_size, tag_size=34):
+    """字幕卡 + 上方的说话人标签。返回 (PIL 图, 卡片正文中心的 y)。"""
+    body, tag, ov, w, h = _subtitle_parts(who, text_lines, tag_color, body_size, tag_size)
+    im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     im.alpha_composite(body, ((im.width - body.width) // 2, ov))
-    im.alpha_composite(tag, (30, 0))
+    im.alpha_composite(tag, (SUB_TAG_X, 0))
     return im, ov + body.height / 2
+
+
+def subtitle_boxes(who, text_lines, body_size, tag_size=34):
+    """subtitle_image 画出来的图里，卡片和说话人标签各占的方框（含白纸边）：(图宽, 图高, 卡片 (l, t, r, b), 标签 (l, t, r, b))，原点在图左上角，设计像素。
+    storyboard_check 的 [字幕] 用它算字幕卡实际占的区域，和合成器画的是同一份布局。"""
+    body, tag, ov, w, h = _subtitle_parts(who, text_lines, (0, 0, 0), body_size, tag_size)
+    bl = (w - body.width) // 2
+    return w, h, (bl, ov, bl + body.width, h), (SUB_TAG_X, 0, SUB_TAG_X + tag.width, tag.height)
 
 
 # ============================== 素材仓库 ==============================

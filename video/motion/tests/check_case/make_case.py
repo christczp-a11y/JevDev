@@ -507,10 +507,10 @@ def _(sb):
     next(f for f in sh(sb, "s02")["fx"] if f["type"] == "name_plate")["dur"] = 1.2
 
 
-# ---- 字幕区挡脸（M6）、特效盖住主角（M8）
-@case("bad_subtitle_covers_face", "字幕区")
+# ---- 字幕卡挡脸（M6、待补 20）、特效盖住主角（M8）
+@case("bad_subtitle_covers_face", "字幕卡")
 def _(sb):
-    sh(sb, "s10")["actors"][0]["pos"] = [ALONE_X, 1800]            # 脸框 y 1354–1533：说话的时候字幕卡（底边 y 1615 往上长）盖在嘴上
+    sh(sb, "s10")["actors"][0]["pos"] = [ALONE_X, 1800]            # 脸框 y 1354–1533：说话的时候字幕卡（一行，y 约 1478–1615）盖在嘴上
 
 
 @case("bad_cover_icons_on_lead", "压在主角")
