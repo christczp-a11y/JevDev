@@ -10,6 +10,13 @@
 - **下一步**：第 3 集。按通鉴顺序是魏武侯浮西河、吴起「在德不在险」（tj02 预告已讲）；Gemini 储备日志写 ep03 是商鞅，等 Chris 的 Gemini 剧本。
 - 待补：PITFALLS 待补 14、15；字幕卡检查认不出「手里的道具」（遥控器画在人物图里），要做就在 faces.json 里加道具框；`fx/_paper.py` 的 `FACE_FRAC` 改用 faces.json；`video/tests/registry/` 4 项旧失败（ep01v2 目录早没了）。
 
+## 第 3 集开工照这个顺序（tj02 实测省时的做法）
+1. 读 `memory/README.md`、本文件、`video/stories/tj02/复盘.md`（和 tj01 的）、`docs/自动化工作流-每集生成.md`；跑 `bash scripts/cloud_setup.sh`。
+2. 第 2 步：主会话自己对照规则 + 维基文库原文列红线改法（`video/stories/<集>/红线改法.md`），发 Chris 等点头。
+3. 点头后**同时**派：researcher 写 source.md（主会话存档、跑 source_check）、director 写剧本 JSON、builder 画新角色定妆（Codex）。
+4. 剧本 JSON 过闸门 → builder 配音 → director 先交素材清单 + 镜头大纲 → builder 照清单画图 **同时** director 写 storyboard.json → 素材登记后 storyboard_check 0 错、storyboard_jev 0。
+5. builder 合成 + 自检（联系表复述、dwell.md）→ reviewer（Sonnet，30 分钟）**同时** director 改自检问题 → 一次截段重出 → 主会话亲眼看原尺寸抽帧 → 手机版发 Chris。
+
 ## 装机（09-29 检查通过）
 - `bash scripts/cloud_setup.sh` 全部通过：Python 依赖（含 OpenCV 5.0）、ffmpeg、字体（`video/vendor/fonts/` 全量 Noto Sans SC Bold + ZCOOL KuaiLe）、背景音乐 `video/assets/audio/bgm_main.mp3`、Jev key 和连通（实测调用成功）、Codex 已登录。
 - Jev：插件 `typesafe@typesafe-ai` 在 `.claude/settings.json` 启用；仓库约定在 `.claude/skills/jev-decisions/SKILL.md`。

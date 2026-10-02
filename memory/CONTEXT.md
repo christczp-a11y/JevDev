@@ -97,3 +97,7 @@
 - 手机端（Remote Control）收文件上限 30 MiB；发视频前压成手机版（做法见 docs/workflow/7-成片检查.md「发给 Chris」）。
 - 上传到手机（Remote Control）还有 30 秒超时：网慢时 25 MB 也会失败，切成上下两段发（做法见第 7 步）。
 - 本机 git 没配身份：提交用 `git -c user.name=Chris -c user.email=christczp@gmail.com commit ...`（和之前的提交一致），不改全局配置。别的会话也会往同一个分支推，push 被拒就先 `git pull --rebase`，不强推。
+- 几个子代理同时改工作区时，`git pull --rebase` 会因为别人没提交的改动失败：先 `git push`（远端没新提交就直接成功），被拒再 `git pull --rebase --autostash`。只 `git add` 自己这一步的文件，别 `git add -A`。
+- 子代理的报告只在它交回的那条消息里，`tasks/<id>.output` 读出来是空的：长报告（例如 researcher 的 source.md 全文）要主会话自己用 Write 落盘。
+- 改 `video/motion/engine/` 或 `fx/` 的源码会让合成器的镜头缓存全部失效（整集重渲约 6 分钟）；检查尽量写在 storyboard_check / blank_scan 里，要改引擎就挑渲染空闲的时候。
+
