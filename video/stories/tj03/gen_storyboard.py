@@ -66,14 +66,14 @@ def ridges(y_far=470, y_mid=640, near=None, blur=0):
 
 
 def ground(y0=1290, blur=0):
-    """地面条一条比一条宽地往下铺满（照 tj02 strips()）。"""
+    """地面条一条比一条宽地往下铺满（照 tj02 strips()，间距收紧、多一条）。"""
     out, y = [], float(y0)
-    for k, w in enumerate((1300, 1500, 1700, 1900)):
+    for k, w in enumerate((1300, 1450, 1600, 1750, 1900)):
         g = L("sets/jin_land/ground.png", [540, y], 0.9, [0.5, 0], w=w, repeat="x")
         if k % 2:
             g["flip"] = True
         out.append(g)
-        y += 218 * w / 1528 * 0.8
+        y += 218 * w / 1528 * 0.65      # 0.65（tj02 是 0.8）：上沿草丛的缺口落在上一条不透明的地方，条和条之间不露底（[铺满]）
     return blurred(out, blur)
 
 
@@ -104,11 +104,19 @@ def palace_bg(blur=0):
     return blurred([sky()] + ridges(470, 640, near=820) + [L("sets/palace/hall.png", [540, 1330], 0.6, [0.5, 1], w=1300)] + ground(1250), blur)
 
 
-def study_bg(blur=0):
-    d = L("sets/study/wall.png", [0, 0], 0.3, w=1080)
+def study_bg(blur=0, full=False):
+    """书房后墙（1024×1536）。有书桌前景的镜头宽 1080 就够（铺出来 1620 高，下面被书桌盖住）；
+    没有书桌的镜头写 full=True：宽 1300、往左挪 110，铺出来 1950 高（震屏也不露底），画面最下面也有画（M7 第三次再犯）。"""
+    if full:
+        out = [L("sets/study/wall.png", [-110, 0], 0.3, w=1300)]
+    else:
+        # 书桌镜头：后墙宽 1080 只铺到 y 1620，桌腿中间会露底 → 下面先垫一张同样的墙往下挪 320（只露出它的木地板，铺到 y 1940），
+        # 正常那张盖在上面（书架、鸡蛋落点的位置不变）
+        out = [L("sets/study/wall.png", [0, 320], 0.3, w=1080), L("sets/study/wall.png", [0, 0], 0.3, w=1080)]
     if blur:
-        d["blur"] = blur
-    return [d]
+        for d in out:
+            d["blur"] = blur
+    return out
 
 
 def desk():
@@ -575,12 +583,12 @@ shot("s21", A(9, word="一个国家"), "close",
      camera=cam(push(0.03), punch(D(0.1), 0.08)))
 
 shot("s22", A(9, word="在德"), "close",
-     "知识（点题）：「在德，不在险！」吴起摊开手讲道理，「在德不在险」五个大字砸下来，下面一行小字「靠德行，不靠山河险」；司马光一开口「注意看！」，画面「咔」地定格",
+     "知识（点题）：「在德，不在险！」吴起摊开手讲道理，「在德不在险」五个大字砸下来，左边两行小字「靠德行，不靠山河险」（不压吴起的冠）（知识镜头只出三样：定格挪到下一镜 s23 开头）",
      bg=river(blur=6),
      actors=[hi_wq("chars/wq_hi_speak.png", 640, "吴起一手摊开，认真地讲道理：在德，不在险")],
      fx=[fx("smash", A(9, word="在德", dt=-0.1), text="在德不在险", pos=[540, 560], size=160, color="gold"),
-         st_text("靠德行，不靠山河险", [540, 740], A(9, word="不在险"), 60, color="red"),
-         fx("freeze", A(10), dur=0.8)],
+         st_text("靠德行，", [215, 720], A(9, word="不在险"), 52, color="red"),
+         st_text("不靠山河险", [215, 800], A(9, word="不在险", dt=0.1), 52, color="red")],
      camera=cam(push(0.03)),
      notes={"jev_allow": ["kid"], "why": "吴起这句「在德不在险」是通鉴原话（剧本原话），这一镜配了一行白话小字「靠德行，不靠山河险」，接下来 s23–s26 司马光用「山再高、水再深，只是地形」和高墙下打呼噜的泡泡再讲一遍"})
 
@@ -619,7 +627,7 @@ shot("s25", A(11), "medium",
 
 shot("s26", A(11, dt=2.45), "medium",
      "「大祸马上就要上门！」：泡泡推近墙脚，「啪嗒」掉下一块土，一个红色感叹号「叮」地弹出来；司马光再按一下遥控器，定格解除",
-     bg=study_bg(blur=6),
+     bg=study_bg(blur=6, full=True),
      fx=[fx("bubble", D(0.0), img="props/bubble_wall_nap.png", pos=[120, 1300], w=820, crop=[0, 0, 1532, 1015], crop_to=[700, 380, 1440, 884],
             crop_t=0.0, crop_dur=0.8),
          fx("dust", A(11, word="上门", dt=-0.2), mode="puff", pos=[700, 1180], size=110),
@@ -661,10 +669,10 @@ shot("s27", A(12), "medium",
 
 shot("s28", A(12, word="他们的"), "medium",
      "「他们的地盘比我们险要十倍！」：三张卡占满画面，「十倍！」红字「咚」地盖上来；魏武侯在左下角伸长脖子看，嘴张成大 O（笑点）",
-     bg=river(blur=6),
-     actors=[P("wuh", WUH, "chars/wuh_shock.png", [170, 1600], 520, "魏武侯伸长脖子看着三张卡，眼睛瞪圆、嘴张成小 o",
+     bg=river(blur=6) + [MED.back()],
+     actors=[MED.stand("wuh", WUH, "chars/wuh_shock.png", 170, 520, "魏武侯站在船里，伸长脖子看着三张卡，眼睛瞪圆、嘴张成小 o",
                acts=[act(A(12, word="十倍"), "jump")])],
-     fg=cards([190, 540, 880], 860, 320),
+     fg=MED.front() + cards([190, 540, 880], 860, 320),
      fx=[st_text("十倍！", [540, 520], A(12, word="十倍", dt=-0.1), 150, color="red"),
          st("exclaim", [0, 0], A(12, word="十倍", dt=0.2), 80, follow="wuh", attach="head")],
      camera=cam(push(0.03), shake(A(12, word="十倍"), 0.3, 8)),
@@ -722,9 +730,9 @@ shot("s33", A(14, word="就像玩游戏", dt=-0.25), "medium",
 
 shot("s34", A(14, word="你觉得"), "medium",
      "「你觉得是身上的『满级防御甲』重要」：选项【满级防御甲】弹出来；泡泡推到小勇士：大铠甲太重，走一步晃三晃（笑点）",
-     bg=study_bg(blur=6),
+     bg=study_bg(blur=6, full=True),
      fx=[fx("card_quest", D(0.05), text="满级防御甲", sub="选 A", pos=[540, 540]),
-         fx("bubble", D(0.0), img="props/bubble_knight_a.png", pos=[120, 1300], w=820, crop=[0, 180, 990, 855]),
+         fx("bubble", D(0.0), img="props/bubble_knight_a.png", pos=[120, 1300], w=820, crop=[0, 100, 1100, 848]),
          st_text("晃～", [780, 900], A(14, word="满级", dt=0.5), 80)],
      camera=cam(push(0.03), shake(A(14, word="重要"), 0.3, 6)),
      notes={"jev_allow": ["subject"], "why": "司马光对观众出题（弹幕选择），这一镜只放选项卡和泡泡里的小勇士，司马光在前后几镜出镜"})
@@ -732,10 +740,10 @@ shot("s34", A(14, word="你觉得"), "medium",
 papers = [L("props/paperman_wave.png", [x, 1310], 1.0, [0.5, 1], w=130, flip=(k % 2 == 1), enter={"type": "pop", "at": A(14, word="队友", dt=0.12 * k)})
           for k, x in enumerate((330, 470, 610, 750))]
 shot("s35", A(14, word="还是"), "medium",
-     "「还是『队友齐心不背叛』重要？」：选项【队友齐心不背叛】也弹出来，两个按钮一上一下；下面四个纸片小伙伴手拉手站成一排",
-     bg=study_bg(blur=6),
+     "「还是『队友齐心不背叛』重要？」：上一镜的选项【满级防御甲】接着挂在上面不动，选项【队友齐心不背叛】也弹出来，两个按钮一上一下；下面四个纸片小伙伴手拉手站成一排",
+     bg=study_bg(blur=6, full=True),
      fg=papers,
-     fx=[fx("card_quest", D(0.0), text="满级防御甲", sub="选 A", pos=[540, 540]),
+     fx=[fx("card_quest", A(14, word="你觉得", dt=0.05), text="满级防御甲", sub="选 A", pos=[540, 540], sfx=None),
          fx("card_quest", A(14, word="队友", dt=-0.2), text="队友齐心不背叛", sub="选 B", pos=[540, 900])],
      sfx=[sfx("pop", A(14, word="队友", dt=0.12 * k)) for k in range(4)],
      camera=cam(push(0.03)),
@@ -766,16 +774,16 @@ shot("s37", A(16), "medium",
 
 shot("s38", A(16, word="人心"), "medium",
      "知识：「决定胜负的永远是人心与德行，而不是险要的山河」：纸天平弹出来，一边两座小山、一边一颗红心——说到「人心」，心那边「咚」地沉下去；魏武侯在左下角跟着上下点头（笑点）",
-     bg=river(blur=6),
-     actors=[P("wuh", WUH, "chars/wuh_shock.png", [170, 1600], 520, "魏武侯盯着天平，跟着一上一下地看",
+     bg=river(blur=6) + [MED.back()],
+     actors=[MED.stand("wuh", WUH, "chars/wuh_shock.png", 170, 520, "魏武侯站在船里，盯着天平，跟着一上一下地看",
                acts=[act(A(16, word="人心", dt=0.1), "nod"), act(A(16, word="山河"), "nod")])],
-     fg=[L("props/scale_heart_a.png", [640, 1330], 1.0, [0.5, 1], w=600, enter={"type": "pop", "at": D(0.05)},
+     fg=MED.front() + [L("props/scale_heart_a.png", [640, 1330], 1.0, [0.5, 1], w=600, enter={"type": "pop", "at": D(0.05)},
            anim=[{"at": A(16, word="人心", dt=0.1), "dur": 0.05, "alpha": 0.0}]),
          L("props/scale_heart_b.png", [640, 1330], 1.0, [0.5, 1], w=600, alpha=0.0,
            anim=[{"at": A(16, word="人心", dt=0.1), "dur": 0.05, "alpha": 1.0}])],
      sfx=[sfx("slam_1", A(16, word="人心", dt=0.1))],
      camera=cam(push(0.03), shake(A(16, word="人心", dt=0.1), 0.3, 8)),
-     notes={"jev_allow": ["subject"], "why": "吴起讲「人心比山河重」，这一镜的主体是天平（比喻），听的魏武侯在角落；说话的吴起在前一镜和后一镜出镜"})
+     notes={"jev_allow": ["subject", "kid"], "why": "吴起讲「人心比山河重」（通鉴「由此观之，在德不在险」，剧本原话）：这一镜就是给孩子的比喻——天平一边两座小山、一边一颗红心，心那边沉下去；主体是天平，听的魏武侯在角落，说话的吴起在前一镜和后一镜出镜"})
 
 shot("s39", A(17), "close",
      "知识：「今天主公要是不好好体恤百姓、做好德行」：吴起特写，语重心长（背景音乐收住）",
@@ -790,7 +798,7 @@ for f in rw_fg:
     f["anim"] = [{"at": A(17, word="所有人", dt=-0.1), "dur": 0.05, "alpha": 0.0}]
 shot("s40", A(17, word="我告诉你"), "medium",
      "「我告诉你——这艘船上的所有人」：镜头慢慢横摇过船上划桨的人；说到「所有人」，他们停下桨，你看看我、我看看他（困惑，不瞪人）；只剩河水声，不配心跳",
-     bg=river(blur=3) + [MED.back()],
+     bg=[L("sets/jin_land/sky.png", [-20, 0], 0.1, w=1120, blur=3)] + river(blur=3)[1:] + [MED.back()],      # 这一镜横摇：天空宽一点，左右不露边
      actors=[rw],
      fg=MED.front() + rw_fg,
      camera=cam(pan(dx=-50)),
@@ -903,7 +911,7 @@ shot("s48", A(22), "medium",
 
 shot("s49", A(22, word="两千多年"), "close",
      "知识（点题）：「传了两千多年：『在德不在险！』」：书页特写，「在德不在险」五个大字一个接一个亮起来，落定时书页一震",
-     bg=[L("sets/study/book_page_hi.png", [0, 0], 0.5, w=1080)],
+     bg=[L("sets/study/book_page_hi.png", [-110, 0], 0.5, w=1300)],
      fx=[fx("big_title", A(22, word="在德不在险", dt=-0.1), text="在德不在险", pos=[540, 820], size=190, deco="none"),
          fx("sparkle", A(22, word="在德不在险", dt=0.4), area=[160, 640, 920, 1000], count=12)],
      camera=cam(push(0.03), shake(A(22, word="在德不在险", dt=0.5), 0.3, 6)),
@@ -915,14 +923,14 @@ shot("s50", A(23, word="优越"), "medium",
      bg=study_bg(),
      actors=[sgm("chars/sgm_hi_remote.png", x, h, "司马光举着遥控器，笑呵呵地讲", acts=[act(A(23, word="装备"), "nod")])],
      fg=[desk()],
-     fx=[fx("bubble", D(0.05), img="props/bubble_knight_a.png", pos=[420, 880], w=820, crop=[0, 180, 990, 855]),
+     fx=[fx("bubble", D(0.05), img="props/bubble_knight_a.png", pos=[420, 880], w=820, crop=[0, 100, 1100, 848]),
          st_text("999 级", [860, 520], A(23, word="装备"), 70, color="gold")],
      camera=cam(push(0.03)))
 
 shot("s51", A(23, word="从来"), "medium",
      "「从来不是无敌的护身符！」：泡泡推近小勇士，铠甲上的「护身符」小纸条「呼」地被风撕跑了；草丛里亮起一对圆溜溜的眼睛（笑点）",
-     bg=study_bg(blur=6),
-     fx=[fx("bubble", D(0.0), img="props/bubble_knight_a.png", pos=[120, 1300], w=820, crop=[0, 180, 990, 855], crop_to=[60, 420, 720, 870],
+     bg=study_bg(blur=6, full=True),
+     fx=[fx("bubble", D(0.0), img="props/bubble_knight_a.png", pos=[120, 1300], w=820, crop=[0, 100, 1100, 848], crop_to=[0, 150, 900, 762],
             crop_t=0.0, crop_dur=1.2),
          st_text("护身符", [520, 960], D(0.2), 70, color="red", dur=1.6, exit="tear"),
          st("question", [250, 1180], A(23, word="护身符", dt=0.3), 70)],
@@ -931,7 +939,7 @@ shot("s51", A(23, word="从来"), "medium",
 
 shot("s52", A(24), "medium",
      "（动作 →「装备再厉害，对人不好」）泡泡里：小勇士鼻子朝天，冲小伙伴们一甩手（不推人）；小伙伴们耸耸肩，一个接一个转身走开",
-     bg=study_bg(blur=6),
+     bg=study_bg(blur=6, full=True),
      fx=[fx("bubble", D(0.0), img="props/bubble_knight_bc.png", pos=[120, 1300], w=820, crop=[0, 150, 830, 715], crop_to=[270, 330, 830, 711],
             crop_t=1.6, crop_dur=1.6),
          st_text("哼", [760, 820], D(0.5), 90),
@@ -942,7 +950,7 @@ shot("s52", A(24), "medium",
 
 shot("s53", A(25, word="队友"), "medium",
      "「队友也会一个个走开」：小勇士一个人，一只软乎乎的果冻小怪「啵」地蹦出来，他脚下一滑一屁股坐在地上（笑点；小怪一点都不吓人）",
-     bg=study_bg(blur=6),
+     bg=study_bg(blur=6, full=True),
      fx=[fx("bubble", D(0.0), img="props/bubble_knight_bc.png", pos=[120, 1300], w=820, crop=[850, 180, 1678, 743]),
          st_text("啪叽", [700, 1080], A(25, word="走开"), 90)],
      sfx=[sfx("pop", A(25, word="一个个"))],
@@ -951,7 +959,7 @@ shot("s53", A(25, word="队友"), "medium",
 
 shot("s54", A(25, word="真心待人"), "medium",
      "金句：「真心待人，身边的人才是你最强的后盾！」：泡泡里，小勇士挠头说对不起，小伙伴们跑回来在他身后排成一面大盾牌；金句大字停在上面",
-     bg=study_bg(blur=6),
+     bg=study_bg(blur=6, full=True),
      fx=[fx("rays", D(0.05), pos=[540, 520], layer="back"),
          fx("big_title", D(0.05), text="真心待人，身边的人\n才是你最强的后盾", pos=[540, 520], size=84, deco="none"),
          fx("bubble", D(0.1), img="props/bubble_knight_d.png", pos=[120, 1300], w=820),
@@ -1004,10 +1012,12 @@ shot("s57", A(27, word="看懂"), "medium",
 
 # ======================================================== 下集预告（第 28–29 句）
 shot("s58", A(28), "wide",
-     "「关注我们，下一集带你看」：整屏压暗，一个大问号纸牌「啪」地翻起来",
+     "「关注我们，下一集带你看」：画面压暗，卫国宫殿前站着背着手的卫侯（下一集的人），他头顶一个大问号纸牌「啪」地翻起来",
      transition={"type": "iris", "dur": 0.6},
      bg=palace_bg(),
-     fx=[st("question", [540, 880], A(28, word="下一集"), 280)],
+     actors=[P("wh", WH, "chars/wh_stand_l.png", [600, 1520], 460, "卫侯（卫国国君，是侯：小冠）背着手站在宫殿前，挑剔地斜眼看着")],
+     fg=[fore()],
+     fx=[plate("卫侯", "卫国的国君", [150, 420], D(0.1), color=WH_COLOR), st("question", [540, 820], A(28, word="下一集"), 260)],
      grade="tense",
      camera=cam(push(0.04)),
      notes={"jev_allow": ["subject"], "why": "旁白的下集预告（剧本原话），台词里没有故事人物；下一镜起是苟变、卫侯、子思"})
