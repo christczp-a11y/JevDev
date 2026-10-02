@@ -1023,6 +1023,7 @@ sb = {
     "episode": "tj03", "no": 3, "name": "在德不在险",
     "title": ["吴起要给魏武侯", "上一堂什么课？"],
     "voice": "video/out/tj03_voice",
+    "bgm": "video/assets/audio/bgm/tj03_cand12.mp3",   # ACE-Step 1.5 生成，70 Hz 高通、-20 LUFS；Chris 选别的就换文件名
     "speakers": {"魏武侯": "魏家", "吴起": WQ_COLOR},
     "note": "tj03 分镜表（剧本 A_在德.json，配音 video/out/tj03_voice，全长 174.22 秒）。素材见 video/stories/tj03/素材清单.md，镜头见 镜头大纲.md；"
             "交领人物不翻转；船上魏武侯在左朝右、吴起在船头朝左、划桨的人在船尾；司马光一律在书房书桌后、人在画面中部（不从底边探头、不用 page_edge）；"

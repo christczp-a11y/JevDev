@@ -7,6 +7,7 @@
   "上一堂什么课？"
  ],
  "voice": "video/out/tj03_voice",
+ "bgm": "video/assets/audio/bgm/tj03_cand12.mp3",
  "speakers": {
   "魏武侯": "魏家",
   "吴起": "#5b4636"
