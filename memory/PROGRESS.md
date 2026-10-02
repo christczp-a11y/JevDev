@@ -1,17 +1,14 @@
 # PROGRESS — 当前进度
 
-> 最后更新：2026-10-01（本地）
+> 最后更新：2026-10-01 晚（本地）
 
-## 当前阶段：tj02「魏文侯之约」第 2 步——红线改法清单（`video/stories/tj02/红线改法.md`）等 Chris 定
-- 进度看 `video/stories/tj02/status.md`。Chris 点头后写剧本 JSON，再做第 3–7 步。
-
-## 上一集：tj01 做完（第 3 版），Chris 10-02 发小红书
-- 发布用 `video/out/tj01/full/三家分晋_第一集_v2_高清.mp4`（Chris 选的第 2 版）；`tj01_full.mp4` 和 `三家分晋_第一集_v3_高清.mp4` 是第 3 版（多修了 0:05 学霸泡泡停留，PITFALLS M9）。
-- **文案、标题、封面字由 Chris 的另一个会话做**；这个仓库的会话只做动画（第 9 步的发布材料不归这边）。
-- 复盘：`video/stories/tj01/复盘.md`（这一集踩过的坑 + 下一集照着做的 6 条）。
-- 引擎现状：截段拼接（改 1 镜约 30–60 秒）、字幕底边 y 1615、出片空白检测；storyboard_check 查字幕区挡脸、特效盖主角、交领不许 flip；出图规矩 `video/assets/prompt_rules.txt` 自动接。
-- **下一步**：第 2 集 tj02「魏文侯之约」。剧本 Gemini 已写好：`geminiscripts/episodes/ep02_魏文侯之约/script_ep02.md`（史料 `source_ep02.md`）。照新的第 2 步对接：先列红线改法给 Chris 定，再写 JSON，接着第 3–7 步。Chris 建议开新会话做（新会话才加载 Sonnet 版 reviewer）。`geminiscripts/` 是 Gemini 的工作区，只读不改不提交。
-- 待补：PITFALLS 待补 14（storyboard_jev 看不到泡泡里的画）、15（去掉镜头运动后的静止检查）、16（讲事画面停留 ≥ 2 秒）；`video/tests/registry/` 4 项旧失败；字幕挪进平台遮挡区的事 Chris 说先不做。
+## 当前阶段：tj02「魏文侯之约」做完（第 4 版，Chris 10-01：「这一版不用改」）
+- 发布用 `video/out/tj02/full/tj02_full.mp4`（高清）/ `魏文侯之约_第二集_v4_手机.mp4`；**文案、标题、封面字由 Chris 的另一个会话做**，这边只做动画。
+- 复盘：`video/stories/tj02/复盘.md`（踩过的坑 + 下一集照着做的 6 条，接着 tj01 的 6 条）；进度和重跑命令：`video/stories/tj02/status.md`。
+- Chris 给下一集的经验（M6 第二次再犯）：对话框经常挡住司马光 → 规则已改（`docs/规则/版式和画风.md` 最后一节：司马光解说镜头人在画面中部、脸 y 700–1250，不放左下角探头）；待补 20（字幕卡实际区域进 storyboard_check）builder 做中。
+- 这一集新加的检查：`[停留]`（M10）、`[速度线]`（M2）、按图脸框 `video/assets/faces.json`（M6）、局部直边露缝 `blank_scan.py --bare`（M7）。
+- **下一步**：第 3 集。按通鉴顺序是魏武侯浮西河、吴起「在德不在险」（tj02 预告已讲）；Gemini 储备日志写 ep03 是商鞅，等 Chris 的 Gemini 剧本。
+- 待补：PITFALLS 待补 14、15、20；`fx/_paper.py` 的 `FACE_FRAC` 改用 faces.json；`video/tests/registry/` 4 项旧失败（ep01v2 目录早没了）。
 
 ## 装机（09-29 检查通过）
 - `bash scripts/cloud_setup.sh` 全部通过：Python 依赖（含 OpenCV 5.0）、ffmpeg、字体（`video/vendor/fonts/` 全量 Noto Sans SC Bold + ZCOOL KuaiLe）、背景音乐 `video/assets/audio/bgm_main.mp3`、Jev key 和连通（实测调用成功）、Codex 已登录。
