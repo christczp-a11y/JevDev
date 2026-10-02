@@ -22,7 +22,7 @@ python video/motion/render.py path/to/storyboard.json ...      直接给分镜�
 输出：`<out>/<集>[_preview|_final][_shots_1-1+1-2].mp4`、同名 `.wav`（混好的音轨）、同名 `.report.json`（自动检查报告）。
 
 **退出码**：0 = 出片成功、自动检查全过；1 = 出了片但自动检查没过（闪烁、静止、响度、人声、空白，报告里写明）；2 = 输入有错，没有出片。
-输入有错包括：找不到字体（`video/vendor/fonts/`，不许退回系统字体）、找不到背景音乐 `video/assets/audio/bgm_main.mp3`、找不到图片 / 音效 / 配音文件、
+输入有错包括：找不到字体（`video/vendor/fonts/`，不许退回系统字体）、找不到背景音乐（默认 `video/assets/audio/bgm_main.mp3`，或分镜表顶层 `bgm` 写的那一首）、找不到图片 / 音效 / 配音文件、
 锚点对不上、拼错的字段、不存在的特效 / 转场、字体里没有的字。**所有能查的错一次列完**再退出。
 
 **截段修改**（09-30，PITFALLS P19）：改一两个镜头不再整片重新拼接编码。每个镜头（含它的转场、字幕）单独编码成片段，按输入哈希缓存；整集 = 把片段用 ffmpeg concat **拷贝流**拼起来（视频不重编码）+ 整条音轨（单独混好，最后编码一次 aac）。
@@ -73,6 +73,7 @@ python video/motion/render.py path/to/storyboard.json ...      直接给分镜�
 }
 ```
 - `title`：1–2 行，做顶部标题条。`no`：第几集；`name`：本集名（标题条上面的小字「第 N 集 · <本集名>」，不写就只有「第 N 集」；系列名只在右上角水印里出现一次）。
+- `bgm`（可选）：这一集用的背景音乐文件，先按仓库根目录找，再按分镜表所在目录找，也可以写绝对路径，比如 `"bgm": "video/assets/audio/bgm/xxx.mp3"`；不写 = 系列默认的 `video/assets/audio/bgm_main.mp3`（tj01、tj02 不写）。文件不存在直接报错。出片报告的 `audio.bgm` 记着实际用的是哪一首。
 - `bgm_start`（可选）：背景音乐从第几秒开始放（默认 0；样片合集避开音乐里的空拍用）。
 - `voice`：配音目录（里面有 `timeline.json`），先按仓库根目录找，再按分镜表所在目录找。
 - `speakers`：说话人 → 家名（`video/series_style.json` 的 `houses`）或 `#rrggbb`，用来给字幕上的说话人标签上色。司马光固定红色、旁白固定灰褐色；不在表里的用旁白色。
@@ -155,7 +156,7 @@ python video/motion/render.py path/to/storyboard.json ...      直接给分镜�
 
 ## 声音
 
-配音（最响）→ 音效 → 背景音乐（`video/assets/audio/bgm_main.mp3`，不够长就交叉淡入淡出循环）。全部在绝对时间轴上用 numpy 摆，再按输出的镜头范围切出来。
+配音（最响）→ 音效 → 背景音乐（默认 `video/assets/audio/bgm_main.mp3`，分镜表顶层 `bgm` 可以按集换；不够长就交叉淡入淡出循环）。全部在绝对时间轴上用 numpy 摆，再按输出的镜头范围切出来。
 
 - 每句配音先调到同一个有声部分 RMS（−21 dBFS，最多调 ±8 dB），不同角色的音量拉齐。
 - 背景音乐调到和配音同样的 RMS 再降 13 dB；**有人说话时再压 10 dB**（提前 0.06 秒压、攻击 0.08 秒、释放 0.6 秒、字与字之间小于 0.35 秒的停顿不放开）。片头淡入 0.6 秒、片尾淡出 1.5 秒。

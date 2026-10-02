@@ -5,7 +5,10 @@ import shutil
 import unittest
 from pathlib import Path
 
+import numpy as np
+
 import common
+from engine import audiomix
 from engine import consts as C
 from engine import sprites
 from engine.plan import PlanError, build_plan
@@ -129,6 +132,64 @@ class TestBadStoryboards(unittest.TestCase):
 
     def test_missing_voice_timeline(self):
         self.expect(lambda sb: sb.update(voice="video/out/nowhere"), "找不到配音时间线")
+
+
+class TestPerEpisodeBgm(unittest.TestCase):
+    """分镜表顶层 "bgm"（可选）：每集换背景音乐。不写就用系列默认的 C.BGM（tj01、tj02 不写，输出不变）。"""
+
+    @classmethod
+    def setUpClass(cls):
+        common.ensure_proto_assets()
+        cls.dir = common.OUT / "bgm_case"
+        shutil.rmtree(cls.dir, ignore_errors=True)
+        shutil.copytree(common.PROTO, cls.dir, ignore=shutil.ignore_patterns("voice"))        # 配音路径写的是仓库根目录相对路径，不用拷
+        t = np.arange(25 * audiomix.SR) / audiomix.SR
+        for name, f in (("tone_low.wav", 5000.0), ("tone_high.wav", 8000.0)):
+            x = (0.3 * np.sin(2 * np.pi * f * t)).astype(np.float32)
+            audiomix.write_wav(cls.dir / name, np.stack([x, x], axis=1))
+        cls.sb = json.loads((common.PROTO / "storyboard.json").read_text(encoding="utf-8"))
+
+    def plan_with(self, **top):
+        sb = dict(self.sb, **top)
+        p = self.dir / "storyboard.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        return build_plan(p)
+
+    def band(self, pcm, f, half=4.0):
+        """整条音轨在 f ± half 赫兹里的能量。"""
+        x = pcm.mean(axis=1)
+        sp = np.abs(np.fft.rfft(x * np.hanning(len(x)))) ** 2
+        fr = np.fft.rfftfreq(len(x), 1 / audiomix.SR)
+        return float(sp[(fr > f - half) & (fr < f + half)].sum())
+
+    def test_default_when_not_written(self):
+        self.assertNotIn("bgm", self.sb)
+        self.assertEqual(self.plan_with().bgm, C.BGM)
+
+    def test_relative_to_repo_root_and_to_storyboard_dir_and_absolute(self):
+        self.assertEqual(self.plan_with(bgm="video/motion/sfx/pop.wav").bgm, C.ROOT / "video/motion/sfx/pop.wav")
+        self.assertEqual(self.plan_with(bgm="tone_high.wav").bgm, self.dir / "tone_high.wav")
+        self.assertEqual(self.plan_with(bgm=str(self.dir / "tone_low.wav")).bgm, self.dir / "tone_low.wav")
+
+    def test_missing_file_is_an_error_naming_the_path(self):
+        with self.assertRaises(PlanError) as cm:
+            self.plan_with(bgm="video/assets/audio/bgm/nope.mp3")
+        self.assertTrue(any("找不到背景音乐" in e and "nope.mp3" in e for e in cm.exception.errors), cm.exception.errors)
+
+    def test_directory_or_wrong_type_is_an_error(self):
+        for bad in ("video/assets/audio", "", 5, ["a.mp3"]):
+            with self.assertRaises(PlanError, msg=repr(bad)):
+                self.plan_with(bgm=bad)
+
+    def test_mix_uses_the_chosen_file_and_report_says_which(self):
+        low, high = self.plan_with(bgm="tone_low.wav"), self.plan_with(bgm="tone_high.wav")
+        (pl, il), (ph, ih) = audiomix.build(low), audiomix.build(high)
+        self.assertEqual(il["bgm"], str(self.dir / "tone_low.wav"))
+        self.assertEqual(ih["bgm"], str(self.dir / "tone_high.wav"))
+        for f, hi_mix in ((8000.0, ph), (5000.0, pl)):                 # 换了音乐，对应频率的能量比另一首高得多（用 5 / 8 kHz 的纯音：人声在这里几乎没有能量）
+            other = pl if hi_mix is ph else ph
+            self.assertGreater(10 * np.log10(self.band(hi_mix, f) / self.band(other, f)), 10.0, f)
+        self.assertEqual(audiomix.build(self.plan_with())[1]["bgm"], str(C.BGM))          # 不写 = 默认那首
 
 
 class TestPlanShape(unittest.TestCase):

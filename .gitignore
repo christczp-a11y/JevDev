@@ -12,3 +12,6 @@ experiments/mpt/skill/
 
 # Qwen3-TTS 配音试验环境（Python 3.12，独立于主环境 .venv）
 .venv-tts/
+
+# ACE-Step 1.5 背景音乐生成环境（Python 3.12，独立于 .venv / .venv-tts；代码和权重在 video/out/acestep/，不进 git）
+.venv-music/

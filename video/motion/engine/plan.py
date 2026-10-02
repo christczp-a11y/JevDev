@@ -14,7 +14,7 @@ from .sprites import AssetError, AssetStore, font_file, missing_glyphs
 from .timeline import AnchorError, Timeline
 from .ui import UI
 
-TOP_KEYS = {"episode", "no", "title", "voice", "shots", "rituals", "speakers", "bgm_start", "name", "note", "notes"}
+TOP_KEYS = {"episode", "no", "title", "voice", "shots", "rituals", "speakers", "bgm", "bgm_start", "name", "note", "notes"}
 KNOWN_ERRORS = (SceneError, AssetError, AnchorError, ValueError, KeyError, TypeError)
 
 
@@ -116,8 +116,15 @@ def build_plan(sb_path, only=None, scale=1.0, mode=None):
             font_file("title" if f == C.FONT_TITLE else "body")
         except AssetError as e:
             errors.append(str(e))
-    if not C.BGM.exists():
-        errors.append(f"找不到背景音乐 {C.BGM}")
+    bgm = C.BGM                           # 分镜表顶层 "bgm"（可选）：这一集用的背景音乐文件，先按仓库根目录找，再按分镜表所在目录找；不写就用系列默认的 C.BGM
+    if "bgm" in sb:
+        if not isinstance(sb["bgm"], str) or not sb["bgm"].strip():
+            errors.append("bgm 要写成音乐文件的路径，比如 \"video/assets/audio/bgm/xxx.mp3\"")
+            bgm = None
+        else:
+            bgm = next((c for c in (C.ROOT / sb["bgm"], base / sb["bgm"]) if c.is_file()), C.ROOT / sb["bgm"])
+    if bgm is not None and not bgm.is_file():
+        errors.append(f"找不到背景音乐 {bgm}")
 
     # 配音时间线
     voice = None
@@ -137,6 +144,7 @@ def build_plan(sb_path, only=None, scale=1.0, mode=None):
 
     plan = Plan()
     plan.sb, plan.path, plan.base, plan.tl, plan.voice = sb, sb_path, base, tl, voice
+    plan.bgm = bgm
     plan.fx_dirs, plan.roots, plan.scale, plan.total_frames = fx_dirs, roots, scale, total
     plan.sfx_dirs = [C.SFX_DIR] + [d for d in (base / "sfx",) if d.is_dir()]
 

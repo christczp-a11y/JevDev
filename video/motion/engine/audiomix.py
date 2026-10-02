@@ -165,7 +165,7 @@ def build(plan):
             clip = decode(plan_sfx_path(plan, name))
             place(sfx, clip * 10 ** ((C.SFX_GAIN_DB + g) / 20), t)
     # 背景音乐：整首调到和配音同样的 RMS，再按（没人说话 −13 dB / 说话时再 −10 dB）压
-    raw = decode(C.BGM)
+    raw = decode(plan.bgm)                                            # 分镜表顶层 "bgm" 指定的这一集的音乐；不写 = 系列默认的 C.BGM（plan.py 里定）
     raw = raw[int(float(plan.sb.get("bgm_start", 0.0)) * SR):]        # 分镜表可以写 bgm_start：从音乐第几秒开始放（样片合集避开音乐里的空拍）
     bgm = loop_bgm(raw, n_abs)
     bgm = bgm * 10 ** ((C.VOICE_TARGET_DB - float(db(np.sqrt(np.mean(raw ** 2))))) / 20)
@@ -188,7 +188,7 @@ def build(plan):
     m[:fi] *= np.linspace(0, 1, fi, dtype=np.float32)[:, None]
     m[len(m) - fo:] *= np.linspace(1, 0, fo, dtype=np.float32)[:, None]
     mix = v + s + m
-    info = {"voice_spans": spans}
+    info = {"voice_spans": spans, "bgm": str(plan.bgm)}
     # 配音轨道有没有声音（每句台词的时段里）
     hop = SR // 100
     chk = []
