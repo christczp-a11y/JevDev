@@ -18,6 +18,15 @@ refs() {
     rower_row)                      echo "$R $C/zhao_dig.png" ;;
     rower_stop)                     echo "$R rower_row.png" ;;
     preview_chars)                  echo "$R $C/wq_stand.png" ;;
+    wuh_pose_c)                     echo "$R $C/wuh_bow_l.png $C/wuh_ponder.png" ;;
+    card_sanmiao)                   echo "$R" ;;
+    card_xiajie|card_shangzhou)     echo "$R card_sanmiao.png" ;;
+    props_a)                        echo "$R" ;;
+    mini_mountains)                 echo "$R props_a.png" ;;
+    icons_boat)                     echo "$R $P/icon_heart.png $P/icon_look.png ../codex_tj02/boat_crop.png $C/rower_row.png" ;;
+    bubble_wall_nap)                echo "$R $P/bubble_nickname.png $P/paperman_wave.png" ;;
+    bubble_knight_a)                echo "$R $P/bubble_nickname.png" ;;
+    bubble_knight_bc|bubble_knight_d) echo "$R $P/bubble_shoe_mud.png bubble_knight_a.png" ;;
     *)                              echo "$R" ;;
   esac
 }
