@@ -10,8 +10,11 @@ import json
 import sys
 from pathlib import Path
 
+from PIL import Image
+
 sys.stdout.reconfigure(encoding="utf-8")
 OUT = Path(__file__).resolve().parent / "storyboard.json"
+ASSETS = Path(__file__).resolve().parents[2] / "assets"
 
 
 def A(line=None, word=None, dt=None, nth=None):
@@ -118,9 +121,21 @@ def fore(y=1930):
 
 
 # ---------------------------------------------------------------- 大木船（量过的近侧船舷上沿：图 x → 图 y，图 1969×410）
+# 近侧船身下沿（船底）：图 x → 图 y（不透明的最下面一行）
+BOT = [(300, 229), (400, 267), (500, 287), (600, 300), (700, 309), (800, 317), (900, 325), (1000, 330), (1100, 333), (1200, 334),
+       (1300, 333), (1400, 331), (1500, 327), (1600, 319), (1700, 306), (1800, 278), (1900, 204)]
+WATER_CREST = 50       # water.png 最上面 50 行是浪尖（有缝），第 50 行起整行不透明
 GUN = [(300, 114), (400, 137), (500, 152), (600, 166), (700, 178), (800, 186), (900, 193), (1000, 198), (1100, 201), (1200, 203),
        (1300, 203), (1400, 199), (1500, 191), (1600, 180), (1700, 162), (1800, 135), (1900, 86)]
 BOAT_W, BOAT_H, HULL_BOTTOM = 1969, 410, 330
+
+
+def _interp(tab, xi):
+    xi = min(max(xi, tab[0][0]), tab[-1][0])
+    for (x0, y0), (x1, y1) in zip(tab, tab[1:]):
+        if x0 <= xi <= x1:
+            return y0 + (y1 - y0) * (xi - x0) / (x1 - x0)
+    return tab[-1][1]
 
 
 def gun_y(cx, by, k, x):
@@ -148,17 +163,33 @@ class Boat:
     def back(self):
         return self.layer("props/boat_back.png")
 
+    def water_top(self):
+        """前景第一条水的上沿：浪尖从这里开始，往下 WATER_CREST 像素起整行不透明（= 船底中间往上 10 像素，船吃水）。"""
+        return round(self.by - (BOAT_H - HULL_BOTTOM) * self.k - 10 - WATER_CREST)
+
     def front(self):
-        """近侧船身 + 前景的水（盖住船底和站在船里的人的腿）。"""
-        hb = self.by - (BOAT_H - HULL_BOTTOM) * self.k
-        return [self.layer("props/boat_front.png")] + water(round(hb - 25), 3, 1.0, 120, blur=self.blur)
+        """近侧船身 + 前景的水：水满不透明的那一行在船底上面，站在船里的人船舷以下的腿脚全被船身和水盖住；
+        水一条接一条铺到画面底下以外（≥ 1990，镜头推了也看不到最后一条的平直下沿）。"""
+        y0 = self.water_top()
+        n = max(3, -(-(1990 - 203 - y0) // 120) + 1)
+        return [self.layer("props/boat_front.png")] + water(y0, n, 1.0, 120, blur=self.blur)
 
     def gun(self, x):
         return gun_y(self.cx, self.by, self.k, x)
 
     def stand(self, id_, who, img, x, h, note, hip=0.6, **kw):
-        """站在船里：图高 hip 处落在近侧船舷上沿。"""
+        """站在船里：图高 hip 处落在近侧船舷上沿。船头 / 船尾的船底往上翘，比前景水满不透明的那一行高的地方，
+        脚底（图的下沿）不低于这一段船底，免得下摆和鞋尖从船底和水之间露出来。"""
         y = self.gun(x) - hip * h + h
+        iw, ih = Image.open(ASSETS / img).size
+        half = 0.25 * iw * h / ih
+        k = self.k
+        x0i, x1i = [(xx - (self.cx - BOAT_W * k / 2)) / k for xx in (x - half, x + half)]
+        bot = min(_interp(BOT, xi) for xi in (x0i, (x0i + x1i) / 2, x1i))
+        hull = self.by - (BOAT_H - bot) * k
+        full = self.water_top() + WATER_CREST
+        if hull < full:
+            y = min(y, hull - 4)
         return P(id_, who, img, [x, y], h, note, **kw)
 
 
@@ -807,8 +838,9 @@ shot("s44", A(20), "medium",
      notes={"jev_allow": ["subject"], "why": "旁白说的道理（剧本原话），画面是魏武侯听完吴起的话，若有所思地看着划船的人（红线第 4 条：只画他若有所思）"})
 
 
-def paper_bg():
-    return [sky(4)] + ridges(470, 640, near=820, blur=4) + ground(1140, blur=4)
+def paper_bg(mid=None):
+    """纸片小人的比喻场景；mid = 夹在远山和地面条之间的图层（地面条盖住它的平底边）。"""
+    return [sky(4)] + ridges(470, 640, near=820, blur=4) + (mid or []) + ground(1140, blur=4)
 
 
 MEN = [("props/paperman_wave.png", 520), ("props/paperman_thumb.png", 600), ("props/paperman_wave.png", 680),
@@ -830,8 +862,8 @@ def people_wall(gather=None, glow=False):
 
 
 shot("s45", A(20, word="城墙"), "medium",
-     "知识（比喻）：「城墙再厚重，抵不过得民心」：画面一分为二：左边一座高高的剪纸山旁，孤零零站着一个纸片小人；右边一群纸片小人手拉手，「咚」地肩并肩站成一道人墙（夯土城墙的样子，不画砖）",
-     bg=paper_bg() + [L("sets/jin_land/ridge_far.png", [240, 1330], 1.0, [0.5, 1], w=520)],
+     "知识（比喻）：「城墙再厚重，抵不过得民心」：画面一分为二：左边一座剪纸青山（整座山，平底边藏在地面后面）前，孤零零站着一个纸片小人；右边一群纸片小人手拉手，「咚」地肩并肩站成一道人墙（夯土城墙的样子，不画砖）",
+     bg=paper_bg(mid=[L("props/mini_mountains.png", [230, 1260], 0.9, [0.5, 1], w=700)]),
      fg=[L("props/paperman_shrug.png", [260, 1390], 1.0, [0.5, 1], w=110)] + people_wall(gather=A(20, word="得民心", dt=-0.3)),
      fx=[st_text("咚", [760, 1080], A(20, word="民心"), 90)],
      camera=cam(push(0.03)),
@@ -853,7 +885,7 @@ shot("s47", A(21, word="人心也会", dt=-0.45), "wide",
      bg=river() + [WIDE3.back()] + wide_people(WIDE3, drift=drift),
      fg=WIDE3.front(),
      fx=[fx("tone", D(0.05), tone="warm", ramp=0.8),
-         fx("smash", D(0.1), text="在德不在险", pos=[540, 450], size=150, color="red", shake=8)],
+         fx("smash", D(0.1), text="在德不在险", pos=[540, 600], size=150, color="red", shake=8)],
      camera=cam(pull(0.03)),
      notes={"jev_allow": ["subject"], "why": "旁白讲道理（剧本原话），台词里没有故事人物；画面是一船人一起划桨的远景，加上大问题揭晓的红印章「在德不在险」"})
 
@@ -930,12 +962,14 @@ shot("s54", A(25, word="真心待人"), "medium",
 
 # ======================================================== 行动呼吁（第 26–27 句）
 x, h = 540, 570
-eggs = [L("props/egg.png", [560, 1280], 1.0, [0.5, 0.5], w=70, alpha=0.0,
+SHELF_EGGS = [(95, 1168), (165, 1172)]     # 左边书架最下一格那堆卷轴的顶上（墙图 1024 宽铺 1080，卷轴顶约 y 1213、x 0–188）；depth 同墙，跟书架一起动
+eggs = [L("props/egg.png", [560, 1280], 0.3, [0.5, 0.5], w=70, alpha=0.0,
           anim=[{"at": A(26, word="大格局", dt=0.15 * k), "dur": 0.05, "alpha": 1.0},
-                {"at": A(26, word="大格局", dt=0.15 * k), "dur": 0.9, "ease": "out", "pos": [760 + 110 * k, 1375], "rot": 360}])
+                {"at": A(26, word="大格局", dt=0.15 * k), "dur": 0.45, "ease": "out", "pos": [330 - 40 * k, 1040], "rot": 360},
+                {"at": A(26, word="大格局", dt=0.45 + 0.15 * k), "dur": 0.45, "ease": "in", "pos": list(SHELF_EGGS[k]), "rot": 720}])
         for k in range(2)]
 shot("s55", A(26), "medium",
-     "「给孩子讲历史，学做大格局的人」：司马光捧着书冲镜头笑；两张小纸条「讲历史」「学做大格局的人」弹出来；书缝里「噗」地掉出两个鸡蛋，骨碌碌滚向桌边（下集的伏笔，笑点）",
+     "「给孩子讲历史，学做大格局的人」：司马光捧着书冲镜头笑；两张小纸条「讲历史」「学做大格局的人」弹出来；书缝里「噗」地蹦出两个鸡蛋，翻着跟头落到左边书架的卷轴堆上（下集的伏笔，笑点；书桌桌面在字幕卡后面，不放那里）",
      transition={"type": "paper_wipe", "dur": 0.6},
      bg=study_bg(),
      actors=[sgm("chars/sgm_book.png", x, h, "司马光双手捧着书，笑着看观众", acts=[act(A(26, word="讲历史"), "bounce"), act(A(26, word="大格局", dt=0.3), "jump")])],
@@ -947,12 +981,13 @@ shot("s55", A(26), "medium",
 
 x, h = 540, 1000
 shot("s56", A(27), "medium",
-     "「点赞并收藏这集视频」：司马光举起遥控器冲镜头比「收藏」；红心和金星弹出来，小青蛙跳上桌边的鸡蛋，抱着鸡蛋转了一圈（笑点）",
+     "「点赞并收藏这集视频」：司马光举起遥控器冲镜头比「收藏」；红心和金星弹出来，小青蛙跳上书架卷轴堆上的鸡蛋，抱着鸡蛋转了一圈（笑点）",
      bg=study_bg(),
      actors=[sgm("chars/sgm_hi_remote.png", x, h, "司马光举起遥控器，冲镜头哈哈笑", acts=[act(A(27, word="收藏"), "bounce")])],
-     fg=[desk(), L("props/egg.png", [870, 1375], 1.0, [0.5, 0.5], w=70, anim=[{"at": A(27, word="收藏", dt=0.6), "dur": 0.6, "rot": 360}]),
-         L("props/frog_jump.png", [930, 1250], 1.0, [0.5, 0.5], w=150, flip=True, alpha=0.0,
-           anim=[{"at": A(27, word="收藏", dt=0.15), "dur": 0.05, "alpha": 1.0}, {"at": A(27, word="收藏", dt=0.2), "dur": 0.45, "ease": "out", "pos": [860, 1330]}])],
+     fg=[desk(), L("props/egg.png", list(SHELF_EGGS[1]), 0.3, [0.5, 0.5], w=70),
+         L("props/egg.png", list(SHELF_EGGS[0]), 0.3, [0.5, 0.5], w=70, anim=[{"at": A(27, word="收藏", dt=0.65), "dur": 0.6, "rot": 360}]),
+         L("props/frog_jump.png", [250, 1000], 0.3, [0.5, 0.5], w=120, alpha=0.0,
+           anim=[{"at": A(27, word="收藏", dt=0.15), "dur": 0.05, "alpha": 1.0}, {"at": A(27, word="收藏", dt=0.2), "dur": 0.45, "ease": "out", "pos": [100, 1105]}])],
      fx=[st("heart", [200, 640], A(27, word="点赞"), 170), st("star", [880, 640], A(27, word="收藏"), 160)],
      sfx=[sfx("whoosh", A(27, word="收藏", dt=0.2)), sfx("frog_croak", A(27, word="收藏", dt=0.7))],
      camera=cam(push(0.03)))
@@ -985,14 +1020,14 @@ shot("s59", A(29), "medium",
      fx=[plate("苟变", "卫国人", [150, 400], D(0.1), color=GB_COLOR), st_text("五百辆", [360, 1040], A(29, word="五百"), 100, color="red")],
      camera=cam(push(0.03)))
 
-eggs2 = [L("props/egg.png", [100, 1375], 1.0, [0.5, 0.5], w=80, alpha=0.0,
-           anim=[{"at": A(29, word="两个", dt=0.1 * k - 0.3), "dur": 0.1, "alpha": 1.0},
-                 {"at": A(29, word="两个", dt=0.1 * k - 0.3), "dur": 0.9, "ease": "out", "pos": [440 - 100 * k, 1375], "rot": 540}])
+eggs2 = [L("props/egg.png", [100, 1335], 1.0, [0.5, 0.5], w=80, alpha=0.0,
+           anim=[{"at": A(29, word="收税", dt=0.15 * k), "dur": 0.1, "alpha": 1.0},
+                 {"at": A(29, word="收税", dt=0.15 * k), "dur": 1.2, "ease": "out", "pos": [600 - 60 * k, 1335], "rot": 720}])
          for k in range(2)]
 shot("s60", A(29, word="可他"), "medium",
      "「可他以前收税时吃了老百姓两个鸡蛋」：画面变成旧纸黄（从前的事）；两个鸡蛋骨碌碌滚到他脚边，他不好意思地挠挠头（笑点；不画钱）",
      bg=[sky(4)] + ridges(470, 640, near=820, blur=4) + ground(1140, blur=4),
-     actors=[P("gb", GB, "chars/gb_stand_l.png", [640, 1440], 600, "苟变站着，有点局促",
+     actors=[P("gb", GB, "chars/gb_stand_l.png", [640, 1380], 600, "苟变站着，有点局促",
                acts=[act(A(29, word="鸡蛋", dt=0.2), swap="chars/gb_scratch_l.png", h=590)])],
      fg=eggs2,
      fx=[fx("tone", D(0.0), tone="memory", ramp=0.5)],
@@ -1027,7 +1062,7 @@ sb = {
     "speakers": {"魏武侯": "魏家", "吴起": WQ_COLOR},
     "note": "tj03 分镜表（剧本 A_在德.json，配音 video/out/tj03_voice，全长 174.22 秒）。素材见 video/stories/tj03/素材清单.md，镜头见 镜头大纲.md；"
             "交领人物不翻转；船上魏武侯在左朝右、吴起在船头朝左、划桨的人在船尾；司马光一律在书房书桌后、人在画面中部（不从底边探头、不用 page_edge）；"
-            "弹幕选择用两张 card_quest + danmaku（不用 kaoni，不倒计时）；背景音乐：选定后在顶层加 \"bgm\"（现在用系列默认）",
+            "弹幕选择用两张 card_quest + danmaku（不用 kaoni，不倒计时）；背景音乐见顶层 bgm（ACE-Step 候选 12，Chris 选定后换文件名）",
     "shots": SH,
 }
 OUT.write_text(json.dumps(sb, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
