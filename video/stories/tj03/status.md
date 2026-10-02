@@ -3,7 +3,7 @@
 > 主会话维护。流程见 `docs/自动化工作流-每集生成.md`；照 tj01、tj02 复盘「下一集照着做」执行（`memory/PROGRESS.md` 有派活顺序）。只做动画，不做文案。
 > 最后更新：2026-10-02
 
-## 当前：第 3 步配音；新角色定妆（builder + Codex）、背景音乐（builder + ACE-Step）同时做
+## 当前：第 4 步素材清单 + 镜头大纲（director）；背景音乐候选（builder + ACE-Step）同时做
 
 ## 每一步的状态
 | 步 | 内容 | 状态 | 产出 | 备注 |
@@ -11,4 +11,20 @@
 | 自检 | 装机检查 | 通过（10-02） | — | `bash scripts/cloud_setup.sh` 全过 |
 | 1 | 史料 | **通过**（10-02，cbc2a85） | `source.md`（researcher；source_check 131 条 0 错） | 纠正 Gemini：安王十五年不是十六年；「同舟共济」出自《孙子》；七十六战只在《吴子》；吴起后来是自己害怕离开魏国；子思年代存疑（预告不写年份） |
 | 2 | 剧本 | **通过**（10-02） | `A_在德.json`（30 行，27 句台词，估算 182 秒）+ `episode.json` | 闸门 史实 0.29 / 不宜 0.06 / 对立 0.03；最长平淡段 12.9 秒；script_check 0 错 27 警告（不硬拆）。主会话定：大问题「君王」→「国君」；「将军」读 jiāngjūn；删「彻底砸醒了魏武侯」（不演他改过）；「吓出一身冷汗」照留（表情夸张） |
+| 3 | 配音（Qwen3-TTS 整集） | **完成**（10-02；没有人耳听过，只靠指标和 Whisper） | `video/out/tj03_voice/timeline.json`（**174.2 秒**，30 行 = 27 句台词 + 3 个动作行，27 句全是新合成，没有仪式句；cache 在同目录） | script_check 退出码 0（0 处错误，26 条警告：21 条单句 >15 字、5 条单句 >8 秒，都是照「不硬拆」留的长句）；`story.py --only A_在德` 最长平淡段真实时间线 **11.9 秒**（从 162.33 秒起，≤ 12.9；估算秒数下 12.9 秒）；大问题 27.88–30.75 秒念完（bigq_by 35）；语速报警 0 处。**注意：`story.py` 的史实闸门 g_accuracy 现在是 0.67（≥ 0.5）**：照 10-02 的新决定把吴起「比我们险要十倍」改回原句以后升的（同一份剧本把这句换回「还要险要」是 0.46，其余都没动）；台词是 Chris 定的，这里只报告，不改。新声音 2 个角色 4 段参考音（存 `video/assets/audio/voices/`，每个声音换种子设计候选，按基频、起伏、Whisper 转写、说话人向量挑；json 的 `pick` 记着）：**魏武侯** 116.2 Hz（@真诚恍然大悟郑重地点头称赞 111.6）、**吴起** 124.2 Hz（@沉稳有力加重语气语重心长 125.0）；整集念出来的实际基频：魏武侯两句得意大笑 143–154 Hz、「吴将军，说得好！」128 Hz，吴起 101–128 Hz（加重语气那句 144 Hz）。**魏武侯的描述改过**：`episode.json` 原描述（二十岁上下、温暖明亮、少年得志、洪亮爽朗地哈哈大笑）出的 8 个候选基频全在 212–311 Hz，像女声；换了「二十多岁 / 男中音 / 三十多岁 / 音调偏低 / 男低音歌手 / 去掉哈哈大笑 / 较平静的参考句」共约 80 个候选，只有「三十岁左右的成年男子、嗓音浑厚饱满、像男低音歌手说话、音调偏低、说话不紧不慢」才有一部分落在 110–160 Hz，所以 `cast.魏武侯` 的 desc 和 ref_text 改了（语气没动）；听起来是三十岁左右的成年人，不是二十岁的少年。**还改了**：`episode.json` cast.魏武侯 的 desc / tone 和剧本 tone 里「，不阴冷」删掉（voice.py 按子串查「阴冷」，写「不阴冷」也报错，PITFALLS A7）。`voice_text` 7 条（都在剧本顶层）：5 条是原来就有的（lines[1]、[5]、[17]、[27]、[29]，都只是加逗号），其中 lines[17] 我又把「德行」换成同音字「德形」；新加 2 条：lines[13] 同样「德行」→「德形」（Whisper 强制解码：lines[17] 原来念出来偏 xìng，换后「德形」比「德幸」高 8 分，偏 xíng；lines[13] 原来 xíng / xìng 打平），lines[4] 加逗号（5.0 字/秒的语速报警，只改标点）；其余多音字没有写 voice_text。多音字：「将军」（lines[3]、[6]、[8]、[19]）用 8 个同音字强制解码打分，姜 / 疆 / 江（jiāng）全部比匠 / 降 / 绛 / 犟（jiàng）高，均值高 2.8–4.7 分，读 jiāng，不用写；「德行」lines[16] 偏 xíng；「为所欲为」wéi（维比位高 3 分）；「重要」zhòng；「传了」「传家宝」chuán；「强大」qiáng；「筑成」chéng（不是 zhòng：筑成比筑重高 13 分，铸成比铸重高 10 分，Whisper 把它转成「注重」只是词频）。太行 / 彭蠡 / 伊阙 / 河济 / 泰华 / 五百乘 台词不念。拿不准的：旁白念「吴起」时（lines[3]、[4]、[8]）Whisper 转成「武起 / 无奇」（同音字 / 常见字偏好，强制解码里「吴起」和「吴奇」打平，没法分 qǐ / qí，要听一遍）；魏武侯得意大笑那句 154 Hz 偏高（笑声本来就高）；吴起「主公，你错了！」只有 3.1 字/秒，慢而有分量，句长 5.7 秒比剧本估算的 4.6 秒长。 |
 | 背景音乐 | Chris 10-02：旧 BGM 老旧、第二集开头像电子音乐，要重选 | Chris 同意下载，装模型、出候选中 | — | Qwen3-TTS 只能说话不能作曲；推荐 ACE-Step 1.5（Apache 2.0、可商用、显存 < 4 GB，本机 GTX 1660 Ti 6 GB 能跑） |
+
+## 重跑用的命令
+（环境：Git Bash、仓库根目录；`export PYTHONIOENCODING=utf-8; export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`，Python 用 `.venv/Scripts/python`）
+- 第 3 步配音（Qwen3-TTS，voice.py 自己调 `.venv-tts`；**配音时显卡不能被别的程序占**：背景音乐 ACE-Step 也用显卡，开始前 `nvidia-smi` 看总占用，别的进程占了 2 GB 以上（总数超过约 3.4 GB）就等；整集第一次约 13 分钟，之后走缓存约 1 分钟；一定放后台跑）：
+  `.venv/Scripts/python video/voice.py video/stories/tj03/A_在德.json video/out/tj03_voice 0=2 18=1.5 24=1.5`
+  （动作行秒数 = 剧本估算秒数；这一集没有「考你」停顿。参考音都已存在 `video/assets/audio/voices/`，重跑不会变；缓存按（文字、声音、参考音 sha256、模型、种子）算，换了机器没有 `video/out/tj03_voice/cache/` 就要重新合成，种子相同，但显卡浮点不同时声音可能有细小差别。）
+  全长 174.2 秒（30 行，27 句台词）。过关：`.venv/Scripts/python video/script_check.py video/stories/tj03/A_在德.json --timeline video/out/tj03_voice/timeline.json`（退出码 0）；`.venv/Scripts/python video/story.py video/stories/tj03 --only A_在德 --timeline video/out/tj03_voice/timeline.json`（最长平淡段 ≤ 12.9 秒，要 TYPESAFE_API_KEY；真实时间线 11.9 秒）。
+  新声音怎么挑的（照 tj02「重跑用的命令」第 3 步的做法，脚本从 `video/out/tj02_voice_pick/scripts/` 复制到 `video/out/tj03_voice_pick/scripts/`，输出在 `video/out/tj03_voice_pick/`，都不进 git）：
+  1. `make_spec.py`（读 `episode.json` 的 cast 和剧本里的语气）写 `spec.json`：魏武侯、吴起 2 个默认声音 + 2 个语气变体（魏武侯@真诚恍然大悟郑重地点头称赞、吴起@沉稳有力加重语气语重心长）；`gen_cands.py spec.json cands 8`（`.venv-tts`，约 10 分钟）每个声音换种子出 8 个候选；
+  2. 魏武侯 8 个候选全是 212–311 Hz（像女声）：改描述、改参考句、改语气重出了 5 轮（spec2–spec6、cands2–cands6，约 80 个候选；`quick_dir.py <目录>` 只量基频，不用显卡），最后用 `cands4/I`、`cands5/I2`（新描述）的 14 个默认候选、`cands6/cands7` 的 22 个语气变体；吴起 8 + 8 个候选是第一轮的，吴起变体后来又加了 12 个（`cands7`）；
+  3. `analyze_cands.py <候选目录> <spec> <输出 json> [额外参考音 wav ...]`（`.venv-tts`）量基频中位数 / 起伏 / 响度 / 频谱重心 / Whisper-small 转写字错率 / 说话人向量，额外参考音放司马光、魏文侯、旁白（要和他们不像）；`show.py` 打印对比表（说话人向量先减全体均值再算余弦）；
+  4. 挑法：男青年 110–140 Hz、中年 105–130 Hz，起伏 ≥ 4 个半音，Whisper 转写要对，和司马光（116 Hz）/ 魏文侯（133 Hz）/ 旁白 / 彼此的说话人余弦接近 0，语气变体和默认参考音基频相近、余弦尽量高；
+  5. **挑完先用真实台词试念**：`linetest_job.py`（写 job，用候选 wav 当参考音，直接调 `video/tts/qwen_worker.py`，不用装进 voices）+ `linetest_eval.py`（`.venv-tts`，每句基频 + Whisper 转写）：魏武侯 3 个默认候选里一个念出来 138 Hz，另两个 123–153 Hz 起伏小而慢 / 173–191 Hz 偏高；吴起 3 个默认候选基频都在 110–136 Hz，选转写和说话人最稳的；`install_picks.py` 把挑好的 4 个装进 `video/assets/audio/voices/`（wav + json，`pick` 写原因）；
+  6. 整集念完后：`asr_timeline.py video/out/tj03_voice <输出.json> small`（`.venv-tts`）用 Whisper 转写每一句；`line_f0.py video/out/tj03_voice 魏武侯 吴起`（`.venv-tts`）量每句基频；`forced.py '<json: {音频: [候选转写...]}>'`（`.venv-tts`）用 Whisper 强制解码给「读音相近的几个字」打分（查多音字：同一段音频，比「吴姜军 / 吴匠军」「德形 / 德幸」谁的对数似然更高；生僻的同音字组合比较，不要拿成词的和不成词的比，词频会盖过读音）。
+- 10-02 主会话：配音后史实闸门 g_accuracy 0.67 → episode.json pitfalls 写明「险要十倍」「万丈绝壁」是 Chris 定的修辞后降到 **0.50**（压线；去掉「十倍」那句是 0.46）。按 Chris 的决定放行，不改台词。拿不准、请 Chris 听：旁白念「吴起」可能像「吴奇」；魏武侯的声音为了不像女声，按「三十岁左右、嗓音浑厚」设计。
