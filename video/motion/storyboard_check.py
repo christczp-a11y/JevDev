@@ -55,6 +55,16 @@
            线画在人物前面（layer front，不写 layer 就是这个）、区域盖住任何一个人物（不只是主体）脸框的 5% 以上 = 错；脸没碰到、只盖住他身体（人物图不透明部分）的 20% 以上 = 警告；
            线画在人物后面（写了 "layer": "back"）、或区域避开了人物的不报。线条钉在屏幕上不跟镜头动，人物的脸框 / 身体框按镜头运动、补间算到屏幕上（同 [压脸]、[遮挡]）；
            在线出现的这段时间里取 3 个时刻查（出现后 0.25 秒、中间、结束）
+  [铺满]   整屏都要有画（M7 第三次再犯、待补 23：tj03 第一版书房镜头只铺了 1024×1536 的 wall.png，宽 1080 铺出来只有 1620 高，最下面约 300 像素露出纸底色，合计约 25 秒）：
+           每个镜头里每隔 0.25 秒取一个时刻（最后一帧也取），按每个 bg / fg 布景图层的实际尺寸（w / h / scale、repeat x 拼的份数）、pos / anchor、补间（anim）、sway、
+           视差（depth）和镜头运动（推 / 拉 / 摇 / 冲击推 / 震屏 / 呼吸漂移）算它盖在屏幕上哪些地方，不透明度取图自己的 alpha（透明 PNG 按 alpha 算，叠在一起的几层按「下面的纸底色还透出多少」算）。
+           整个画面（x 0–1080、y 0–1920，含标题条下面、字幕区、底部 300 像素平台遮挡区）里，下面的纸底色透出 > 50% 的地方，连成一块面积 ≥ 400 像素²：厚度 ≥ 10 像素 = 错
+           （底部空条、桌腿之间、图层之间露出来的 14–20 像素的缝），厚度 6–10 像素 = 警告（贴着屏幕边的几像素，多半是视差 / 镜头漂移），< 6 像素（图边抗锯齿）不报；
+           报镜头号、秒数、没盖住的区域坐标和占画面的比例、本镜每个布景图层在屏幕上的外框。只算 bg / fg 布景图层，不算人物（actors）、特效（fx 的 screen / 卡片 / 光芒……）；
+           故意要纯纸底的镜头也得放一层铺满的纸底图（没有「放行」开关）。有图层的图找不到 / 字段写错（[素材] / [格式] 已经报了）的镜头不查。
+           不查的时刻：布景图层还在出场动画里（enter 的 at 到 at + dur）、甩镜的 whip 进行中（内容本来就在滑进 / 滑出画面）；出场动画以前这个图层还不在，算没盖。
+           阈值在 FILL_* 常量里（和 tj01 / tj02 / tj03 实际画出来的布景帧对过：逐镜头每 0.5 秒一帧，用「纸底色 / 黑底」两次渲染的差算每个像素透出多少底色，不画人物；预测 = 实测）。
+           `blank_scan.py --bare` 是同一件事的「画出来再看」版本（扫 y 0–1920，认露出来的纸底色）
 
 脸框（[安全区] [字幕] [压脸] [遮挡] [速度线] [集中线] 共用；PITFALLS M6 再犯、待补 18）：不再是每张图都当「脸在最上面 40%、中间 50% 宽」（斗笠 / 官帽的人脸在 18%–55%、有胡子的下巴到 57%，旧框会低估）。
 每张人物图自己的脸框 = 额头到下巴 / 胡子底（戴帽的从帽檐下面算），比例坐标 [x0, x1, y0, y1]，写在 video/assets/faces.json（路径相对 video/assets/，量过看过的）；没写的图自动估（video/motion/faces.py：
@@ -75,6 +85,7 @@ import re
 import sys
 import traceback
 
+import cv2
 import numpy as np
 from functools import lru_cache
 from pathlib import Path
@@ -165,6 +176,13 @@ FACE_TOUCH_BY_OVERLAY = {"sticker", "slam"}                                # 这
 LINE_FX = ("lines_speed", "lines_radial")                                  # [速度线] 查的整屏线条特效（fx/lines.py；lines_focus 有自己的 [集中线]）
 SPEED_PAD = 10.0                                                           # lines_speed：线最粗 20 像素，y0–y1 上下各多出 10
 RADIAL_CLEAR = 210.0                                                       # lines_radial：圆心 210 像素以内不画线（fx/lines.py 的 r0）
+FILL_STEP = 0.25                                                           # [铺满]：镜头里每隔这么久取一个时刻（最后一帧也取）
+FILL_GRID = 2                                                              # [铺满]：屏幕上 2 个设计像素一格（540×960 个格子）
+FILL_COARSE = 4                                                            # [铺满]：先在 4 个设计像素一格（270×480）上粗扫，一格都没露才跳过细扫（厚 ≥ 6 的缺口里一定有粗扫的格子中心，不会漏）
+FILL_VIS_MAX = 0.5                                                         # [铺满]：几层布景叠起来，下面的纸底色还透出 > 50% 的格子 = 没盖住
+FILL_MIN_PX, FILL_ERR_PX, FILL_MIN_AREA = 6, 10, 400                       # [铺满]：没盖住的地方厚度 ≥ 10 设计像素（同 blank.py 的 STRIP_H 下限）= 错，6–10 像素 = 警告（贴着屏幕边的几像素，多半是视差 / 镜头漂移），< 6 像素（图边抗锯齿）不报；面积 ≥ 400 像素²
+FILL_MASK_MAX = 512                                                        # [铺满]：图的不透明度缩到最长边这么多像素存起来（每张图只读一次）
+FILL_GROUPS_MAX = 3                                                        # [铺满]：一个镜头最多列几处没盖住的区域
 BUB_AR, BUB_MIN_W = 920 / 1357, 460.0                                      # 泡泡图的高 / 宽
 COVER_CELL = 12.0                                                          # 算「合起来盖住多少」时的格子大小（像素）
 SUBJECT_LATER_WINS = 0.85                                                  # 主体：面积最大的人物；后画的（在上面的）面积 ≥ 最大的 85% 时取它
@@ -997,6 +1015,206 @@ def check_cover(sh, out, cam, tl, rep):
                 rep.err("遮挡", f"{'、'.join(dict.fromkeys(names))} 压在主角 {a['who']}（{why}）身上：{why_bad}（{t:.1f} 秒时；M8：贴图特效不应该覆盖主角）：挪到旁边、堆在怀里露出脸，或者缩小", sh.id)
 
 
+# ------------------------------------------------------------------ [铺满]（M7 第三次再犯，待补 23）
+def fill_layer(e, ref, grp, where, rel, where_full):
+    """一个 bg / fg 布景图层的记录（[铺满] 用）：尺寸（含 repeat x 拼的份数）、锚点、补间（含 alpha 的初值）、出场动画的时间段。读不了 / 拼错 = None（那几项别处已经报了）。"""
+    try:
+        sw, shh = ref.size
+        wd = float(e["w"]) if "w" in e else sw * float(e["h"]) / shh if "h" in e else sw * float(e.get("scale", 1.0))
+        ax, ay = e.get("anchor", (0.0, 0.0))
+        tile = 1
+        if e.get("repeat") == "x":                                    # 同 engine/scene.py：奇数份，原图在正中间，pos / anchor 仍然指原图那一份
+            tile = 2 * math.ceil(C.W / wd) + 1
+            ax = (ax + (tile - 1) / 2) / tile
+        tracks = Tracks(dict(x=float(e["pos"][0]), y=float(e["pos"][1]), scale=1.0, sx=1.0, sy=1.0, alpha=float(e.get("alpha", 1.0)), rot=0.0),
+                        e.get("anim"), rel, where_full)
+        enter = None
+        en = e.get("enter")
+        if en is not None:
+            en = {"type": en} if isinstance(en, str) else en
+            enter = (rel(en["at"]) if "at" in en else 0.0, float(en.get("dur", C.ENTER_DUR.get(en.get("type"), 0.4))))
+        return dict(spec=e, ref=ref, tracks=tracks, where=where, grp=grp, wd=wd, hd=wd * shh / sw, tile=tile, anchor=(float(ax), float(ay)), enter=enter,
+                    depth=float(e.get("depth", 1.0)), flip=bool(e.get("flip")), blur=round(float(e.get("blur", 0) or 0), 2))
+    except (KeyError, TypeError, ValueError, ZeroDivisionError, AnchorError):
+        return None
+
+
+@lru_cache(maxsize=None)
+def fill_alpha(path, flip, tile, blur=0.0, wd=1.0):
+    """图的不透明度（0–1，float32，最长边缩到 FILL_MASK_MAX）；flip = 左右翻；tile = 横向拼几份（repeat x）；blur = 分镜表里的 blur（设计像素）、wd = 一份图的设计宽，
+    blur > 0 的图层引擎先把图模糊再贴（窄缝会被抹平 / 变淡），这里同样把不透明度模糊一遍。读不了 = None。"""
+    try:
+        with Image.open(path) as im:
+            a = np.asarray(im.convert("RGBA").getchannel("A"))
+    except (OSError, ValueError):
+        return None
+    h, w = a.shape
+    k = FILL_MASK_MAX / max(w, h)
+    if k < 1:
+        a = cv2.resize(a, (max(1, round(w * k)), max(1, round(h * k))), interpolation=cv2.INTER_AREA)
+    mw = a.shape[1]
+    a = a.astype(np.float32) / 255.0
+    if flip:
+        a = a[:, ::-1]
+    if tile > 1:
+        a = np.tile(a, (1, tile))
+    if blur > 0:
+        a = fill_blur(np.ascontiguousarray(a), blur * mw / wd)
+    return np.ascontiguousarray(a)
+
+
+def fill_blur(a, sigma):
+    """同 engine/sprites.py 的 blur_premult（只对 alpha 通道）：边上不透明的像素不到一半的那条边（画到这儿就结束了）往外垫透明，别的边镜像；模糊后裁回原来的大小。"""
+    if sigma < 0.3:
+        return a
+    r = int(math.ceil(3.0 * sigma)) + 1
+    open_ = ((a[:, 0] >= 250 / 255).mean() < 0.5, (a[0] >= 250 / 255).mean() < 0.5, (a[:, -1] >= 250 / 255).mean() < 0.5, (a[-1] >= 250 / 255).mean() < 0.5)      # 左 上 右 下
+    big = cv2.copyMakeBorder(a, r, r, r, r, cv2.BORDER_REFLECT_101)
+    if open_[0]:
+        big[:, :r] = 0
+    if open_[1]:
+        big[:r] = 0
+    if open_[2]:
+        big[:, -r:] = 0
+    if open_[3]:
+        big[-r:] = 0
+    return cv2.GaussianBlur(big, (0, 0), sigma)[r:-r, r:-r]
+
+
+def fill_geom(L, cam, t, t0):
+    """布景图层 L 在镜头内 t 秒时画在屏幕上的位置：(外框 (l, t, r, b)（设计坐标，没算镜头以外的裁切）, 变换参数)；这时它不在（缩成 0 / 完全透明）= None。
+    和 engine/scene.py Element.draw + canvas.blit 同一套：补间 → sway → 视差 + 镜头 → 锚点。"""
+    e, v = L["spec"], L["tracks"].value(t)
+    if v["alpha"] <= 0.02 or v["scale"] <= 0.0 or v["sx"] == 0.0 or v["sy"] == 0.0:
+        return None
+    x, y = v["x"], v["y"]
+    sway = e.get("sway")
+    if sway:
+        per, ph = float(sway.get("period", 3.7)), float(sway.get("phase", 0.0))
+        x += float(sway.get("x", 0)) * math.sin(2 * math.pi * (t0 + t) / per + ph)
+        y += float(sway.get("y", 0)) * math.sin(2 * math.pi * (t0 + t) * 1.35 / per + 1.3 + ph)
+    X, Y, Z = screen_xf(cam, t, t0 + t, x, y, L["depth"])
+    fw, fh = L["wd"] * L["tile"] * Z * v["scale"] * v["sx"], L["hd"] * Z * v["scale"] * v["sy"]
+    ax, ay = L["anchor"]
+    xs, ys = sorted((X - ax * fw, X + (1 - ax) * fw)), sorted((Y - ay * fh, Y + (1 - ay) * fh))
+    return (xs[0], ys[0], xs[1], ys[1]), (X, Y, fw, fh, ax, ay, min(max(v["alpha"], 0.0), 1.0))
+
+
+def fill_layer_alpha(L, cam, t, t0, G=FILL_GRID):
+    """布景图层 L 在镜头内 t 秒时盖在屏幕格子（G 个设计像素一格，默认 FILL_GRID = 2，540×960）上的不透明度：(x0, y0, 数组 0–1)，数组只含图层外框占到的那一块格子；
+    这时它不在 / 图读不了 / 在屏幕以外 = None。"""
+    g = fill_geom(L, cam, t, t0)
+    mask = fill_alpha(str(L["ref"].file), L["flip"], L["tile"], L["blur"], round(L["wd"]))
+    if g is None or mask is None:
+        return None
+    (l, tp, r, b), (X, Y, fw, fh, ax, ay, alpha) = g
+    gw, gh = C.W // G, C.H // G
+    x0, x1 = max(int(math.floor(l / G)) - 1, 0), min(int(math.ceil(r / G)) + 1, gw)
+    y0, y1 = max(int(math.floor(tp / G)) - 1, 0), min(int(math.ceil(b / G)) + 1, gh)
+    if x1 <= x0 or y1 <= y0:
+        return None
+    mh, mw = mask.shape
+    # 图的像素 (i, j) 的中心 → 屏幕格子坐标（cv2 的像素坐标：格子 j 的中心在 j）；warpAffine 按「图 → 屏幕」给矩阵，自己求逆；只算图层外框占到的那一块（−x0、−y0）
+    M = np.array([[fw / mw / G, 0.0, (X + (0.5 / mw - ax) * fw) / G - 0.5 - x0],
+                  [0.0, fh / mh / G, (Y + (0.5 / mh - ay) * fh) / G - 0.5 - y0]], np.float64)
+    out = cv2.warpAffine(mask, M, (x1 - x0, y1 - y0), flags=cv2.INTER_NEAREST, borderMode=cv2.BORDER_CONSTANT, borderValue=0.0)
+    return x0, y0, (out * alpha if alpha < 1.0 else out)
+
+
+def fill_skip_windows(L_list, cam):
+    """不查的时间段（镜头内秒）：布景图层还在出场动画里、甩镜进行中。"""
+    wins = []
+    for L in L_list:
+        if L["enter"]:
+            wins.append((L["enter"][0] - 1e-6, L["enter"][0] + L["enter"][1] + 1e-6))
+    for m in cam.moves:
+        if m["kind"] == "whip":
+            wins.append((m["at"] - 1e-6, m["at"] + m["dur"] + 1e-6))
+    return wins
+
+
+def fill_vis(layers, cam, t, t0, G):
+    """镜头内 t 秒时屏幕格子（G 个设计像素一格）上，几层布景叠起来下面的纸底色还透出多少（1 = 一点没盖，0 = 全盖住）。"""
+    vis = np.ones((C.H // G, C.W // G), np.float32)
+    for L in layers:
+        if L["enter"] and t < L["enter"][0]:
+            continue                                                      # 出场以前：还不在
+        a = fill_layer_alpha(L, cam, t, t0, G)
+        if a is not None:
+            x0, y0, arr = a
+            vis[y0:y0 + arr.shape[0], x0:x0 + arr.shape[1]] *= 1.0 - arr
+    return vis
+
+
+def fill_uncovered(layers, cam, t, t0):
+    """镜头内 t 秒时屏幕上没被布景图层盖住的地方：[(外框 (l, t, r, b)（设计坐标）, 面积（设计像素²）, 厚 ≥ FILL_ERR_PX 吗)]。几层叠起来下面的纸底色还透出 > FILL_VIS_MAX 的格子，
+    去掉厚度 < FILL_MIN_PX 的细缝，面积 < FILL_MIN_AREA 的小块不算；厚度 < FILL_ERR_PX 的（只能当警告）最后一项是 False。"""
+    if not (fill_vis(layers, cam, t, t0, FILL_COARSE) > FILL_VIS_MAX).any():
+        return []                                                         # 粗扫一格都没露：绝大多数镜头在这里就结束
+    G = FILL_GRID
+    vis = fill_vis(layers, cam, t, t0, G)
+    raw = (vis > FILL_VIS_MAX).astype(np.uint8)
+    def opened(k):                                                        # 画面外面算「有图」（0）：贴着屏幕边的缝不会因为 cv2 默认的腐蚀边界当无穷而显得比实际厚
+        return cv2.morphologyEx(raw, cv2.MORPH_OPEN, np.ones((max(1, k // G),) * 2, np.uint8), borderType=cv2.BORDER_CONSTANT, borderValue=0)
+    bad = opened(FILL_MIN_PX)
+    out = []
+    if bad.any():
+        thick = opened(FILL_ERR_PX)
+        cnt, lab, st, _ = cv2.connectedComponentsWithStats(bad, connectivity=8)
+        for i in range(1, cnt):
+            area = int(st[i][4]) * G * G
+            if area >= FILL_MIN_AREA:
+                box = (int(st[i][0]) * G, int(st[i][1]) * G, (int(st[i][0]) + int(st[i][2])) * G, (int(st[i][1]) + int(st[i][3])) * G)
+                out.append((box, area, bool(thick[lab == i].any())))
+    return out
+
+
+def fill_times(dur, wins):
+    """[铺满] 的取样时刻：每隔 FILL_STEP 秒一个，最后一帧也取，去掉落在不查的时间段里的。"""
+    n = max(2, int(math.ceil(dur / FILL_STEP)) + 1)
+    return [t for t in (max(min(dur * k / (n - 1), dur - 1.0 / FPS), 0.0) for k in range(n)) if not any(a <= t <= b for a, b in wins)]
+
+
+def check_fill(sh, out, cam, rep):
+    """M7（第三次再犯）：整屏都要有画。每隔 FILL_STEP 秒取一个时刻，把每个 bg / fg 布景图层按实际尺寸、位置、补间、视差、镜头运动算到屏幕上，
+    几层叠起来下面的纸底色还透出 > 50% 的地方没盖住：厚度 ≥ FILL_ERR_PX = 错，FILL_MIN_PX–FILL_ERR_PX = 警告（面积都要 ≥ FILL_MIN_AREA）。"""
+    layers, t0, dur = out.get("layers", []), sh.t0, sh.dur
+    if len(layers) < out.get("layers_expected", 0):
+        return
+    ts = fill_times(dur, fill_skip_windows(layers, cam))
+    groups = {True: [], False: []}                                        # 错的 / 警告的各自合并
+    for t in ts:
+        for box, area, severe in fill_uncovered(layers, cam, t, t0):
+            gl = groups[severe]
+            for g in gl:
+                if overlap_frac(box, g["box"]) >= 0.5 or overlap_frac(g["box"], box) >= 0.5:
+                    g["t1"], g["n"] = t, g["n"] + (g["last"] != t)
+                    g["last"] = t
+                    if area > g["area"]:
+                        g["box"], g["area"], g["at"] = box, area, t
+                    break
+            else:
+                gl.append(dict(box=box, area=area, t0=t, t1=t, n=1, at=t, last=t))
+    for severe in (True, False):
+        gl = sorted(groups[severe], key=lambda g: -g["area"])
+        if not gl:
+            continue
+        parts = []
+        for g in gl[:FILL_GROUPS_MAX]:
+            l, tp, r, b = g["box"]
+            when = f"{t0 + g['t0']:.1f}–{t0 + g['t1']:.1f} 秒" if g["t1"] - g["t0"] > 1e-6 else f"{t0 + g['t0']:.1f} 秒"
+            parts.append(f"{when}：x {l}–{r}、y {tp}–{b}（占画面 {g['area'] / (C.W * C.H):.1%}；{g['n']}/{len(ts)} 个取样时刻）")
+        lay = []
+        for L in layers:
+            gm = fill_geom(L, cam, gl[0]["at"], t0)
+            lay.append(f"{L['where']} {L['ref'].rel or Path(str(L['ref'].file)).name}" + (f"（屏幕上 x {gm[0][0]:.0f}–{gm[0][2]:.0f}、y {gm[0][1]:.0f}–{gm[0][3]:.0f}）" if gm else "（那时不在）"))
+        more = f"；另有 {len(gl) - FILL_GROUPS_MAX} 处" if len(gl) > FILL_GROUPS_MAX else ""
+        what = "整屏 1080×1920 有地方没被布景图层盖住，露出纸底色" if severe else f"有 {FILL_MIN_PX}–{FILL_ERR_PX} 像素厚的细缝没被布景图层盖住（多半是贴着屏幕边的视差 / 镜头漂移，或者图层之间没接严）"
+        msg = (f"{what}（M7 第三次再犯、待补 23）：" + "；".join(parts) + more + "。本镜布景图层：" + ("、".join(lay) if lay else "没有（bg / fg 都是空的）")
+               + ("。放大这张图（竖图 1024×1536 要 w ≥ 1280 才有 1920 高）、换更高的图，或者叠一层前景 / 地面（桌子、地面）把下面盖住；人物、特效不算盖住" if severe else ""))
+        (rep.err if severe else rep.warn)("铺满", msg, sh.id)
+
+
 def check_plate_time(sh, out, rep):
     """人名牌看得清的时间（不算落下的 0.42 秒；写了 dur 的话，dur 以后的淡出也不算）≥ 1.5 秒。"""
     for kind, at, e in out["fx"]:
@@ -1294,7 +1512,7 @@ def analyse_shot(sh, ctx, rep, spec, out):
         events.append((t0, t0, "切镜头"))
 
     # ---- 图层 / 人物：图、放大倍数、补间、出场
-    actors, props, icons = [], [], []
+    actors, props, icons, layers = [], [], [], []
     for grp in ("bg", "actors", "fg"):
         for j, e in enumerate(spec.get(grp, []) or []):
             kind = "actor" if grp == "actors" else grp
@@ -1370,6 +1588,10 @@ def analyse_shot(sh, ctx, rep, spec, out):
                 except (KeyError, TypeError, ValueError, AnchorError):
                     enter_end = 0.0
                 props.append(dict(spec=e, ref=ref, tracks=tracks, where=where, grp=grp, is_actor=False, enter_end=enter_end))
+            if kind != "actor" and ref.file:
+                lay = fill_layer(e, ref, grp, where, rel, f"{sid} {where}")
+                if lay:
+                    layers.append(lay)
     out["new_things"] = new_things
 
     # ---- 特效（含 rituals 分到这个镜头的）
@@ -1470,12 +1692,15 @@ def analyse_shot(sh, ctx, rep, spec, out):
                     rep.warn("安全区", f"{e['type']} 砸字「{e.get('text')}」按字号估计宽 {box[2] - box[0]:.0f}，x 会到 {box[0]:.0f}–{box[2]:.0f}，超出 {SAFE[0]:.0f}–{OCC_X:.0f}", sid)
     out["actors"] = actors
     out["icons"], out["props"], out["assets_root"] = icons, props, ctx.assets_root
+    out["layers"] = layers
+    out["layers_expected"] = len(spec.get("bg", []) or []) + len(spec.get("fg", []) or [])       # 有图层读不了（找不到素材 / 写错了）= [素材] / [格式] 已经报了，[铺满] 算不准，不跟着报
     if cam is not None:
         check_overlays(sh, out, cam, rep)
         check_focus_lines(sh, out, cam, rep)
         check_line_fx(sh, out, cam, rep, ctx.fx_table)
         check_subtitle_zone(sh, out, cam, tl, rep)
         check_cover(sh, out, cam, tl, rep)
+        check_fill(sh, out, cam, rep)
     check_plate_time(sh, out, rep)
     out["dwell"] = dwell_items(sh, fxs)
     check_dwell(sh, out, rep)

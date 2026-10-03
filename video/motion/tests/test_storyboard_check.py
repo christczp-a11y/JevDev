@@ -20,7 +20,7 @@ OUT = common.OUT / "check_case"
 GOOD = TESTS / "good_storyboard.json"
 EXPECT = json.loads((TESTS / "check_expect.json").read_text(encoding="utf-8"))
 BAD = sorted(TESTS.glob("bad_*.json"))
-TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌", "翻转", "压脸", "集中线", "速度线", "字幕", "遮挡", "停留"]
+TAGS = ["格式", "锚点", "长度", "频率", "静止", "特效", "闪烁", "安全区", "素材", "放大", "朝向", "人名牌", "翻转", "压脸", "集中线", "速度线", "字幕", "遮挡", "停留", "铺满"]
 
 _spec = importlib.util.spec_from_file_location("make_case", CASE / "make_case.py")
 make_case = importlib.util.module_from_spec(_spec)
@@ -721,6 +721,136 @@ class TestDwell(unittest.TestCase):
         md, n_bad = RF.dwell_markdown("tj01", ranges, {r["id"]: r for r in good_rep.dwell}, 30)
         self.assertEqual(n_bad, 0, md)
         self.assertIn("清单「高大、力气、才艺」", md)                                          # s05 的清单：3 条，等最后一条到位后还有 2 秒以上
+
+
+class TestFillScreen(unittest.TestCase):
+    """M7 第三次再犯（待补 23）：整屏都要有画。tj03 第一版书房镜头只铺了 1024×1536 的 wall.png，宽 1080 铺出来只有 1620 高，最下面 300 像素露出纸底色。
+    用 s10（智伯一个人，第 9 句，约 2.6 秒，默认缓推 5%）当试验场：把它的 bg / fg 换成各种布景，只看 [铺满]。
+    天空图 sets/jin_land/sky.png 是 1024×1536 的不透明竖图（测试素材）；sets/test/holey.png 是 1080×1920、中间 (300, 800)–(700, 1200) 透明的洞；sets/study/desk.png 是 1221×531 不透明的桌子。"""
+    SKY_1080 = {"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 1080}              # 宽 1080 → 高 1620，下面 300 像素空
+    SKY_1280 = {"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [-100, 0], "w": 1280}           # 宽 1280 → 高 1920，左右各出 100
+    DESK = {"img": "sets/study/desk.png", "depth": 1.0, "pos": [540, 1930], "anchor": [0.5, 1], "w": 1150}      # 桌面在 y 1430–1930，宽 1150（x −35–1115）
+
+    def _run(self, name, bg, fg=None, camera=None, shot="s10"):
+        sb = json.loads(GOOD.read_text(encoding="utf-8"))
+        s = next(s for s in sb["shots"] if s["id"] == shot)
+        s["bg"] = bg
+        if fg is not None:
+            s["fg"] = fg
+        if camera is not None:
+            s["camera"] = camera
+        p = OUT / f"{name}.json"
+        p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        rep = check(p)[0]
+        return [e for e in rep.errors if e["tag"] == "铺满"], rep
+
+    @staticmethod
+    def _box(msg):
+        import re
+        m = re.search(r"x (-?\d+)–(\d+)、y (-?\d+)–(\d+)", msg)
+        return tuple(int(v) for v in m.groups())
+
+    def test_portrait_1024x1536_at_1080_wide_leaves_the_bottom_band(self):
+        errs, rep = self._run("fill_1080", [self.SKY_1080])
+        self.assertEqual(len(errs), 1, text(rep))
+        e = errs[0]
+        self.assertEqual(e["shot"], "s10")
+        x0, x1, y0, y1 = self._box(e["msg"])
+        self.assertEqual((x0, x1, y1), (0, 1080, 1920), e["msg"])
+        self.assertTrue(1615 <= y0 <= 1635, e["msg"])                       # 1620 + 缓推 5% × depth 0.05 的一点点
+        self.assertIn("bg[0] sets/jin_land/sky.png", e["msg"])               # 列出本镜布景图层和它们在屏幕上的外框
+        self.assertIn("1920", e["msg"])
+        self.assertEqual([e["tag"] for e in rep.errors], ["铺满"], text(rep))      # 只此一条，没连带别的错
+
+    def test_enlarged_to_1280_wide_is_fine(self):
+        errs, rep = self._run("fill_1280", [self.SKY_1280])
+        self.assertEqual(errs, [], text(rep))
+
+    def test_an_opaque_foreground_desk_over_the_bottom_is_fine(self):
+        errs, rep = self._run("fill_desk", [self.SKY_1080], fg=[self.DESK])
+        self.assertEqual(errs, [], text(rep))
+        errs, rep = self._run("fill_no_desk", [self.SKY_1080], fg=[])
+        self.assertEqual(len(errs), 1)
+
+    def test_a_transparent_hole_in_a_layer_is_reported_and_a_layer_behind_it_fills_it(self):
+        holey = {"img": "sets/test/holey.png", "depth": 0.0, "pos": [0, 0], "w": 1080}
+        errs, rep = self._run("fill_hole", [holey])
+        self.assertEqual(len(errs), 1, text(rep))
+        x0, x1, y0, y1 = self._box(errs[0]["msg"])
+        for got, want in ((x0, 300), (x1, 700), (y0, 800), (y1, 1200)):
+            self.assertAlmostEqual(got, want, delta=8, msg=errs[0]["msg"])
+        errs, rep = self._run("fill_hole_filled", [self.SKY_1280, holey])
+        self.assertEqual(errs, [], text(rep))
+
+    def test_thickness_decides_between_error_warning_and_nothing(self):
+        def run(name, x):
+            errs, rep = self._run(name, [{"img": "sets/test/full.png", "depth": 0.0, "pos": [x, 0], "w": 1080}])      # 1080×1920 整屏图往右挪 x：左边露出 x 像素宽、整个高的一条
+            return errs, [w for w in rep.warnings if w["tag"] == "铺满"]
+        errs, warns = run("fill_edge12", 12)
+        self.assertEqual((len(errs), len(warns)), (1, 0))                                         # ≥ 10 像素 = 错
+        errs, warns = run("fill_edge8", 8)
+        self.assertEqual((len(errs), len(warns)), (0, 1))                                         # 6–10 像素 = 警告
+        self.assertEqual(self._box(warns[0]["msg"])[:2], (0, 8))
+        errs, warns = run("fill_edge4", 4)
+        self.assertEqual((len(errs), len(warns)), (0, 0))                                         # < 6 像素（图边抗锯齿 / 漂移）不报
+
+    def test_a_shot_whose_layer_is_missing_is_left_to_the_asset_check(self):
+        errs, rep = self._run("fill_missing", [dict(self.SKY_1280, img="sets/nope/none.png")])
+        self.assertEqual(errs, [])
+        self.assertTrue(any(e["tag"] == "素材" for e in rep.errors), text(rep))
+
+    def test_translucent_layers_add_up(self):
+        faint = dict(self.SKY_1280, alpha=0.4)
+        self.assertEqual(len(self._run("fill_alpha1", [faint])[0]), 1)                         # 一层 0.4：下面的纸底色还透出 60%
+        self.assertEqual(self._run("fill_alpha2", [faint, dict(faint)])[0], [])                # 两层：0.6 × 0.6 = 0.36 透出，够了
+        self.assertEqual(self._run("fill_alpha3", [dict(self.SKY_1280, alpha=0.6)])[0], [])    # 一层 0.6：透出 40%，不算
+
+    def test_camera_pan_can_slide_an_edge_into_view(self):
+        pan = [{"move": "pan", "dx": -150}]                                                     # dx < 0：镜头往左，内容往右走 150 像素
+        errs, rep = self._run("fill_pan_near", [dict(self.SKY_1280, depth=1.0)], camera=pan)     # 图层跟着镜头走：左边露出 x 0–50
+        self.assertEqual(len(errs), 1, text(rep))
+        x0, x1, y0, y1 = self._box(errs[0]["msg"])
+        self.assertTrue(x0 == 0 and 40 <= x1 <= 60 and y0 <= 10 and y1 >= 1900, errs[0]["msg"])
+        self.assertEqual(self._run("fill_pan_far", [self.SKY_1280], camera=pan)[0], [])               # 远景（depth 0.05）几乎不动，盖得住
+
+    def test_zoom_hides_the_gap_only_if_the_layer_scales_with_the_camera(self):
+        errs, rep = self._run("fill_frame_out", [dict(self.SKY_1280, depth=1.0)], camera=[{"move": "frame", "zoom": 0.9}])     # 镜头缩到 0.9：图层缩小，四周露出来
+        self.assertEqual(len(errs), 1, text(rep))
+        errs, rep = self._run("fill_push", [dict(self.SKY_1280, depth=1.0)], camera=[{"move": "push", "amount": 0.05}])
+        self.assertEqual(errs, [], text(rep))                                                     # 推近：只会更满
+
+    def test_people_and_effects_do_not_cover(self):
+        errs, rep = self._run("fill_empty", [], fg=[])
+        self.assertEqual(len(errs), 1, text(rep))
+        self.assertIn("bg / fg 都是空的", errs[0]["msg"])                                       # 这一镜有人物、有特效，都不算布景
+        self.assertEqual((self._box(errs[0]["msg"])[1], self._box(errs[0]["msg"])[3]), (1080, 1920))
+
+    def test_repeat_x_tiles_sideways_but_not_downwards(self):
+        errs, rep = self._run("fill_repeat", [{"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 600, "repeat": "x"}])
+        self.assertEqual(len(errs), 1, text(rep))
+        x0, x1, y0, y1 = self._box(errs[0]["msg"])
+        self.assertEqual((x0, x1, y1), (0, 1080, 1920), errs[0]["msg"])                       # 左右铺满了，下面 900 以下没有
+        self.assertTrue(880 <= y0 <= 920, errs[0]["msg"])
+        flipped = dict(self.SKY_1280, flip=True)
+        self.assertEqual(self._run("fill_flip", [flipped])[0], [])
+
+    def test_blurred_layer_still_covers_to_its_edges(self):
+        self.assertEqual(self._run("fill_blur", [dict(self.SKY_1280, blur=6)])[0], [])
+
+    def test_a_layer_still_entering_is_not_checked_but_one_that_arrives_late_leaves_a_gap(self):
+        self.assertEqual(self._run("fill_enter_now", [dict(self.SKY_1280, enter={"type": "fade", "dur": 0.3})])[0], [])
+        errs, rep = self._run("fill_enter_late", [dict(self.SKY_1280, enter={"type": "fade", "at": {"line": 9, "dt": 1.2}, "dur": 0.3})])
+        self.assertEqual(len(errs), 1, text(rep))                                                # 前 1.2 秒这一层还没来，整屏都是纸底色
+
+    def test_whip_slide_in_is_not_checked(self):
+        whip = [{"move": "whip", "dir": "left", "mode": "in", "dur": 0.2}]
+        self.assertEqual(self._run("fill_whip", [dict(self.SKY_1280, depth=1.0)], camera=whip)[0], [])
+
+    def test_report_names_the_shot_and_seconds(self):
+        rc, out = cli(TESTS / "bad_fill_gap.json", "--assets-root", OUT / "assets", "--registry", OUT / "REGISTRY.md", "--no-plugins")
+        self.assertEqual(rc, 1, out)
+        self.assertRegex(out, r"\[铺满\] 镜头 s10（[\d.]+–[\d.]+ 秒）")
+        self.assertIn("个取样时刻", out)
 
 
 class TestWarnings(unittest.TestCase):

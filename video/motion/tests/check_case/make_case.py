@@ -38,7 +38,10 @@ IMGS = {
     "sets/jin_land/sky": (1024, 1536, "正面", "定稿", "tj01"), "sets/jin_land/ridge_far": (1016, 462, "正面", "定稿", "tj01"),
     "sets/jin_land/ground": (1528, 218, "正面", "定稿", "tj01"),
     "props/cup_lacquer": (513, 257, "正面", "定稿", "tj01"), "props/map_silk": (1132, 806, "正面", "定稿", "tj01"),
+    # [铺满] 的测试用：整屏大小、中间有一块透明的洞的布景图（make_assets 里挖洞）；不透明的书桌前景
+    "sets/test/holey": (1080, 1920, "正面", "定稿", "tj01"), "sets/test/full": (1080, 1920, "正面", "定稿", "tj01"), "sets/study/desk": (1221, 531, "正面", "定稿", "tj01"),
 }
+HOLE = (300, 800, 700, 1200)          # sets/test/holey.png 里透明的方块 (x0, y0, x1, y1)
 
 
 NOTES = {"chars/zb_stand": "测试图（侧面立像，可翻转）"}          # 登记表备注写了「可翻转」的图可以 flip
@@ -58,7 +61,10 @@ def make_assets(out):
     for path, (w, h, facing, status, scope) in IMGS.items():
         f = out / "assets" / f"{path}.png"
         f.parent.mkdir(parents=True, exist_ok=True)
-        Image.new("RGBA", (w, h), (200, 180, 160, 255)).save(f)
+        im = Image.new("RGBA", (w, h), (200, 180, 160, 255))
+        if path == "sets/test/holey":
+            im.paste((0, 0, 0, 0), HOLE)
+        im.save(f)
         rows.append(f"| `{path}.png` | {owner_of(path)} | {facing} | {w}×{h} | 无 | {status} | {NOTES.get(path, '测试图')} | {scope} |")
     (out / "REGISTRY.md").write_text("\n".join(rows) + "\n", encoding="utf-8")
     print(f"{len(IMGS)} 张测试图 + 登记表写到 {out}")
@@ -103,7 +109,8 @@ def actor(pid, pose, x, left=False, y=FEET, **extra):
 
 
 def bg():
-    return [{"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [0, 0], "w": 1080},
+    # 天空是竖图 1024×1536：宽 1080 只有 1620 高，最下面 300 像素露出纸底色（[铺满]，PITFALLS M7 第三次再犯 / 待补 23），所以放大到 1280 宽（1920 高）、左右各出 100
+    return [{"img": "sets/jin_land/sky.png", "depth": 0.05, "pos": [-100, 0], "w": 1280},
             {"img": "sets/jin_land/ridge_far.png", "depth": 0.15, "pos": [0, 430], "w": 1080},
             {"img": "sets/jin_land/ground.png", "depth": 0.9, "pos": [540, 1330], "anchor": [0.5, 0], "w": 1200, "repeat": "x"}]
 
@@ -526,6 +533,12 @@ def _(sb):
 @case("bad_cover_speaker", "正在说话")
 def _(sb):
     sh(sb, "s03")["fg"] = [{"img": "props/cup_lacquer.png", "depth": 1.0, "pos": [x, y], "anchor": [0.5, 0.5], "w": 180} for x in (250, 400) for y in (1200, 1290, 1380)]    # 第 2 句韩康子（左，比较小）说话，被图标盖住
+
+
+# ---- 铺满（M7 第三次再犯，待补 23）
+@case("bad_fill_gap", "没被布景图层盖住")
+def _(sb):
+    sh(sb, "s10")["bg"][0].update(pos=[0, 0], w=1080)      # 竖图宽 1080 只有 1620 高：最下面 300 像素没有任何布景（tj03 第一版书房镜头的毛病）
 
 
 # ---- 停留（M9、M10）

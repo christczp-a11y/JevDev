@@ -422,6 +422,159 @@ class TestBlankScan(unittest.TestCase):
                 self.assertIn("gap  直边平条", out)
 
 
+class TestBareWholeScreen(unittest.TestCase):
+    """待补 23（M7 第三次再犯，tj03 第一版书房镜头只铺了 1620 高的 wall.png，最下面 300 像素空米色条）：`blank_scan.py --bare` 扫整屏 y 0–1920，
+    认露出来的纸底色（C.PAPER，饱和度 33，不算「淡色」，以前不管扫多大范围都报不出来）。engine/blank.py 本身一个字没动（范围还是 340–1400）。"""
+
+    @classmethod
+    def setUpClass(cls):
+        import blank_scan
+        cls.bs = blank_scan
+        cls.d = common.fresh("it_bare_whole")
+
+    def frame(self):
+        return textured(H, W)
+
+    def test_bottom_band_of_paper_colour_is_reported_and_the_engine_default_range_never_saw_it(self):
+        img = self.frame()
+        img[1620:] = self.bs.PAPER_BGR.astype(np.uint8)
+        self.assertEqual(blank.detect(img), [])                                         # 以前的检查：y 340–1400，而且纸底色不是淡色
+        ev = self.bs.detect_bare(img)
+        self.assertEqual([e["kind"] for e in ev], ["paper"], ev)
+        self.assertEqual(ev[0]["bbox"], [0, 1620, 1080, 1920])
+        self.assertAlmostEqual(ev[0]["area"], 300 / 1920, delta=0.002)
+
+    def test_small_thin_or_off_colour_bits_are_not_reported(self):
+        paper = self.bs.PAPER_BGR.astype(np.uint8)
+        img = self.frame()
+        img[1000:1004, :] = paper                                                       # 4 像素的细线（图边抗锯齿 / 镜头漂移）
+        img[500:515, 500:515] = paper                                                   # 15×15 = 225 像素²
+        img[1700:1800, 100:300] = paper + np.array([8, 8, 8], np.uint8)                 # 差 8：是图的颜色，不是没盖住
+        self.assertEqual(self.bs.uncovered_paper(img), [])
+        img[:, :8] = paper                                                              # 贴着屏幕左边的 8 像素宽细条（整个高）：< 10 像素，不报（storyboard_check 的 [铺满] 当警告）
+        self.assertEqual(self.bs.uncovered_paper(img), [])
+        img[500:530, 500:530] = paper                                                   # 30×30 = 900 像素²：报
+        ev = self.bs.uncovered_paper(img)
+        self.assertEqual([e["bbox"] for e in ev], [[500, 500, 530, 530]])
+
+    def test_a_pale_flat_band_below_y1400_or_above_y340_is_now_reported(self):
+        img = self.frame()
+        img[1500:1700] = flat(200, W)
+        img[100:300] = flat(200, W)
+        self.assertEqual(blank.detect(img), [])                                         # engine 的默认范围看不到
+        ev = self.bs.detect_bare(img)
+        self.assertEqual(sorted(e["kind"] for e in ev), ["block", "block"], ev)
+        for got, want in zip(sorted(e["bbox"][1] for e in ev), (100, 1500)):
+            self.assertAlmostEqual(got, want, delta=12)                                 # 5×5 局部标准差在边上多吃几行
+
+    def test_several_bare_bits_in_one_frame_are_merged_into_one_event(self):
+        paper = self.bs.PAPER_BGR.astype(np.uint8)
+        img = self.frame()
+        img[1700:1730, 100:300] = paper
+        img[1700:1730, 600:900] = paper
+        ev = self.bs.detect_bare(img)
+        self.assertEqual(len(ev), 1, ev)
+        self.assertEqual((ev[0]["kind"], ev[0]["n"], ev[0]["bbox"]), ("paper", 2, [100, 1700, 900, 1730]))
+        self.assertAlmostEqual(ev[0]["area"], (200 + 300) * 30 / (W * H), delta=0.0005)
+
+    def test_wide_range_puts_the_engine_constants_back(self):
+        self.bs.detect_bare(self.frame())
+        self.assertEqual((C.BLANK_Y0, C.BLANK_Y1), (340, 1400))
+        with self.assertRaises(RuntimeError):
+            with self.bs.wide_range():
+                self.assertEqual((C.BLANK_Y0, C.BLANK_Y1), (self.bs.BARE_Y0, self.bs.BARE_Y1))
+                raise RuntimeError
+        self.assertEqual((C.BLANK_Y0, C.BLANK_Y1), (340, 1400))
+
+    def run_scan(self, *argv):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = self.bs.main(list(argv))
+        return code, buf.getvalue()
+
+    def test_bare_mode_reports_a_bare_strip_at_the_bottom_and_passes_when_the_last_water_layers_are_there(self):
+        full = TestStripEndToEnd.bg(TestStripEndToEnd, ([540, 300], 1250), ([490, 640], 1250), ([470, 830], 1250))      # tj02 s68 改后的分层 + 6 层水（最后一层水在 y 1880）
+
+        def scan(name, layers):
+            sb = {"episode": "strip_case", "no": 1, "title": ["测试"], "voice": "video/motion/tests/proto17/voice", "shots": [{"id": "gap", "from": {"line": 3}, "bg": layers}]}
+            p = self.d / f"{name}.json"
+            p.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+            return self.run_scan("--bare", str(p), "--every", "1")
+        code, out = scan("water_short", full[:-2])                                      # 少了 y 1740 / 1880 两层水：最下面约 110 像素露出纸底色
+        self.assertEqual(code, 1, out)
+        self.assertIn("gap  纸底色（没铺满）", out)
+        self.assertRegex(out, r"bbox \[0, 18\d\d, 1080, 1920\]")
+        code, out = scan("water_full", full)
+        self.assertEqual(code, 0, out)
+
+
+class TestFillModelMatchesTheEngine(unittest.TestCase):
+    """storyboard_check 的 [铺满]（不画图，按图层尺寸 / 位置 / 补间 / sway / 视差 / 镜头运动算盖住的范围）和合成器真画出来的一致：
+    同一个分镜表（天空 + 三层山 + 三条翻转 / 横向重复的地面、一层带 sway 的模糊水，推 + 摇，故意留着缝）里，每个取样时刻「预测的没盖住」和「真画出来的没盖住」
+    （合成器在纸底色和黑底上各画一遍，两张的差 ÷ 纸底色 = 每个像素透出多少底色，> 50% = 没盖住）基本重合。引擎改了画图的办法（blit / 模糊 / 重复）这里会先响。"""
+
+    def test_predicted_uncovered_area_is_what_the_engine_really_leaves_open(self):
+        import storyboard_check as SC
+        from engine import canvas as engine_canvas
+        from engine import segment as S
+        from engine.canvas import Canvas
+        from engine.plan import build_plan
+        jl = "sets/jin_land/"
+        bg = [{"img": jl + "sky.png", "depth": 0.1, "pos": [0, 0], "w": 1080, "blur": 3},
+              {"img": jl + "ridge_far.png", "depth": 0.2, "pos": [540, 470], "anchor": [0.5, 0], "w": 1100},
+              {"img": jl + "ridge_mid.png", "depth": 0.3, "pos": [540, 640], "anchor": [0.5, 0], "w": 1100},
+              {"img": jl + "ridge_near.png", "depth": 0.4, "pos": [540, 820], "anchor": [0.5, 0], "w": 1100}]
+        for i, (y, w, flip) in enumerate(((1250, 1300, False), (1398, 1500, True), (1570, 1700, False))):                     # 少了最下面一条（y 1764），底下留着空
+            bg.append({"img": jl + "ground.png", "depth": 0.9, "pos": [540, y], "anchor": [0.5, 0], "w": w, "repeat": "x", **({"flip": True} if flip else {})})
+        bg.append({"img": jl + "water.png", "depth": 0.7, "pos": [540, 1180], "anchor": [0.5, 0], "w": 1528, "repeat": "x", "blur": 3, "sway": {"x": 26, "y": 6, "period": 3.4, "phase": 0.4}})
+        sb = {"episode": "strip_case", "no": 1, "title": ["测试"], "voice": "video/motion/tests/proto17/voice",
+              "shots": [{"id": "gap", "from": {"line": 3}, "bg": bg, "camera": [{"move": "push", "amount": 0.05}, {"move": "pan", "dx": -40, "dy": 10}]}]}
+        d = common.fresh("it_fill_model")
+        path = d / "storyboard.json"
+        path.write_text(json.dumps(sb, ensure_ascii=False), encoding="utf-8")
+        cap = {}
+        real = SC.check_fill
+        SC.check_fill = lambda sh, out, cam, rep: cap.update(sh=sh, out=out, cam=cam)
+        try:
+            SC.run(str(path))
+        finally:
+            SC.check_fill = real
+        sh, out, cam = cap["sh"], cap["out"], cap["cam"]
+        plan = build_plan(path, None, 1.0, "normal")
+        sp = plan.shots[0]
+        job = S.make_job(plan, sp, d / "cache", "normal")
+        fxreg, tl, store, _ui = S._context(job)
+        own = S._scene(job["own"], tl, store, fxreg)
+        cv = Canvas(store, 1.0, C.FPS, own.dur)
+        paper = engine_canvas._PAPER_BGR
+        k = np.ones((3, 3), np.uint8)
+        try:
+            checked = 0
+            for t in (0.3, 0.9, 1.5, 2.1):
+                f = sp.f0 + int(round(t * C.FPS))
+                if f >= sp.f1:
+                    continue
+                t = (f - sp.f0) / C.FPS
+                shots = []
+                for bgc in (paper, (0, 0, 0)):
+                    engine_canvas._PAPER_BGR = bgc
+                    cv.rng = np.random.default_rng([1, f])
+                    own.draw(cv, (f - own.f0i) / C.FPS, f / C.FPS, bare=True)
+                    shots.append(cv.img.astype(np.float32).copy())
+                engine_canvas._PAPER_BGR = paper
+                v_real = (shots[0] - shots[1]).mean(2) / float(np.mean(C.PAPER))
+                real_mask = cv2.resize((v_real > 0.5).astype(np.uint8), (540, 960), interpolation=cv2.INTER_AREA) > 0.5
+                pred_mask = SC.fill_vis(out["layers"], cam, t, sh.t0, 2) > SC.FILL_VIS_MAX
+                real_mask, pred_mask = [cv2.morphologyEx(m.astype(np.uint8), cv2.MORPH_OPEN, k, borderType=cv2.BORDER_CONSTANT, borderValue=0).astype(bool) for m in (real_mask, pred_mask)]
+                self.assertGreater(real_mask.sum(), 540 * 960 * 0.03, f"t={t}：测试场景应该留着缝（真画出来的没盖住的格子太少，场景失效了）")
+                diff = np.logical_xor(real_mask, pred_mask).sum()
+                self.assertLess(diff, 0.05 * real_mask.sum(), f"t={t}：预测和真画出来的没盖住的范围对不上（不重合的格子 {diff}，真实 {real_mask.sum()}）")
+                checked += 1
+            self.assertGreaterEqual(checked, 3)
+        finally:
+            engine_canvas._PAPER_BGR = paper
+
+
 if __name__ == "__main__":
     common.ensure_proto_assets()
     unittest.main()
