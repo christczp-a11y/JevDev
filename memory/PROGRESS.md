@@ -2,7 +2,12 @@
 
 > 最后更新：2026-10-02（本地）
 
-## 当前阶段：tj03「在德不在险」第 2 步——红线改法清单（`video/stories/tj03/红线改法.md`）和新背景音乐等 Chris 定；进度看 `video/stories/tj03/status.md`
+## 当前阶段：tj03「在德不在险」第 3 版已发 Chris（10-02），等他的意见
+- 成片 `video/out/tj03/full/tj03_full.mp4`，手机版 `在德不在险_第三集_v3_手机.mp4`；进度、命令、交付记录看 `video/stories/tj03/status.md`。
+- 新背景音乐：ACE-Step 1.5（MIT），`video/music_gen.py` / `music_screen.py`，曲子在 `video/assets/audio/bgm/`（README），分镜表顶层 `"bgm"` 选用；tj03 用候选 12（Chris 选）。
+- 这一集新加 / 修的：引擎模糊图层先拼再模糊（水面台阶，dd62ceb）；`[铺满]` 整屏覆盖检查 + `blank_scan --bare` 扫全高（M7 第三次再犯）；PITFALLS 新 M 行（砸字被标题条切、道具悬空 → 待补 22）。
+- 等 Chris 定：tj02 预告「大将军」可能读成 jiàng（S14 再犯），修不修。
+- 可选：出片时合成器自带的空白检测还只扫 y 340–1400（分镜检查和 `blank_scan --bare` 已经能拦住），要同步就照 49851cc 那次 builder 回复的 a–d 改 engine（缓存会全废）。
 
 ## 上一集：tj02「魏文侯之约」做完（第 4 版，Chris 10-01：「这一版不用改」）
 - 发布用 `video/out/tj02/full/tj02_full.mp4`（高清）/ `魏文侯之约_第二集_v4_手机.mp4`；**文案、标题、封面字由 Chris 的另一个会话做**，这边只做动画。
