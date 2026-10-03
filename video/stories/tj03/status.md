@@ -3,7 +3,7 @@
 > 主会话维护。流程见 `docs/自动化工作流-每集生成.md`；照 tj01、tj02 复盘「下一集照着做」执行（`memory/PROGRESS.md` 有派活顺序）。只做动画，不做文案。
 > 最后更新：2026-10-02
 
-## 当前：第 8 步第 2 版成片**完成**（10-02，builder），等 reviewer 复查
+## 当前：第 8 步第 3 版成片**完成**（10-02，builder），等 reviewer 复查
 
 ## 每一步的状态
 | 步 | 内容 | 状态 | 产出 | 备注 |
@@ -16,6 +16,7 @@
 
 | 6 | 合成 | **完成**（10-02，builder；等第 7 步 reviewer） | `video/out/tj03/full/tj03_full.mp4`（1080×1920、30 帧、174.23 秒、5227 帧、113.0 MB）/ `.wav` / `.report.json`；预览 `preview/tj03_preview.mp4`；联系表 22 张 + 动作条 62 张 + `dwell.md`（62 镜 ⚠ 0）；抽帧 62 镜 × 开头 / 中间 = 124 张 1080 原尺寸在 `check_v1/`；手机版 `在德不在险_第三集_v1_手机.mp4`（720×1280、27.0 MB、174.23 秒、−16.1 LUFS、峰值 −2.1 dB） | 合成器自动检查退出码 0：响度 −16.0 LUFS、真峰值 −2.0 dB、闪烁 0 处、静止 > 1.5 秒 0 处、27 句台词没有人声 0 句、空白 0 处、合成器警告 0 条；`report.audio.bgm` = `video/assets/audio/bgm/tj03_cand12.mp3`；storyboard_check 0 错 5 警告（朝向 3 条 + s05 特效 6 个 + 划桨的人不是时间线说话人，都是分镜表第 4 步已知）；`blank_scan.py --bare tj03` 0 处（362 帧）；成片模式 `blank_scan.py` 1 处 s46「大块」bbox [176,340,1080,548]（348 帧）= 误报：那是 `rays` 光芒（淡黄半透明平涂）盖在天空上，布景三层 0 处。冷启动 245.5 秒（62 镜 104 块）。**没有改引擎**（中途试过两个修左缘水面台阶的办法都没效果，已原样还原，`sprites.py` 和 HEAD 逐字节相同）。自检发现的、要导演改分镜表的问题见 builder 回复 |
 | 8（第 2 版） | 分镜表改两轮（d2093c0：自检 7 处；81e75fd：reviewer 6 处 + 书房底部空条 M7 + 整屏铺满，共 34 镜）+ 引擎修模糊水面左缘台阶（dd62ceb）后重出 | **完成**（10-02，builder） | `video/out/tj03/full/tj03_full.mp4`（1080×1920、30 帧、174.23 秒、5227 帧、117.3 MB）/ `.wav` / `.report.json`；第 1 版改名留 `tj03_full_v1.mp4 / .wav / .report.json`、`dwell_v1.md`、`blank_scan_log_v1.txt`、`build_v1/`；手机版 `在德不在险_第三集_v2_手机.mp4`（720×1280、27.07 MB、174.23 秒、−16.1 LUFS、峰值 −2.1 dB）；联系表 22 张 + 动作条 62 张 + `dwell.md`（62 镜 ⚠ 0）；抽帧 62 镜 × 开头 / 中间 / 结尾 = 186 张 1080 原尺寸在 `check_v2/` | 合成器自动检查退出码 0：响度 −16.0 LUFS、真峰值 −2.0 dB、闪烁 0、静止 0、台词没有人声 0 句、空白 0、警告 0；报告 `audio.bgm` = `tj03_cand12.mp3`；`blank_scan.py --bare tj03` 0 处 0 组（362 帧；用的是工作区里另一个 builder 没提交的整屏 y 0–1920 + 纸底色版本）；成片模式 1 组 s46「大块」[168,340,1080,548] = `rays` 光芒误报（和第 1 版同一处）；storyboard_check（HEAD 版，复制到临时目录跑）0 错 6 警告（朝向 3 + s05 特效 6 个 + 划桨的人不是说话人 + s35 选项卡 A 从上一镜带过来，`at` 在镜头开始之前 3.05 秒 = 有意）；186 张抽帧最下面 300 像素逐张量过：没有成片里连续 ≥ 6 行的纸底色空条（同一个检测在第 1 版 s26/s34/s49/s51 对得出 296 行）。冷启动 277.6 秒（62 镜 104 块，缓存全废）。没改引擎、没改 `storyboard_check.py`、没改 `storyboard.json` |
+| 8（第 3 版） | 分镜表只改 s45（30c47bd：去掉右边是直边的纸山）后重出 | **完成**（10-02，builder） | `video/out/tj03/full/tj03_full.mp4`（1080×1920、30 帧、174.23 秒、5227 帧、117.1 MB）/ `.wav` / `.report.json`；第 2 版改名留 `tj03_full_v2.mp4 / .wav / .report.json`、`dwell_v2.md`、`blank_scan_log_v2.txt`、`build_v2/`；手机版 `在德不在险_第三集_v3_手机.mp4`（720×1280、27.07 MB、174.23 秒、−16.1 LUFS、峰值 −2.1 dB）；s45 开头 / 中间 / 结尾原尺寸帧在 `check_v3/` | 合成器自动检查退出码 0：响度 −16.0 LUFS、真峰值 −2.0 dB、闪烁 0、静止 0、台词没有人声 0 句、空白 0、警告 0；`blank_scan.py --bare tj03` 0 处（362 帧）；成片模式 1 组 s46「大块」= `rays` 光芒误报（同第 1、2 版）；dwell.md 62 镜 ⚠ 0。缓存命中 61 镜、只重渲 s45（2 块），总 24.0 秒。**逐帧比第 2、3 版**（5227 帧、1080×1920 全分辨率、每个像素）：只有 s45 的 102 帧（第 3549–3650 帧 = s45 的全部帧）不一样，其余 5125 帧逐像素相同；混音 `.wav` 的 md5 相同、成片音轨的 md5 相同。s45 底部 300 像素没有空米色条 |
 
 ## 重跑用的命令
 （环境：Git Bash、仓库根目录；`export PYTHONIOENCODING=utf-8; export TYPESAFE_API_KEY=$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('TYPESAFE_API_KEY','User')" | tr -d '\r')`，Python 用 `.venv/Scripts/python`）
@@ -46,3 +47,7 @@
   ④ `review_frames.py`、`blank_scan.py`（成片模式，后台）、`blank_scan.py --bare tj03`（同第 6 步）；
   ⑤ 抽帧核：每镜开头（转场镜头取转场结束后 3 帧）/ 中间 / 结尾（下一镜转场开始前 3 帧）各一张，存 `check_v2/<镜头号>_<1_start|2_mid|3_end>.png`（用 `engine.plan.build_plan` 取每镜帧范围，`cv2.VideoCapture` 顺序读帧）；最下面 300 像素有没有空米色条：每张成片帧 y 1620–1920 里和纸底色（BGR 200,220,230）差 ≤ 12 的像素占一行 ≥ 60%、连续 ≥ 6 行就算；
   ⑥ 手机版（码率 1100k，27.07 MB）：同第 6 步，输出名 `在德不在险_第三集_v2_手机.mp4`。
+
+## 交付记录
+- 10-02：第 3 版（分镜表 30c47bd，引擎 dd62ceb）手机版 `video/out/tj03/full/在德不在险_第三集_v3_手机.mp4`（27.1 MB）发 Chris。背景音乐 tj03_cand12（Chris 选）。小遗留：s46 光芒在成片模式空白扫描里是误报；s56 青蛙停在蛋上方一点点。
+
