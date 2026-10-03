@@ -1,7 +1,8 @@
 """tj03 小红书封面（3:4，1080×1440），版式同 tj01 第 2 版、tj02：上方奶白卡片两行大字 + 红签「第3集 · 在德不在险」+ 下方人物。
-大木船上，左边魏武侯（冒冷汗，朝右）、右边吴起（皱眉说话，朝左）面对面。
-K3（推荐）「成语「在德不在险」 / 原来是这么来的」；K2（备选）「满级装备 / 不如队友齐心？」。Jev 比较见 `picks/combo_pick.py`。
-用法：.venv/Scripts/python video/stories/tj03/make_cover.py → video/out/tj03/publish/cover_K3.png、cover_K2.png
+第 2 版（10-03，Chris：「封面太难看了吧 主角魏武侯的形象没有让我想点进去的想法啊」；PITFALLS H1 再犯、P22）：
+不用魏武侯（娃娃脸撑不起封面），改成常胜将军吴起大特写，背后是视频里的高山和河浪。原来的「成语」说法查无此条，删掉。
+A「常胜将军说： / 山河再险也守不住」；B「船上的人 / 都可能变成对手？」。Jev 比较见 `picks/combo2_pick.py`。
+用法：.venv/Scripts/python video/stories/tj03/make_cover.py → video/out/tj03/publish/cover_v2_A.png、cover_v2_B.png
 """
 from pathlib import Path
 
@@ -58,24 +59,34 @@ def banner(cv, lines, label, size=112):
 def scene():
     cv = Image.new("RGBA", (W, H))
     cv.alpha_composite(layer(A / "sets/jin_land/sky.png", W), (0, 0))
-    for name, y in (("ridge_far", 560), ("ridge_mid", 760), ("ridge_near", 900)):
-        cv.alpha_composite(layer(A / f"sets/jin_land/{name}.png", W), (0, y))
-    water = layer(A / "sets/jin_land/water.png", 1500)
-    cv.alpha_composite(water, ((W - 1500) // 2, 1080))
+    for name, y, wd in (("ridge_far", 330, 1500), ("ridge_mid", 560, 1450), ("ridge_near", 760, 1400)):
+        cv.alpha_composite(layer(A / f"sets/jin_land/{name}.png", wd), ((W - wd) // 2, y))
+    water = layer(A / "sets/jin_land/water.png", 1600)
+    for y in (1060, H - water.height):   # 两层叠到画面底边，下面不留空白（M7）
+        cv.alpha_composite(water, ((W - 1600) // 2, max(1060, y)))
     return cv
 
 
 LABEL = "第3集 · 在德不在险"
-for name, lines in (
-    ("K3", [[("成语「", BROWN), ("在德不在险", RED), ("」", BROWN)], [("原来是这么来的", BROWN)]]),
-    ("K2", [[("满级装备", BROWN)], [("不如", BROWN), ("队友齐心？", RED)]]),
+for name, lines, pose in (
+    ("A", [[("常胜将军说：", BROWN)], [("山河再险也", BROWN), ("守不住", RED)]], "wq_hi_frown"),
+    ("B", [[("船上的人", BROWN)], [("都可能", BROWN), ("变成对手？", RED)]], "wq_hi_speak"),
 ):
     cv = scene()
-    bottom = banner(cv, lines, LABEL)
-    put(cv, A / "chars/wuh_hi_sweat.png", 0.64, -40, bottom + 70)
-    put(cv, A / "chars/wq_hi_speak.png", 0.58, W - round(1020 * 0.58) + 30, bottom + 40)
-    boat = layer(A / "props/boat_front.png", 1700)
-    cv.alpha_composite(boat, ((W - 1700) // 2, H - boat.height + 20))
-    p = OUT / f"cover_{name}.png"
+    bottom = banner(cv, lines, LABEL, size=120)
+    s_ = 0.86
+    put(cv, A / f"chars/{pose}.png", s_, W - round(1020 * s_) + 60, bottom + 36)
+    p = OUT / f"cover_v2_{name}.png"
     cv.convert("RGB").save(p)
     print(p)
+
+# M：吴起放大在前（主角），魏武侯缩小在后面冒冷汗（留住「将军给国君上课」的故事感）
+cv = scene()
+bottom = banner(cv, [[("“", BROWN), ("在德不在险", RED), ("”", BROWN)], [("原来是这么来的", BROWN)]], LABEL, size=120)
+put(cv, A / "chars/wuh_hi_sweat.png", 0.50, -10, bottom + 150)
+boat = layer(A / "props/boat_front.png", 1500)   # 船舷挡住魏武侯的半身切边（M7），人在船上
+cv.alpha_composite(boat, (-380, 1050))
+put(cv, A / "chars/wq_hi_speak.png", 0.80, W - round(1020 * 0.80) + 70, bottom + 40)
+p = OUT / "cover_v2_M.png"
+cv.convert("RGB").save(p)
+print(p)
